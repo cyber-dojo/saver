@@ -8,13 +8,16 @@
 # file system as required by flock.
 #
 # The argument to join.rb is a dir which is probably a
-# Persistent-Volume-Claim mounted non-local file system.
+# mounted Persistent-Volume-Claim non-local file system.
 
 # It assumes grouper.create(manifest) has saved a children.json file
-# in /a/b/c/1BBAED9A which simply holds (1..64).to_a.shuffle
+# in /a/b/c/1BBAED9A which (initially) holds (0..63).to_a.shuffle
 
 require 'json'
 
 my_dir = ARGV[0]
-
-# each time open the file, pop the 1st element, resave the file
+filename = "#{my_dir}/children.json"
+unborn = JSON.parse(IO.read(filename))
+born = unborn.shift
+IO.write(filename, JSON.unparse(unborn))
+print born

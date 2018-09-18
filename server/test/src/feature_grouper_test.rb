@@ -43,7 +43,7 @@ class FeatureGrouperTest < TestBase
   # create(manifest) manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '42D',
+  test '420',
   'manifest raises when id does not exist' do
     error = assert_raises(ArgumentError) {
       manifest('B4AB376BE2')
@@ -53,7 +53,7 @@ class FeatureGrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42E',
+  test '421',
   'manifest round-trip' do
     stub_id = '0ADDE7572A'
     stub_id_generator.stub(stub_id)
@@ -63,6 +63,22 @@ class FeatureGrouperTest < TestBase
     expected['id'] = id
     actual = manifest(id)
     assert_equal expected, actual
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '422',
+  'create() puts shuffled (0..63).to_a into json file ready for join' do
+    stub_id = '2DF7FE6776'
+    refute id?(stub_id)
+    stub_create(stub_id)
+    dir = disk[pathed(stub_id)]
+    assert dir.exists?
+    unborn = JSON.parse(dir.read('children.json')).sort
+    assert_equal 64, unborn.size
+    assert_equal 0, unborn[0]
+    assert_equal 63, unborn[-1]
+    assert_equal (0..63).to_a, unborn
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -177,6 +193,24 @@ class FeatureGrouperTest < TestBase
     expected.each do |filename,content|
       assert_equal content, actual[filename], diagnostic + " [#{filename}]"
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  def disk
+    externals.disk
+  end
+
+  def pathed(id)
+    "#{externals.grouper.path}/#{outer(id)}/#{inner(id)}"
+  end
+
+  def outer(id)
+    id[0..1]  # 2-chars long. eg 'e5'
+  end
+
+  def inner(id)
+    id[2..-1] # 8-chars long. eg '6aM327PE'
   end
 
 end

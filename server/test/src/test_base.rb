@@ -42,7 +42,8 @@ class TestBase < HexMiniTest
     grouper.joined(id)
   end
 
-  #- - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - -
 
   def create_manifest
     starter = ExternalStarter.new

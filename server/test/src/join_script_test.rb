@@ -6,22 +6,49 @@ class JoinScriptTest < TestBase
     '69252'
   end
 
+  def hex_setup
+    @real_id_generator = externals.id_generator
+    @stub_id_generator = IdGeneratorStub.new
+    externals.id_generator = @stub_id_generator
+  end
+
+  def hex_teardown
+    externals.id_generator = @real_id_generator
+  end
+
+  attr_reader :stub_id_generator
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '0E9',
-  'sdfsdfdsf' do
-    id = '588AA6D4FB'
-    command = "flock /tmp/#{id} /app/src/join.rb #{pathed(id)}"
-    logging = false
-    stdout,stderr,status = shell.exec(command, logging)
+  'returns another random number in range 0..63' do
+    stub_create(id = '588AA6D4FB')
 
-    #puts ":stdout:#{stdout}:"
-    #puts ":stderr:#{stderr}:"
-    #puts ":status:#{status}:"
-    assert_equal 0, status
+    born = []
+    64.times do
+      born << join(id)
+    end
+    assert_equal (0..63).to_a.sort, born.sort
+    # this passes but is very slow....
   end
 
   private
+
+  def join(id)
+    command = "flock /tmp/#{id} /app/src/join.rb #{pathed(id)}"
+    logging = false
+    stdout,stderr,status = shell.exec(command, logging)
+    assert_equal '', stderr
+    assert_equal 0, status
+    stdout.to_i
+  end
+
+  def stub_create(stub_id)
+    stub_id_generator.stub(stub_id)
+    id = create(create_manifest)
+    assert_equal stub_id, id
+    id
+  end
 
   def shell
     externals.shell
