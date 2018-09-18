@@ -20,7 +20,7 @@ RUN  chown -R grouper ${GROUPER_HOME}
 # - - - - - - - - - - - - - - - - -
 
 ARG SHA
-RUN echo ${SHA} > ${SINGLER_HOME}/sha.txt
+RUN echo ${SHA} > ${GROUPER_HOME}/sha.txt
 
 # - - - - - - - - - - - - - - - - - -
 # bring it up

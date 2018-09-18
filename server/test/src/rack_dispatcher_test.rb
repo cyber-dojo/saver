@@ -1,6 +1,6 @@
 require_relative 'test_base'
 require_relative 'rack_request_stub'
-require_relative 'storer_stub'
+require_relative 'grouper_stub'
 require_relative '../../src/rack_dispatcher'
 
 class RackDispatcherTest < TestBase
@@ -14,7 +14,7 @@ class RackDispatcherTest < TestBase
   test 'E41',
   'dispatch to sha' do
     assert_dispatch('sha', {},
-      'hello from StorerStub.sha'
+      'hello from GrouperStub.sha'
     )
   end
 
@@ -33,19 +33,17 @@ class RackDispatcherTest < TestBase
 
   test 'E5B',
   'dispatch raises when any argument is malformed' do
-    assert_dispatch_raises('increments',
+    assert_dispatch_raises('manifest',
       { id: malformed_id },
       500,
       'ArgumentError',
       'id:malformed'
     )
-    assert_dispatch_raises('tag_visible_files',
-      {  id: well_formed_id,
-        tag: malformed_tag
-      },
+    assert_dispatch_raises('join',
+      {  id: malformed_id },
       500,
       'ArgumentError',
-      'tag:malformed'
+      'id:malformed'
     )
   end
 
@@ -56,7 +54,7 @@ class RackDispatcherTest < TestBase
   'dispatch to create' do
     assert_dispatch('create',
       { manifest: create_manifest },
-      'hello from StorerStub.create'
+      'hello from GrouperStub.create'
     )
   end
 
@@ -66,7 +64,7 @@ class RackDispatcherTest < TestBase
   'dispatch to manifest' do
     assert_dispatch('manifest',
       { id: well_formed_id },
-      'hello from StorerStub.manifest'
+      'hello from GrouperStub.manifest'
     )
   end
 
@@ -77,7 +75,7 @@ class RackDispatcherTest < TestBase
   'dispatch to id' do
     assert_dispatch('id',
       { id: well_formed_id },
-      'hello from StorerStub.id?'
+      'hello from GrouperStub.id?'
     )
   end
 
@@ -87,7 +85,7 @@ class RackDispatcherTest < TestBase
   'dispatch to id_completed' do
     assert_dispatch('id_completed',
       { partial_id: well_formed_partial_id},
-      'hello from StorerStub.id_completed'
+      'hello from GrouperStub.id_completed'
     )
   end
 
@@ -97,72 +95,12 @@ class RackDispatcherTest < TestBase
   'dispatch to id_completions' do
     assert_dispatch('id_completions',
       { outer_id: well_formed_outer_id},
-      'hello from StorerStub.id_completions'
+      'hello from GrouperStub.id_completions'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E70',
-  'dispatch to ran_tests' do
-    assert_dispatch('ran_tests',
-      {     id: well_formed_id,
-         files: well_formed_files,
-           now: well_formed_now,
-        stdout: well_formed_stdout,
-        stderr: well_formed_stderr,
-        colour: well_formed_colour
-      },
-      'hello from StorerStub.ran_tests'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E71',
-  'dispatch to increments' do
-    assert_dispatch('increments',
-      { id: well_formed_id},
-      'hello from StorerStub.increments'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E80',
-  'dispatch to visible_files' do
-    assert_dispatch('visible_files',
-      { id: well_formed_id },
-      'hello from StorerStub.visible_files'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E81',
-  'dispatch to tag_visible_files' do
-    assert_dispatch('tag_visible_files',
-      {  id: well_formed_id,
-        tag: well_formed_tag
-      },
-      'hello from StorerStub.tag_visible_files'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E82',
-  'dispatch to tags_visible_files' do
-    assert_dispatch('tags_visible_files',
-      {      id: well_formed_id,
-        was_tag: well_formed_was_tag,
-        now_tag: well_formed_now_tag
-      },
-      'hello from StorerStub.tags_visible_files'
-    )
-  end
 
 =begin
   test 'E68',
@@ -172,7 +110,7 @@ class RackDispatcherTest < TestBase
         tag:well_formed_tag,
         now:well_formed_now
       },
-      'hello from StorerStub.tag_fork'
+      'hello from GrouperStub.tag_fork'
     )
   end
 =end
@@ -181,10 +119,6 @@ class RackDispatcherTest < TestBase
 
   def malformed_id
     '==' # ! Base58 String
-  end
-
-  def malformed_tag
-    'sdsd' # !Integer
   end
 
   def well_formed_id
@@ -197,38 +131,6 @@ class RackDispatcherTest < TestBase
 
   def well_formed_outer_id
     '12'
-  end
-
-  def well_formed_files
-    { 'cyber-dojo.sh' => 'make' }
-  end
-
-  def well_formed_now
-    [2018,3,28, 21,11,39]
-  end
-
-  def well_formed_stdout
-    'tweedle-dee'
-  end
-
-  def well_formed_stderr
-    'tweedle-dum'
-  end
-
-  def well_formed_colour
-    'red'
-  end
-
-  def well_formed_tag
-    4
-  end
-
-  def well_formed_was_tag
-    7
-  end
-
-  def well_formed_now_tag
-    8
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -271,7 +173,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def rack_call(name, args)
-    rack = RackDispatcher.new(StorerStub.new, RackRequestStub)
+    rack = RackDispatcher.new(GrouperStub.new, RackRequestStub)
     env = { path_info:name, body:args.to_json }
     rack.call(env)
   end

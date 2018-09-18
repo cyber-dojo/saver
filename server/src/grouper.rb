@@ -115,6 +115,10 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
+  def dir_join(*args)
+    File.join(*args)
+  end
+
   def invalid(name)
     fail ArgumentError.new("#{name}:invalid")
   end
