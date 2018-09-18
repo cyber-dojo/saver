@@ -134,6 +134,32 @@ class FeatureGrouperTest < TestBase
     assert_equal [id0,id1].sort, id_completions(outer_id).sort
   end
 
+  #- - - - - - - - - - - - - - - - - - - - - -
+  # join
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '1D1',
+  'join raises when id does not exist' do
+    error = assert_raises(ArgumentError) {
+      join('B4AB376BE2')
+    }
+    assert_equal 'id:invalid', error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '1D2',
+  'joined raises when id does not exist' do
+    error = assert_raises(ArgumentError) {
+      joined('B4AB376BE2')
+    }
+    assert_equal 'id:invalid', error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+
+
   private
 
   def stub_create(stub_id)

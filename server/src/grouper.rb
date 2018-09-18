@@ -143,4 +143,8 @@ class Grouper
     @externals.id_generator
   end
 
+  def shell
+    @externals.shell
+  end
+
 end

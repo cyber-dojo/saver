@@ -8,11 +8,13 @@ class ExternalBashShellerTest < TestBase
   end
 
   def hex_setup
-    externals.logger = StdoutLoggerSpy.new
+    @real_logger = externals.logger
+    @spy_logger = StdoutLoggerSpy.new
+    externals.logger = @spy_logger
   end
 
-  def shell
-    externals.shell
+  def hex_teardown
+    externals.logger = @real_logger
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -124,7 +126,11 @@ class ExternalBashShellerTest < TestBase
     ]
   end
 
-  # - - - - - - - - - - - - - - - - -
+  private
+
+  def shell
+    externals.shell
+  end
 
   def exec(command, logging = true)
     @stdout,@stderr,@status = shell.exec(command, logging)
