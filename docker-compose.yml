@@ -1,0 +1,65 @@
+
+version: '2.2'
+
+services:
+
+  grouper_client:
+    build:
+      context: client
+    user: nobody
+    image: cyberdojo/grouper-client
+    init: true
+    container_name: test-grouper-client
+    read_only: true
+    tmpfs: /tmp
+    restart: 'no'
+    depends_on:
+      - starter
+      - grouper
+    ports:
+      - 4538:4538
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  grouper:
+    build:
+      context: server
+      args:
+        - SHA
+    user: grouper
+    image: cyberdojo/grouper
+    init: true
+    container_name: test-grouper-server
+    read_only: true
+    tmpfs: /tmp
+    restart: 'no'
+    volumes:
+      - /tmp/grouper/persistent-dir/ids:/persistent-dir/ids:rw
+    depends_on:
+      - starter # for tests
+      - singler
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  singler:
+    user: singler
+    image: cyberdojo/singler
+    init: true
+    container_name: test-grouper-singler-server
+    read_only: true
+    tmpfs: /tmp
+    volumes:
+      - /tmp/singler/persistent-dir/ids:/persistent-dir/ids:rw
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # starter is handy in tests for creating start-point manifests
+
+  starter:
+    user: nobody
+    image: cyberdojo/starter
+    init: true
+    container_name: test-grouper-starter-server
+    read_only: true
+    tmpfs: /tmp
+    volumes:
+      - ./start_points:/app/start_points:ro
