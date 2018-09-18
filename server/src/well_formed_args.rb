@@ -114,6 +114,18 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
+  def is_time?(arg)
+    return false unless arg.is_a?(Array)
+    return false unless arg.size == 6
+    return false unless arg.all? { |n| n.is_a?(Integer) }
+    Time.mktime(*arg)
+    true
+  rescue
+    false
+  end
+
+  # - - - - - - - - - - - - - - - -
+
   def malformed
     raise ArgumentError.new("#{arg_name}:malformed")
   end
