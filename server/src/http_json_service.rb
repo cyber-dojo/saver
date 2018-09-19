@@ -12,6 +12,14 @@ module HttpJsonService # mix-in
     result(json, name)
   end
 
+  def post(method, *args)
+    name = method.to_s
+    json = http(name, args_hash(name, *args)) { |uri|
+      Net::HTTP::Post.new(uri)
+    }
+    result(json, name)
+  end
+
   def http(method, args)
     uri = URI.parse("http://#{hostname}:#{port}/" + method)
     http = Net::HTTP.new(uri.host, uri.port)

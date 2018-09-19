@@ -6,12 +6,19 @@ readonly MY_NAME="${ROOT_DIR##*/}"
 readonly SERVER_CID=`docker ps --all --quiet --filter "name=${MY_NAME}-server"`
 readonly CLIENT_CID=`docker ps --all --quiet --filter "name=${MY_NAME}-client"`
 
+readonly SINGLER_CID=`docker ps --all --quiet --filter "name=test-grouper-singler-server"`
+
 readonly COVERAGE_ROOT=/tmp/coverage
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 run_server_tests()
 {
+  docker exec \
+    --user root \
+    "${SINGLER_CID}" \
+      sh -c 'chown -R singler /persistent-dir/ids'
+
   docker exec \
     --user root \
     "${SERVER_CID}" \

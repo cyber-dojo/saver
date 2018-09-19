@@ -65,24 +65,6 @@ class GrouperTest < TestBase
     assert_equal expected, actual
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-=begin
-  test '422',
-  'create() puts shuffled (0..63).to_a into json file ready for join' do
-    stub_id = '2DF7FE6776'
-    refute id?(stub_id)
-    stub_create(stub_id)
-    dir = disk[pathed(stub_id)]
-    assert dir.exists?
-    unborn = JSON.parse(dir.read('children.json')).sort
-    assert_equal 64, unborn.size
-    assert_equal 0, unborn[0]
-    assert_equal 63, unborn[-1]
-    assert_equal (0..63).to_a, unborn
-  end
-=end
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # id?(id), id_completed(partial_id), id_completions(outer_id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -153,7 +135,7 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # join
+  # join/joined
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D1',
@@ -167,6 +149,30 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
+  'join with a valid id succeeds 64 times then nil' do
+    stub_id = stub_create('D47983B964')
+    joined = []
+    64.times do
+      hash = join(stub_id)
+      refute_nil hash
+      index = hash['index']
+      assert index.is_a?(Integer), "#{index} is a #{index.class.name}!"
+      assert (0..63).include?(index), "#{index} not in (0..63)!"
+      id = hash['id']
+      assert id.is_a?(String), "#{id} is a #{id.class.name}!"
+      assert singler.id?(id), "!singler.id?(#{id})"
+      refute joined.include?(index), "joined.include?(#{index})!"
+      joined << index
+    end
+    refute_equal (0..63).to_a, joined
+    assert_equal (0..63).to_a, joined.sort
+    n = join(stub_id)
+    assert_nil n
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '2D1',
   'joined raises when id does not exist' do
     error = assert_raises(ArgumentError) {
       joined('B4AB376BE2')
@@ -189,30 +195,8 @@ class GrouperTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_visible_files(expected, actual, output, diagnostic)
-    assert actual.keys.include?('output'), diagnostic + ' [output]'
-    assert_equal output, actual['output']
-    expected.each do |filename,content|
-      assert_equal content, actual[filename], diagnostic + " [#{filename}]"
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - -
-
-  def disk
-    externals.disk
-  end
-
-  def pathed(id)
-    "#{externals.grouper.path}/#{outer(id)}/#{inner(id)}"
-  end
-
-  def outer(id)
-    id[0..1]  # 2-chars long. eg 'e5'
-  end
-
-  def inner(id)
-    id[2..-1] # 8-chars long. eg '6aM327PE'
+  def singler
+    externals.singler
   end
 
 end

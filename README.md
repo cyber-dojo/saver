@@ -155,11 +155,11 @@ Join the practice-session with the given id.
 ```
   { "id": "55D3B97CF7" }
 ```
-Returns the avatar name and its individual practice-session id, eg
+Returns the individual practice-session avatar-index and id, eg
 ```
   { "join": {
-       "avatar": "lion",
-           "id": "D6A57FC1A5"
+      "index": 6,
+         "id": "D6A57FC1A5"
      }
   }
 ```
@@ -167,8 +167,8 @@ Returns the avatar name and its individual practice-session id, eg
 - - - -
 
 ## GET joined
-Returns the names and ids of everyone who has joined the practice-session
-with the given id.
+Returns the individual practice-session avatar-index and id of everyone
+who has joined the practice-session with the given group id.
 - parameters, eg
 ```
   { "id": "55D3B97CF7" }
@@ -176,9 +176,9 @@ with the given id.
 - returns, eg
 ```
   { "joined": {
-       "lion": "D6A57FC1A5",
-      "tiger": "C4AC8BF502",
-       "swan": "454F917286"
+       6: "D6A57FC1A5",
+      34: "C4AC8BF502",
+      11: "454F917286"
     }
   }
 ```

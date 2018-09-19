@@ -21,7 +21,6 @@ class Grouper
     dir = id_dir(id)
     dir.make
     dir.write(manifest_filename, json_unparse(manifest))
-    #dir.write('children.json', json_unparse((0..63).to_a.shuffle))
     id
   end
 
@@ -29,8 +28,7 @@ class Grouper
 
   def manifest(id)
     assert_id_exists(id)
-    dir = id_dir(id)
-    json_parse(dir.read(manifest_filename))
+    get_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -72,7 +70,23 @@ class Grouper
 
   def join(id)
     assert_id_exists(id)
-    'TODO'
+    index = (0..63).to_a.shuffle.detect { |n|
+      path = dir_join(id_path(id), n.to_s)
+      disk[path].make
+    }
+    if index.nil?
+      nil
+    else
+      manifest = get_manifest(id)
+      manifest.delete('id')
+      #manifest['group'] = id
+      sid = singler.create(manifest)
+      # write { "id" => sid } into dir/index/id.json
+      {
+        "index" => index,
+        "id" => sid
+      }
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -85,6 +99,10 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   private
+
+  def get_manifest(id)
+    json_parse(id_dir(id).read(manifest_filename))
+  end
 
   def manifest_filename
     'manifest.json'
@@ -146,6 +164,10 @@ class Grouper
 
   def shell
     @externals.shell
+  end
+
+  def singler
+    @externals.singler
   end
 
 end
