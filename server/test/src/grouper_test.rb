@@ -149,6 +149,16 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
+  'joined raises when id does not exist' do
+    error = assert_raises(ArgumentError) {
+      joined('B4AB376BE2')
+    }
+    assert_equal 'id:invalid', error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '1D3',
   'join with a valid id succeeds 64 times then nil' do
     stub_id = stub_create('D47983B964')
     joined = []
@@ -172,17 +182,10 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '2D1',
-  'joined raises when id does not exist' do
-    error = assert_raises(ArgumentError) {
-      joined('B4AB376BE2')
-    }
-    assert_equal 'id:invalid', error.message
+  test '1D4',
+  'joined information can be retrieved' do
+
   end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-
 
   private
 
