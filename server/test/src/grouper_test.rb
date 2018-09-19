@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require_relative 'id_generator_stub'
 
-class FeatureGrouperTest < TestBase
+class GrouperTest < TestBase
 
   def self.hex_prefix
     '97431'

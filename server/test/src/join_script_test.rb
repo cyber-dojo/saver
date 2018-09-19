@@ -20,6 +20,7 @@ class JoinScriptTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test '0E9',
   'returns another random number in range 0..63' do
     stub_create(id = '588AA6D4FB')
@@ -31,6 +32,7 @@ class JoinScriptTest < TestBase
     assert_equal (0..63).to_a.sort, born.sort
     # this passes but is very slow....
   end
+=end
 
   private
 
