@@ -13,7 +13,7 @@ class GrouperServiceTest < TestBase
   %w( malformed id on any method raises ) do
     error = assert_raises { grouper.manifest(nil) }
     assert_equal 'ServiceError', error.class.name
-    assert_equal 'SinglerService', error.service_name
+    assert_equal 'GrouperService', error.service_name
     assert_equal 'manifest', error.method_name
     json = JSON.parse(error.message)
     assert_equal 'ArgumentError', json['class']
