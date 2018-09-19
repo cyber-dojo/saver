@@ -23,7 +23,7 @@ class GrouperTest < TestBase
   # sha
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '190', %w( sha is exposed via API ) do
+  test '190', %w( sha of image's git commit ) do
     assert_equal 40, sha.size
     sha.each_char do |ch|
       assert "0123456789abcdef".include?(ch)
@@ -35,7 +35,7 @@ class GrouperTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '218',
-  'path is set but in test there is no volume-mount so its emphemeral' do
+  %w( grouper's path is set but in test its volume-mounted to /tmp so its emphemeral ) do
     assert_equal '/persistent-dir/ids', grouper.path
   end
 
@@ -54,7 +54,7 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'manifest round-trip' do
+  'create-manifest round-trip' do
     stub_id = '0ADDE7572A'
     stub_id_generator.stub(stub_id)
     expected = create_manifest
@@ -67,6 +67,7 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test '422',
   'create() puts shuffled (0..63).to_a into json file ready for join' do
     stub_id = '2DF7FE6776'
@@ -80,6 +81,7 @@ class GrouperTest < TestBase
     assert_equal 63, unborn[-1]
     assert_equal (0..63).to_a, unborn
   end
+=end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # id?(id), id_completed(partial_id), id_completions(outer_id)

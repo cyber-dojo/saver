@@ -21,7 +21,7 @@ class Grouper
     dir = id_dir(id)
     dir.make
     dir.write(manifest_filename, json_unparse(manifest))
-    dir.write('children.json', json_unparse((0..63).to_a.shuffle))
+    #dir.write('children.json', json_unparse((0..63).to_a.shuffle))
     id
   end
 
