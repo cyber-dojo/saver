@@ -81,7 +81,10 @@ class Grouper
       manifest.delete('id')
       #manifest['group'] = id
       sid = singler.create(manifest)
-      # write { "id" => sid } into dir/index/id.json
+      path = dir_join(id_path(id), index.to_s)
+      dir = disk[path]
+      dir.make
+      dir.write('id.json', json_unparse({ 'id' => sid }))
       {
         "index" => index,
         "id" => sid
@@ -94,6 +97,7 @@ class Grouper
   def joined(id)
     assert_id_exists(id)
     'TODO'
+    # get all index dirs, read their id.json files
   end
 
   # - - - - - - - - - - - - - - - - - - -

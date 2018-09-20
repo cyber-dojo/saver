@@ -159,17 +159,18 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D3',
-  'join with a valid id succeeds 64 times then nil' do
+  'join with a valid id succeeds 64 times then fails with nil' do
     stub_id = stub_create('D47983B964')
     joined = []
     64.times do
       hash = join(stub_id)
       refute_nil hash
+      assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
       index = hash['index']
-      assert index.is_a?(Integer), "#{index} is a #{index.class.name}!"
-      assert (0..63).include?(index), "#{index} not in (0..63)!"
+      assert index.is_a?(Integer), "index is a #{index.class.name}!"
+      assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
       id = hash['id']
-      assert id.is_a?(String), "#{id} is a #{id.class.name}!"
+      assert id.is_a?(String), "id is a #{id.class.name}!"
       assert singler.id?(id), "!singler.id?(#{id})"
       refute joined.include?(index), "joined.include?(#{index})!"
       joined << index
@@ -184,7 +185,19 @@ class GrouperTest < TestBase
 
   test '1D4',
   'joined information can be retrieved' do
-
+    stub_id = stub_create('58A5639933')
+    hash = joined(stub_id)
+    assert_equal({}, hash, 'initially no one has joined')
+    4.times do |n|
+      hash = joined(stub_id)
+      assert hash.is_a?(Hash), "#{hash} is a #{hash.class.name}"
+      assert_equal n+1, hash.size, 'correct size'
+      hash.each do |index,id|
+        assert index.is_a?(Integer), "index is a #{index.class.name}"
+        assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
+        assert singler.id?(id), "!singler.id?(#{id})"
+      end
+    end
   end
 
   private
