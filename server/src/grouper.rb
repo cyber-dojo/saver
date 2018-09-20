@@ -96,8 +96,8 @@ class Grouper
 
   def joined(id)
     assert_id_exists(id)
-    'TODO'
     # get all index dirs, read their id.json files
+    {}
   end
 
   # - - - - - - - - - - - - - - - - - - -
