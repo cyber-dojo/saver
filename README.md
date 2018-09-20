@@ -157,11 +157,7 @@ Join the practice-session with the given id.
 ```
 Returns the individual practice-session avatar-index and id, eg
 ```
-  { "join": {
-      "index": 6,
-         "id": "D6A57FC1A5"
-     }
-  }
+  { "join": [ 6, "D6A57FC1A5" ] }
 ```
 
 - - - -

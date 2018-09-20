@@ -100,6 +100,26 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E63',
+  'dispatch to join' do
+    assert_dispatch('join',
+      { id: well_formed_id},
+      'hello from GrouperStub.join'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E64',
+  'dispatch to joined' do
+    assert_dispatch('joined',
+      { id: well_formed_id},
+      'hello from GrouperStub.joined'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 =begin

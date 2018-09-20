@@ -85,10 +85,7 @@ class Grouper
       dir = disk[path]
       dir.make
       dir.write('id.json', json_unparse({ 'id' => sid }))
-      {
-        "index" => index,
-        "id" => sid
-      }
+      return [index, sid]
     end
   end
 
@@ -96,8 +93,16 @@ class Grouper
 
   def joined(id)
     assert_id_exists(id)
-    # get all index dirs, read their id.json files
-    {}
+    result = {}
+    64.times { |index|
+      path = dir_join(id_path(id), index.to_s)
+      dir = disk[path]
+      if dir.exists?
+        json = json_parse(dir.read('id.json'))
+        result[index] = json['id']
+      end
+    }
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - -
