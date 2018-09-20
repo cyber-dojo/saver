@@ -2,9 +2,11 @@ require_relative 'http_json_service'
 
 class ExternalSingler
 
+=begin
   def sha
     get(__method__)
   end
+=end
 
   # - - - - - - - - - - - -
 
@@ -22,6 +24,7 @@ class ExternalSingler
     get(__method__, id)
   end
 
+=begin
   def id_completed(partial_id)
     get(__method__, partial_id)
   end
@@ -53,6 +56,7 @@ class ExternalSingler
   def tags_visible_files(id, was_tag, now_tag)
     get(__method__, id, was_tag, now_tag)
   end
+=end
 
   private
 
