@@ -63,7 +63,7 @@ Creates a practice-session from the given json manifest.
       }
     }
 ```
-- returns the id of the practice session created from the given manifest, eg
+- returns the group id of the group  practice-session created from the given manifest, eg
 ```
   { "create": "55D3B97CF7"
   }
@@ -72,7 +72,7 @@ Creates a practice-session from the given json manifest.
 - - - -
 
 ## GET manifest
-Returns the manifest used to create the practice-session with the given id.
+Returns the manifest used to create the practice-session with the given group id.
 - parameter, eg
 ```
   { "id": "55D3B97CF7" }
@@ -150,7 +150,7 @@ Returns all the practice-session id's starting with the given outer_id.
 - - - -
 
 ## POST join
-Join the practice-session with the given id.
+Join the practice-session with the given group id.
 - parameters, eg
 ```
   { "id": "55D3B97CF7" }

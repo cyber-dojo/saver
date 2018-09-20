@@ -183,13 +183,13 @@ class GrouperTest < TestBase
   'joined information can be retrieved' do
     stub_id = stub_create('58A5639933')
     hash = joined(stub_id)
-    assert_equal({}, hash, 'initially no one has joined')
+    assert_equal({}, hash, 'someone has already joined!')
     4.times do |n|
       index,sid = *join(stub_id)
       hash = joined(stub_id)
-      assert hash.is_a?(Hash), "#{hash} is a #{hash.class.name}"
-      assert_equal n+1, hash.size, 'correct size'
-      assert_equal sid, hash[index]
+      assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
+      assert_equal n+1, hash.size, 'incorrect size!'
+      assert_equal sid, hash[index], 'does not round-trip!'
     end
   end
 
