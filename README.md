@@ -172,9 +172,9 @@ who has joined the practice-session with the given group id.
 - returns, eg
 ```
   { "joined": {
-       6: "D6A57FC1A5",
-      34: "C4AC8BF502",
-      11: "454F917286"
+       "6": "D6A57FC1A5",
+      "34": "C4AC8BF502",
+      "11": "454F917286"
     }
   }
 ```

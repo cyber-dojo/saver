@@ -75,7 +75,6 @@ class GrouperServiceTest < TestBase
       assert joined.is_a?(Hash), "#{n}: joined is a #{hash.class.name}!"
       assert_equal n, joined.size, "#{n}: incorrect size!"
       diagnostic = "#{n}: #{sid}, #{index}, #{joined}"
-      # WHY DO I NEED THE .to_s HERE???
       assert_equal sid, joined[index.to_s], diagnostic
     end
   end
