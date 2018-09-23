@@ -60,6 +60,26 @@ class GrouperServiceTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '64E',
+  'join succeeds with valid id' do
+    id = grouper.create(make_manifest)
+    joined = grouper.joined(id)
+    assert_equal({}, joined, 'someone has already joined')
+    4.times do |n|
+      n = n + 1
+      index,sid = *grouper.join(id)
+      assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
+      assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
+      assert sid.is_a?(String), "#{n}: sid is a #{id.class.name}!"
+      joined = grouper.joined(id)
+      assert joined.is_a?(Hash), "#{n}: joined is a #{hash.class.name}!"
+      assert_equal n, joined.size, "#{n}: incorrect size!"
+      diagnostic = "#{n}: #{sid}, #{index}, #{joined}"
+      # WHY DO I NEED THE .to_s HERE???
+      assert_equal sid, joined[index.to_s], diagnostic
+    end
+  end
+
   private
 
   def make_manifest
