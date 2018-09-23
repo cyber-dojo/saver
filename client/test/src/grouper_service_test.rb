@@ -65,8 +65,7 @@ class GrouperServiceTest < TestBase
     id = grouper.create(make_manifest)
     joined = grouper.joined(id)
     assert_equal({}, joined, 'someone has already joined')
-    4.times do |n|
-      n = n + 1
+    (1..4).to_a.each do |n|
       index,sid = *grouper.join(id)
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
       assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
