@@ -37,7 +37,7 @@ class GrouperService
   end
 
   def joined(id)
-    post(__method__, id)
+    get(__method__, id)
   end
 
   private
