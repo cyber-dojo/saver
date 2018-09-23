@@ -64,7 +64,7 @@ class GrouperServiceTest < TestBase
   'join succeeds with valid id' do
     id = grouper.create(make_manifest)
     joined = grouper.joined(id)
-    assert_equal({}, joined, 'someone has already joined')
+    assert_equal({}, joined, 'someone has already joined!')
     (1..4).to_a.each do |n|
       index,sid = *grouper.join(id)
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
