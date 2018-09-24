@@ -79,7 +79,7 @@ class Grouper
     else
       manifest = get_manifest(id)
       manifest.delete('id')
-      #manifest['group'] = id
+      manifest['group'] = id
       sid = singler.create(manifest)
       path = dir_join(id_path(id), index.to_s)
       dir = disk[path]

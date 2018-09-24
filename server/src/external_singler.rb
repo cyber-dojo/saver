@@ -6,6 +6,10 @@ class ExternalSingler
     post(__method__, manifest)
   end
 
+  def manifest(id)
+    get(__method__, id)
+  end
+
   # - - - - - - - - - - - -
 
   def id?(id)

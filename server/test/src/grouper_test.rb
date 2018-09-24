@@ -158,7 +158,18 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D3',
+  test '1D3', %w(
+  join with valid id succeeds and
+  manifest of joined participant contains group id ) do
+    stub_id = stub_create('E9r17F3ED8')
+    _index,id = *join(stub_id)
+    manifest = singler.manifest(id)
+    assert_equal stub_id, manifest['group']
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '1D4',
   'join with a valid id succeeds 64 times then fails with nil' do
     stub_id = stub_create('D47983B964')
     joined = []
@@ -179,7 +190,7 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D4',
+  test '1D5',
   'joined information can be retrieved' do
     stub_id = stub_create('58A5639933')
     hash = joined(stub_id)
