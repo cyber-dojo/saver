@@ -50,12 +50,12 @@ class Base56Test < TestBase
     refute string?(nil)
     refute string?([])
     refute string?(25)
-    refute string?('HIJ') # I (India)
-    refute string?('HiJ') # i (india)
-    refute string?('NOP') # O (Oscar)
-    refute string?('NoP') # o (oscar)
-    refute string?('CLU') # L (Lima)
-    refute string?('ClU') # l (lima)
+    refute string?('I') # (India)
+    refute string?('i') # (india)
+    refute string?('O') # (Oscar)
+    refute string?('o') # (oscar)
+    refute string?('L') # (Lima)
+    refute string?('l') # (lima)
   end
 
   private
