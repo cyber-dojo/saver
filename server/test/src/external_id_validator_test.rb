@@ -30,32 +30,6 @@ class ExternalIdValidatorTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   test '921',
-  'false when id contains lowercase L (too similar to digit one)' do
-    ell = 'l'
-    id = '51D8' + ell + 'FC978'
-    refute id_validator.valid?(id)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '922',
-  'false when id contains uppercase L (keep lower&upper false for simplicity)' do
-    ell = 'L'
-    id = '51D8' + ell + 'FC978'
-    refute id_validator.valid?(id)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '923',
-  'true when id is not used and does not contain lowercase/uppercase L' do
-    id = '0DA6427C97'
-    assert id_validator.valid?(id)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '924',
   'false when initial 6-chars already used for existing id' do
     id = '82875424E7'
     stub_create(id)

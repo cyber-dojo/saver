@@ -10,11 +10,11 @@ class ExternalIdValidator
     args << grouper.path
     args << outer(id)              # eg '01
     args << inner(id)[0..3] + '**' # eg '15AF**'
-    path = File.join(*args)
+    path = File.join(*args)        # eg .../01/15AF**
     matched = Dir.glob(path).select{ |name|
       File.directory?(name)
     }
-    matched == [] && !id.upcase.include?('L')
+    matched == []
   end
 
   private
