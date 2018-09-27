@@ -23,12 +23,12 @@ class ExternalIdGenerator
 
   private
 
-  def grouper
-    @externals.grouper
+  def valid?(id)
+    id_validator.valid?(id)
   end
 
-  def valid?(id)
-    !grouper.id?(id) && !id.upcase.include?('L')
+  def id_validator
+    @externals.id_validator
   end
 
 end

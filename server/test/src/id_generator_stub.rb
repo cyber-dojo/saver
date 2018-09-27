@@ -6,7 +6,7 @@ class IdGeneratorStub
   end
 
   def stub(*ids)
-    @stubbed = ids
+    @stubbed += ids
   end
 
   def generate
