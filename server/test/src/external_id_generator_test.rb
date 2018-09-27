@@ -18,7 +18,7 @@ class ExternalIdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - -
 
   test '927',
-  'skips Base58 ids that do not complete uniquely with 6 characters' do
+  'skips Base58 ids that the validator rejects' do
     real_validator = externals.id_validator
     externals.id_validator = stub = IdValidatorStub.new(3)
     begin

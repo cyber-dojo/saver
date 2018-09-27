@@ -24,6 +24,8 @@ class TestBase < HexMiniTest
     grouper.id?(id)
   end
 
+  # - - - - - - - - - - - - - - - - -
+
   def id_completed(partial_id)
     grouper.id_completed(partial_id)
   end
@@ -58,6 +60,13 @@ class TestBase < HexMiniTest
 
   def externals
     @externals ||= Externals.new
+  end
+
+  def stub_create(stub_id)
+    stub_id_generator.stub(stub_id)
+    id = create(create_manifest)
+    assert_equal stub_id, id
+    id
   end
 
   private

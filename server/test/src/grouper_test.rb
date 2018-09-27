@@ -206,15 +206,6 @@ class GrouperTest < TestBase
 
   private
 
-  def stub_create(stub_id)
-    stub_id_generator.stub(stub_id)
-    id = create(create_manifest)
-    assert_equal stub_id, id
-    id
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - -
-
   def singler
     externals.singler
   end
