@@ -53,6 +53,16 @@ class ExternalIdValidatorTest < TestBase
     assert id_validator.valid?(id)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '924',
+  'false when initial 6-chars already used for existing id' do
+    id = '82875424E7'
+    stub_create(id)
+    partial_id = id[0..6]
+    refute id_validator.valid?(partial_id + '0000')
+  end
+
   private
 
   def id_validator
