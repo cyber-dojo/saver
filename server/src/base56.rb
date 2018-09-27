@@ -1,8 +1,10 @@
 require 'securerandom'
 
-# Similar to https://en.wikipedia.org/wiki/Base56
-# o) includes the digits zero and one (to be backwards compatible as hex)
-# o) excludes the letters IO (India,Oscar,Lima) both lowercase and uppercase
+# Similar to https://en.wikipedia.org/wiki/Base58
+# o) includes the digits zero and one
+#    (to be backwards compatible as hex)
+# o) excludes the letters IOL
+#    (India,Oscar,Lima) both lowercase and uppercase
 
 class Base56
 
