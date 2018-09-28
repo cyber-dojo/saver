@@ -10,30 +10,32 @@ class Demo
   end
 
   def inner_call
-    @html = ''
-    create
-    manifest
-    [ 200, { 'Content-Type' => 'text/html' }, [ @html ] ]
+    html = [
+      create,
+      manifest
+    ].join
+    [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
   end
 
   private
 
   def create
-    manifest = make_manifest
-    manifest['created'] = [2016,12,2, 6,13,23]
-    result,duration = *timed { @id = grouper.create(manifest) }
-    @html += pre(__method__, result, duration)
+    pre {
+      @id = grouper.create(starter.manifest, starter.files)
+    }
   end
 
   def manifest
-    result,duration = *timed { grouper.manifest(@id) }
-    @html += pre(__method__, result, duration)
+    pre {
+      grouper.manifest(@id)
+    }
   end
 
   # - - - - - - - - - - - - - - - - -
 
-  def make_manifest
-    starter.language_manifest('C (gcc), assert', 'Fizz_Buzz')
+  def name_of(caller)
+    # eg caller[0] == "demo.rb:50:in `increments'"
+    /`(?<name>[^']*)/ =~ caller[0] && name
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -48,18 +50,38 @@ class Demo
 
   # - - - - - - - - - - - - - - - - -
 
-  def pre(name, result, duration)
-    border = 'border: 1px solid black;'
-    padding = 'padding: 10px;'
-    margin = 'margin-left: 30px; margin-right: 30px;'
-    background = "background: white;"
-    whitespace = "white-space: pre-wrap;"
+  def pre(&block)
+    result,duration = *timed { block.call }
+    [
+      "<pre>/#{name_of(caller)}(#{duration}s)</pre>",
+      "<pre style='#{style}'>",
+        "#{JSON.pretty_unparse(result)}",
+      '</pre>'
+    ].join
+  end
 
-    html = "<pre>/#{name}(#{duration}s)</pre>"
-    html += "<pre style='#{whitespace}#{margin}#{border}#{padding}#{background}'>" +
-            "#{JSON.pretty_unparse(result)}" +
-            '</pre>'
-    html
+  def style
+    [whitespace,margin,border,padding,background].join
+  end
+
+  def border
+    'border: 1px solid black;'
+  end
+
+  def padding
+    'padding: 10px;'
+  end
+
+  def margin
+    'margin-left: 30px; margin-right: 30px;'
+  end
+
+  def background
+    'background: white;'
+  end
+
+  def whitespace
+    'white-space: pre-wrap;'
   end
 
   # - - - - - - - - - - - - - - - - -
