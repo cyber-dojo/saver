@@ -17,12 +17,12 @@ run_server_tests()
   docker exec \
     --user root \
     "${SINGLER_CID}" \
-      sh -c 'chown -R singler /persistent-dir/ids'
+      sh -c 'chown -R singler:singler /singler/ids'
 
   docker exec \
     --user root \
     "${SERVER_CID}" \
-      sh -c 'chown -R grouper /persistent-dir/ids'
+      sh -c 'chown -R grouper:grouper /grouper/ids'
 
   docker exec \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \

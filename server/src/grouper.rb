@@ -4,7 +4,7 @@ class Grouper
 
   def initialize(externals)
     @externals = externals
-    @path = '/persistent-dir/ids'
+    @path = '/grouper/ids'
   end
 
   attr_reader :path

@@ -34,7 +34,7 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - /tmp/grouper/persistent-dir/ids:/persistent-dir/ids:rw
+      - /tmp/grouper/ids:/grouper/ids:rw
     depends_on:
       - starter # for tests
       - singler
@@ -49,7 +49,7 @@ services:
     read_only: true
     tmpfs: /tmp
     volumes:
-      - /tmp/singler/persistent-dir/ids:/persistent-dir/ids:rw
+      - /tmp/singler/ids:/singler/ids:rw
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # starter is handy in tests for creating start-point manifests
