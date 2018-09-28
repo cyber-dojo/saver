@@ -6,7 +6,7 @@ class Demo
   def call(_env)
     inner_call
   rescue => error
-    [ 200, { 'Content-Type' => 'text/html' }, [ error.message ] ]
+    [ 400, { 'Content-Type' => 'text/html' }, [ error.message ] ]
   end
 
   private
