@@ -31,10 +31,7 @@ class WellFormedArgsTest < TestBase
 
   test '591',
   'manifest does not raise when well-formed' do
-    manifest = create_manifest
-    json = { manifest:manifest }.to_json
-    assert_equal manifest, WellFormedArgs.new(json).manifest
-    manifest['filename_extension'] = '.c'
+    manifest = starter.manifest
     json = { manifest:manifest }.to_json
     assert_equal manifest, WellFormedArgs.new(json).manifest
   end
@@ -53,28 +50,55 @@ class WellFormedArgsTest < TestBase
   def malformed_manifests
     bad_time = [2018,-3,28, 11,33,13]
     [
-      [],                                                # ! Hash
-      {},                                                # required key missing
-      create_manifest.merge({x:'unknown'}),              # unknown key
-      create_manifest.merge({display_name:42}),          # ! String
-      create_manifest.merge({image_name:42}),            # ! String
-      create_manifest.merge({runner_choice:42}),         # ! String
-      create_manifest.merge({filename_extension:true}),  # ! String && ! Array
-      create_manifest.merge({filename_extension:{}}),    # ! String && ! Array
-      create_manifest.merge({exercise:true}),            # ! String
-      create_manifest.merge({visible_files:[]}),         # ! Hash
-      create_manifest.merge({visible_files:{
-        'cyber-dojo.sh':42                     # file content must be String
-      }}),
-      create_manifest.merge({highlight_filenames:1}),    # ! Array of Strings
-      create_manifest.merge({highlight_filenames:[1]}),  # ! Array of Strings
-      create_manifest.merge({progress_regexs:{}}),       # ! Array of Strings
-      create_manifest.merge({progress_regexs:[1]}),      # ! Array of Strings
-      create_manifest.merge({tab_size:true}),            # ! Integer
-      create_manifest.merge({max_seconds:nil}),          # ! Integer
-      create_manifest.merge({created:nil}),              # ! Array of 6 Integers
-      create_manifest.merge({created:['s']}),            # ! Array of 6 Integers
-      create_manifest.merge({created:bad_time}),         # ! Time
+      [],                                                 # ! Hash
+      {},                                                 # required key missing
+      starter.manifest.merge({x:false}),                  # unknown key
+      starter.manifest.merge({display_name:42}),          # ! String
+      starter.manifest.merge({image_name:42}),            # ! String
+      starter.manifest.merge({runner_choice:42}),         # ! String
+      starter.manifest.merge({filename_extension:true}),  # ! String && ! Array
+      starter.manifest.merge({filename_extension:{}}),    # ! String && ! Array
+      starter.manifest.merge({exercise:true}),            # ! String
+      starter.manifest.merge({highlight_filenames:1}),    # ! Array of Strings
+      starter.manifest.merge({highlight_filenames:[1]}),  # ! Array of Strings
+      starter.manifest.merge({progress_regexs:{}}),       # ! Array of Strings
+      starter.manifest.merge({progress_regexs:[1]}),      # ! Array of Strings
+      starter.manifest.merge({tab_size:true}),       # ! Integer
+      starter.manifest.merge({max_seconds:nil}),     # ! Integer
+      starter.manifest.merge({created:nil}),         # ! Array of 6 Integers
+      starter.manifest.merge({created:['s']}),       # ! Array of 6 Integers
+      starter.manifest.merge({created:bad_time}),    # ! Time
+    ]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # files
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '846',
+  'files does not raise when well-formed' do
+    files = { 'cyber-dojo.sh' => 'make' }
+    json = { files:files }.to_json
+    assert_equal files, WellFormedArgs.new(json).files
+  end
+
+  test '847',
+  'files raises when malformed' do
+    expected = 'files:malformed'
+    malformed_files.each do |malformed|
+      json = { files:malformed }.to_json
+      wfa = WellFormedArgs.new(json)
+      error = assert_raises { wfa.files }
+      assert_equal expected, error.message, malformed
+    end
+  end
+
+  def malformed_files
+    [
+      [],              # ! Hash
+      { "x" => 42 },   # content ! String
+      { "y" => true }, # content ! String
+      { "z" => nil },  # content ! String
     ]
   end
 

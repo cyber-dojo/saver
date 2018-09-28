@@ -57,8 +57,8 @@ class GrouperTest < TestBase
   'create-manifest round-trip' do
     stub_id = '0ADDE7572A'
     stub_id_generator.stub(stub_id)
-    expected = create_manifest
-    id = create(expected)
+    expected = starter.manifest
+    id = create(expected, starter.files)
     assert_equal stub_id, id
     expected['id'] = id
     actual = manifest(id)

@@ -41,25 +41,27 @@ Returns the git commit sha used to create the docker image.
 - - - -
 
 ## POST create
-Creates a practice-session from the given json manifest.
-- parameter, eg
+Creates a practice-session from the given manifest
+and visible_files.
+- parameters, eg
 ```
     { "manifest": {
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
-             "visible_files": {        "hiker.h": "#ifndef HIKER_INCLUDED...",
-                                       "hiker.c": "#include \"hiker.h\"...",
-                                "hiker.tests.c" : "#include <assert.h>\n...",
-                                 "instructions" : "Write a program that...",
-                                     "makefile" : "CFLAGS += -I. -Wall...",
-                                "cyber-dojo.sh" : "make"
-                              },
              "runner_choice": "stateless",
                   "exercise": "Fizz_Buzz",
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
+      },
+      "visible_files": {
+               "hiker.h": "#ifndef HIKER_INCLUDED...",
+               "hiker.c": "#include \"hiker.h\"...",
+        "hiker.tests.c" : "#include <assert.h>\n...",
+         "instructions" : "Write a program that...",
+             "makefile" : "CFLAGS += -I. -Wall...",
+        "cyber-dojo.sh" : "make"
       }
     }
 ```
@@ -84,13 +86,6 @@ Returns the manifest used to create the practice-session with the given group id
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
-             "visible_files": {       "hiker.h" : "ifndef HIKER_INCLUDED\n...",
-                                      "hiker.c" : "#include \"hiker.h\"...",
-                                "hiker.tests.c" : "#include <assert.h>\n...",
-                                 "instructions" : "Write a program that...",
-                                     "makefile" : "CFLAGS += -I. -Wall...",
-                                "cyber-dojo.sh" : "make"
-                              },
              "runner_choice": "stateless",
                   "exercise": "Fizz_Buzz",
                "max_seconds": 10,

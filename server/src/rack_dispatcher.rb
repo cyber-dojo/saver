@@ -34,7 +34,7 @@ class RackDispatcher
     @well_formed_args = WellFormedArgs.new(request.body.read)
     args = case name
       when /^sha$/            then []
-      when /^create$/         then [manifest]
+      when /^create$/         then [manifest,files]
       when /^manifest$/       then [id]
       when /^id$/             then [id]
       when /^id_completed$/   then [partial_id]
@@ -66,7 +66,7 @@ class RackDispatcher
     end
   end
 
-  well_formed_args :manifest
+  well_formed_args :manifest, :files
   well_formed_args :id, :partial_id, :outer_id
 
   # - - - - - - - - - - - - - - - -

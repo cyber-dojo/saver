@@ -36,8 +36,8 @@ class GrouperServiceTest < TestBase
 
   test '6E7',
   %w( retrieved manifest contains id ) do
-    manifest = make_manifest
-    id = grouper.create(manifest)
+    manifest = starter.manifest
+    id = grouper.create(manifest, starter.files)
     manifest['id'] = id
     assert_equal manifest, grouper.manifest(id)
   end
@@ -49,7 +49,7 @@ class GrouperServiceTest < TestBase
   the id can be completed
   and id?() is true
   and the manifest can be retrieved ) do
-    id = grouper.create(make_manifest)
+    id = grouper.create(starter.manifest, starter.files)
     assert grouper.id?(id)
     assert_equal id, grouper.id_completed(id[0..5])
     outer = id[0..1]
@@ -62,7 +62,7 @@ class GrouperServiceTest < TestBase
 
   test '64E',
   'join succeeds with valid id' do
-    id = grouper.create(make_manifest)
+    id = grouper.create(starter.manifest, starter.files)
     joined = grouper.joined(id)
     assert_equal({}, joined, 'someone has already joined!')
     (1..4).to_a.each do |n|
@@ -76,18 +76,6 @@ class GrouperServiceTest < TestBase
       diagnostic = "#{n}: #{sid}, #{index}, #{joined}"
       assert_equal sid, joined[index.to_s], diagnostic
     end
-  end
-
-  private
-
-  def make_manifest
-    manifest = starter.language_manifest('C (gcc), assert', 'Fizz_Buzz')
-    manifest['created'] = creation_time
-    manifest
-  end
-
-  def creation_time
-    [ 2016,12,15, 17,26,34 ]
   end
 
 end

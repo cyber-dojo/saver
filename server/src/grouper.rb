@@ -15,12 +15,15 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest)
+  def create(manifest, files)
     id = id_generator.generate
     manifest['id'] = id
     dir = id_dir(id)
     dir.make
-    dir.write(manifest_filename, json_unparse(manifest))
+    dir.write(manifest_filename, json_unparse({
+      manifest:manifest,
+      files:files
+    }))
     id
   end
 
@@ -28,7 +31,7 @@ class Grouper
 
   def manifest(id)
     assert_id_exists(id)
-    get_manifest(id)
+    get(id)[0]
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -77,10 +80,10 @@ class Grouper
     if index.nil?
       nil
     else
-      manifest = get_manifest(id)
+      manifest,files = get(id)
       manifest.delete('id')
       manifest['group'] = id
-      sid = singler.create(manifest)
+      sid = singler.create(manifest, files)
       path = dir_join(id_path(id), index.to_s)
       dir = disk[path]
       dir.make
@@ -105,12 +108,11 @@ class Grouper
     result
   end
 
-  # - - - - - - - - - - - - - - - - - - -
-
   private
 
-  def get_manifest(id)
-    json_parse(id_dir(id).read(manifest_filename))
+  def get(id)
+    json = json_parse(id_dir(id).read(manifest_filename))
+    return [json['manifest'],json['files']]
   end
 
   def manifest_filename
