@@ -9,33 +9,18 @@ class Demo
     [ 200, { 'Content-Type' => 'text/html' }, [ error.message ] ]
   end
 
-  def inner_call
-    html = [
-      create,
-      manifest
-    ].join
-    [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
-  end
-
   private
 
-  def create
-    pre {
-      @id = grouper.create(starter.manifest, starter.files)
-    }
-  end
-
-  def manifest
-    pre {
-      grouper.manifest(@id)
-    }
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def name_of(caller)
-    # eg caller[0] == "demo.rb:50:in `increments'"
-    /`(?<name>[^']*)/ =~ caller[0] && name
+  def inner_call
+    html = [
+      pre('create') {
+        @id = grouper.create(starter.manifest, starter.files)
+      },
+      pre('manifest') {
+        grouper.manifest(@id)
+      }
+    ].join
+    [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -50,10 +35,10 @@ class Demo
 
   # - - - - - - - - - - - - - - - - -
 
-  def pre(&block)
+  def pre(name, &block)
     result,duration = *timed { block.call }
     [
-      "<pre>/#{name_of(caller)}(#{duration}s)</pre>",
+      "<pre>/#{name}(#{duration}s)</pre>",
       "<pre style='#{style}'>",
         "#{JSON.pretty_unparse(result)}",
       '</pre>'
