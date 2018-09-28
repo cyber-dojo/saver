@@ -146,9 +146,13 @@ Returns all the practice-session id's starting with the given outer_id.
 
 ## POST join
 Join the practice-session with the given group id.
+The indexes parameter, when sorted, must be (0..63).to_a
+and determines the join attempt order.
 - parameters, eg
 ```
-  { "id": "55D3B97CF7" }
+  { "id": "55D3B97CF7",
+    "indexes": [61, 8, 28, ..., 13, 32, 42]
+  }
 ```
 Returns the individual practice-session avatar-index and id, eg
 ```

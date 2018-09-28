@@ -106,7 +106,7 @@ class RackDispatcherTest < TestBase
   test 'E63',
   'dispatch to join' do
     assert_dispatch('join',
-      { id: well_formed_id},
+      { id: well_formed_id, indexes: well_formed_indexes },
       'hello from GrouperStub.join'
     )
   end
@@ -153,6 +153,10 @@ class RackDispatcherTest < TestBase
 
   def well_formed_outer_id
     '12'
+  end
+
+  def well_formed_indexes
+    (0..63).to_a.shuffle
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

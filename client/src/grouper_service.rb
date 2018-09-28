@@ -32,8 +32,8 @@ class GrouperService
 
   # - - - - - - - - - - - -
 
-  def join(id)
-    post(__method__, id)
+  def join(id, indexes)
+    post(__method__, id, indexes)
   end
 
   def joined(id)

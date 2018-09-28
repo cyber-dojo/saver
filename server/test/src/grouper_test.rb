@@ -140,10 +140,10 @@ class GrouperTest < TestBase
   # join/joined
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D1',
+  test '1D0',
   'join raises when id does not exist' do
     error = assert_raises(ArgumentError) {
-      join('B4AB376BE2')
+      join('B4AB376BE2', indexes)
     }
     assert_equal 'id:invalid', error.message
   end
@@ -164,7 +164,9 @@ class GrouperTest < TestBase
   join with valid id succeeds and
   manifest of joined participant contains group id ) do
     stub_id = stub_create('E9r17F3ED8')
-    _index,id = *join(stub_id)
+    shuffled = indexes
+    index,id = *join(stub_id, shuffled)
+    assert_equal shuffled[0], index
     manifest = singler.manifest(id)
     assert_equal stub_id, manifest['group']
   end
@@ -176,7 +178,7 @@ class GrouperTest < TestBase
     stub_id = stub_create('D47983B964')
     joined = []
     64.times do
-      index,id = *join(stub_id)
+      index,id = *join(stub_id, indexes)
       assert index.is_a?(Integer), "index is a #{index.class.name}!"
       assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
       assert id.is_a?(String), "id is a #{id.class.name}!"
@@ -186,7 +188,7 @@ class GrouperTest < TestBase
     end
     refute_equal (0..63).to_a, joined
     assert_equal (0..63).to_a, joined.sort
-    n = join(stub_id)
+    n = join(stub_id, indexes)
     assert_nil n
   end
 
@@ -198,7 +200,7 @@ class GrouperTest < TestBase
     hash = joined(stub_id)
     assert_equal({}, hash, 'someone has already joined!')
     (1..4).to_a.each do |n|
-      index,sid = *join(stub_id)
+      index,sid = *join(stub_id, indexes)
       hash = joined(stub_id)
       assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
       assert_equal n, hash.size, 'incorrect size!'
@@ -207,6 +209,10 @@ class GrouperTest < TestBase
   end
 
   private
+
+  def indexes
+    (0..63).to_a.shuffle
+  end
 
   def singler
     externals.singler

@@ -65,10 +65,12 @@ class GrouperServiceTest < TestBase
     id = grouper.create(starter.manifest, starter.files)
     joined = grouper.joined(id)
     assert_equal({}, joined, 'someone has already joined!')
+    indexes = (0..63).to_a.shuffle
     (1..4).to_a.each do |n|
-      index,sid = *grouper.join(id)
+      index,sid = *grouper.join(id, indexes)
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
       assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
+      assert_equal indexes[n-1], index, "#{n}: index is not #{indexes[n-1]}!"
       assert sid.is_a?(String), "#{n}: sid is a #{id.class.name}!"
       joined = grouper.joined(id)
       assert joined.is_a?(Hash), "#{n}: joined is a #{hash.class.name}!"

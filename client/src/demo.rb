@@ -18,6 +18,12 @@ class Demo
       },
       pre('manifest') {
         grouper.manifest(@id)
+      },
+      pre('join') {
+        grouper.join(@id, (0..63).to_a.shuffle)
+      },
+      pre('joined') {
+        grouper.joined(@id)
       }
     ].join
     [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]

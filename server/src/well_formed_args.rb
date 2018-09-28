@@ -83,6 +83,15 @@ class WellFormedArgs
     arg
   end
 
+  # - - - - - - - - - - - - - - - -
+
+  def indexes
+    @arg_name = __method__.to_s
+    malformed unless arg.is_a?(Array) && arg.length == 64
+    malformed unless arg.sort == (0..63).to_a
+    arg
+  end
+
   private # = = = = = = = = = = = =
 
   attr_reader :args, :arg_name

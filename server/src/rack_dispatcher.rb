@@ -39,7 +39,7 @@ class RackDispatcher
       when /^id$/             then [id]
       when /^id_completed$/   then [partial_id]
       when /^id_completions$/ then [outer_id]
-      when /^join$/           then [id]
+      when /^join$/           then [id,indexes]
       when /^joined$/         then [id]
       else
         raise ClientError, 'json:malformed'
@@ -66,7 +66,7 @@ class RackDispatcher
     end
   end
 
-  well_formed_args :manifest, :files
+  well_formed_args :manifest, :files, :indexes
   well_formed_args :id, :partial_id, :outer_id
 
   # - - - - - - - - - - - - - - - -

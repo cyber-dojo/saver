@@ -71,9 +71,9 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def join(id)
+  def join(id, indexes)
     assert_id_exists(id)
-    index = (0..63).to_a.shuffle.detect { |n|
+    index = indexes.detect { |n|
       path = dir_join(id_path(id), n.to_s)
       disk[path].make
     }

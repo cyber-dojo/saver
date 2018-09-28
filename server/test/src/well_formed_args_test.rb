@@ -196,4 +196,37 @@ class WellFormedArgsTest < TestBase
     ]
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # indexes
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '086',
+  'indexes does not raise when well-formed' do
+    json = { indexes:(0..63).to_a }.to_json
+    WellFormedArgs.new(json).indexes
+  end
+
+  test '087',
+  'indexes raises when malformed' do
+    expected = 'indexes:malformed'
+    malformed_indexes.each do |malformed|
+      json = { indexes:malformed }.to_json
+      wfa = WellFormedArgs.new(json)
+      error = assert_raises { wfa.indexes }
+      assert_equal expected, error.message, malformed
+    end
+  end
+
+  def malformed_indexes
+    [
+      42,
+      "string",
+      false,
+      {},
+      [],
+      [0,1],
+      [62,63]
+    ]
+  end
+
 end

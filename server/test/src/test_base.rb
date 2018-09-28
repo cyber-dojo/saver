@@ -36,8 +36,8 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - -
 
-  def join(id)
-    grouper.join(id)
+  def join(id, indexes)
+    grouper.join(id, indexes)
   end
 
   def joined(id)
