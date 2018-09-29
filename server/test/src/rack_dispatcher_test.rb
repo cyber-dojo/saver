@@ -178,8 +178,8 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception(s, class_name, message)
-    json = JSON.parse(s)
+  def assert_exception(body, class_name, message)
+    json = JSON.parse(body)
     exception = json['exception']
     refute_nil exception
     assert_equal class_name, exception['class']
@@ -193,7 +193,7 @@ class RackDispatcherTest < TestBase
     response = rack_call(name, args)
     assert_equal 200, response[0]
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_equal [ to_json(expected) ], response[2], args
+    assert_equal [to_json(expected)], response[2], args
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -206,8 +206,8 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def to_json(o)
-    JSON.pretty_generate(o)
+  def to_json(body)
+    JSON.generate(body)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

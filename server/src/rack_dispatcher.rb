@@ -15,9 +15,9 @@ class RackDispatcher
     body = request.body.read
     name, args = validated_name_args(path, body)
     result = @grouper.public_send(name, *args)
-    json_response(200, { name => result })
+    json_response(200, plain({ name => result }))
   rescue => error
-    info = {
+    diagnostic = {
       'exception' => {
         'class' => error.class.name,
         'message' => error.message,
@@ -25,9 +25,9 @@ class RackDispatcher
         'backtrace' => error.backtrace
       }
     }
-    $stderr.puts pretty(info)
+    $stderr.puts pretty(diagnostic)
     $stderr.flush
-    json_response(status(error), info)
+    json_response(status(error), pretty(diagnostic))
   end
 
   private # = = = = = = = = = = = = = = = = = = =
@@ -53,12 +53,16 @@ class RackDispatcher
   def json_response(status, body)
     [ status,
       { 'Content-Type' => 'application/json' },
-      [ pretty(body) ]
+      [ body ]
     ]
   end
 
-  def pretty(o)
-    JSON.pretty_generate(o)
+  def plain(body)
+    JSON.generate(body)
+  end
+
+  def pretty(body)
+    JSON.pretty_generate(body)
   end
 
   def status(error)
