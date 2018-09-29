@@ -138,7 +138,7 @@ class Grouper
 
   def assert_id_exists(id)
     unless id_dir(id).exists?
-      invalid('id')
+      invalid('id', id)
     end
   end
 
@@ -164,8 +164,8 @@ class Grouper
     File.join(*args)
   end
 
-  def invalid(name)
-    fail ArgumentError.new("#{name}:invalid")
+  def invalid(name, value)
+    fail ArgumentError.new("#{name}:invalid:#{value}")
   end
 
   # - - - - - - - - - - - - - -

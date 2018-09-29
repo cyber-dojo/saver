@@ -4,14 +4,16 @@ require 'json'
 
 class RackDispatcher
 
-  def initialize(grouper, request)
+  def initialize(grouper, request_class)
     @grouper = grouper
-    @request = request
+    @request_class = request_class
   end
 
   def call(env)
-    request = @request.new(env)
-    name, args = validated_name_args(request)
+    request = @request_class.new(env)
+    path = request.path_info[1..-1] # lose leading /
+    body = request.body.read
+    name, args = validated_name_args(path, body)
     result = @grouper.public_send(name, *args)
     json_response(200, { name => result })
   rescue => error
@@ -19,6 +21,7 @@ class RackDispatcher
       'exception' => {
         'class' => error.class.name,
         'message' => error.message,
+        'args' => body,
         'backtrace' => error.backtrace
       }
     }
@@ -29,9 +32,8 @@ class RackDispatcher
 
   private # = = = = = = = = = = = = = = = = = = =
 
-  def validated_name_args(request)
-    name = request.path_info[1..-1] # lose leading /
-    @well_formed_args = WellFormedArgs.new(request.body.read)
+  def validated_name_args(name, body)
+    @well_formed_args = WellFormedArgs.new(body)
     args = case name
       when /^sha$/            then []
       when /^create$/         then [manifest,files]
@@ -49,7 +51,10 @@ class RackDispatcher
   end
 
   def json_response(status, body)
-    [ status, { 'Content-Type' => 'application/json' }, [ pretty(body) ] ]
+    [ status,
+      { 'Content-Type' => 'application/json' },
+      [ pretty(body) ]
+    ]
   end
 
   def pretty(o)
@@ -62,7 +67,9 @@ class RackDispatcher
 
   def self.well_formed_args(*names)
     names.each do |name|
-      define_method name, &lambda { @well_formed_args.send(name) }
+      define_method name, &lambda {
+        @well_formed_args.send(name)
+      }
     end
   end
 

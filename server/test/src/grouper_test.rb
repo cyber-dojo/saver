@@ -47,10 +47,11 @@ class GrouperTest < TestBase
 
   test '420',
   'manifest raises when id does not exist' do
+    id = 'B4AB376BE2'
     error = assert_raises(ArgumentError) {
-      manifest('B4AB376BE2')
+      manifest(id)
     }
-    assert_equal 'id:invalid', error.message
+    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -142,20 +143,22 @@ class GrouperTest < TestBase
 
   test '1D0',
   'join raises when id does not exist' do
+    id = 'B4AB376BE2'
     error = assert_raises(ArgumentError) {
-      join('B4AB376BE2', indexes)
+      join(id, indexes)
     }
-    assert_equal 'id:invalid', error.message
+    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
   'joined raises when id does not exist' do
+    id = 'B4AB376BE2'
     error = assert_raises(ArgumentError) {
-      joined('B4AB376BE2')
+      joined(id)
     }
-    assert_equal 'id:invalid', error.message
+    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
