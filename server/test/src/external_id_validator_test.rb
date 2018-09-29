@@ -20,21 +20,12 @@ class ExternalIdValidatorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '920',
-  'false when id already used' do
-    id = '82875424E7'
-    stub_create(id)
-    refute id_validator.valid?(id)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
   test '921',
   'false when initial 6-chars already used for existing id' do
     id = '82875424E7'
     stub_create(id)
     partial_id = id[0..6]
-    refute id_validator.valid?(partial_id + '0000')
+    refute_valid(partial_id + '0000')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,8 +33,8 @@ class ExternalIdValidatorTest < TestBase
   test '922',
   'false if id contains ell (lowercase or uppercase)' do
     ell = 'L'
-    refute id_validator.valid?('2466FD900' + ell.upcase)
-    refute id_validator.valid?('2466FD9L0' + ell.downcase)
+    refute_valid('2466FD900' + ell.upcase)
+    refute_valid('2466FD900' + ell.downcase)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,6 +49,14 @@ class ExternalIdValidatorTest < TestBase
 
   def id_validator
     @externals.id_validator
+  end
+
+  def assert_valid(id)
+    assert id_validator.valid?(id)
+  end
+
+  def refute_valid(id)
+    refute id_validator.valid?(id)
   end
 
 end
