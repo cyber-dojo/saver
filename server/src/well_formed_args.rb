@@ -1,4 +1,4 @@
-require_relative 'base56'
+require_relative 'base58'
 require 'json'
 
 # Checks for arguments synactic correctness
@@ -57,7 +57,7 @@ class WellFormedArgs
 
   def outer_id
     @arg_name = __method__.to_s
-    malformed unless Base56.string?(arg) && arg.length == 2
+    malformed unless Base58.string?(arg) && arg.length == 2
     arg
   end
 
@@ -71,7 +71,7 @@ class WellFormedArgs
     # the full id of a cyber-dojo and potentially interfere
     # with a live session.
     @arg_name = __method__.to_s
-    malformed unless Base56.string?(arg) && (6..10).include?(arg.length)
+    malformed unless Base58.string?(arg) && (6..10).include?(arg.length)
     arg
   end
 
@@ -79,7 +79,7 @@ class WellFormedArgs
 
   def id
     @arg_name = __method__.to_s
-    malformed unless Base56.string?(arg) && arg.length == 10
+    malformed unless Base58.string?(arg) && arg.length == 10
     arg
   end
 

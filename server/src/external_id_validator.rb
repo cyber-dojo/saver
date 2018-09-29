@@ -6,6 +6,7 @@ class ExternalIdValidator
   end
 
   def valid?(id)                   # eg '0215AFADCB'
+    return false if id.upcase.include?('L')
     args = []
     args << grouper.path
     args << outer(id)              # eg '01

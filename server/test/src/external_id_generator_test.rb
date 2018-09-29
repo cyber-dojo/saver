@@ -9,16 +9,16 @@ class ExternalIdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - -
 
   test '926',
-  'generates Base56 ids' do
+  'generates Base58 ids' do
     id = externals.id_generator.generate
-    assert Base56.string?(id), "Base56.string?(#{id})"
+    assert Base58.string?(id), "Base58.string?(#{id})"
     assert_equal 10, id.size
   end
 
   # - - - - - - - - - - - - - - - -
 
   test '927',
-  'skips Base56 ids that the validator rejects' do
+  'skips Base58 ids that the validator rejects' do
     real_validator = externals.id_validator
     externals.id_validator = stub = IdValidatorStub.new(3)
     begin

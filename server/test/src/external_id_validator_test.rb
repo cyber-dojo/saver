@@ -37,6 +37,23 @@ class ExternalIdValidatorTest < TestBase
     refute id_validator.valid?(partial_id + '0000')
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '922',
+  'false if id contains ell (lowercase or uppercase)' do
+    ell = 'L'
+    refute id_validator.valid?('2466FD900' + ell.upcase)
+    refute id_validator.valid?('2466FD9L0' + ell.downcase)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '923',
+  'true when initial 6-chars not yet used for existing id' do
+    id = 'D9A3DC94C6'
+    assert id_validator.valid?(id)
+  end
+
   private
 
   def id_validator
