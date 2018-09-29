@@ -42,7 +42,7 @@ class ExternalIdValidatorTest < TestBase
   test '923',
   'true when initial 6-chars not yet used for existing id' do
     id = 'D9A3DC94C6'
-    assert id_validator.valid?(id)
+    assert_valid(id)
   end
 
   private
