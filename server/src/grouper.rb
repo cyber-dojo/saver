@@ -1,5 +1,20 @@
 require 'json'
 
+# If all ids came from a single server I could use
+# 6-character ids as the directory names and guarantee
+# uniqueness at id generation.
+# However, it is not uncommon to copy practice-sessions
+# from one server to another, and uniqueness cannot be
+# guaranteed in this case.
+# Hence a 'visible' id is 6-characters and is
+# completed to a 'private' 10-character id.
+# When entering an id you will almost always only need
+# 6-characters, but very very occasionally you may need
+# to enter a 7th,8th.
+# Using a base58 alphabet (but excluding L)
+#   ==> 3^10 unique  6-character ids.
+#   ==> 3^16 unique 10-character ids.
+
 class Grouper
 
   def initialize(externals)
