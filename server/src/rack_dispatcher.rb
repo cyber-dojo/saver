@@ -38,11 +38,11 @@ class RackDispatcher
       when /^sha$/            then []
       when /^create$/         then [manifest,files]
       when /^manifest$/       then [id]
+      when /^join$/           then [id,indexes]
+      when /^joined$/         then [id]
       when /^id$/             then [id]
       when /^id_completed$/   then [partial_id]
       when /^id_completions$/ then [outer_id]
-      when /^join$/           then [id,indexes]
-      when /^joined$/         then [id]
       else
         raise ClientError, 'json:malformed'
     end
@@ -66,7 +66,11 @@ class RackDispatcher
   end
 
   def status(error)
-    error.is_a?(ClientError) ? 400 : 500
+    if error.is_a?(ClientError)
+      400 # client_error
+    else
+      500 # server_error
+    end
   end
 
   def self.well_formed_args(*names)
@@ -77,8 +81,9 @@ class RackDispatcher
     end
   end
 
-  well_formed_args :manifest, :files, :indexes
-  well_formed_args :id, :partial_id, :outer_id
+  well_formed_args :manifest, :files
+  well_formed_args :id, :indexes
+  well_formed_args :partial_id, :outer_id
 
   # - - - - - - - - - - - - - - - -
 
