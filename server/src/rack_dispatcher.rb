@@ -17,17 +17,17 @@ class RackDispatcher
     result = @grouper.public_send(name, *args)
     json_response(200, plain({ name => result }))
   rescue => error
-    diagnostic = {
+    diagnostic = pretty({
       'exception' => {
         'class' => error.class.name,
         'message' => error.message,
         'args' => body,
         'backtrace' => error.backtrace
       }
-    }
-    $stderr.puts pretty(diagnostic)
+    })
+    $stderr.puts diagnostic
     $stderr.flush
-    json_response(status(error), pretty(diagnostic))
+    json_response(status(error), diagnostic)
   end
 
   private # = = = = = = = = = = = = = = = = = = =
