@@ -2,10 +2,12 @@
 set -e
 
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
+readonly MY_NAME="${ROOT_DIR##*/}"
 
 docker-compose \
   --file "${ROOT_DIR}/docker-compose.yml" \
-  up -d \
+  up \
+  --detach \
   --force-recreate
 
 # - - - - - - - - - - - - - - - - - - - -
@@ -26,6 +28,6 @@ wait_till_up()
   exit 1
 }
 
-wait_till_up 'test-grouper-server'
-wait_till_up 'test-grouper-client'
-wait_till_up 'test-grouper-starter-server'
+wait_till_up "test-${MY_NAME}-server"
+wait_till_up "test-${MY_NAME}-client"
+wait_till_up "test-${MY_NAME}-starter-server"
