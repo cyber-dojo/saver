@@ -6,17 +6,13 @@ class ExternalIdValidator
     @externals = externals
   end
 
-  def valid?(id)                   # eg '0215AFADCB'
+  def valid?(id)             # eg '0215AFADCB'
     return false if id.upcase.include?('L')
     args = []
     args << grouper.path
-    args << outer(id)              # eg '01
-    args << inner(id)[0..3] + '**' # eg '15AF**'
-    path = File.join(*args)        # eg .../01/15AF**
-    matched = Dir.glob(path).select{ |name|
-      File.directory?(name)
-    }
-    matched == []
+    args << outer(id)        # eg '01
+    args << inner(id)[0..3]  # eg '15AF**'
+    disk[File.join(*args)].completions == []
   end
 
   private
@@ -25,6 +21,10 @@ class ExternalIdValidator
 
   def grouper
     @externals.grouper
+  end
+
+  def disk
+    @externals.disk
   end
 
 end

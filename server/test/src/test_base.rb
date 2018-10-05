@@ -24,14 +24,8 @@ class TestBase < HexMiniTest
     grouper.id?(id)
   end
 
-  # - - - - - - - - - - - - - - - - -
-
   def id_completed(partial_id)
     grouper.id_completed(partial_id)
-  end
-
-  def id_completions(outer_id)
-    grouper.id_completions(outer_id)
   end
 
   # - - - - - - - - - - - - - - - - -

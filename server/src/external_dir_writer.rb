@@ -35,20 +35,13 @@ class ExternalDirWriter
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def each_dir
-    return enum_for(:each_dir) unless block_given?
-    Dir.entries(name).each do |entry|
-      if disk[pathed(entry)].exists? && !dot?(pathed(entry))
-        yield entry
-      end
-    end
+  def completions
+    Dir.glob(name + '**').select{ |complete|
+      File.directory?(complete)
+    }
   end
 
   private
-
-  def disk
-    @externals.disk
-  end
 
   def shell
     @externals.shell
@@ -56,10 +49,6 @@ class ExternalDirWriter
 
   def pathed(entry)
     name + '/' + entry
-  end
-
-  def dot?(name)
-    name.end_with?('/.') || name.end_with?('/..')
   end
 
 end

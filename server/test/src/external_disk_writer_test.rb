@@ -41,6 +41,22 @@ class ExternalDiskWriterTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '0CB',
+  'dir.completions() returns dir names but not . or ..' do
+    names = %w(
+      /tmp/0CDnope
+      /tmp/0CCalpha
+      /tmp/0CCbeta
+      /tmp/0CCgamma
+    )
+    names.each{ |name| disk[name].make }
+    names.shift
+    assert_equal names, disk['/tmp/0CC'].completions.sort
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+=begin
   test '0CC',
   'dir.each_dir() returns dir names but not . or ..' do
     dir = disk['/tmp/0CC']
@@ -57,6 +73,7 @@ class ExternalDiskWriterTest < TestBase
     dir.make
     assert_equal [], dir.each_dir.entries
   end
+=end
 
   private # = = = = = = = = = = = = = = = =
 

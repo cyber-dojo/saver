@@ -102,7 +102,7 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # id?(id), id_completed(partial_id), id_completions(outer_id)
+  # id?(id), id_completed(partial_id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
@@ -143,6 +143,7 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test '396',
   'id_completions when no completions' do
     outer_id = '28'
@@ -169,6 +170,7 @@ class GrouperTest < TestBase
     stub_create(id1)
     assert_equal [id0,id1].sort, id_completions(outer_id).sort
   end
+=end
 
   #- - - - - - - - - - - - - - - - - - - - - -
   # join/joined

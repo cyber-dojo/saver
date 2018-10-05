@@ -93,19 +93,6 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def outer_id
-    @arg_name = __method__.to_s
-    unless Base58.string?(arg)
-      malformed
-    end
-    unless arg.length == 2
-      malformed
-    end
-    arg
-  end
-
-  # - - - - - - - - - - - - - - - -
-
   def partial_id
     # Doing completion with fewer than 6 characters would likely result
     # in a lot of disk activity and no unique outcome. Also, if

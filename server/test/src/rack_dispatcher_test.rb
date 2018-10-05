@@ -93,16 +93,6 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E62',
-  'dispatch to id_completions' do
-    assert_dispatch('id_completions',
-      { outer_id: well_formed_outer_id},
-      'hello from GrouperStub.id_completions'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'E63',
   'dispatch to join' do
     assert_dispatch('join',
@@ -149,10 +139,6 @@ class RackDispatcherTest < TestBase
 
   def well_formed_partial_id
     '123456'
-  end
-
-  def well_formed_outer_id
-    '12'
   end
 
   def well_formed_indexes

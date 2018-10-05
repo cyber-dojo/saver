@@ -153,36 +153,6 @@ class WellFormedArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # outer_id
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'C6B',
-  'outer_id does not raise when well-formed' do
-    outer_id = '12'
-    json = { outer_id:outer_id }.to_json
-    assert_equal outer_id, WellFormedArgs.new(json).outer_id
-  end
-
-  test 'CB7',
-  'outer_id raises when malformed' do
-    expected = 'outer_id:malformed'
-    malformed_outer_ids.each do |malformed|
-      json = { outer_id:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises { wfa.outer_id }
-      assert_equal expected, error.message, malformed
-    end
-  end
-
-  def malformed_outer_ids
-    [
-      true,  # ! String
-      '=',   # ! Base58 String
-      '123', # ! length 2
-    ]
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # partial_id
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

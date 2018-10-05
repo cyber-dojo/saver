@@ -66,22 +66,31 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def id_completed(partial_id)
-    outer_dir = disk[dir_join(path, outer(partial_id))]
-    unless outer_dir.exists?
-      return ''
+    args = [path, outer(partial_id), inner(partial_id)[0..3]]
+    completions = disk[File.join(*args)].completions
+    if completions.size == 1
+      completions[0].split('/')[-2..-1].join
+    else
+      ''
     end
+    #outer_dir = disk[dir_join(path, outer(partial_id))]
+    #completions = outer_dir.completions
+    #unless outer_dir.exists?
+    #  return ''
+    #end
     # Slower with more inner dirs.
-    dirs = outer_dir.each_dir.select { |inner_dir|
-      inner_dir.start_with?(inner(partial_id))
-    }
-    unless dirs.length == 1
-      return ''
-    end
-    outer(partial_id) + dirs[0] # success!
+    #dirs = outer_dir.each_dir.select { |inner_dir|
+    #  inner_dir.start_with?(inner(partial_id))
+    #}
+    #unless dirs.length == 1
+    #  return ''
+    #end
+    #outer(partial_id) + dirs[0] # success!
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
+=begin
   def id_completions(outer_id)
     # for Batch-Method iteration over large number of practice-sessions...
     unless disk[dir_join(path, outer_id)].exists?
@@ -91,6 +100,7 @@ class Grouper
       outer_id + dir
     }
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - -
 
