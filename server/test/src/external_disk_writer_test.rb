@@ -31,17 +31,6 @@ class ExternalDiskWriterTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '61F',
-  'dir.exists?(filename) false when file does not exist, true when it does' do
-    dir = disk['/tmp/61F']
-    dir.make
-    refute dir.exists?(filename )
-    dir.write(filename, content)
-    assert dir.exists?(filename)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'D4C',
   'dir.read() reads back what dir.write() wrote' do
     dir = disk['/tmp/D4C']

@@ -19,12 +19,8 @@ class ExternalDirWriter
     output != ''
   end
 
-  def exists?(filename = nil)
-    if filename.nil?
-      File.directory?(name)
-    else
-      File.exist?(pathed(filename))
-    end
+  def exists?
+    File.directory?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
