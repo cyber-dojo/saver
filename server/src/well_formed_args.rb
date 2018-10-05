@@ -16,28 +16,59 @@ class WellFormedArgs
   def manifest
     @arg_name = __method__.to_s
 
-    malformed unless arg.is_a?(Hash)
-    malformed unless all_required_keys?
-    malformed if     any_unknown_key?
+    unless arg.is_a?(Hash)
+      malformed
+    end
+    unless all_required_keys?
+      malformed
+    end
+    if any_unknown_key?
+      malformed
+    end
 
     arg.keys.each do |key|
       value = arg[key]
       case key
       when 'id'
-        malformed unless Base58.string?(value) && value.length == 10
+        unless Base58.string?(value)
+          malformed
+        end
+        unless value.length == 10
+          malformed
+        end
       when 'display_name', 'image_name', 'runner_choice', 'exercise'
-        malformed unless value.is_a?(String)
+        unless value.is_a?(String)
+          malformed
+        end
       when 'highlight_filenames','progress_regexs','hidden_filenames'
-        malformed unless value.is_a?(Array)
-        value.each { |val|  malformed unless val.is_a?(String) }
+        unless value.is_a?(Array)
+          malformed
+        end
+        value.each { |val|
+          unless val.is_a?(String)
+            malformed
+          end
+        }
       when 'tab_size', 'max_seconds'
-        malformed unless value.is_a?(Integer)
+        unless value.is_a?(Integer)
+          malformed
+        end
       when 'created'
-        malformed unless is_time?(value)
+        unless is_time?(value)
+          malformed
+        end
       when 'filename_extension'
-        value = [ value ] if value.is_a?(String)
-        malformed unless value.is_a?(Array)
-        value.each { |val| malformed unless val.is_a?(String) }
+        if value.is_a?(String)
+          value = [ value ]
+        end
+        unless value.is_a?(Array)
+          malformed
+        end
+        value.each { |val|
+          unless val.is_a?(String)
+            malformed
+          end
+        }
       end
     end
     arg

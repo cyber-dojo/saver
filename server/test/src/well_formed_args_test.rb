@@ -31,10 +31,20 @@ class WellFormedArgsTest < TestBase
 
   test '591',
   'manifest does not raise when well-formed' do
-    manifest = starter.manifest
-    json = { manifest:manifest }.to_json
-    assert_equal manifest, WellFormedArgs.new(json).manifest
+    well_formed_manifests.each do |manifest|
+      json = { manifest:manifest }.to_json
+      WellFormedArgs.new(json).manifest
+    end
   end
+
+  def well_formed_manifests
+    [
+      starter.manifest,
+      starter.manifest.merge({filename_extension:'.h'}),
+    ]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '592',
   'manifest raises when malformed' do
@@ -59,6 +69,7 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({runner_choice:42}),         # ! String
       starter.manifest.merge({filename_extension:true}),  # ! String && ! Array
       starter.manifest.merge({filename_extension:{}}),    # ! String && ! Array
+      starter.manifest.merge({filename_extension:[23]}),  # ! Array[String]
       starter.manifest.merge({exercise:true}),            # ! String
       starter.manifest.merge({highlight_filenames:1}),    # ! Array of Strings
       starter.manifest.merge({highlight_filenames:[1]}),  # ! Array of Strings
@@ -70,8 +81,9 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({created:['s']}),       # ! Array of 6 Integers
       starter.manifest.merge({created:bad_month}),   # ! Time
       starter.manifest.merge({created:bad_year}),    # ! Time
+      starter.manifest.merge({id:true}),             # ! string
       starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
-      starter.manifest.merge({id:'ABCDEFGHI'}),      # ! 10-chars long
+      starter.manifest.merge({id:'ABCDE1234'}),      # ! 10-chars long
     ]
   end
 
