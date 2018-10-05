@@ -170,18 +170,21 @@ class RackDispatcherTest < TestBase
 
   def assert_dispatch_raises(name, args, status, class_name, message)
     response,stderr = with_captured_stderr { rack_call(name, args) }
+    body = args.to_json
     assert_equal status, response[0]
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_exception(response[2][0], class_name, message)
-    assert_exception(stderr, class_name, message)
+    assert_exception(response[2][0], name, body, class_name, message)
+    assert_exception(stderr,         name, body, class_name, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception(body, class_name, message)
-    json = JSON.parse(body)
+  def assert_exception(s, name, body, class_name, message)
+    json = JSON.parse(s)
     exception = json['exception']
     refute_nil exception
+    assert_equal name, exception['path']
+    assert_equal body, exception['body']
     assert_equal class_name, exception['class']
     assert_equal message, exception['message']
     assert_equal 'Array', exception['backtrace'].class.name
