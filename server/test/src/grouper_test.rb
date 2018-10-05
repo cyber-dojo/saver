@@ -142,37 +142,6 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-
-=begin
-  test '396',
-  'id_completions when no completions' do
-    outer_id = '28'
-    assert_equal [], id_completions(outer_id)
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '397',
-  'id_completions when a single completion' do
-    id = stub_create('7CA8A87A2B')
-    outer_id = id[0...2]
-    assert_equal [id], id_completions(outer_id)
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '398',
-  'id_completions when two completions' do
-    outer_id = '22'
-    id0 = outer_id + '0' + '3D2DF43'
-    id1 = outer_id + '1' + '3D2DF43'
-    stub_create(id0)
-    stub_create(id1)
-    assert_equal [id0,id1].sort, id_completions(outer_id).sort
-  end
-=end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
   # join/joined
   #- - - - - - - - - - - - - - - - - - - - - -
 

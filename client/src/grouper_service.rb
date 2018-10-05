@@ -26,10 +26,6 @@ class GrouperService
     get(__method__, partial_id)
   end
 
-  def id_completions(outer_id)
-    get(__method__, outer_id)
-  end
-
   # - - - - - - - - - - - -
 
   def join(id, indexes)

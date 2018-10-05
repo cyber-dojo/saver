@@ -8,11 +8,12 @@ class ExternalIdValidator
 
   def valid?(id)             # eg '0215AFADCB'
     return false if id.upcase.include?('L')
-    args = []
-    args << grouper.path
-    args << outer(id)        # eg '01
-    args << inner(id)[0..3]  # eg '15AF**'
-    disk[File.join(*args)].completions == []
+    completions(id) == []
+  end
+
+  def completions(id)
+    args = [grouper.path, outer(id), inner(id)[0..3]]
+    disk[File.join(*args)].completions
   end
 
   private

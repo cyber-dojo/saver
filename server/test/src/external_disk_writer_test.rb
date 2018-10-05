@@ -54,27 +54,6 @@ class ExternalDiskWriterTest < TestBase
     assert_equal names, disk['/tmp/0CC'].completions.sort
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-=begin
-  test '0CC',
-  'dir.each_dir() returns dir names but not . or ..' do
-    dir = disk['/tmp/0CC']
-    disk['/tmp/0CC/alpha'].make
-    disk['/tmp/0CC/beta' ].make
-    disk['/tmp/0CC/gamma'].make
-    disk['/tmp/0CC/.git' ].make
-    assert_equal %w( .git alpha beta gamma ), dir.each_dir.entries.sort
-  end
-
-  test '7E1',
-  'dir.each_dir() returns [] when there are no sub-dirs' do
-    dir = disk['/tmp/7E1']
-    dir.make
-    assert_equal [], dir.each_dir.entries
-  end
-=end
-
   private # = = = = = = = = = = = = = = = =
 
   def filename

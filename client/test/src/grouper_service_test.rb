@@ -63,10 +63,6 @@ class GrouperServiceTest < TestBase
     id = grouper.create(starter.manifest, starter.files)
     assert grouper.id?(id)
     assert_equal id, grouper.id_completed(id[0..5])
-    outer = id[0..1]
-    inner = id[2..-1]
-    id_completions = grouper.id_completions(outer)
-    assert id_completions.include?(outer+inner)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
