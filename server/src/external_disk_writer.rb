@@ -10,8 +10,4 @@ class ExternalDiskWriter
     ExternalDirWriter.new(@externals, dir_name)
   end
 
-  private
-
-  attr_reader :externals
-
 end
