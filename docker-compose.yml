@@ -1,6 +1,9 @@
 
 version: '2.2'
 
+volumes:
+  grafana_data: {}
+
 services:
 
   grouper_client:
@@ -38,6 +41,7 @@ services:
     depends_on:
       - starter # for tests
       - singler
+      - prometheus
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -45,20 +49,42 @@ services:
     user: singler
     image: cyberdojo/singler
     init: true
-    container_name: test-grouper-singler-server
+    container_name: test-grouper-singler
     read_only: true
     tmpfs: /tmp
     volumes:
       - /tmp/singler/ids:/singler/ids:rw
 
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # starter is handy in tests for creating start-point manifests
+  # monitoring
+
+  prometheus:
+    image: cyberdojo/prometheus
+    init: true
+    container_name: test-grouper-prometheus
+
+  grafana:
+    image: cyberdojo/grafana
+    init: true
+    container_name: test-grouper-grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    env_file:
+      - ./grafana.env
+    ports:
+      - 3001:3000
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # starter is used in tests for creating start-point manifests
 
   starter:
     user: nobody
     image: cyberdojo/starter
     init: true
-    container_name: test-grouper-starter-server
+    container_name: test-grouper-starter
     read_only: true
     tmpfs: /tmp
     volumes:
