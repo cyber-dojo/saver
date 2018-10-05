@@ -1,0 +1,14 @@
+
+1. grouper.create(manifest)
+extend this so manifest['id'] can be pre-populated.
+If it can't honour the ID (eg taken or not uniquely completable)
+then it raises.
+If it is passed a manifest without an ID in it
+then it will generate a new ID as it currently does.
+
+2. grouper.joined(id)
+extend this so if grouper.id?(id) is false then rather
+than raising it simply returns nil.
+This is a nice BatchedMethod optimization, eg
+if you want to see if an old style kata-ID has
+a single avatar.
