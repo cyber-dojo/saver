@@ -111,10 +111,10 @@ class WellFormedArgsTest < TestBase
 
   def malformed_files
     [
-      [],              # ! Hash
-      { "x" => 42 },   # content ! String
-      { "y" => true }, # content ! String
-      { "z" => nil },  # content ! String
+      [], true, 42, 'string', # ! Hash
+      { 'x' => 42 },   # content ! String
+      { 'y' => true }, # content ! String
+      { 'z' => nil },  # content ! String
     ]
   end
 
