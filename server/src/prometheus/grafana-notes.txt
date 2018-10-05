@@ -1,6 +1,6 @@
 
 To load this into grafana...
-o) go to http://...:3001
+o) go to http://...:3002
 o) login: user=admin, password=(as set in grafana.env)
 
 - - - - - - - - - - - - - - - - - - - - - - - -
@@ -18,16 +18,14 @@ If there is no existing dashboard...
 o) hover over the + on the top-left
 o) click Import in the drop-down
 o) click [Upload .json File]
-o) choose the singler.json file in this dir
+o) choose the grouper-grafana-dashboard.json file in this dir
 
 - - - - - - - - - - - - - - - - - - - - - - - -
 
-The dashboard should display 4 graphs,
-o) Top left: test events
-o) Top right: total number of tests
-o) Bottom left: create events
-o) Bottom right: total number of creates
+The dashboard should display 2 graphs,
+o) Top left: create events
+o) Top right: total number of creates
 
-Sometimes the 4 graphs display their axis but with no green
+Sometimes the graphs display their axis but with no green
 graph content inside. If you resize a graph by dragging its
 bottom right corner the graph will appear!
