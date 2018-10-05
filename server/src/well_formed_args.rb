@@ -23,6 +23,8 @@ class WellFormedArgs
     arg.keys.each do |key|
       value = arg[key]
       case key
+      when 'id'
+        malformed unless Base58.string?(value) && value.length == 10
       when 'display_name', 'image_name', 'runner_choice', 'exercise'
         malformed unless value.is_a?(String)
       when 'highlight_filenames','progress_regexs','hidden_filenames'
@@ -120,6 +122,7 @@ class WellFormedArgs
   end
 
   KNOWN_KEYS = REQUIRED_KEYS + %w(
+    id
     exercise
     filename_extension
     highlight_filenames

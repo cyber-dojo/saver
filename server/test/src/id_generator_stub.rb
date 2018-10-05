@@ -10,7 +10,11 @@ class IdGeneratorStub
   end
 
   def generate
-    @stubbed.shift
+    if @stubbed == []
+      fail RuntimeError, "#{self.class.name} - @stubbed is empty"
+    else
+      @stubbed.shift
+    end
   end
 
 end

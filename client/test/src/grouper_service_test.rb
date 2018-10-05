@@ -44,6 +44,17 @@ class GrouperServiceTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '591',
+  %w( create(manifest) can pass the id inside the manifest ) do
+    manifest = starter.manifest
+    explicit_id = '2347646D81'
+    manifest['id'] = explicit_id
+    id = grouper.create(manifest, starter.files)
+    assert_equal explicit_id, id
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test '5F9', %w(
   after create() then
   the id can be completed

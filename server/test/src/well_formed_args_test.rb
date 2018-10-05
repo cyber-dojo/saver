@@ -68,6 +68,8 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({created:nil}),         # ! Array of 6 Integers
       starter.manifest.merge({created:['s']}),       # ! Array of 6 Integers
       starter.manifest.merge({created:bad_time}),    # ! Time
+      starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
+      starter.manifest.merge({id:'ABCDEFGHI'}),      # ! 10-chars long
     ]
   end
 

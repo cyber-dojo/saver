@@ -31,8 +31,15 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest, files)
-    id = id_generator.generate
-    manifest['id'] = id
+    if manifest['id'].nil?
+      id = id_generator.generate
+      manifest['id'] = id
+    else
+      id = manifest['id']
+      unless id_validator.valid?(id)
+        invalid('id', id)
+      end
+    end
     dir = id_dir(id)
     dir.make
     dir.write(manifest_filename, json_unparse({
@@ -186,6 +193,10 @@ class Grouper
 
   def id_generator
     @externals.id_generator
+  end
+
+  def id_validator
+    @externals.id_validator
   end
 
   def singler

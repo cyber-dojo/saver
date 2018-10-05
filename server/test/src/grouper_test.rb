@@ -57,7 +57,7 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'create-manifest round-trip' do
+  'create() manifest() round-trip' do
     stub_id = '0ADDE7572A'
     stub_id_generator.stub(stub_id)
     expected = starter.manifest
@@ -66,6 +66,39 @@ class GrouperTest < TestBase
     expected['id'] = id
     actual = manifest(id)
     assert_equal expected, actual
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '422', %w(
+  create(manifest) can be passed the id
+  and when it is uniquely-completable at 6-chars it is used ) do
+    explicit_id = 'CE2BD61EB2'
+    manifest = starter.manifest
+    manifest['id'] = explicit_id
+    externals.id_generator = @real_id_generator
+    id = create(manifest, starter.files)
+    assert_equal explicit_id, id
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '423', %w(
+  create(manifest) can be passed the id
+  and raises when it is not uniquely-completeable at c-chars ) do
+    stub_id = 'A01DE86620'
+    stub_id_generator.stub(stub_id)
+    expected = starter.manifest
+    id = create(expected, starter.files)
+
+    externals.id_generator = @real_id_generator
+    explicit_id = stub_id[0..5]+'1234'
+    manifest = starter.manifest
+    manifest['id'] = explicit_id
+    error = assert_raises(ArgumentError) {
+      create(manifest, starter.files)
+    }
+    assert_equal "id:invalid:#{explicit_id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
