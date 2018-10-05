@@ -9,14 +9,14 @@ class ExternalDirWriter
   attr_reader :name
 
   def make
-    # Can't find a Ruby library method allowing you to do a
-    # mkdir_p and-know-if-a-dir-was-created-or-not.
+    # Returns true iff the dir does not already exist
+    # and is made. Can't find a Ruby library method
+    # that does this, so using shell.
     # Note: FileUtils.mkdir_p() does not tell.
-    # So using shell.
     # -p creates intermediate dirs as required.
     # -v verbose mode, output each dir actually made
-    stdout,stderr,exit_status = shell.exec("mkdir -vp #{name}")
-    stdout != '' && stderr == '' && exit_status == 0
+    stdout,stderr,status = shell.exec("mkdir -vp #{name}")
+    stdout != '' && stderr == '' && status == 0
   end
 
   def exists?
