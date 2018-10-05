@@ -26,7 +26,7 @@ class ExternalDirWriter
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(filename, content)
-    File.open(pathed(filename), 'w') { |fd| fd.write(content) }
+    IO.write(pathed(filename), content)
   end
 
   def read(filename)
