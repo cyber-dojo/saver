@@ -6,9 +6,13 @@ class ExternalIdValidator
     @externals = externals
   end
 
-  def valid?(id)             # eg '0215AFADCB'
-    return false if id.upcase.include?('L')
-    completions(id) == []
+  def valid?(id)
+    # eg '0215AFADCB'
+    if id.upcase.include?('L')
+      false
+    else
+      completions(id) == []
+    end
   end
 
   def completions(id)
