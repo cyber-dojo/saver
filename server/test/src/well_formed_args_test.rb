@@ -48,7 +48,8 @@ class WellFormedArgsTest < TestBase
   end
 
   def malformed_manifests
-    bad_time = [2018,-3,28, 11,33,13]
+    bad_month = [2018,-3,28, 11,33,13]
+    bad_year = ["2018",3,28, 11,33,13]
     [
       [],                                                 # ! Hash
       {},                                                 # required key missing
@@ -67,7 +68,8 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({max_seconds:nil}),     # ! Integer
       starter.manifest.merge({created:nil}),         # ! Array of 6 Integers
       starter.manifest.merge({created:['s']}),       # ! Array of 6 Integers
-      starter.manifest.merge({created:bad_time}),    # ! Time
+      starter.manifest.merge({created:bad_month}),   # ! Time
+      starter.manifest.merge({created:bad_year}),    # ! Time
       starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
       starter.manifest.merge({id:'ABCDEFGHI'}),      # ! 10-chars long
     ]
@@ -227,7 +229,8 @@ class WellFormedArgsTest < TestBase
       {},
       [],
       [0,1],
-      [62,63]
+      [62,63],
+      (1..64).to_a
     ]
   end
 

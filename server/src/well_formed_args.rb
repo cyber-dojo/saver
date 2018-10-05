@@ -59,7 +59,12 @@ class WellFormedArgs
 
   def outer_id
     @arg_name = __method__.to_s
-    malformed unless Base58.string?(arg) && arg.length == 2
+    unless Base58.string?(arg)
+      malformed
+    end
+    unless arg.length == 2
+      malformed
+    end
     arg
   end
 
@@ -73,7 +78,12 @@ class WellFormedArgs
     # the full id of a cyber-dojo and potentially interfere
     # with a live session.
     @arg_name = __method__.to_s
-    malformed unless Base58.string?(arg) && (6..10).include?(arg.length)
+    unless Base58.string?(arg)
+      malformed
+    end
+    unless (6..10).include?(arg.length)
+      malformed
+    end
     arg
   end
 
@@ -81,7 +91,12 @@ class WellFormedArgs
 
   def id
     @arg_name = __method__.to_s
-    malformed unless Base58.string?(arg) && arg.length == 10
+    unless Base58.string?(arg)
+      malformed
+    end
+    unless arg.length == 10
+      malformed
+    end
     arg
   end
 
@@ -89,8 +104,15 @@ class WellFormedArgs
 
   def indexes
     @arg_name = __method__.to_s
-    malformed unless arg.is_a?(Array) && arg.length == 64
-    malformed unless arg.sort == (0..63).to_a
+    unless arg.is_a?(Array)
+      malformed
+    end
+    unless arg.length == 64
+      malformed
+    end
+    unless arg.sort == (0..63).to_a
+      malformed
+    end
     arg
   end
 
@@ -135,9 +157,15 @@ class WellFormedArgs
   # - - - - - - - - - - - - - - - -
 
   def is_time?(arg)
-    return false unless arg.is_a?(Array)
-    return false unless arg.size == 6
-    return false unless arg.all? { |n| n.is_a?(Integer) }
+    unless arg.is_a?(Array)
+      return false
+    end
+    unless arg.size == 6
+      return false
+    end
+    unless arg.all? { |n| n.is_a?(Integer) }
+      return false
+    end
     Time.mktime(*arg)
     true
   rescue
