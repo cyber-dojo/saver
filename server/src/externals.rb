@@ -1,5 +1,4 @@
 require_relative 'grouper'
-require_relative 'external_bash_sheller'
 require_relative 'external_disk_writer'
 require_relative 'external_id_generator'
 require_relative 'external_id_validator'
@@ -32,10 +31,6 @@ class Externals
   end
   def logger=(arg)
     @logger = arg
-  end
-
-  def shell
-    @shell ||= ExternalBashSheller.new(self)
   end
 
   def disk

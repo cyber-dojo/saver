@@ -14,8 +14,8 @@ class ExternalsTest < TestBase
     assert_equal 'Grouper',      externals.grouper.class.name
     assert_equal 'ExternalDiskWriter',   externals.disk.class.name
     assert_equal 'ExternalStdoutLogger', externals.logger.class.name
-    assert_equal 'ExternalBashSheller',  externals.shell.class.name
     assert_equal 'ExternalIdGenerator',  externals.id_generator.class.name
+    assert_equal 'ExternalIdValidator',  externals.id_validator.class.name
   end
 
 end
