@@ -37,11 +37,11 @@ class Grouper
         invalid('id', id)
       end
     end
-    dir[id].make
-    dir[id].write(manifest_filename, json_unparse({
-      manifest:manifest,
-      files:files
-    }))
+    unless dir[id].make
+      invalid('id', id)
+    end
+    json = { manifest:manifest, files:files }
+    dir[id].write(manifest_filename, json_pretty(json))
     id
   end
 
@@ -72,8 +72,7 @@ class Grouper
       manifest.delete('id')
       manifest['group'] = id
       sid = singler.create(manifest, files)
-      dir[id,index].make
-      dir[id,index].write('id.json', json_unparse({ 'id' => sid }))
+      dir[id,index].write('id.json', json_pretty({ 'id' => sid }))
       [index, sid]
     end
   end
@@ -113,7 +112,7 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
-  def json_unparse(o)
+  def json_pretty(o)
     JSON.pretty_generate(o)
   end
 
