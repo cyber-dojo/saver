@@ -12,8 +12,8 @@ require 'json'
 # 6-characters, but very very occasionally you may need
 # to enter a 7th,8th.
 # Using a base58 alphabet (but excluding L)
-#   ==> 3^10 unique  6-character ids.
-#   ==> 3^16 unique 10-character ids.
+#   ==> 3*10^10 unique  6-character ids.
+#   ==> 3*10^16 unique 10-character ids.
 
 class Grouper
 
