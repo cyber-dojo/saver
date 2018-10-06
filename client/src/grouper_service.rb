@@ -8,22 +8,16 @@ class GrouperService
 
   # - - - - - - - - - - - -
 
+  def id?(id)
+    get(__method__, id)
+  end
+
   def create(manifest, files)
     post(__method__, manifest, files)
   end
 
   def manifest(id)
     get(__method__, id)
-  end
-
-  # - - - - - - - - - - - -
-
-  def id?(id)
-    get(__method__, id)
-  end
-
-  def id_completed(partial_id)
-    get(__method__, partial_id)
   end
 
   # - - - - - - - - - - - -

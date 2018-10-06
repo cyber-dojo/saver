@@ -11,7 +11,7 @@ class ExternalIdGeneratorTest < TestBase
   test '926',
   'generates Base58 ids of length 6' do
     id = externals.id_generator.generate
-    assert Base58.string?(id), "Base58.string?(#{id})"
+    assert Base58.string?(id), "Base58.string?('#{id}')"
     assert_equal 6, id.size
   end
 

@@ -17,11 +17,9 @@ API:
     * If the method raises an exception, the key equals "exception".
 
 - [GET sha](#get-sha)
+- [GET id?](#get-id)
 - [POST create](#post-create)
 - [GET manifest](#get-manifest)
-- [GET id?](#get-id)
-- [GET id_completed](#get-id_completed)
-- [GET id_completions](#get-id_completions)
 - [POST join](#post-join)
 - [GET joined](#get-joined)
 
@@ -42,7 +40,7 @@ Returns the git commit sha used to create the docker image.
 
 ## POST create
 Creates a practice-session from the given manifest
-and visible_files.
+and given files.
 - parameters, eg
 ```
     { "manifest": {
@@ -55,7 +53,7 @@ and visible_files.
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
       },
-      "visible_files": {
+      "files": {
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",
@@ -65,9 +63,9 @@ and visible_files.
       }
     }
 ```
-- returns the group id of the group  practice-session created from the given manifest, eg
+- returns the id of the created group practice-session, eg
 ```
-  { "create": "55D3B97CF7"
+  { "create": "55D3B9"
   }
 ```
 
@@ -77,12 +75,12 @@ and visible_files.
 Returns the manifest used to create the practice-session with the given group id.
 - parameter, eg
 ```
-  { "id": "55D3B97CF7" }
+  { "id": "55D3B9" }
 ```
 - returns, eg
 ```
     { "manifest": {
-                        "id": "55D3B97CF7",
+                        "id": "55D3B9",
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
@@ -101,45 +99,12 @@ Returns the manifest used to create the practice-session with the given group id
 Asks whether the practice-session with the given id exists.
 - parameters, eg
 ```
-  { "id": "55D3B97CF7" }
+  { "id": "55D3B9" }
 ```
 - returns true if it does, false if it doesn't, eg
 ```
   { "id?": true   }
   { "id?": false  }
-```
-
-- - - -
-
-## GET id_completed
-If it exists, returns the 10-digit practice-session id which uniquely
-completes the given partial_id, otherwise returns the empty string.
-- parameter, the partial-id to complete, eg
-```
-  { "partial_id": "55D3B9" } # must be at least 6 characters long.
-```
-- returns, eg
-```
-  { "id_completed": "55D3B97CF7"  } # completed
-  { "id_completed": ""            } # not completed
-```
-
-- - - -
-
-## GET id_completions
-Returns all the practice-session id's starting with the given outer_id.
-- parameter, eg
-```
-  { "outer_id": "55" } # must be 2 characters long
-```
-- returns, eg
-```
-  { "id_completions": [
-       "55D3B97CF7",
-       "55D3B97CF8",
-       "55D3B97CF9"
-    ]
-  }
 ```
 
 - - - -
@@ -150,13 +115,13 @@ The indexes parameter, when sorted, must be (0..63).to_a
 and determines the join attempt order.
 - parameters, eg
 ```
-  { "id": "55D3B97CF7",
+  { "id": "55D3B9",
     "indexes": [61, 8, 28, ..., 13, 32, 42]
   }
 ```
 Returns the individual practice-session avatar-index and id, eg
 ```
-  { "join": [ 6, "D6A57FC1A5" ] }
+  { "join": [ 6, "D6A57F" ] }
 ```
 
 - - - -
@@ -166,14 +131,14 @@ Returns the individual practice-session avatar-index and id of everyone
 who has joined the practice-session with the given group id.
 - parameters, eg
 ```
-  { "id": "55D3B97CF7" }
+  { "id": "55D3B9" }
 ```
 - returns, eg
 ```
   { "joined": {
-       "6": "D6A57FC1A5",
-      "34": "C4AC8BF502",
-      "11": "454F917286"
+       "6": "D6A57F",
+      "34": "C4AC8B",
+      "11": "454F91"
     }
   }
 ```
