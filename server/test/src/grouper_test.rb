@@ -168,8 +168,4 @@ class GrouperTest < TestBase
     externals.singler
   end
 
-  def dir
-    externals.disk
-  end
-
 end

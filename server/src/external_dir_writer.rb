@@ -15,8 +15,7 @@ class ExternalDirWriter
     # -p creates intermediate dirs as required.
     # -v verbose mode, output each dir actually made
     stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
-    status = r.exitstatus
-    stdout != '' && stderr == '' && status == 0
+    stdout != '' && stderr == '' && r.exitstatus == 0
   end
 
   def exists?
