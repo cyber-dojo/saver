@@ -3,7 +3,6 @@ require_relative 'external_disk_writer'
 require_relative 'external_id_generator'
 require_relative 'external_id_validator'
 require_relative 'external_singler'
-require_relative 'external_stdout_logger'
 
 class Externals
 
@@ -24,13 +23,6 @@ class Externals
   end
   def id_validator=(arg)
     @id_validator = arg
-  end
-
-  def logger
-    @logger ||= ExternalStdoutLogger.new(self)
-  end
-  def logger=(arg)
-    @logger = arg
   end
 
   def disk
