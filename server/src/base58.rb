@@ -16,6 +16,8 @@ require 'securerandom'
 # the alphabet the less you have to worry about
 # ID clashes when copying sessions from one
 # server to another.
+#
+# 56^6 == 30,840,979,456 == 30 billion
 
 class Base58
 
