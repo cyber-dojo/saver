@@ -73,15 +73,15 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # id?(id)
+  # exists?(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
-  'id? is false before creation, true after creation' do
+  'exists? is false before creation, true after creation' do
     id = '50C8C6'
-    refute id?(id)
+    refute exists?(id)
     stub_create(id)
-    assert id?(id)
+    assert exists?(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

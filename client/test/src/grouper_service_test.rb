@@ -57,9 +57,9 @@ class GrouperServiceTest < TestBase
 
   test '5F9', %w(
   after create() then
-  id?() is true ) do
+  exists?() is true ) do
     id = grouper.create(starter.manifest, starter.files)
-    assert grouper.id?(id)
+    assert grouper.exists?(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

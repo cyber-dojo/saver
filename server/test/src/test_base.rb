@@ -20,8 +20,8 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - -
 
-  def id?(id)
-    grouper.id?(id)
+  def exists?(id)
+    grouper.exists?(id)
   end
 
   # - - - - - - - - - - - - - - - - -

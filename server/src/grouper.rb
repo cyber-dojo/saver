@@ -27,6 +27,12 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
+  def exists?(id)
+    dir[id].exists?
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
   def create(manifest, files)
     if manifest['id'].nil?
       id = id_generator.generate
@@ -50,12 +56,6 @@ class Grouper
   def manifest(id)
     assert_id_exists(id)
     get(id)[0]
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  def id?(id)
-    dir[id].exists?
   end
 
   # - - - - - - - - - - - - - - - - - - -
