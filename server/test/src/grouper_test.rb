@@ -1,23 +1,10 @@
 require_relative 'test_base'
-require_relative 'id_generator_stub'
 
 class GrouperTest < TestBase
 
   def self.hex_prefix
     '97431'
   end
-
-  def hex_setup
-    @real_id_generator = externals.id_generator
-    @stub_id_generator = IdGeneratorStub.new
-    externals.id_generator = @stub_id_generator
-  end
-
-  def hex_teardown
-    externals.id_generator = @real_id_generator
-  end
-
-  attr_reader :stub_id_generator
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # sha

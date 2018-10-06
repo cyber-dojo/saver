@@ -19,9 +19,6 @@ class Externals
   def id_generator
     @id_generator ||= ExternalIdGenerator.new(self)
   end
-  def id_generator=(arg)
-    @id_generator = arg
-  end
 
   def id_validator
     @id_validator ||= ExternalIdValidator.new(self)
