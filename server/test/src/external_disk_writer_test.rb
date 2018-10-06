@@ -6,22 +6,6 @@ class ExternalDiskWriterTest < TestBase
     'FDF13'
   end
 
-  def disk
-    externals.disk
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '436', %w(
-  dir.name is based on /grouper/ids/
-  reveals id is split 2-4
-  and can optionally take avatar-index ) do
-    dir = disk['6BD45B']
-    assert_equal '/grouper/ids/6B/D45B', dir.name
-    dir = disk['2FA591',13]
-    assert_equal '/grouper/ids/2F/A591/13', dir.name
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '437',
@@ -43,6 +27,12 @@ class ExternalDiskWriterTest < TestBase
     content = 'the boy stood on the burning deck'
     dir.write(filename, content)
     assert_equal content, dir.read(filename)
+  end
+
+  private
+
+  def disk
+    externals.disk
   end
 
 end
