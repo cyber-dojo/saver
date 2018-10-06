@@ -6,11 +6,23 @@ class ExternalIdGeneratorTest < TestBase
     '9E748'
   end
 
+  def id_generator
+    @id_generator ||= ExternalIdGenerator.new(self)
+  end
+
+  def id_validator
+    @id_validator ||= ExternalIdValidator.new(self)
+  end
+
+  def disk
+    @disk ||= ExternalDiskWriter.new
+  end
+
   # - - - - - - - - - - - - - - - -
 
   test '926',
   'generates Base58 ids of length 6' do
-    id = externals.id_generator.generate
+    id = id_generator.generate
     assert Base58.string?(id), "Base58.string?('#{id}')"
     assert_equal 6, id.size
   end
@@ -19,14 +31,9 @@ class ExternalIdGeneratorTest < TestBase
 
   test '927',
   'skips Base58 ids that the validator rejects' do
-    real_validator = externals.id_validator
-    externals.id_validator = stub = IdValidatorStub.new(3)
-    begin
-      id = externals.id_generator.generate
-      assert_equal 3, stub.count
-    ensure
-      externals.id_validator = real_validator
-    end
+    @id_validator = IdValidatorStub.new(3)
+    id = id_generator.generate
+    assert_equal 3, @id_validator.count
   end
 
   # - - - - - - - - - - - - - - - -

@@ -21,9 +21,6 @@ class Externals
   def id_validator
     @id_validator ||= ExternalIdValidator.new(self)
   end
-  def id_validator=(arg)
-    @id_validator = arg
-  end
 
   def disk
     @disk ||= ExternalDiskWriter.new
