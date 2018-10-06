@@ -6,8 +6,8 @@ class ExternalDiskWriter
     @externals = externals
   end
 
-  def [](dir_name)
-    ExternalDirWriter.new(@externals, dir_name)
+  def [](id, index=nil)
+    ExternalDirWriter.new(@externals, id, index)
   end
 
 end

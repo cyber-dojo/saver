@@ -30,17 +30,6 @@ class GrouperTest < TestBase
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # path
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '218', %w(
-  grouper's path is set
-  but in test its volume-mounted to /tmp
-  so its emphemeral ) do
-    assert_equal '/grouper/ids', grouper.path
-  end
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # create(manifest) manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

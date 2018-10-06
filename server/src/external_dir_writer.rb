@@ -1,12 +1,19 @@
 
 class ExternalDirWriter
 
-  def initialize(externals, name)
+  def initialize(externals, id, index)
     @externals = externals
-    @name = name
+    @id = id
+    @index = index
   end
 
-  attr_reader :name
+  def name
+    args = ['', 'grouper', 'ids', @id[0..1], @id[2..-1]]
+    unless @index.nil?
+      args << @index.to_s
+    end
+    File.join(*args)
+  end
 
   def make
     # Returns true iff the dir does not already exist
@@ -47,8 +54,8 @@ class ExternalDirWriter
     @externals.shell
   end
 
-  def pathed(entry)
-    name + '/' + entry
+  def pathed(filename)
+    File.join(name, filename)
   end
 
 end

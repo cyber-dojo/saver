@@ -1,4 +1,3 @@
-require_relative 'id_splitter'
 require 'json'
 
 # If all ids came from a single server I could use
@@ -20,10 +19,7 @@ class Grouper
 
   def initialize(externals)
     @externals = externals
-    @path = '/grouper/ids'
   end
-
-  attr_reader :path
 
   def sha
     IO.read('/app/sha.txt').strip
@@ -41,9 +37,8 @@ class Grouper
         invalid('id', id)
       end
     end
-    dir = id_dir(id)
-    dir.make
-    dir.write(manifest_filename, json_unparse({
+    dir[id].make
+    dir[id].write(manifest_filename, json_unparse({
       manifest:manifest,
       files:files
     }))
@@ -60,13 +55,13 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def id?(id)
-    id_dir(id).exists?
+    dir[id].exists?
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def id_completed(partial_id)
-    completions = id_validator.completions(partial_id)
+    completions = dir[partial_id].completions
     if completions.size == 1
       completions[0].split('/')[-2..-1].join
     else
@@ -78,9 +73,8 @@ class Grouper
 
   def join(id, indexes)
     assert_id_exists(id)
-    index = indexes.detect { |n|
-      path = dir_join(id_path(id), n.to_s)
-      disk[path].make
+    index = indexes.detect { |index|
+      dir[id,index].make
     }
     if index.nil?
       nil
@@ -89,11 +83,9 @@ class Grouper
       manifest.delete('id')
       manifest['group'] = id
       sid = singler.create(manifest, files)
-      path = dir_join(id_path(id), index.to_s)
-      dir = disk[path]
-      dir.make
-      dir.write('id.json', json_unparse({ 'id' => sid }))
-      return [index, sid]
+      dir[id,index].make
+      dir[id,index].write('id.json', json_unparse({ 'id' => sid }))
+      [index, sid]
     end
   end
 
@@ -103,10 +95,8 @@ class Grouper
     assert_id_exists(id)
     result = {}
     64.times { |index|
-      path = dir_join(id_path(id), index.to_s)
-      dir = disk[path]
-      if dir.exists?
-        json = json_parse(dir.read('id.json'))
+      if dir[id,index].exists?
+        json = json_parse(dir[id,index].read('id.json'))
         result[index] = json['id']
       end
     }
@@ -116,8 +106,8 @@ class Grouper
   private
 
   def get(id)
-    json = json_parse(id_dir(id).read(manifest_filename))
-    return [json['manifest'],json['files']]
+    json = json_parse(dir[id].read(manifest_filename))
+    [json['manifest'],json['files']]
   end
 
   def manifest_filename
@@ -127,29 +117,9 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def assert_id_exists(id)
-    unless id_dir(id).exists?
+    unless dir[id].exists?
       invalid('id', id)
     end
-  end
-
-  def id_dir(id)
-    disk[id_path(id)]
-  end
-
-  def id_path(id)
-    dir_join(path, outer(id), inner(id))
-  end
-
-  include IdSplitter
-
-  # - - - - - - - - - - - - - -
-
-  def dir_join(*args)
-    File.join(*args)
-  end
-
-  def invalid(name, value)
-    fail ArgumentError.new("#{name}:invalid:#{value}")
   end
 
   # - - - - - - - - - - - - - -
@@ -164,7 +134,13 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
-  def disk
+  def invalid(name, value)
+    fail ArgumentError.new("#{name}:invalid:#{value}")
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def dir
     @externals.disk
   end
 

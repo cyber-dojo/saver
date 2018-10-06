@@ -1,4 +1,3 @@
-require_relative 'id_splitter'
 
 class ExternalIdValidator
 
@@ -11,24 +10,13 @@ class ExternalIdValidator
     if id.upcase.include?('L')
       false
     else
-      completions(id) == []
+      dir[id[0..5]].completions == []
     end
-  end
-
-  def completions(id)
-    args = [grouper.path, outer(id), inner(id)[0..3]]
-    disk[File.join(*args)].completions
   end
 
   private
 
-  include IdSplitter
-
-  def grouper
-    @externals.grouper
-  end
-
-  def disk
+  def dir
     @externals.disk
   end
 
