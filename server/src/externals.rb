@@ -39,7 +39,7 @@ class Externals
   end
 
   def disk
-    @disk ||= ExternalDiskWriter.new(self)
+    @disk ||= ExternalDiskWriter.new
   end
 
 end

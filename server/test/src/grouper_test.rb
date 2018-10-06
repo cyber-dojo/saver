@@ -132,7 +132,7 @@ class GrouperTest < TestBase
       assert index.is_a?(Integer), "index is a #{index.class.name}!"
       assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
       assert id.is_a?(String), "id is a #{id.class.name}!"
-      assert singler.id?(id), "!singler.id?(#{id})"
+      assert singler.exists?(id), "!singler.exists?(#{id})"
       refute joined.include?(index), "joined.include?(#{index})!"
       joined << index
     end

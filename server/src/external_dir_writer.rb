@@ -1,8 +1,8 @@
+require 'open3'
 
 class ExternalDirWriter
 
-  def initialize(externals, id, index)
-    @externals = externals
+  def initialize(id, index)
     @id = id
     @index = index
   end
@@ -25,7 +25,8 @@ class ExternalDirWriter
     # Note: FileUtils.mkdir_p() does not tell.
     # -p creates intermediate dirs as required.
     # -v verbose mode, output each dir actually made
-    stdout,stderr,status = shell.exec("mkdir -vp #{name}")
+    stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
+    status = r.exitstatus
     stdout != '' && stderr == '' && status == 0
   end
 
@@ -44,10 +45,6 @@ class ExternalDirWriter
   end
 
   private
-
-  def shell
-    @externals.shell
-  end
 
   def pathed(filename)
     File.join(name, filename)
