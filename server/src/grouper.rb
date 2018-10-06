@@ -28,9 +28,13 @@ class Grouper
         invalid('id', id)
       end
     end
+
     unless dir[id].make
+      # :nocov:
       invalid('id', id)
+      # :nocov:
     end
+
     json = { manifest:manifest, files:files }
     dir[id].write(manifest_filename, json_pretty(json))
     id

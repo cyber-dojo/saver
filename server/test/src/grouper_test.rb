@@ -18,27 +18,40 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # exists?(id)
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '392',
+  'exists? is false before creation, true after creation' do
+    id = '50C8C6'
+    refute exists?(id)
+    stub_create(id)
+    assert exists?(id)
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # create(manifest) manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '420',
-  'manifest raises when id does not exist' do
-    id = 'B4AB37'
-    error = assert_raises(ArgumentError) {
-      manifest(id)
-    }
-    assert_equal "id:invalid:#{id}", error.message
+  test '421',
+  'create() generates id if one is not supplied' do
+    manifest = starter.manifest
+    refute manifest.key?('id')
+    id = create(manifest, starter.files)
+    assert manifest.key?('id')
+    assert_equal id, manifest['id']
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '421',
-  'create() manifest() round-trip' do
-    id = '0ADDE7'
-    m = starter.manifest
-    m['id'] = id
-    create(m, starter.files)
-    assert_equal m, manifest(id)
+  test '42C',
+  'create() raises when provided id is invalid' do
+    manifest = starter.manifest
+    manifest['id'] = '12345L'
+    error = assert_raises(ArgumentError) {
+      create(manifest, starter.files)
+    }
+    assert_equal 'id:invalid:12345L', error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -72,16 +85,26 @@ class GrouperTest < TestBase
     assert_equal "id:invalid:#{id}", error.message
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?(id)
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '392',
-  'exists? is false before creation, true after creation' do
-    id = '50C8C6'
-    refute exists?(id)
-    stub_create(id)
-    assert exists?(id)
+  test '420',
+  'manifest raises when id does not exist' do
+    id = 'B4AB37'
+    error = assert_raises(ArgumentError) {
+      manifest(id)
+    }
+    assert_equal "id:invalid:#{id}", error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '42E',
+  'create() manifest() round-trip' do
+    id = '0ADDE7'
+    m = starter.manifest
+    m['id'] = id
+    create(m, starter.files)
+    assert_equal m, manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
