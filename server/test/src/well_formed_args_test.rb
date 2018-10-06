@@ -83,7 +83,7 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({created:bad_year}),    # ! Time
       starter.manifest.merge({id:true}),             # ! string
       starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
-      starter.manifest.merge({id:'ABCDE1234'}),      # ! 10-chars long
+      starter.manifest.merge({id:'12345'}),          # ! 6-chars long
     ]
   end
 
@@ -124,7 +124,7 @@ class WellFormedArgsTest < TestBase
 
   test '61A',
   'id does not raise when well-formed' do
-    id = 'A1B2F345kn'
+    id = 'A1B2kn'
     json = { id:id }.to_json
     assert_equal id, WellFormedArgs.new(json).id
   end
@@ -144,41 +144,11 @@ class WellFormedArgsTest < TestBase
     [
       nil,          # ! String
       [],           # ! string
-      '',           # ! 10 chars
-      '34',         # ! 10 chars
-      '345',        # ! 10 chars
-      '123456789',  # ! 10 chars
-      'ABCDEF123='  # ! Base58 chars
-    ]
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # partial_id
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'FC1',
-  'partial_id does not raise when well-formed' do
-    partial_id = '1a34Z6'
-    json = { partial_id:partial_id }.to_json
-    assert_equal partial_id, WellFormedArgs.new(json).partial_id
-  end
-
-  test 'FC2',
-  'partial_id raises when malformed' do
-    expected = 'partial_id:malformed'
-    malformed_partial_ids.each do |malformed|
-      json = { partial_id:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises { wfa.partial_id }
-      assert_equal expected, error.message, malformed
-    end
-  end
-
-  def malformed_partial_ids
-    [
-      false,    # ! String
-      '=',      # ! Base58 String
-      'abc'     # ! length 6..10
+      '',           # ! 6 chars
+      '12',         # ! 6 chars
+      '12345',      # ! 6 chars
+      '1234567',    # ! 6 chars
+      '12345='      # ! Base58 chars
     ]
   end
 

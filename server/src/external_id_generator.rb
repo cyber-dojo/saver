@@ -14,7 +14,7 @@ class ExternalIdGenerator
 
   def generate
     loop do
-      id = Base58.string(10)
+      id = Base58.string(6)
       if valid?(id)
         return id
       end

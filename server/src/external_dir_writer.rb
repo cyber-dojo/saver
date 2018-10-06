@@ -40,14 +40,6 @@ class ExternalDirWriter
     IO.read(pathed(filename))
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def completions
-    Dir.glob(name + '**').select{ |complete|
-      File.directory?(complete)
-    }
-  end
-
   private
 
   def shell

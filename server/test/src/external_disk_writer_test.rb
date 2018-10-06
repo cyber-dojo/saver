@@ -45,21 +45,4 @@ class ExternalDiskWriterTest < TestBase
     assert_equal content, dir.read(filename)
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '439',
-  'dir.completions() returns dir names with common 6-char prefix' do
-    ids = [
-      '93769k' + '36DF',
-      '937690' + 'D157',
-      '937690' + '837B',
-      '937690' + '07A2',
-    ]
-    ids.each{ |id| disk[id].make }
-    expected = ids[1..-1].map{ |id|
-      "/grouper/ids/#{id[0..1]}/#{id[2..-1]}"
-    }.sort
-    assert_equal expected, disk['937690'].completions.sort
-  end
-
 end

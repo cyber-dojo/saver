@@ -60,17 +60,6 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def id_completed(partial_id)
-    completions = dir[partial_id].completions
-    if completions.size == 1
-      completions[0].split('/')[-2..-1].join
-    else
-      ''
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
   def join(id, indexes)
     assert_id_exists(id)
     index = indexes.detect { |index|

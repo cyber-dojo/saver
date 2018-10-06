@@ -71,23 +71,12 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E60',
   'dispatch to id' do
     assert_dispatch('id',
       { id: well_formed_id },
       'hello from GrouperStub.id?'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E61',
-  'dispatch to id_completed' do
-    assert_dispatch('id_completed',
-      { partial_id: well_formed_partial_id},
-      'hello from GrouperStub.id_completed'
     )
   end
 
@@ -111,22 +100,6 @@ class RackDispatcherTest < TestBase
     )
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-=begin
-  test 'E68',
-  'dispatch to tag_fork' do
-    assert_dispatch('tag_fork',
-      { id:well_formed_id,
-        tag:well_formed_tag,
-        now:well_formed_now
-      },
-      'hello from GrouperStub.tag_fork'
-    )
-  end
-=end
-
   private
 
   def malformed_id
@@ -134,10 +107,6 @@ class RackDispatcherTest < TestBase
   end
 
   def well_formed_id
-    '1234567890'
-  end
-
-  def well_formed_partial_id
     '123456'
   end
 

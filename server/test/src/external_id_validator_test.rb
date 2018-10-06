@@ -11,11 +11,10 @@ class ExternalIdValidatorTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   test '921',
-  'false when initial 6-chars already used for existing id' do
-    id = '82875424E7'
+  'false when group with id already exists' do
+    id = '828754'
     stub_create(id)
-    partial_id = id[0..6]
-    refute_valid(partial_id + '0000')
+    refute_valid(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
@@ -23,15 +22,15 @@ class ExternalIdValidatorTest < TestBase
   test '922',
   'false if id contains ell (lowercase or uppercase)' do
     ell = 'L'
-    refute_valid('2466FD900' + ell.upcase)
-    refute_valid('2466FD900' + ell.downcase)
+    refute_valid('2466F' + ell.upcase)
+    refute_valid('2466F' + ell.downcase)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   test '923',
-  'true when initial 6-chars not yet used for existing id' do
-    id = 'D9A3DC94C6'
+  'true when group with id does not already exist' do
+    id = 'D9A3DC'
     assert_valid(id)
   end
 

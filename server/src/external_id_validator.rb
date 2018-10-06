@@ -6,11 +6,11 @@ class ExternalIdValidator
   end
 
   def valid?(id)
-    # eg '0215AFADCB'
+    # eg '0215AF'
     if id.upcase.include?('L')
       false
     else
-      dir[id[0..5]].completions == []
+      !dir[id].exists?
     end
   end
 

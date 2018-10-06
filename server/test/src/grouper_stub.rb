@@ -14,7 +14,7 @@ class GrouperStub
 
   define_stubs :sha
   define_stubs :create, :manifest
-  define_stubs :id?, :id_completed, :id_completions
+  define_stubs :id?
   define_stubs :join, :joined
 
 end

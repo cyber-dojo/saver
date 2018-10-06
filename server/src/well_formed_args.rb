@@ -33,7 +33,7 @@ class WellFormedArgs
         unless Base58.string?(value)
           malformed
         end
-        unless value.length == 10
+        unless value.length == 6
           malformed
         end
       when 'display_name', 'image_name', 'runner_choice', 'exercise'
@@ -93,31 +93,12 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def partial_id
-    # Doing completion with fewer than 6 characters would likely result
-    # in a lot of disk activity and no unique outcome. Also, if
-    # completion was attempted for a very short id (say 3
-    # characters) it would provide a way for anyone to find
-    # the full id of a cyber-dojo and potentially interfere
-    # with a live session.
-    @arg_name = __method__.to_s
-    unless Base58.string?(arg)
-      malformed
-    end
-    unless (6..10).include?(arg.length)
-      malformed
-    end
-    arg
-  end
-
-  # - - - - - - - - - - - - - - - -
-
   def id
     @arg_name = __method__.to_s
     unless Base58.string?(arg)
       malformed
     end
-    unless arg.length == 10
+    unless arg.length == 6
       malformed
     end
     arg
