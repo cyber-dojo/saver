@@ -6,18 +6,6 @@ class ExternalIdValidatorTest < TestBase
     'C72E3'
   end
 
-  def hex_setup
-    @real_id_generator = externals.id_generator
-    @stub_id_generator = IdGeneratorStub.new
-    externals.id_generator = @stub_id_generator
-  end
-
-  def hex_teardown
-    externals.id_generator = @real_id_generator
-  end
-
-  attr_reader :stub_id_generator
-
   # - - - - - - - - - - - - - - - - - - - - - - -
   # valid?(id)
   # - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,7 +46,7 @@ class ExternalIdValidatorTest < TestBase
   end
 
   def id_validator
-    @externals.id_validator
+    externals.id_validator
   end
 
 end

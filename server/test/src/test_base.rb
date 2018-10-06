@@ -41,8 +41,9 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - -
 
   def stub_create(stub_id)
-    stub_id_generator.stub(stub_id)
-    id = create(starter.manifest, starter.files)
+    manifest = starter.manifest
+    manifest['id'] = stub_id
+    id = create(manifest, starter.files)
     assert_equal stub_id, id
     id
   end

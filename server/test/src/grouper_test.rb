@@ -74,7 +74,7 @@ class GrouperTest < TestBase
 
   test '423', %w(
   create(manifest) can be passed the id
-  and raises when it is not uniquely-completeable at c-chars ) do
+  and raises when it is not uniquely-completeable at 6-chars ) do
     stub_id = 'A01DE86620'
     stub_id_generator.stub(stub_id)
     expected = starter.manifest
@@ -123,10 +123,9 @@ class GrouperTest < TestBase
 
   test '395',
   'id_completed returns empty-string when no unique completion' do
-    stub_id = '9504E6559'
-    stub_create(stub_id + '0')
-    stub_create(stub_id + '1')
-    partial_id = stub_id[0...6]
+    partial_id = '9504E6'
+    dir[partial_id + '0000'].make
+    dir[partial_id + '1111'].make
     assert_equal '', id_completed(partial_id)
   end
 
@@ -212,6 +211,10 @@ class GrouperTest < TestBase
 
   def singler
     externals.singler
+  end
+
+  def dir
+    externals.disk
   end
 
 end
