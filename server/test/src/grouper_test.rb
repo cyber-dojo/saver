@@ -18,26 +18,26 @@ class GrouperTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?(id)
+  # group_exists?(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
-  'exists? is false before creation, true after creation' do
+  'group_exists? is false before creation, true after creation' do
     id = '50C8C6'
-    refute exists?(id)
-    stub_create(id)
-    assert exists?(id)
+    refute group_exists?(id)
+    stub_group_create(id)
+    assert group_exists?(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # create(manifest) manifest(id)
+  # group_create(manifest) group_manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'create() generates id if one is not supplied' do
+  'group_create() generates id if one is not supplied' do
     manifest = starter.manifest
     refute manifest.key?('id')
-    id = create(manifest, starter.files)
+    id = group_create(manifest, starter.files)
     assert manifest.key?('id')
     assert_equal id, manifest['id']
   end
@@ -45,11 +45,11 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '42C',
-  'create() raises when provided id is invalid' do
+  'group_create() raises when provided id is invalid' do
     manifest = starter.manifest
     manifest['id'] = '12345L'
     error = assert_raises(ArgumentError) {
-      create(manifest, starter.files)
+      group_create(manifest, starter.files)
     }
     assert_equal 'id:invalid:12345L', error.message
   end
@@ -57,30 +57,30 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '422', %w(
-  create(manifest) can be passed the id
+  group_create(manifest) can be passed the id
   and its used when a group with that id does not already exist ) do
     explicit_id = 'CE2BD6'
     manifest = starter.manifest
     manifest['id'] = explicit_id
-    id = create(manifest, starter.files)
+    id = group_create(manifest, starter.files)
     assert_equal explicit_id, id
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '423', %w(
-  create(manifest) can be passed the id
+  group_create(manifest) can be passed the id
   and raises when a group with that id already exists ) do
     explicit_id = 'A01DE8'
     manifest = starter.manifest
     manifest['id'] = explicit_id
-    id = create(manifest, starter.files)
+    id = group_create(manifest, starter.files)
     assert_equal explicit_id, id
 
     manifest = starter.manifest
     manifest['id'] = id
     error = assert_raises(ArgumentError) {
-      create(manifest, starter.files)
+      group_create(manifest, starter.files)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -88,10 +88,10 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '420',
-  'manifest raises when id does not exist' do
+  'group_manifest() raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
-      manifest(id)
+      group_manifest(id)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -99,23 +99,23 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '42E',
-  'create() manifest() round-trip' do
+  'group_create() group_manifest() round-trip' do
     id = '0ADDE7'
     m = starter.manifest
     m['id'] = id
-    create(m, starter.files)
-    assert_equal m, manifest(id)
+    group_create(m, starter.files)
+    assert_equal m, group_manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # join/joined
+  # group_join() / group_joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D0',
-  'join raises when id does not exist' do
+  'group_join raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
-      join(id, indexes)
+      group_join(id, indexes)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -123,10 +123,10 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
-  'joined raises when id does not exist' do
+  'group_joined raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
-      joined(id)
+      group_joined(id)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -134,11 +134,11 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D3', %w(
-  join with valid id succeeds and
+  group_join with valid id succeeds and
   manifest of joined participant contains group id ) do
-    stub_id = stub_create('E9r17F')
+    stub_id = stub_group_create('E9r17F')
     shuffled = indexes
-    index,id = *join(stub_id, shuffled)
+    index,id = *group_join(stub_id, shuffled)
     assert_equal shuffled[0], index
     manifest = singler.manifest(id)
     assert_equal stub_id, manifest['group']
@@ -147,11 +147,11 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D4',
-  'join with a valid id succeeds 64 times then fails with nil' do
-    stub_id = stub_create('D47983')
+  'group_join with a valid id succeeds 64 times then fails with nil' do
+    stub_id = stub_group_create('D47983')
     joined = []
     64.times do
-      index,id = *join(stub_id, indexes)
+      index,id = *group_join(stub_id, indexes)
       assert index.is_a?(Integer), "index is a #{index.class.name}!"
       assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
       assert id.is_a?(String), "id is a #{id.class.name}!"
@@ -161,20 +161,20 @@ class GrouperTest < TestBase
     end
     refute_equal (0..63).to_a, joined
     assert_equal (0..63).to_a, joined.sort
-    n = join(stub_id, indexes)
+    n = group_join(stub_id, indexes)
     assert_nil n
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D5',
-  'joined information can be retrieved' do
-    stub_id = stub_create('58A563')
-    hash = joined(stub_id)
+  'group_joined information can be retrieved' do
+    stub_id = stub_group_create('58A563')
+    hash = group_joined(stub_id)
     assert_equal({}, hash, 'someone has already joined!')
     (1..4).to_a.each do |n|
-      index,sid = *join(stub_id, indexes)
-      hash = joined(stub_id)
+      index,sid = *group_join(stub_id, indexes)
+      hash = group_joined(stub_id)
       assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
       assert_equal n, hash.size, 'incorrect size!'
       assert_equal sid, hash[index], 'does not round-trip!'

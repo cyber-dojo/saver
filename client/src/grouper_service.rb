@@ -8,25 +8,25 @@ class GrouperService
 
   # - - - - - - - - - - - -
 
-  def exists?(id)
+  def group_exists?(id)
     get(__method__, id)
   end
 
-  def create(manifest, files)
+  def group_create(manifest, files)
     post(__method__, manifest, files)
   end
 
-  def manifest(id)
+  def group_manifest(id)
     get(__method__, id)
   end
 
   # - - - - - - - - - - - -
 
-  def join(id, indexes)
+  def group_join(id, indexes)
     post(__method__, id, indexes)
   end
 
-  def joined(id)
+  def group_joined(id)
     get(__method__, id)
   end
 

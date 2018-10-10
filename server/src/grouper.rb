@@ -12,13 +12,13 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def exists?(id)
+  def group_exists?(id)
     dir[id].exists?
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, files)
+  def group_create(manifest, files)
     if manifest['id'].nil?
       id = id_generator.generate
       manifest['id'] = id
@@ -42,14 +42,14 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def manifest(id)
+  def group_manifest(id)
     assert_id_exists(id)
     get(id)[0]
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def join(id, indexes)
+  def group_join(id, indexes)
     assert_id_exists(id)
     index = indexes.detect { |index|
       dir[id,index].make
@@ -68,7 +68,7 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def joined(id)
+  def group_joined(id)
     assert_id_exists(id)
     result = {}
     64.times { |index|

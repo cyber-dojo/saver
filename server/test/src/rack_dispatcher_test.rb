@@ -33,13 +33,13 @@ class RackDispatcherTest < TestBase
 
   test 'E5B',
   'dispatch raises when any argument is malformed' do
-    assert_dispatch_raises('manifest',
+    assert_dispatch_raises('group_manifest',
       { id: malformed_id },
       500,
       'ArgumentError',
       'id:malformed'
     )
-    assert_dispatch_raises('join',
+    assert_dispatch_raises('group_join',
       {  id: malformed_id },
       500,
       'ArgumentError',
@@ -51,52 +51,52 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E60',
-  'dispatch to exists' do
-    assert_dispatch('exists',
+  'dispatch to group_exists' do
+    assert_dispatch('group_exists',
       { id: well_formed_id },
-      'hello from GrouperStub.exists?'
+      'hello from GrouperStub.group_exists?'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E5C',
-  'dispatch to create' do
-    assert_dispatch('create',
+  'dispatch to group_create' do
+    assert_dispatch('group_create',
       { manifest: starter.manifest,
         files: starter.files
       },
-      'hello from GrouperStub.create'
+      'hello from GrouperStub.group_create'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E5E',
-  'dispatch to manifest' do
-    assert_dispatch('manifest',
+  'dispatch to group_manifest' do
+    assert_dispatch('group_manifest',
       { id: well_formed_id },
-      'hello from GrouperStub.manifest'
+      'hello from GrouperStub.group_manifest'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E63',
-  'dispatch to join' do
-    assert_dispatch('join',
+  'dispatch to group_join' do
+    assert_dispatch('group_join',
       { id: well_formed_id, indexes: well_formed_indexes },
-      'hello from GrouperStub.join'
+      'hello from GrouperStub.group_join'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E64',
-  'dispatch to joined' do
-    assert_dispatch('joined',
+  'dispatch to group_joined' do
+    assert_dispatch('group_joined',
       { id: well_formed_id},
-      'hello from GrouperStub.joined'
+      'hello from GrouperStub.group_joined'
     )
   end
 
@@ -117,7 +117,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_dispatch(name, args, stubbed)
-    qname = (name == 'exists') ? 'exists?' : name
+    qname = (name == 'group_exists') ? 'group_exists?' : name
     assert_rack_call(name, args, { qname => stubbed })
   end
 

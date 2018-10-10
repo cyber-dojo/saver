@@ -13,7 +13,7 @@ class GrouperStub
   end
 
   define_stubs :sha
-  define_stubs :exists?, :create, :manifest
-  define_stubs :join, :joined
+  define_stubs :group_exists?, :group_create, :group_manifest
+  define_stubs :group_join, :group_joined
 
 end

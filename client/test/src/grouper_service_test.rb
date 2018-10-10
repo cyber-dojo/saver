@@ -11,10 +11,10 @@ class GrouperServiceTest < TestBase
 
   test '966',
   %w( malformed id on any method raises ) do
-    error = assert_raises { grouper.manifest(nil) }
+    error = assert_raises { grouper.group_manifest(nil) }
     assert_equal 'ServiceError', error.class.name
     assert_equal 'GrouperService', error.service_name
-    assert_equal 'manifest', error.method_name
+    assert_equal 'group_manifest', error.method_name
     json = JSON.parse(error.message)
     assert_equal 'ArgumentError', json['class']
     assert_equal 'id:malformed', json['message']
@@ -35,48 +35,48 @@ class GrouperServiceTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '6E7',
-  %w( retrieved manifest contains id ) do
+  %w( retrieved group_manifest contains id ) do
     manifest = starter.manifest
-    id = grouper.create(manifest, starter.files)
+    id = grouper.group_create(manifest, starter.files)
     manifest['id'] = id
-    assert_equal manifest, grouper.manifest(id)
+    assert_equal manifest, grouper.group_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '591',
-  %w( create(manifest) can pass the id inside the manifest ) do
+  %w( group_create(manifest) can pass the id inside the manifest ) do
     manifest = starter.manifest
-    explicit_id = '234764'
+    explicit_id = '234765'
     manifest['id'] = explicit_id
-    id = grouper.create(manifest, starter.files)
+    id = grouper.group_create(manifest, starter.files)
     assert_equal explicit_id, id
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '5F9', %w(
-  after create() then
-  exists?() is true ) do
-    id = grouper.create(starter.manifest, starter.files)
-    assert grouper.exists?(id)
+  after group_create() then
+  group_exists?() is true ) do
+    id = grouper.group_create(starter.manifest, starter.files)
+    assert grouper.group_exists?(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '64E',
-  'join succeeds with valid id' do
-    id = grouper.create(starter.manifest, starter.files)
-    joined = grouper.joined(id)
+  'group_join succeeds with valid id' do
+    id = grouper.group_create(starter.manifest, starter.files)
+    joined = grouper.group_joined(id)
     assert_equal({}, joined, 'someone has already joined!')
     indexes = (0..63).to_a.shuffle
     (1..4).to_a.each do |n|
-      index,sid = *grouper.join(id, indexes)
+      index,sid = *grouper.group_join(id, indexes)
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
       assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
       assert_equal indexes[n-1], index, "#{n}: index is not #{indexes[n-1]}!"
       assert sid.is_a?(String), "#{n}: sid is a #{id.class.name}!"
-      joined = grouper.joined(id)
+      joined = grouper.group_joined(id)
       assert joined.is_a?(Hash), "#{n}: joined is a #{hash.class.name}!"
       assert_equal n, joined.size, "#{n}: incorrect size!"
       diagnostic = "#{n}: #{sid}, #{index}, #{joined}"

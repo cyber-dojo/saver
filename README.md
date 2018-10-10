@@ -17,11 +17,11 @@ API:
     * If the method raises an exception, the key equals "exception".
 
 - [GET sha](#get-sha)
-- [GET id?](#get-id)
-- [POST create](#post-create)
-- [GET manifest](#get-manifest)
-- [POST join](#post-join)
-- [GET joined](#get-joined)
+- [GET group_exists?](#get-group_exists)
+- [POST group_create](#post-group_create)
+- [GET group_manifest](#get-group_manifest)
+- [POST group_join](#post-group_join)
+- [GET group_joined](#get-group_joined)
 
 - - - -
 
@@ -38,7 +38,7 @@ Returns the git commit sha used to create the docker image.
 
 - - - -
 
-## POST create
+## POST group_create
 Creates a practice-session from the given manifest
 and given files.
 - parameters, eg
@@ -71,7 +71,7 @@ and given files.
 
 - - - -
 
-## GET manifest
+## GET group_manifest
 Returns the manifest used to create the practice-session with the given group id.
 - parameter, eg
 ```
@@ -95,7 +95,7 @@ Returns the manifest used to create the practice-session with the given group id
 
 - - - -
 
-## GET id?
+## GET group_exists?
 Asks whether the practice-session with the given id exists.
 - parameters, eg
 ```
@@ -103,13 +103,13 @@ Asks whether the practice-session with the given id exists.
 ```
 - returns true if it does, false if it doesn't, eg
 ```
-  { "id?": true   }
-  { "id?": false  }
+  { "exists?": true   }
+  { "exists?": false  }
 ```
 
 - - - -
 
-## POST join
+## POST group_join
 Join the practice-session with the given group id.
 The indexes parameter, when sorted, must be (0..63).to_a
 and determines the join attempt order.
@@ -126,7 +126,7 @@ Returns the individual practice-session avatar-index and id, eg
 
 - - - -
 
-## GET joined
+## GET group_joined
 Returns the individual practice-session avatar-index and id of everyone
 who has joined the practice-session with the given group id.
 - parameters, eg

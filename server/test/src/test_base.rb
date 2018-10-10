@@ -10,36 +10,36 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - -
 
-  def create(manifest, files)
-    grouper.create(manifest, files)
+  def group_create(manifest, files)
+    grouper.group_create(manifest, files)
   end
 
-  def manifest(id)
-    grouper.manifest(id)
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def exists?(id)
-    grouper.exists?(id)
+  def group_manifest(id)
+    grouper.group_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - -
 
-  def join(id, indexes)
-    grouper.join(id, indexes)
-  end
-
-  def joined(id)
-    grouper.joined(id)
+  def group_exists?(id)
+    grouper.group_exists?(id)
   end
 
   # - - - - - - - - - - - - - - - - -
 
-  def stub_create(stub_id)
+  def group_join(id, indexes)
+    grouper.group_join(id, indexes)
+  end
+
+  def group_joined(id)
+    grouper.group_joined(id)
+  end
+
+  # - - - - - - - - - - - - - - - - -
+
+  def stub_group_create(stub_id)
     manifest = starter.manifest
     manifest['id'] = stub_id
-    id = create(manifest, starter.files)
+    id = group_create(manifest, starter.files)
     assert_equal stub_id, id
     id
   end
