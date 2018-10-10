@@ -2,15 +2,15 @@ require_relative 'http_json_service'
 
 class ExternalSingler
 
-  def exists?(id)
+  def kata_exists?(id)
     get(__method__, id)
   end
 
-  def create(manifest, files)
+  def kata_create(manifest, files)
     post(__method__, manifest, files)
   end
 
-  def manifest(id)
+  def kata_manifest(id)
     get(__method__, id)
   end
 

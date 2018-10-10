@@ -65,7 +65,7 @@ and given files.
 ```
 - returns the id of the created group practice-session, eg
 ```
-  { "create": "55D3B9"
+  { "group_create": "55D3B9"
   }
 ```
 
@@ -79,7 +79,7 @@ Returns the manifest used to create the practice-session with the given group id
 ```
 - returns, eg
 ```
-    { "manifest": {
+    { "group_manifest": {
                         "id": "55D3B9",
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
@@ -103,8 +103,8 @@ Asks whether the practice-session with the given id exists.
 ```
 - returns true if it does, false if it doesn't, eg
 ```
-  { "exists?": true   }
-  { "exists?": false  }
+  { "group_exists?": true   }
+  { "group_exists?": false  }
 ```
 
 - - - -
@@ -121,7 +121,7 @@ and determines the join attempt order.
 ```
 Returns the individual practice-session avatar-index and id, eg
 ```
-  { "join": [ 6, "D6A57F" ] }
+  { "group_join": [ 6, "D6A57F" ] }
 ```
 
 - - - -
@@ -135,7 +135,7 @@ who has joined the practice-session with the given group id.
 ```
 - returns, eg
 ```
-  { "joined": {
+  { "group_joined": {
        "6": "D6A57F",
       "34": "C4AC8B",
       "11": "454F91"

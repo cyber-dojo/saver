@@ -140,7 +140,7 @@ class GrouperTest < TestBase
     shuffled = indexes
     index,id = *group_join(stub_id, shuffled)
     assert_equal shuffled[0], index
-    manifest = singler.manifest(id)
+    manifest = singler.kata_manifest(id)
     assert_equal stub_id, manifest['group']
   end
 
@@ -155,7 +155,7 @@ class GrouperTest < TestBase
       assert index.is_a?(Integer), "index is a #{index.class.name}!"
       assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
       assert id.is_a?(String), "id is a #{id.class.name}!"
-      assert singler.exists?(id), "!singler.exists?(#{id})"
+      assert singler.kata_exists?(id), "!singler.kata_exists?(#{id})"
       refute joined.include?(index), "joined.include?(#{index})!"
       joined << index
     end
@@ -173,7 +173,7 @@ class GrouperTest < TestBase
     hash = group_joined(stub_id)
     assert_equal({}, hash, 'someone has already joined!')
     (1..4).to_a.each do |n|
-      index,sid = *group_join(stub_id, indexes)
+      index,sid = group_join(stub_id, indexes)
       hash = group_joined(stub_id)
       assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
       assert_equal n, hash.size, 'incorrect size!'

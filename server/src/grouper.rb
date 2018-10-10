@@ -60,7 +60,7 @@ class Grouper
       manifest,files = get(id)
       manifest.delete('id')
       manifest['group'] = id
-      sid = singler.create(manifest, files)
+      sid = singler.kata_create(manifest, files)
       dir[id,index].write('id.json', json_pretty({ 'id' => sid }))
       [index, sid]
     end
