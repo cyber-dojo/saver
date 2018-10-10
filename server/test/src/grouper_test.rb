@@ -138,7 +138,7 @@ class GrouperTest < TestBase
   manifest of joined participant contains group id ) do
     stub_id = stub_group_create('E9r17F')
     shuffled = indexes
-    index,id = *group_join(stub_id, shuffled)
+    index,id = group_join(stub_id, shuffled)
     assert_equal shuffled[0], index
     manifest = singler.kata_manifest(id)
     assert_equal stub_id, manifest['group']
