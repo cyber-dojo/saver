@@ -73,14 +73,11 @@ class Grouper
   private
 
   def group_id(manifest)
-    if manifest['id'].nil?
-      id = id_generator.generate
-      manifest['id'] = id
-    else
-      id = manifest['id']
-      unless id_validator.valid?(id)
-        invalid('id', id)
-      end
+    id = manifest['id']
+    if id.nil?
+      manifest['id'] = id = generate_id
+    elsif group_exists?(id)
+      invalid('id', id)
     end
     id
   end
@@ -114,6 +111,17 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
+  def generate_id
+    loop do
+      id = Base58.string(6)
+      if !group_exists?(id)
+        return id
+      end
+    end
+  end
+
+  # - - - - - - - - - - - - - -
+
   def invalid(name, value)
     fail ArgumentError.new("#{name}:invalid:#{value}")
   end
@@ -122,14 +130,6 @@ class Grouper
 
   def dir
     @externals.disk
-  end
-
-  def id_generator
-    @externals.id_generator
-  end
-
-  def id_validator
-    @externals.id_validator
   end
 
   def singler

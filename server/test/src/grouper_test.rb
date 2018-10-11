@@ -44,14 +44,23 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42C',
-  'group_create() raises when provided id is invalid' do
+  test '42C', %w(
+  kata_create() does NOT raise when the id is provided
+  and contains the letter L (ell, lowercase or uppercase)
+  (this is for backward compatibility; katas in storer
+  have ids with ells and I want porter to have to only map
+  ids that are not unique in their first 6 characters)
+  ) do
     manifest = starter.manifest
-    manifest['id'] = '12345L'
-    error = assert_raises(ArgumentError) {
-      group_create(manifest, starter.files)
-    }
-    assert_equal 'id:invalid:12345L', error.message
+    ell = 'L'
+
+    id = '12345' + ell.upcase
+    manifest['id'] = id
+    assert_equal id, group_create(manifest, starter.files)
+
+    id = '12345' + ell.downcase
+    manifest['id'] = id
+    assert_equal id, group_create(manifest, starter.files)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
