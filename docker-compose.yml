@@ -53,7 +53,7 @@ services:
     read_only: true
     tmpfs: /tmp
     volumes:
-      - /tmp/singler/ids:/singler/ids:rw
+      - /tmp/katas:/katas:rw
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

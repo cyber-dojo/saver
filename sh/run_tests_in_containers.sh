@@ -20,7 +20,7 @@ run_server_tests()
   docker exec \
     --user root \
     "${SINGLER_CID}" \
-      sh -c 'chown -R singler:singler /singler/ids'
+      sh -c 'chown -R singler:singler /katas'
 
   docker exec \
     --user root \
