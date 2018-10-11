@@ -43,14 +43,14 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_manifest(id)
-    assert_id_exists(id)
+    assert_group_exists(id)
     get(id)[0]
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def group_join(id, indexes)
-    assert_id_exists(id)
+    assert_group_exists(id)
     index = indexes.detect { |index|
       dir[id,index].make
     }
@@ -69,7 +69,7 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_joined(id)
-    assert_id_exists(id)
+    assert_group_exists(id)
     result = {}
     64.times { |index|
       if dir[id,index].exists?
@@ -93,7 +93,7 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
-  def assert_id_exists(id)
+  def assert_group_exists(id)
     unless dir[id].exists?
       invalid('id', id)
     end
