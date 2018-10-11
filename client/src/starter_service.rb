@@ -7,16 +7,9 @@ class StarterService
     manifest = json['manifest']
     manifest['created'] = creation_time
     manifest['exercise'] = exercise_name
-    manifest.delete('visible_files')
+    files = manifest.delete('visible_files')
+    manifest['files'] = files
     manifest
-  end
-
-  def files
-    json = language_manifest(display_name, exercise_name)
-    manifest = json['manifest']
-    files = manifest['visible_files']
-    files['instructions'] = json['exercise']
-    files
   end
 
   private

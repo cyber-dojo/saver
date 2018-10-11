@@ -12,20 +12,18 @@ class Demo
   private
 
   def inner_call
-    manifest = starter.manifest
-    starter['files'] = starter.files
     html = [
-      pre('create') {
-        @id = grouper.create(manifest)
+      pre('group_create') {
+        @id = grouper.group_create(starter.manifest)
       },
-      pre('manifest') {
-        grouper.manifest(@id)
+      pre('group_manifest') {
+        grouper.group_manifest(@id)
       },
-      pre('join') {
-        grouper.join(@id, (0..63).to_a.shuffle)
+      pre('group_join') {
+        grouper.group_join(@id, (0..63).to_a.shuffle)
       },
-      pre('joined') {
-        grouper.joined(@id)
+      pre('group_joined') {
+        grouper.group_joined(@id)
       }
     ].join
     [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
