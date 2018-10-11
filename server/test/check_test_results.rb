@@ -99,7 +99,7 @@ table =
     [ 'coverage(src)[%]',       src_coverage,       '==', 100 ],
     [ 'coverage(test)[%]',      test_coverage,      '==', 100 ],
     [ 'lines(test)/lines(src)', f2(line_ratio),     '>=', 1.3 ],
-    [ 'hits(src)/hits(test)',   f2(hits_ratio),     '>=',  13 ],
+    [ 'hits(src)/hits(test)',   f2(hits_ratio),     '>=',  10 ],
   ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -

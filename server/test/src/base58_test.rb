@@ -1,35 +1,52 @@
 require_relative 'test_base'
 require_relative '../../src/base58'
+require 'open3'
 
 class Base58Test < TestBase
 
   def self.hex_prefix
-    'F3A59'
+    'F3A'
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   test '064', %w(
-  alphabet has 58 characters none of which are missed ) do
+  alphabet has 58 characters all of which are used ) do
     counts = {}
-    Base58.string(5000).chars.each do |ch|
+    base.string(5000).chars.each do |ch|
       counts[ch] = true
     end
     assert_equal 58, counts.keys.size
+    assert_equal base.alphabet, counts.keys.sort.join
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
+  test '065', %w(
+  every letter of the alphabet can be used as part of a dir name
+  ) do
+    base.alphabet.each_char do |letter|
+      name = "/tmp/base/#{letter}"
+      stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
+      refute_equal '', stdout
+      assert_equal '', stderr
+      assert_equal 0, r.exitstatus
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   test '066', %w(
+  string generation is sufficiently random that there is
   no 6-digit string duplicate in 25,000 repeats ) do
     ids = {}
     repeats = 25000
     repeats.times do
-      s = Base58.string(6)
+      s = base.string(6)
       ids[s] ||= 0
       ids[s] += 1
     end
-    assert_equal 0, repeats - ids.keys.size
+    assert repeats, ids.keys.size
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -59,7 +76,11 @@ class Base58Test < TestBase
   private
 
   def string?(s)
-    Base58.string?(s)
+    base.string?(s)
+  end
+
+  def base
+    Base58
   end
 
 end

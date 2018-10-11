@@ -6,11 +6,6 @@ require 'securerandom'
 # o) excludes the letters IO
 #    (India,Oscar) both lowercase and uppercase
 #
-# Note that ExternalIdValidator also excludes L
-# (both lowercase and uppercase). Base58 must
-# keep L because previously created katas may
-# have IDs containing L.
-#
 # Within a single server it is easy to guarantee
 # there are no ID clashes. However, the larger
 # the alphabet the less you have to worry about
@@ -30,6 +25,10 @@ class Base58
       s.chars.all?{ |char| letter?(char) }
   end
 
+  def self.alphabet
+    ALPHABET
+  end
+
   private
 
   def self.letter
@@ -42,10 +41,6 @@ class Base58
 
   def self.letter?(char)
     alphabet.include?(char)
-  end
-
-  def self.alphabet
-    ALPHABET
   end
 
   ALPHABET = %w{
