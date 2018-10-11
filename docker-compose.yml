@@ -37,7 +37,7 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - /tmp/grouper/ids:/grouper/ids:rw
+      - /tmp/groups:/groups:rw
     depends_on:
       - starter # for tests
       - singler
