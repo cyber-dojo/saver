@@ -131,17 +131,6 @@ class GrouperTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D2',
-  'group_joined raises when id does not exist' do
-    id = 'B4AB37'
-    error = assert_raises(ArgumentError) {
-      group_joined(id)
-    }
-    assert_equal "id:invalid:#{id}", error.message
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
   test '1D3', %w(
   group_join with valid id succeeds and
   manifest of joined participant contains group id ) do
@@ -172,6 +161,13 @@ class GrouperTest < TestBase
     assert_equal (0..63).to_a, joined.sort
     n = group_join(stub_id, indexes)
     assert_nil n
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '1D2',
+  'group_joined returns nil when the id does not exist' do
+    assert_nil group_joined('B4AB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

@@ -60,15 +60,19 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_joined(id)
-    assert_group_exists(id)
-    result = {}
-    64.times { |index|
-      dir = group_dir(id, index)
-      if dir.exists?
-        json = json_parse(dir.read('id.json'))
-        result[index] = json['id']
-      end
-    }
+    if !group_exists?(id)
+      result = nil
+    else
+      result = {}
+      # TODO: globbing is going to be faster here I think
+      64.times { |index|
+        dir = group_dir(id, index)
+        if dir.exists?
+          json = json_parse(dir.read('id.json'))
+          result[index] = json['id']
+        end
+      }
+    end
     result
   end
 
