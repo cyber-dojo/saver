@@ -3,7 +3,7 @@ require_relative 'test_base'
 class GrouperTest < TestBase
 
   def self.hex_prefix
-    '97431'
+    '974'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,8 +36,9 @@ class GrouperTest < TestBase
   test '421',
   'group_create() generates id if one is not supplied' do
     manifest = starter.manifest
+    manifest['files'] = starter.files
     refute manifest.key?('id')
-    id = group_create(manifest, starter.files)
+    id = group_create(manifest)
     assert manifest.key?('id')
     assert_equal id, manifest['id']
   end
@@ -52,15 +53,16 @@ class GrouperTest < TestBase
   ids that are not unique in their first 6 characters)
   ) do
     manifest = starter.manifest
+    manifest['files'] = starter.files
     ell = 'L'
 
     id = '12345' + ell.upcase
     manifest['id'] = id
-    assert_equal id, group_create(manifest, starter.files)
+    assert_equal id, group_create(manifest)
 
     id = '12345' + ell.downcase
     manifest['id'] = id
-    assert_equal id, group_create(manifest, starter.files)
+    assert_equal id, group_create(manifest)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -70,8 +72,9 @@ class GrouperTest < TestBase
   and its used when a group with that id does not already exist ) do
     explicit_id = 'CE2BD6'
     manifest = starter.manifest
+    manifest['files'] = starter.files
     manifest['id'] = explicit_id
-    id = group_create(manifest, starter.files)
+    id = group_create(manifest)
     assert_equal explicit_id, id
   end
 
@@ -82,14 +85,16 @@ class GrouperTest < TestBase
   and raises when a group with that id already exists ) do
     explicit_id = 'A01DE8'
     manifest = starter.manifest
+    manifest['files'] = starter.files
     manifest['id'] = explicit_id
-    id = group_create(manifest, starter.files)
+    id = group_create(manifest)
     assert_equal explicit_id, id
 
     manifest = starter.manifest
+    manifest['files'] = starter.files
     manifest['id'] = id
     error = assert_raises(ArgumentError) {
-      group_create(manifest, starter.files)
+      group_create(manifest)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -111,8 +116,9 @@ class GrouperTest < TestBase
   'group_create() group_manifest() round-trip' do
     id = '0ADDE7'
     m = starter.manifest
+    m['files'] = starter.files
     m['id'] = id
-    group_create(m, starter.files)
+    group_create(m)
     assert_equal m, group_manifest(id)
   end
 

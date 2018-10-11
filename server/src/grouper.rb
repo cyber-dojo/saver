@@ -18,7 +18,7 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_create(manifest, files)
+  def group_create(manifest)
     id = group_id(manifest)
     dir = group_dir(id)
     unless dir.make
@@ -26,8 +26,7 @@ class Grouper
       invalid('id', id)
       # :nocov:
     end
-    json = { manifest:manifest, files:files }
-    dir.write(manifest_filename, json_pretty(json))
+    dir.write(manifest_filename, json_pretty(manifest))
     id
   end
 
@@ -35,7 +34,7 @@ class Grouper
 
   def group_manifest(id)
     assert_group_exists(id)
-    get(id)[0]
+    json_parse(group_dir(id).read(manifest_filename))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -48,10 +47,10 @@ class Grouper
     if index.nil?
       nil
     else
-      manifest,files = get(id)
+      manifest = group_manifest(id)
       manifest.delete('id')
       manifest['group'] = id
-      sid = singler.kata_create(manifest, files)
+      sid = singler.kata_create(manifest)
       group_dir(id,index).write('id.json', json_pretty({ 'id' => sid }))
       [index, sid]
     end
@@ -95,11 +94,6 @@ class Grouper
       args << index.to_s
     end
     disk[File.join(*args)]
-  end
-
-  def get(id)
-    json = json_parse(group_dir(id).read(manifest_filename))
-    [json['manifest'],json['files']]
   end
 
   def manifest_filename

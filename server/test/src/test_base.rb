@@ -10,8 +10,8 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - -
 
-  def group_create(manifest, files)
-    grouper.group_create(manifest, files)
+  def group_create(manifest)
+    grouper.group_create(manifest)
   end
 
   def group_manifest(id)
@@ -39,7 +39,8 @@ class TestBase < HexMiniTest
   def stub_group_create(stub_id)
     manifest = starter.manifest
     manifest['id'] = stub_id
-    id = group_create(manifest, starter.files)
+    manifest['files'] = starter.files
+    id = group_create(manifest)
     assert_equal stub_id, id
     id
   end

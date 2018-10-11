@@ -38,7 +38,7 @@ class RackDispatcher
     args = case name
       when /^sha$/            then []
       when /^group_exists$/   then [id]
-      when /^group_create$/   then [manifest,files]
+      when /^group_create$/   then [manifest]
       when /^group_manifest$/ then [id]
       when /^group_join$/     then [id,indexes]
       when /^group_joined$/   then [id]
@@ -80,7 +80,7 @@ class RackDispatcher
     end
   end
 
-  well_formed_args :manifest, :files, :id, :indexes
+  well_formed_args :manifest, :id, :indexes
 
   # - - - - - - - - - - - - - - - -
 

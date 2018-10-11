@@ -6,8 +6,8 @@ class ExternalSingler
     get(__method__, id)
   end
 
-  def kata_create(manifest, files)
-    post(__method__, manifest, files)
+  def kata_create(manifest)
+    post(__method__, manifest)
   end
 
   def kata_manifest(id)

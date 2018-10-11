@@ -52,14 +52,14 @@ and given files.
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
-      },
-      "files": {
+                     "files": {
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",
          "instructions" : "Write a program that...",
              "makefile" : "CFLAGS += -I. -Wall...",
         "cyber-dojo.sh" : "make"
+        }
       }
     }
 ```
@@ -88,7 +88,15 @@ Returns the manifest used to create the practice-session with the given group id
                   "exercise": "Fizz_Buzz",
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
-                  "tab_size": 4
+                  "tab_size": 4,
+                     "files": {
+               "hiker.h": "#ifndef HIKER_INCLUDED...",
+               "hiker.c": "#include \"hiker.h\"...",
+        "hiker.tests.c" : "#include <assert.h>\n...",
+         "instructions" : "Write a program that...",
+             "makefile" : "CFLAGS += -I. -Wall...",
+        "cyber-dojo.sh" : "make"
+        }
       }
     }
 ```

@@ -6,7 +6,7 @@ require_relative '../../src/rack_dispatcher'
 class RackDispatcherTest < TestBase
 
   def self.hex_prefix
-    'FF066'
+    'FF0'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -62,10 +62,10 @@ class RackDispatcherTest < TestBase
 
   test 'E5C',
   'dispatch to group_create' do
+    manifest = starter.manifest
+    manifest['files'] = starter.files
     assert_dispatch('group_create',
-      { manifest: starter.manifest,
-        files: starter.files
-      },
+      { manifest: manifest },
       'hello from GrouperStub.group_create'
     )
   end

@@ -12,9 +12,11 @@ class Demo
   private
 
   def inner_call
+    manifest = starter.manifest
+    starter['files'] = starter.files
     html = [
       pre('create') {
-        @id = grouper.create(starter.manifest, starter.files)
+        @id = grouper.create(manifest)
       },
       pre('manifest') {
         grouper.manifest(@id)
