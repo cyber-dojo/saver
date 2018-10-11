@@ -7,26 +7,27 @@ class Grouper
   end
 
   def sha
-    IO.read('/app/sha.txt').strip
+    disk['/app'].read('sha.txt').strip
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
-    dir[id].exists?
+    group_dir(id).exists?
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def group_create(manifest, files)
     id = group_id(manifest)
-    unless dir[id].make
+    dir = group_dir(id)
+    unless dir.make
       # :nocov:
       invalid('id', id)
       # :nocov:
     end
     json = { manifest:manifest, files:files }
-    dir[id].write(manifest_filename, json_pretty(json))
+    dir.write(manifest_filename, json_pretty(json))
     id
   end
 
@@ -42,7 +43,7 @@ class Grouper
   def group_join(id, indexes)
     assert_group_exists(id)
     index = indexes.detect { |index|
-      dir[id,index].make
+      group_dir(id,index).make
     }
     if index.nil?
       nil
@@ -51,7 +52,7 @@ class Grouper
       manifest.delete('id')
       manifest['group'] = id
       sid = singler.kata_create(manifest, files)
-      dir[id,index].write('id.json', json_pretty({ 'id' => sid }))
+      group_dir(id,index).write('id.json', json_pretty({ 'id' => sid }))
       [index, sid]
     end
   end
@@ -62,8 +63,9 @@ class Grouper
     assert_group_exists(id)
     result = {}
     64.times { |index|
-      if dir[id,index].exists?
-        json = json_parse(dir[id,index].read('id.json'))
+      dir = group_dir(id, index)
+      if dir.exists?
+        json = json_parse(dir.read('id.json'))
         result[index] = json['id']
       end
     }
@@ -82,8 +84,17 @@ class Grouper
     id
   end
 
+  def group_dir(id, index=nil)
+    # Using 2/2/2 split. See https://github.com/cyber-dojo/porter
+    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    unless index.nil?
+      args << index.to_s
+    end
+    disk[File.join(*args)]
+  end
+
   def get(id)
-    json = json_parse(dir[id].read(manifest_filename))
+    json = json_parse(group_dir(id).read(manifest_filename))
     [json['manifest'],json['files']]
   end
 
@@ -94,7 +105,7 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def assert_group_exists(id)
-    unless dir[id].exists?
+    unless group_exists?(id)
       invalid('id', id)
     end
   end
@@ -128,7 +139,7 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
-  def dir
+  def disk
     @externals.disk
   end
 

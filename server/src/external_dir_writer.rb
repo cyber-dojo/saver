@@ -2,17 +2,15 @@ require 'open3'
 
 class ExternalDirWriter
 
-  def initialize(id, index)
-    # Using 2/2/2 split
-    # See https://github.com/cyber-dojo/porter
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
-    unless index.nil?
-      args << index.to_s
-    end
-    @name = File.join(*args)
+  def initialize(name)
+    @name = name
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def exists?
+    File.directory?(name)
+  end
 
   def make
     # Returns true iff the dir does not already exist
@@ -25,23 +23,27 @@ class ExternalDirWriter
     stdout != '' && stderr == '' && r.exitstatus == 0
   end
 
-  def exists?
-    File.directory?(name)
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def append(filename, content)
+    open(filename, 'a') { |fd| fd.write(content) }
+  end
+
   def write(filename, content)
-    IO.write(pathed(filename), content)
+    open(filename, 'w') { |fd| fd.write(content) }
   end
 
   def read(filename)
-    IO.read(pathed(filename))
+    open(filename, 'r') { |fd| fd.read }
   end
 
   private
 
   attr_reader :name
+
+  def open(filename, mode)
+    File.open(pathed(filename), mode) { |fd| yield fd }
+  end
 
   def pathed(filename)
     File.join(name, filename)

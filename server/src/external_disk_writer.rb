@@ -2,8 +2,8 @@ require_relative 'external_dir_writer'
 
 class ExternalDiskWriter
 
-  def [](id, index=nil)
-    ExternalDirWriter.new(id, index)
+  def [](name)
+    ExternalDirWriter.new(name)
   end
 
 end
