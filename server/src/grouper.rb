@@ -19,22 +19,12 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_create(manifest, files)
-    if manifest['id'].nil?
-      id = id_generator.generate
-      manifest['id'] = id
-    else
-      id = manifest['id']
-      unless id_validator.valid?(id)
-        invalid('id', id)
-      end
-    end
-
+    id = group_id(manifest)
     unless dir[id].make
       # :nocov:
       invalid('id', id)
       # :nocov:
     end
-
     json = { manifest:manifest, files:files }
     dir[id].write(manifest_filename, json_pretty(json))
     id
@@ -81,6 +71,19 @@ class Grouper
   end
 
   private
+
+  def group_id(manifest)
+    if manifest['id'].nil?
+      id = id_generator.generate
+      manifest['id'] = id
+    else
+      id = manifest['id']
+      unless id_validator.valid?(id)
+        invalid('id', id)
+      end
+    end
+    id
+  end
 
   def get(id)
     json = json_parse(dir[id].read(manifest_filename))
