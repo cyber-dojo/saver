@@ -36,7 +36,6 @@ class GrouperTest < TestBase
   test '421',
   'group_create() generates id if one is not supplied' do
     manifest = starter.manifest
-    manifest['files'] = starter.files
     refute manifest.key?('id')
     id = group_create(manifest)
     assert manifest.key?('id')
@@ -53,7 +52,6 @@ class GrouperTest < TestBase
   ids that are not unique in their first 6 characters)
   ) do
     manifest = starter.manifest
-    manifest['files'] = starter.files
     ell = 'L'
 
     id = '12345' + ell.upcase
@@ -72,7 +70,6 @@ class GrouperTest < TestBase
   and its used when a group with that id does not already exist ) do
     explicit_id = 'CE2BD6'
     manifest = starter.manifest
-    manifest['files'] = starter.files
     manifest['id'] = explicit_id
     id = group_create(manifest)
     assert_equal explicit_id, id
@@ -85,13 +82,11 @@ class GrouperTest < TestBase
   and raises when a group with that id already exists ) do
     explicit_id = 'A01DE8'
     manifest = starter.manifest
-    manifest['files'] = starter.files
     manifest['id'] = explicit_id
     id = group_create(manifest)
     assert_equal explicit_id, id
 
     manifest = starter.manifest
-    manifest['files'] = starter.files
     manifest['id'] = id
     error = assert_raises(ArgumentError) {
       group_create(manifest)
@@ -116,7 +111,6 @@ class GrouperTest < TestBase
   'group_create() group_manifest() round-trip' do
     id = '0ADDE7'
     m = starter.manifest
-    m['files'] = starter.files
     m['id'] = id
     group_create(m)
     assert_equal m, group_manifest(id)

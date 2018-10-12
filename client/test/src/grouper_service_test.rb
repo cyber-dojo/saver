@@ -37,7 +37,6 @@ class GrouperServiceTest < TestBase
   test '6E7',
   %w( retrieved group_manifest contains id ) do
     manifest = starter.manifest
-    manifest['files'] = starter.files
     id = grouper.group_create(manifest)
     manifest['id'] = id
     assert_equal manifest, grouper.group_manifest(id)
@@ -48,7 +47,6 @@ class GrouperServiceTest < TestBase
   test '591',
   %w( group_create(manifest) can pass the id inside the manifest ) do
     manifest = starter.manifest
-    manifest['files'] = starter.files
     explicit_id = '234765'
     manifest['id'] = explicit_id
     id = grouper.group_create(manifest)
@@ -60,9 +58,7 @@ class GrouperServiceTest < TestBase
   test '5F9', %w(
   after group_create() then
   group_exists?() is true ) do
-    manifest = starter.manifest
-    manifest['files'] = starter.files
-    id = grouper.group_create(manifest)
+    id = grouper.group_create(starter.manifest)
     assert grouper.group_exists?(id)
   end
 
@@ -70,9 +66,7 @@ class GrouperServiceTest < TestBase
 
   test '64E',
   'group_join succeeds with valid id' do
-    manifest = starter.manifest
-    manifest['files'] = starter.files
-    id = grouper.group_create(manifest)
+    id = grouper.group_create(starter.manifest)
     joined = grouper.group_joined(id)
     assert_equal({}, joined, 'someone has already joined!')
     indexes = (0..63).to_a.shuffle

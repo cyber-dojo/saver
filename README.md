@@ -52,7 +52,7 @@ and given files.
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
-                     "files": {
+             "visible_files": {
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",
@@ -89,7 +89,7 @@ Returns the manifest used to create the practice-session with the given group id
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
-                     "files": {
+             "visible_files": {
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",

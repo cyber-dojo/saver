@@ -39,8 +39,8 @@ class WellFormedArgsTest < TestBase
 
   def well_formed_manifests
     [
-      starter_manifest,
-      starter_manifest.merge({filename_extension:'.h'}),
+      starter.manifest,
+      starter.manifest.merge({filename_extension:'.h'}),
     ]
   end
 
@@ -63,36 +63,30 @@ class WellFormedArgsTest < TestBase
     [
       [],                                                 # ! Hash
       {},                                                 # required key missing
-      starter_manifest.merge({x:false}),                  # unknown key
-      starter_manifest.merge({files:[]}),                 # ! Hash
-      starter_manifest.merge({files:{'s' => [4]}}),       # ! Hash{s->s}
-      starter_manifest.merge({display_name:42}),          # ! String
-      starter_manifest.merge({image_name:42}),            # ! String
-      starter_manifest.merge({runner_choice:42}),         # ! String
-      starter_manifest.merge({filename_extension:true}),  # ! String && ! Array
-      starter_manifest.merge({filename_extension:{}}),    # ! String && ! Array
-      starter_manifest.merge({filename_extension:[23]}),  # ! Array[String]
-      starter_manifest.merge({exercise:true}),            # ! String
-      starter_manifest.merge({highlight_filenames:1}),    # ! Array of Strings
-      starter_manifest.merge({highlight_filenames:[1]}),  # ! Array of Strings
-      starter_manifest.merge({progress_regexs:{}}),       # ! Array of Strings
-      starter_manifest.merge({progress_regexs:[1]}),      # ! Array of Strings
-      starter_manifest.merge({tab_size:true}),       # ! Integer
-      starter_manifest.merge({max_seconds:nil}),     # ! Integer
-      starter_manifest.merge({created:nil}),         # ! Array of 6 Integers
-      starter_manifest.merge({created:['s']}),       # ! Array of 6 Integers
-      starter_manifest.merge({created:bad_month}),   # ! Time
-      starter_manifest.merge({created:bad_year}),    # ! Time
-      starter_manifest.merge({id:true}),             # ! string
-      starter_manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
-      starter_manifest.merge({id:'12345'}),          # ! 6-chars long
+      starter.manifest.merge({x:false}),                  # unknown key
+      starter.manifest.merge({visible_files:[]}),            # ! Hash
+      starter.manifest.merge({visible_files:{'s' => [4]}}),  # ! Hash{s->s}
+      starter.manifest.merge({display_name:42}),          # ! String
+      starter.manifest.merge({image_name:42}),            # ! String
+      starter.manifest.merge({runner_choice:42}),         # ! String
+      starter.manifest.merge({filename_extension:true}),  # ! String && ! Array
+      starter.manifest.merge({filename_extension:{}}),    # ! String && ! Array
+      starter.manifest.merge({filename_extension:[23]}),  # ! Array[String]
+      starter.manifest.merge({exercise:true}),            # ! String
+      starter.manifest.merge({highlight_filenames:1}),    # ! Array of Strings
+      starter.manifest.merge({highlight_filenames:[1]}),  # ! Array of Strings
+      starter.manifest.merge({progress_regexs:{}}),       # ! Array of Strings
+      starter.manifest.merge({progress_regexs:[1]}),      # ! Array of Strings
+      starter.manifest.merge({tab_size:true}),       # ! Integer
+      starter.manifest.merge({max_seconds:nil}),     # ! Integer
+      starter.manifest.merge({created:nil}),         # ! Array of 6 Integers
+      starter.manifest.merge({created:['s']}),       # ! Array of 6 Integers
+      starter.manifest.merge({created:bad_month}),   # ! Time
+      starter.manifest.merge({created:bad_year}),    # ! Time
+      starter.manifest.merge({id:true}),             # ! string
+      starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
+      starter.manifest.merge({id:'12345'}),          # ! 6-chars long
     ]
-  end
-
-  def starter_manifest
-    manifest = starter.manifest
-    manifest[:files] = starter.files
-    manifest
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

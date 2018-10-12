@@ -39,7 +39,6 @@ class TestBase < HexMiniTest
   def stub_group_create(stub_id)
     manifest = starter.manifest
     manifest['id'] = stub_id
-    manifest['files'] = starter.files
     id = group_create(manifest)
     assert_equal stub_id, id
     id

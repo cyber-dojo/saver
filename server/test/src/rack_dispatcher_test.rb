@@ -62,10 +62,8 @@ class RackDispatcherTest < TestBase
 
   test 'E5C',
   'dispatch to group_create' do
-    manifest = starter.manifest
-    manifest['files'] = starter.files
     assert_dispatch('group_create',
-      { manifest: manifest },
+      { manifest: starter.manifest },
       'hello from GrouperStub.group_create'
     )
   end
