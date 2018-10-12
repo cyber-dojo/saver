@@ -105,7 +105,7 @@ class GrouperRackDispatcherTest < TestBase
   private
 
   def malformed_id
-    '==' # ! Base58 String && size!=6
+    'df/de' # !IdGenerator.string? && size != 6
   end
 
   def well_formed_id

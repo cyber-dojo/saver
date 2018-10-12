@@ -84,7 +84,7 @@ class WellFormedArgsTest < TestBase
       starter.manifest.merge({created:bad_month}),   # ! Time
       starter.manifest.merge({created:bad_year}),    # ! Time
       starter.manifest.merge({id:true}),             # ! string
-      starter.manifest.merge({id:'df=sdf=sdf'}),     # ! Base58.string
+      starter.manifest.merge({id:'df/sdf/sdf'}),     # ! IdGenerator.string
       starter.manifest.merge({id:'12345'}),          # ! 6-chars long
     ]
   end
@@ -119,7 +119,7 @@ class WellFormedArgsTest < TestBase
       '12',         # ! 6 chars
       '12345',      # ! 6 chars
       '1234567',    # ! 6 chars
-      '12345='      # ! Base58 chars
+      '12345/'      # ! IdGenerator chars
     ]
   end
 

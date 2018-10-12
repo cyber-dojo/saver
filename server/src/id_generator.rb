@@ -14,7 +14,7 @@ require 'securerandom'
 #
 # 56^6 == 30,840,979,456 == 30 billion
 
-class Base58
+class IdGenerator
 
   def self.string(size)
     size.times.map{ letter }.join

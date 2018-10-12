@@ -1,3 +1,4 @@
+require_relative 'id_generator'
 require 'json'
 
 class Grouper
@@ -122,7 +123,7 @@ class Grouper
 
   def generate_id
     loop do
-      id = Base58.string(6)
+      id = IdGenerator.string(6)
       if !group_exists?(id)
         return id
       end

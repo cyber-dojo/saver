@@ -1,4 +1,4 @@
-require_relative 'base58'
+require_relative 'id_generator'
 require 'json'
 
 class Singler
@@ -176,7 +176,7 @@ class Singler
 
   def generate_id
     loop do
-      id = Base58.string(6)
+      id = IdGenerator.string(6)
       if !kata_exists?(id)
         return id
       end

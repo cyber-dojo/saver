@@ -134,7 +134,7 @@ class SinglerRackDispatcherTest < TestBase
   end
 
   def malformed_id
-    '==' # ! Base58 String
+    'df/d/' # !IdGenerator.string? && size != 6
   end
 
   # - - - - - - -

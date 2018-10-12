@@ -1,8 +1,8 @@
 require_relative 'test_base'
-require_relative '../../src/base58'
+require_relative '../../src/id_generator'
 require 'open3'
 
-class Base58Test < TestBase
+class IdGeneratorTest < TestBase
 
   def self.hex_prefix
     'F3A'
@@ -13,11 +13,11 @@ class Base58Test < TestBase
   test '064', %w(
   alphabet has 58 characters all of which are used ) do
     counts = {}
-    base.string(5000).chars.each do |ch|
+    IdGenerator.string(5000).chars.each do |ch|
       counts[ch] = true
     end
     assert_equal 58, counts.keys.size
-    assert_equal base.alphabet, counts.keys.sort.join
+    assert_equal IdGenerator.alphabet, counts.keys.sort.join
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -25,7 +25,7 @@ class Base58Test < TestBase
   test '065', %w(
   every letter of the alphabet can be used as part of a dir name
   ) do
-    base.alphabet.each_char do |letter|
+    IdGenerator.alphabet.each_char do |letter|
       name = "/tmp/base/#{letter}"
       stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
       refute_equal '', stdout
@@ -42,7 +42,7 @@ class Base58Test < TestBase
     ids = {}
     repeats = 25000
     repeats.times do
-      s = base.string(6)
+      s = IdGenerator.string(6)
       ids[s] ||= 0
       ids[s] += 1
     end
@@ -76,11 +76,7 @@ class Base58Test < TestBase
   private
 
   def string?(s)
-    base.string?(s)
-  end
-
-  def base
-    Base58
+    IdGenerator.string?(s)
   end
 
 end
