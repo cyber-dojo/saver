@@ -7,10 +7,6 @@ class Grouper
     @externals = externals
   end
 
-  def sha
-    disk['/app'].read('sha.txt').strip
-  end
-
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)

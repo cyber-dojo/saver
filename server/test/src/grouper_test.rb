@@ -6,17 +6,6 @@ class GrouperTest < TestBase
     '974'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # sha
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '190', %w( sha of image's git commit ) do
-    assert_equal 40, sha.size
-    sha.each_char do |ch|
-      assert "0123456789abcdef".include?(ch)
-    end
-  end
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # group_exists?(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

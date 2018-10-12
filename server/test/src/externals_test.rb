@@ -13,6 +13,7 @@ class ExternalsTest < TestBase
     externals = Externals.new
     assert_equal 'Grouper',            externals.grouper.class.name
     assert_equal 'ExternalDiskWriter', externals.disk.class.name
+    assert_equal 'Image',              externals.image.class.name
   end
 
 end

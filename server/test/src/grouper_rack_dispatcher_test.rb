@@ -15,10 +15,20 @@ class GrouperRackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  class ImageStub
+    def sha
+      "hello from #{self.class.name}.sha"
+    end
+  end
+
+  def image
+    ImageStub.new
+  end
+
   test 'E41',
   'dispatch to sha' do
     assert_dispatch('sha', {},
-      'hello from GrouperStub.sha'
+      "hello from #{self.class.name}::ImageStub.sha"
     )
   end
 
