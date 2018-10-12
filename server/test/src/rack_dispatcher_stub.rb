@@ -2,9 +2,9 @@ require_relative '../../src/grouper'
 
 class RackDispatcherStub
 
-  def self.define_grouper_stubs(*names)
+  def self.define_stubs(target, *names)
     names.each do |name|
-      if Grouper.new(nil).respond_to?(name)
+      if target.new(nil).respond_to?(name)
         define_method name do |*_args|
           "hello from #{self.class.name}.#{name}"
         end
@@ -12,15 +12,15 @@ class RackDispatcherStub
     end
   end
 
-  def self.define_singler_stubs(*names)
-    names.each do |name|
-      if Singler.new(nil).respond_to?(name)
-        define_method name do |*_args|
-          "hello from #{self.class.name}.#{name}"
-        end
-      end
-    end
+  def self.define_grouper_stubs(*names)
+    define_stubs(Grouper, *names)
   end
+
+  def self.define_singler_stubs(*names)
+    define_stubs(Singler, *names)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def sha
     "hello from #{self.class.name}.sha"
