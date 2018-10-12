@@ -7,15 +7,11 @@ class SinglerServiceTest < TestBase
     '6AB'
   end
 
-  def singler
-    saver
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '966',
   %w( malformed id on any method raises ) do
-    error = assert_raises { singler.kata_manifest(nil) }
+    error = assert_raises { saver.kata_manifest(nil) }
     assert_equal 'ServiceError', error.class.name
     assert_equal 'SaverService', error.service_name
     assert_equal 'kata_manifest', error.method_name
@@ -30,9 +26,9 @@ class SinglerServiceTest < TestBase
   test '6E7',
   %w( retrieved kata_manifest contains id ) do
     manifest = starter.manifest
-    id = singler.kata_create(manifest)
+    id = saver.kata_create(manifest)
     manifest['id'] = id
-    assert_equal manifest, singler.kata_manifest(id)
+    assert_equal manifest, saver.kata_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,9 +39,9 @@ class SinglerServiceTest < TestBase
   and the kata_tags has tag0
   and the kata_manifest can be retrieved ) do
     manifest = starter.manifest
-    id = singler.kata_create(manifest)
-    assert singler.kata_exists?(id)
-    assert_equal([tag0], singler.kata_tags(id))
+    id = saver.kata_create(manifest)
+    assert saver.kata_exists?(id)
+    assert_equal([tag0], saver.kata_tags(id))
 
     files = manifest['visible_files']
     expected = {
@@ -54,8 +50,8 @@ class SinglerServiceTest < TestBase
       'stderr' => '',
       'status' => 0
     }
-    assert_equal expected, singler.kata_tag(id, 0)
-    assert_equal expected, singler.kata_tag(id, -1)
+    assert_equal expected, saver.kata_tag(id, 0)
+    assert_equal expected, saver.kata_tag(id, -1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -65,7 +61,7 @@ class SinglerServiceTest < TestBase
     # This is an optimization to avoid web service
     # having to make a call back to storer to get the
     # tag numbers for the new traffic-light's diff handler.
-    id = singler.kata_create(starter.manifest)
+    id = saver.kata_create(starter.manifest)
     tag1_files = starter.manifest['visible_files']
     tag1_files.delete('hiker.h')
     now = [2016,12,5, 21,1,34]
@@ -73,7 +69,7 @@ class SinglerServiceTest < TestBase
     stderr = 'assert failed'
     status = 6
     colour = 'amber'
-    tags = singler.kata_ran_tests(id, 1, tag1_files, now, stdout, stderr, status, colour)
+    tags = saver.kata_ran_tests(id, 1, tag1_files, now, stdout, stderr, status, colour)
     expected = [
       tag0,
       {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1}
@@ -81,7 +77,7 @@ class SinglerServiceTest < TestBase
     assert_equal expected, tags
 
     now = [2016,12,5, 21,2,15]
-    tags = singler.kata_ran_tests(id, 2, tag1_files, now, stdout, stderr, status, colour)
+    tags = saver.kata_ran_tests(id, 2, tag1_files, now, stdout, stderr, status, colour)
     expected = [
       tag0,
       {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1},
@@ -97,7 +93,7 @@ class SinglerServiceTest < TestBase
     # This test fails if docker-compose.yml uses
     # [read_only: true] without also using
     # [tmpfs: /tmp]
-    id = singler.kata_create(starter.manifest)
+    id = saver.kata_create(starter.manifest)
 
     files = starter.manifest['visible_files']
     files['very_large'] = 'X'*1024*500
@@ -106,7 +102,7 @@ class SinglerServiceTest < TestBase
     stderr = 'assertion failed'
     status = 41
     colour = 'amber'
-    singler.kata_ran_tests(id, 1, files, now, stdout, stderr, status, colour)
+    saver.kata_ran_tests(id, 1, files, now, stdout, stderr, status, colour)
   end
 
   private
