@@ -11,6 +11,10 @@ class StarterService
     manifest
   end
 
+  def creation_time
+    [2016,12,2, 6,13,23]
+  end
+
   private
 
   include HttpJsonService
@@ -25,10 +29,6 @@ class StarterService
 
   def exercise_name
     'Fizz_Buzz'
-  end
-
-  def creation_time
-    [2016,12,2, 6,13,23]
   end
 
   # - - - - - - - - - - - - - - -

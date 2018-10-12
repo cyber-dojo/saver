@@ -4,7 +4,11 @@ require 'json'
 class GrouperServiceTest < TestBase
 
   def self.hex_prefix
-    '6AA1B'
+    '6AA'
+  end
+
+  def grouper
+    saver
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -13,7 +17,7 @@ class GrouperServiceTest < TestBase
   %w( malformed id on any method raises ) do
     error = assert_raises { grouper.group_manifest(nil) }
     assert_equal 'ServiceError', error.class.name
-    assert_equal 'GrouperService', error.service_name
+    assert_equal 'SaverService', error.service_name
     assert_equal 'group_manifest', error.method_name
     json = JSON.parse(error.message)
     assert_equal 'ArgumentError', json['class']
@@ -47,7 +51,7 @@ class GrouperServiceTest < TestBase
   test '591',
   %w( group_create(manifest) can pass the id inside the manifest ) do
     manifest = starter.manifest
-    explicit_id = '234765'
+    explicit_id = '64DDD3'
     manifest['id'] = explicit_id
     id = grouper.group_create(manifest)
     assert_equal explicit_id, id
