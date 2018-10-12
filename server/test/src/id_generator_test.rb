@@ -16,12 +16,12 @@ class IdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '064', %w(
-  alphabet has 81 characters all of which get used ) do
+  alphabet has 58 characters all of which get used ) do
     counts = {}
     IdGenerator.string(5000).chars.each do |ch|
       counts[ch] = true
     end
-    assert_equal 81, counts.keys.size
+    assert_equal 58, counts.keys.size
     assert_equal alphabet.chars.sort.join, counts.keys.sort.join
   end
 
@@ -57,9 +57,9 @@ class IdGeneratorTest < TestBase
 
   test '066', %w(
   string generation is sufficiently random that there is
-  no 6-digit string duplicate in 50,000 repeats ) do
+  no 6-digit string duplicate in 25,000 repeats ) do
     ids = {}
-    repeats = 50000
+    repeats = 25000
     repeats.times do
       s = IdGenerator.string(6)
       ids[s] ||= 0
@@ -77,7 +77,6 @@ class IdGeneratorTest < TestBase
     assert string?('678HhJjKkMmNnPp')
     assert string?('999PpQqRrSsTtUu')
     assert string?('263VvWwXxYyZz11')
-    assert string?('!@#$%^&*()[]{};')
   end
 
   # - - - - - - - - - - - - - - - - - - -
