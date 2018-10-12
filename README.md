@@ -159,6 +159,20 @@ who has joined the group practice-session with the given id.
 
 - - - -
 
+## GET kata_exists?
+Asks whether the individual practice-session with the given id exists.
+- parameters, eg
+```
+  { "id": "15B9AD" }
+```
+- returns true if it does, false if it doesn't, eg
+```
+  { "kata_exist?": true   }
+  { "kata_exist?": false  }
+```
+
+- - - -
+
 ## POST kata_create
 Creates an individual practice-session from the given manifest.
 - parameters, eg
@@ -218,20 +232,6 @@ Returns the manifest used to create the individual practice-session with the giv
                      }
       }
     }
-```
-
-- - - -
-
-## GET kata_exists?
-Asks whether the individual practice-session with the given id exists.
-- parameters, eg
-```
-  { "id": "15B9AD" }
-```
-- returns true if it does, false if it doesn't, eg
-```
-  { "kata_exist?": true   }
-  { "kata_exist?": false  }
 ```
 
 - - - -
