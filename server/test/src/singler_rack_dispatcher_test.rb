@@ -51,7 +51,7 @@ class SinglerRackDispatcherTest < TestBase
   'dispatch to kata_exists' do
     assert_dispatch('kata_exists',
       { id: well_formed_id },
-      'hello from SinglerStub.kata_exists?'
+      "hello from #{stub_name}.kata_exists?"
     )
   end
 
@@ -61,7 +61,7 @@ class SinglerRackDispatcherTest < TestBase
   'dispatch to kata_create' do
     args = { manifest: starter.manifest }
     assert_dispatch('kata_create', args,
-      'hello from SinglerStub.kata_create'
+      "hello from #{stub_name}.kata_create"
     )
   end
 
@@ -73,7 +73,7 @@ class SinglerRackDispatcherTest < TestBase
     manifest['group'] = '18Q67A'
     args = { manifest: manifest }
     assert_dispatch('kata_create', args,
-      'hello from SinglerStub.kata_create'
+      "hello from #{stub_name}.kata_create"
     )
   end
 
@@ -83,7 +83,7 @@ class SinglerRackDispatcherTest < TestBase
   'dispatch to kata_manifest' do
     assert_dispatch('kata_manifest',
       { id: well_formed_id },
-      'hello from SinglerStub.kata_manifest'
+      "hello from #{stub_name}.kata_manifest"
     )
   end
 
@@ -101,7 +101,7 @@ class SinglerRackDispatcherTest < TestBase
         status: well_formed_status,
         colour: well_formed_colour
       },
-      'hello from SinglerStub.kata_ran_tests'
+      "hello from #{stub_name}.kata_ran_tests"
     )
   end
 
@@ -111,7 +111,7 @@ class SinglerRackDispatcherTest < TestBase
   'dispatch to kata_tags' do
     assert_dispatch('kata_tags',
       { id: well_formed_id },
-      'hello from SinglerStub.kata_tags'
+      "hello from #{stub_name}.kata_tags"
     )
   end
 
@@ -123,11 +123,15 @@ class SinglerRackDispatcherTest < TestBase
       { id: well_formed_id,
          n: well_formed_n
       },
-      'hello from SinglerStub.kata_tag'
+      "hello from #{stub_name}.kata_tag"
     )
   end
 
   private
+
+  def stub_name
+    'SinglerStub'
+  end
 
   def well_formed_id
     '123456'

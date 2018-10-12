@@ -68,7 +68,7 @@ class GrouperRackDispatcherTest < TestBase
   'dispatch to group_exists' do
     assert_dispatch('group_exists',
       { id: well_formed_id },
-      'hello from GrouperStub.group_exists?'
+      "hello from #{stub_name}.group_exists?"
     )
   end
 
@@ -78,7 +78,7 @@ class GrouperRackDispatcherTest < TestBase
   'dispatch to group_create' do
     assert_dispatch('group_create',
       { manifest: starter.manifest },
-      'hello from GrouperStub.group_create'
+      "hello from #{stub_name}.group_create"
     )
   end
 
@@ -88,7 +88,7 @@ class GrouperRackDispatcherTest < TestBase
   'dispatch to group_manifest' do
     assert_dispatch('group_manifest',
       { id: well_formed_id },
-      'hello from GrouperStub.group_manifest'
+      "hello from #{stub_name}.group_manifest"
     )
   end
 
@@ -98,7 +98,7 @@ class GrouperRackDispatcherTest < TestBase
   'dispatch to group_join' do
     assert_dispatch('group_join',
       { id: well_formed_id, indexes: well_formed_indexes },
-      'hello from GrouperStub.group_join'
+      "hello from #{stub_name}.group_join"
     )
   end
 
@@ -108,11 +108,15 @@ class GrouperRackDispatcherTest < TestBase
   'dispatch to group_joined' do
     assert_dispatch('group_joined',
       { id: well_formed_id},
-      'hello from GrouperStub.group_joined'
+      "hello from #{stub_name}.group_joined"
     )
   end
 
   private
+
+  def stub_name
+    'GrouperStub'
+  end
 
   def malformed_id
     'df/de' # !IdGenerator.string? && size != 6
