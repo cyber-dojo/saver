@@ -8,6 +8,10 @@ class IdGeneratorTest < TestBase
     'F3A'
   end
 
+  def alphabet
+    IdGenerator.alphabet
+  end
+
   # - - - - - - - - - - - - - - - - - - -
 
   test '064', %w(
@@ -17,7 +21,7 @@ class IdGeneratorTest < TestBase
       counts[ch] = true
     end
     assert_equal 58, counts.keys.size
-    assert_equal IdGenerator.alphabet, counts.keys.sort.join
+    assert_equal alphabet, counts.keys.sort.join
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -25,7 +29,9 @@ class IdGeneratorTest < TestBase
   test '065', %w(
   every letter of the alphabet can be used as part of a dir name
   ) do
-    IdGenerator.alphabet.each_char do |letter|
+    diagnostic = 'forward slash is the dir separator'
+    refute alphabet.include?('/'), diagnostic
+    alphabet.each_char do |letter|
       name = "/tmp/base/#{letter}"
       stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
       refute_equal '', stdout
