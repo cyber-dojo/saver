@@ -192,8 +192,4 @@ class GrouperTest < TestBase
     (0..63).to_a.shuffle
   end
 
-  def singler
-    externals.singler
-  end
-
 end

@@ -1,4 +1,4 @@
-require_relative 'grouper_service'
+require_relative 'saver_service'
 require_relative 'starter_service'
 
 class Demo
@@ -14,19 +14,63 @@ class Demo
   def inner_call
     html = [
       pre('group_create') {
-        @id = grouper.group_create(starter.manifest)
+        @gid = saver.group_create(starter.manifest)
       },
       pre('group_manifest') {
-        grouper.group_manifest(@id)
+        saver.group_manifest(@gid)
       },
       pre('group_join') {
-        grouper.group_join(@id, (0..63).to_a.shuffle)
+        saver.group_join(@gid, (0..63).to_a.shuffle)
       },
       pre('group_joined') {
-        grouper.group_joined(@id)
+        saver.group_joined(@gid)
+      }
+      pre('kata_create') {
+        @kid = saver.kata_create(starter.manifest)
+      },
+      pre('kata_manifest') {
+        saver.kata_manifest(@kid)
+      },
+      pre('kata_ran_tests') {
+        saver.kata_ran_tests(@kid, 1, edited_files, now, stdout, stderr, status, colour)
+      },
+      pre('kata_tags') {
+        saver.kata_tags(@kid)
+      },
+      pre('kata_tag') {
+        saver.kata_tag(@kid, 1)
       }
     ].join
     [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
+  end
+
+  # - - - - - - - - - - - - - - - - -
+
+  def edited_files
+    files = starter.manifest['visible_files']
+    edited = files['hiker.c']
+    files['hiker.c'] = edited.sub('6 * 9', '6 * 7')
+    files
+  end
+
+  def now
+    [2016,12,2, 6,14,37]
+  end
+
+  def stdout
+    'All tests passed'
+  end
+
+  def stderr
+    ''
+  end
+
+  def status
+    0
+  end
+
+  def colour
+    'green'
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -77,8 +121,8 @@ class Demo
 
   # - - - - - - - - - - - - - - - - -
 
-  def grouper
-    GrouperService.new
+  def saver
+    SaverService.new
   end
 
   def starter

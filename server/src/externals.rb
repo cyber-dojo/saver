@@ -1,19 +1,20 @@
-require_relative 'grouper'
 require_relative 'external_disk_writer'
-require_relative 'external_singler'
+require_relative 'grouper'
+require_relative 'singler'
 
 class Externals
+
+  def disk
+    @disk ||= ExternalDiskWriter.new
+  end
 
   def grouper
     @grouper ||= Grouper.new(self)
   end
 
   def singler
-    @singler ||= ExternalSingler.new
+    @singler ||= Singler.new(disk)
   end
 
-  def disk
-    @disk ||= ExternalDiskWriter.new
-  end
 
 end

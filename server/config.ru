@@ -9,4 +9,4 @@ use Prometheus::Middleware::Collector
 use Prometheus::Middleware::Exporter
 
 externals = Externals.new
-run RackDispatcher.new(externals.grouper, Rack::Request)
+run RackDispatcher.new(externals, Rack::Request)

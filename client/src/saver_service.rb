@@ -1,6 +1,6 @@
 require_relative 'http_json_service'
 
-class GrouperService
+class SaverService
 
   def sha
     get(__method__)
@@ -28,6 +28,34 @@ class GrouperService
 
   def group_joined(id)
     get(__method__, id)
+  end
+
+  # - - - - - - - - - - - -
+
+  def kata_exists?(id)
+    get(__method__, id)
+  end
+
+  def kata_create(manifest)
+    post(__method__, manifest)
+  end
+
+  def kata_manifest(id)
+    get(__method__, id)
+  end
+
+  # - - - - - - - - - - - -
+
+  def kata_ran_tests(id, n ,files, now, stdout, stderr, status, colour)
+    post(__method__, id, n, files, now, stdout, stderr, status, colour)
+  end
+
+  def kata_tags(id)
+    get(__method__, id)
+  end
+
+  def kata_tag(id, n)
+    get(__method__, id, n)
   end
 
   private

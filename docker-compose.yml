@@ -38,23 +38,10 @@ services:
     restart: 'no'
     volumes:
       - /tmp/groups:/groups:rw
+      - /tmp/katas:/katas:rw
     depends_on:
       - starter # for tests
-      - singler
       - prometheus
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  singler:
-    user: singler
-    image: cyberdojo/singler
-    init: true
-    container_name: test-grouper-singler
-    read_only: true
-    tmpfs: /tmp
-    volumes:
-      - /tmp/katas:/katas:rw
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # monitoring

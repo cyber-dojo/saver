@@ -4,8 +4,8 @@ require 'json'
 
 class RackDispatcher
 
-  def initialize(grouper, request_class)
-    @grouper = grouper
+  def initialize(externals, request_class)
+    @externals = externals
     @request_class = request_class
   end
 
@@ -13,8 +13,8 @@ class RackDispatcher
     request = @request_class.new(env)
     path = request.path_info[1..-1] # lose leading /
     body = request.body.read
-    name, args = validated_name_args(path, body)
-    result = @grouper.public_send(name, *args)
+    target, name, args = validated_name_args(path, body)
+    result = target.public_send(name, *args)
     json_response(200, plain({ name => result }))
   rescue => error
     diagnostic = pretty({
@@ -28,7 +28,7 @@ class RackDispatcher
     })
     $stderr.puts(diagnostic)
     $stderr.flush
-    json_response(status(error), diagnostic)
+    json_response(code(error), diagnostic)
   end
 
   private # = = = = = = = = = = = = = = = = = = =
@@ -36,18 +36,38 @@ class RackDispatcher
   def validated_name_args(name, body)
     @well_formed_args = WellFormedArgs.new(body)
     args = case name
-      when /^sha$/            then []
-      when /^group_exists$/   then [id]
-      when /^group_create$/   then [manifest]
-      when /^group_manifest$/ then [id]
-      when /^group_join$/     then [id,indexes]
-      when /^group_joined$/   then [id]
+      when /^sha$/            then [grouper]
+
+      when /^group_exists$/   then [grouper, id]
+      when /^group_create$/   then [grouper, manifest]
+      when /^group_manifest$/ then [grouper, id]
+      when /^group_join$/     then [grouper, id, indexes]
+      when /^group_joined$/   then [grouper, id]
+
+      when /^kata_exists$/    then [singler, id]
+      when /^kata_create$/    then [singler, manifest]
+      when /^kata_manifest$/  then [singler, id]
+      when /^kata_ran_tests$/ then [singler, id, n, files, now, stdout, stderr, status, colour]
+      when /^kata_tags$/      then [singler, id]
+      when /^kata_tag$/       then [singler, id, n]
+
       else
         raise ClientError, 'json:malformed'
     end
     name += '?' if query?(name)
-    [name, args]
+    target = args.shift
+    [target, name, args]
   end
+
+  def grouper
+    @externals.grouper
+  end
+
+  def singler
+    @externals.singler
+  end
+
+  # - - - - - - - - - - - - - - - -
 
   def json_response(status, body)
     [ status,
@@ -64,7 +84,7 @@ class RackDispatcher
     JSON.pretty_generate(body)
   end
 
-  def status(error)
+  def code(error)
     if error.is_a?(ClientError)
       400 # client_error
     else
@@ -81,11 +101,12 @@ class RackDispatcher
   end
 
   well_formed_args :manifest, :id, :indexes
+  well_formed_args :n, :files, :now, :stdout, :stderr, :status, :colour
 
   # - - - - - - - - - - - - - - - -
 
   def query?(name)
-    name == 'group_exists'
+    ['group_exists','kata_exists'].include?(name)
   end
 
 end

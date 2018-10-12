@@ -1,12 +1,16 @@
-require_relative 'test_base'
-require_relative 'rack_request_stub'
 require_relative 'grouper_stub'
+require_relative 'rack_request_stub'
+require_relative 'test_base'
 require_relative '../../src/rack_dispatcher'
 
-class RackDispatcherTest < TestBase
+class GrouperRackDispatcherTest < TestBase
 
   def self.hex_prefix
     'FF0'
+  end
+
+  def grouper
+    GrouperStub.new
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -101,7 +105,7 @@ class RackDispatcherTest < TestBase
   private
 
   def malformed_id
-    '==' # ! Base58 String
+    '==' # ! Base58 String && size!=6
   end
 
   def well_formed_id
@@ -155,7 +159,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def rack_call(name, args)
-    rack = RackDispatcher.new(GrouperStub.new, RackRequestStub)
+    rack = RackDispatcher.new(self, RackRequestStub)
     env = { path_info:name, body:args.to_json }
     rack.call(env)
   end
