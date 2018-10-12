@@ -1,4 +1,4 @@
-require_relative 'rack_request_stub'
+require_relative 'rack_dispatcher_externals_stub'
 require_relative 'rack_dispatcher_stub'
 require_relative 'test_base'
 require_relative '../../src/rack_dispatcher'
@@ -9,13 +9,7 @@ class SinglerRackDispatcherTest < TestBase
     'FF1'
   end
 
-  def singler
-    stub
-  end
-
-  def stub
-    RackDispatcherStub.new
-  end
+  include RackDispatcherExternalsStub
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
