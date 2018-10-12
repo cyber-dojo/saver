@@ -1,5 +1,6 @@
 require_relative 'test_base'
 require_relative '../../src/id_generator'
+require_relative '../../src/external_disk_writer'
 require 'open3'
 
 class IdGeneratorTest < TestBase
@@ -15,28 +16,40 @@ class IdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '064', %w(
-  alphabet has 58 characters all of which are used ) do
+  alphabet has 81 characters all of which get used ) do
     counts = {}
     IdGenerator.string(5000).chars.each do |ch|
       counts[ch] = true
     end
-    assert_equal 58, counts.keys.size
-    assert_equal alphabet, counts.keys.sort.join
+    assert_equal 81, counts.keys.size
+    assert_equal alphabet.chars.sort.join, counts.keys.sort.join
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   test '065', %w(
   every letter of the alphabet can be used as part of a dir name
+  which contains files that can be written to and read from
   ) do
+    disk = ExternalDiskWriter.new
     diagnostic = 'forward slash is the dir separator'
     refute alphabet.include?('/'), diagnostic
+    diagnostic = 'dot is a dir navigator'
+    refute alphabet.include?('.'), diagnostic
+    diagnostic = 'single quote to protect all other letters'
+    refute alphabet.include?("'"), diagnostic
     alphabet.each_char do |letter|
       name = "/tmp/base/#{letter}"
-      stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
-      refute_equal '', stdout
-      assert_equal '', stderr
-      assert_equal 0, r.exitstatus
+      dir = disk[name]
+      refute dir.exists?
+      dir.make
+      assert dir.exists?
+      filename = 'readme.txt'
+      content = 'hello world'
+      dir.write(filename, content)
+      assert_equal content, dir.read(filename)
+      dir.append(filename, content.reverse)
+      assert_equal content+content.reverse, dir.read(filename)
     end
   end
 
@@ -44,9 +57,9 @@ class IdGeneratorTest < TestBase
 
   test '066', %w(
   string generation is sufficiently random that there is
-  no 6-digit string duplicate in 25,000 repeats ) do
+  no 6-digit string duplicate in 50,000 repeats ) do
     ids = {}
-    repeats = 25000
+    repeats = 50000
     repeats.times do
       s = IdGenerator.string(6)
       ids[s] ||= 0
@@ -64,6 +77,7 @@ class IdGeneratorTest < TestBase
     assert string?('678HhJjKkMmNnPp')
     assert string?('999PpQqRrSsTtUu')
     assert string?('263VvWwXxYyZz11')
+    assert string?('!@#$%^&*()[]{};')
   end
 
   # - - - - - - - - - - - - - - - - - - -

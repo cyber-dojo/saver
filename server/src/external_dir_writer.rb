@@ -8,6 +8,8 @@ class ExternalDirWriter
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
+  attr_reader :name
+
   def exists?
     File.directory?(name)
   end
@@ -19,7 +21,7 @@ class ExternalDirWriter
     # Note: FileUtils.mkdir_p() does not tell.
     # -p creates intermediate dirs as required.
     # -v verbose mode, output each dir actually made
-    stdout,stderr,r = Open3.capture3("mkdir -vp #{name}")
+    stdout,stderr,r = Open3.capture3("mkdir -vp '#{name}'")
     stdout != '' && stderr == '' && r.exitstatus == 0
   end
 
@@ -38,8 +40,6 @@ class ExternalDirWriter
   end
 
   private
-
-  attr_reader :name
 
   def open(filename, mode)
     File.open(pathed(filename), mode) { |fd| yield fd }
