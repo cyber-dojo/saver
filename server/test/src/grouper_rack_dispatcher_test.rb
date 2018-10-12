@@ -1,4 +1,4 @@
-require_relative 'grouper_stub'
+require_relative 'rack_dispatcher_stub'
 require_relative 'rack_request_stub'
 require_relative 'test_base'
 require_relative '../../src/rack_dispatcher'
@@ -10,7 +10,7 @@ class GrouperRackDispatcherTest < TestBase
   end
 
   def grouper
-    GrouperStub.new
+    RackDispatcherStub.new
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -115,7 +115,7 @@ class GrouperRackDispatcherTest < TestBase
   private
 
   def stub_name
-    'GrouperStub'
+    'RackDispatcherStub'
   end
 
   def malformed_id

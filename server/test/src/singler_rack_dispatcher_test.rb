@@ -1,5 +1,5 @@
 require_relative 'rack_request_stub'
-require_relative 'singler_stub'
+require_relative 'rack_dispatcher_stub'
 require_relative 'test_base'
 require_relative '../../src/rack_dispatcher'
 
@@ -10,7 +10,7 @@ class SinglerRackDispatcherTest < TestBase
   end
 
   def singler
-    SinglerStub.new
+    RackDispatcherStub.new
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -130,7 +130,7 @@ class SinglerRackDispatcherTest < TestBase
   private
 
   def stub_name
-    'SinglerStub'
+    'RackDispatcherStub'
   end
 
   def well_formed_id
