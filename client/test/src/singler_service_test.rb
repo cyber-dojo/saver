@@ -43,7 +43,7 @@ class SinglerServiceTest < TestBase
     assert saver.kata_exists?(id)
     assert_equal([tag0], saver.kata_tags(id))
 
-    files = manifest['visible_files']
+    files = manifest['starter_files']
     expected = {
       'files' => files,
       'stdout' => '',
@@ -62,7 +62,7 @@ class SinglerServiceTest < TestBase
     # having to make a call back to storer to get the
     # tag numbers for the new traffic-light's diff handler.
     id = saver.kata_create(starter.manifest)
-    tag1_files = starter.manifest['visible_files']
+    tag1_files = starter.manifest['starter_files']
     tag1_files.delete('hiker.h')
     now = [2016,12,5, 21,1,34]
     stdout = 'missing include'
@@ -95,7 +95,7 @@ class SinglerServiceTest < TestBase
     # [tmpfs: /tmp]
     id = saver.kata_create(starter.manifest)
 
-    files = starter.manifest['visible_files']
+    files = starter.manifest['starter_files']
     files['very_large'] = 'X'*1024*500
     now = [2016,12,5, 21,1,34]
     stdout = 'missing include'

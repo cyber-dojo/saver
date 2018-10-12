@@ -64,8 +64,8 @@ class WellFormedArgsTest < TestBase
       [],                                                 # ! Hash
       {},                                                 # required key missing
       starter.manifest.merge({x:false}),                  # unknown key
-      starter.manifest.merge({visible_files:[]}),            # ! Hash
-      starter.manifest.merge({visible_files:{'s' => [4]}}),  # ! Hash{s->s}
+      starter.manifest.merge({starter_files:[]}),            # ! Hash
+      starter.manifest.merge({starter_files:{'s' => [4]}}),  # ! Hash{s->s}
       starter.manifest.merge({display_name:42}),          # ! String
       starter.manifest.merge({image_name:42}),            # ! String
       starter.manifest.merge({runner_choice:42}),         # ! String
