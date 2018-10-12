@@ -24,7 +24,7 @@ class Demo
       },
       pre('group_joined') {
         saver.group_joined(@gid)
-      }
+      },
       pre('kata_create') {
         @kid = saver.kata_create(starter.manifest)
       },
