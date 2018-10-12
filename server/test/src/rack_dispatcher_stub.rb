@@ -22,6 +22,10 @@ class RackDispatcherStub
     end
   end
 
+  def sha
+    "hello from #{self.class.name}.sha"
+  end
+
   define_grouper_stubs :group_exists?, :group_create, :group_manifest
   define_grouper_stubs :group_join, :group_joined
 

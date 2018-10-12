@@ -9,26 +9,26 @@ class GrouperRackDispatcherTest < TestBase
     'FF0'
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   def grouper
+    stub
+  end
+
+  def image
+    stub
+  end
+
+  def stub
     RackDispatcherStub.new
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  class ImageStub
-    def sha
-      "hello from #{self.class.name}.sha"
-    end
-  end
-
-  def image
-    ImageStub.new
-  end
-
   test 'E41',
   'dispatch to sha' do
     assert_dispatch('sha', {},
-      "hello from #{self.class.name}::ImageStub.sha"
+      "hello from #{stub_name}.sha"
     )
   end
 
@@ -115,7 +115,7 @@ class GrouperRackDispatcherTest < TestBase
   private
 
   def stub_name
-    'RackDispatcherStub'
+    stub.class.name
   end
 
   def malformed_id
