@@ -10,6 +10,10 @@ class SinglerRackDispatcherTest < TestBase
   end
 
   def singler
+    stub
+  end
+
+  def stub
     RackDispatcherStub.new
   end
 
@@ -130,7 +134,7 @@ class SinglerRackDispatcherTest < TestBase
   private
 
   def stub_name
-    'RackDispatcherStub'
+    stub.class.name
   end
 
   def well_formed_id
