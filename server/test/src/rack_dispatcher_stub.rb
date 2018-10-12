@@ -1,10 +1,12 @@
 require_relative '../../src/grouper'
+require_relative '../../src/singler'
 
 class RackDispatcherStub
 
-  def self.define_stubs(target, *names)
+  def self.define_stubs(target_class, *names)
+    target = target_class.new(nil)
     names.each do |name|
-      if target.new(nil).respond_to?(name)
+      if target.respond_to?(name)
         define_method name do |*_args|
           "hello from #{self.class.name}.#{name}"
         end
