@@ -7,7 +7,7 @@ class ExternalStarter
     manifest = json['manifest']
     manifest['created'] = creation_time
     manifest['exercise'] = exercise_name
-    manifest['visible_files']['instructions'] = json['exercise']
+    manifest['visible_files']['readme.txt'] = json['exercise']
     manifest
   end
 
