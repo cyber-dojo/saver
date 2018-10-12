@@ -28,10 +28,16 @@ class RackDispatcherStub
     "hello from #{self.class.name}.sha"
   end
 
-  define_grouper_stubs :group_exists?, :group_create, :group_manifest
-  define_grouper_stubs :group_join, :group_joined
+  define_grouper_stubs :group_exists?,
+                       :group_create,
+                       :group_manifest,
+                       :group_join,
+                       :group_joined
 
-  define_singler_stubs :kata_exists?, :kata_create, :kata_manifest
-  define_singler_stubs :kata_ran_tests, :kata_tags, :kata_tag
-
+  define_singler_stubs :kata_exists?,
+                       :kata_create,
+                       :kata_manifest,
+                       :kata_ran_tests,
+                       :kata_tags,
+                       :kata_tag
 end
