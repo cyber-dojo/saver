@@ -30,10 +30,7 @@ class WellFormedArgs
       value = arg[key]
       case key
       when 'id','group'
-        unless Base58.string?(value)
-          malformed
-        end
-        unless value.length == 6
+        unless well_formed_id?(value)
           malformed
         end
       when 'visible_files'
@@ -89,13 +86,14 @@ class WellFormedArgs
 
   def id
     @arg_name = __method__.to_s
-    unless Base58.string?(arg)
-      malformed
-    end
-    unless arg.length == 6
+    unless well_formed_id?(arg)
       malformed
     end
     arg
+  end
+
+  def well_formed_id?(arg)
+    Base58.string?(arg) && arg.size == 6
   end
 
   # - - - - - - - - - - - - - - - -
