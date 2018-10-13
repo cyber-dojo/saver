@@ -22,6 +22,39 @@ class GrouperTest < TestBase
   # group_create(manifest) group_manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  class StubDisk
+    def [](name)
+      @name = name
+      self
+    end
+    def exists?
+      false
+    end
+    def make
+      false
+    end
+  end
+  class StubExternals
+    def grouper
+      @grouper ||= Grouper.new(self)
+    end
+    def disk
+      @disk ||= StubDisk.new
+    end
+  end
+
+  test '42F', %w(
+  group_create raises when id's dir cannot be created
+  ) do
+    externals = StubExternals.new
+    error = assert_raises(ArgumentError) {
+      externals.grouper.group_create(starter.manifest)
+    }
+    assert error.message.start_with?('id:invalid'), error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
   test '421',
   'group_create() generates id if one is not supplied' do
     manifest = starter.manifest

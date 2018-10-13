@@ -19,9 +19,7 @@ class Grouper
     id = group_id(manifest)
     dir = group_dir(id)
     unless dir.make
-      # :nocov:
       invalid('id', id)
-      # :nocov:
     end
     dir.write(manifest_filename, json_pretty(manifest))
     id
