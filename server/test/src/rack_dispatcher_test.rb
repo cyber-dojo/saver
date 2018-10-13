@@ -3,22 +3,13 @@ require_relative 'rack_request_stub'
 require_relative 'test_base'
 require_relative '../../src/rack_dispatcher'
 
-class GrouperRackDispatcherTest < TestBase
+class RackDispatcherTest < TestBase
 
   def self.hex_prefix
     'FF0'
   end
 
   include RackDispatcherExternalsStub
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E41',
-  'dispatch to sha' do
-    assert_dispatch('sha', {},
-      "hello from #{stub_name}.sha"
-    )
-  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -31,6 +22,20 @@ class GrouperRackDispatcherTest < TestBase
       'json:malformed')
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # image
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E41',
+  'dispatch to sha' do
+    assert_dispatch('sha', {},
+      "hello from #{stub_name}.sha"
+    )
+  end
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # grouper
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E5B',
@@ -49,7 +54,6 @@ class GrouperRackDispatcherTest < TestBase
     )
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E60',
@@ -100,6 +104,110 @@ class GrouperRackDispatcherTest < TestBase
     )
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # singler
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A5B',
+  'dispatch raises when any argument is malformed' do
+    assert_dispatch_raises('kata_tags',
+      { id: malformed_id },
+      500,
+      'ArgumentError',
+      'id:malformed'
+    )
+    assert_dispatch_raises('kata_tag',
+      {  id: well_formed_id,
+          n: malformed_n
+      },
+      500,
+      'ArgumentError',
+      'n:malformed'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A60',
+  'dispatch to kata_exists' do
+    assert_dispatch('kata_exists',
+      { id: well_formed_id },
+      "hello from #{stub_name}.kata_exists?"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A5C',
+  'dispatch to kata_create' do
+    args = { manifest: starter.manifest }
+    assert_dispatch('kata_create', args,
+      "hello from #{stub_name}.kata_create"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A5D',
+  'kata_create(manifest) can include group which holds group-id' do
+    manifest = starter.manifest
+    manifest['group'] = '18Q67A'
+    args = { manifest: manifest }
+    assert_dispatch('kata_create', args,
+      "hello from #{stub_name}.kata_create"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A5E',
+  'dispatch to kata_manifest' do
+    assert_dispatch('kata_manifest',
+      { id: well_formed_id },
+      "hello from #{stub_name}.kata_manifest"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A70',
+  'dispatch to kata_ran_tests' do
+    assert_dispatch('kata_ran_tests',
+      {     id: well_formed_id,
+             n: well_formed_n,
+         files: well_formed_files,
+           now: well_formed_now,
+        stdout: well_formed_stdout,
+        stderr: well_formed_stderr,
+        status: well_formed_status,
+        colour: well_formed_colour
+      },
+      "hello from #{stub_name}.kata_ran_tests"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A71',
+  'dispatch to kata_tags' do
+    assert_dispatch('kata_tags',
+      { id: well_formed_id },
+      "hello from #{stub_name}.kata_tags"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A72',
+  'dispatch to kata_tag' do
+    assert_dispatch('kata_tag',
+      { id: well_formed_id,
+         n: well_formed_n
+      },
+      "hello from #{stub_name}.kata_tag"
+    )
+  end
+
   private
 
   def stub_name
@@ -107,7 +215,7 @@ class GrouperRackDispatcherTest < TestBase
   end
 
   def malformed_id
-    'df/de' # !IdGenerator.string? && size != 6
+    'df/de' # !Base58.string? && size != 6
   end
 
   def well_formed_id
@@ -118,10 +226,50 @@ class GrouperRackDispatcherTest < TestBase
     (0..63).to_a.shuffle
   end
 
+  # - - - - - - -
+
+  def well_formed_n
+    2
+  end
+
+  def malformed_n
+    '23' # !Integer
+  end
+
+  # - - - - - - -
+
+  def well_formed_files
+    { 'cyber-dojo.sh' => 'make' }
+  end
+
+  def well_formed_now
+    [2018,3,28, 21,11,39]
+  end
+
+  def well_formed_stdout
+    'tweedle-dee'
+  end
+
+  def well_formed_stderr
+    'tweedle-dum'
+  end
+
+  def well_formed_status
+    23
+  end
+
+  def well_formed_colour
+    'red'
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_dispatch(name, args, stubbed)
-    qname = (name == 'group_exists') ? 'group_exists?' : name
+    if name.end_with?('_exists')
+      qname = name + '?'
+    else
+      qname = name
+    end
     assert_rack_call(name, args, { qname => stubbed })
   end
 
