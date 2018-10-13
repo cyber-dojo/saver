@@ -60,7 +60,6 @@ class Grouper
       result = nil
     else
       result = {}
-      # TODO: globbing is going to be faster here I think
       64.times { |index|
         dir = group_dir(id, index)
         if dir.exists?

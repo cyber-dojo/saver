@@ -251,7 +251,7 @@ class SinglerTest < TestBase
     diagnostic = '#0 kata_tags(id)'
     assert_equal expected_tags, kata_tags(id), diagnostic
 
-    files = starter.manifest['starter_files']
+    files = starter.manifest['visible_files']
     expected = rag_tag(files, '', '', 0)
     assert_equal expected, kata_tag(id, 0), 'kata_tag(id,0)'
     assert_equal expected, kata_tag(id, -1), 'kata_tag(id,-1)'

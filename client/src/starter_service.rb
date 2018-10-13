@@ -7,7 +7,7 @@ class StarterService
     manifest = json['manifest']
     manifest['created'] = creation_time
     manifest['exercise'] = exercise_name
-    manifest['starter_files']['readme.txt'] = json['exercise']
+    manifest['visible_files']['readme.txt'] = json['exercise']
     manifest
   end
 
