@@ -1,4 +1,4 @@
-require_relative 'id_generator'
+require_relative 'base58'
 require 'json'
 
 # Checks for arguments synactic correctness
@@ -30,7 +30,7 @@ class WellFormedArgs
       value = arg[key]
       case key
       when 'id','group'
-        unless IdGenerator.string?(value)
+        unless Base58.string?(value)
           malformed
         end
         unless value.length == 6
@@ -89,7 +89,7 @@ class WellFormedArgs
 
   def id
     @arg_name = __method__.to_s
-    unless IdGenerator.string?(arg)
+    unless Base58.string?(arg)
       malformed
     end
     unless arg.length == 6

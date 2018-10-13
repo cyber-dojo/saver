@@ -1,16 +1,16 @@
 require_relative 'test_base'
-require_relative '../../src/id_generator'
+require_relative '../../src/base58'
 require_relative '../../src/external_disk_writer'
 require 'open3'
 
-class IdGeneratorTest < TestBase
+class Base58Test < TestBase
 
   def self.hex_prefix
     'F3A'
   end
 
   def alphabet
-    IdGenerator.alphabet
+    Base58.alphabet
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -18,7 +18,7 @@ class IdGeneratorTest < TestBase
   test '064', %w(
   alphabet has 58 characters all of which get used ) do
     counts = {}
-    IdGenerator.string(5000).chars.each do |ch|
+    Base58.string(5000).chars.each do |ch|
       counts[ch] = true
     end
     assert_equal 58, counts.keys.size
@@ -61,7 +61,7 @@ class IdGeneratorTest < TestBase
     ids = {}
     repeats = 25000
     repeats.times do
-      s = IdGenerator.string(6)
+      s = Base58.string(6)
       ids[s] ||= 0
       ids[s] += 1
     end
@@ -95,7 +95,7 @@ class IdGeneratorTest < TestBase
   private
 
   def string?(s)
-    IdGenerator.string?(s)
+    Base58.string?(s)
   end
 
 end
