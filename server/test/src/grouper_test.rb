@@ -23,8 +23,7 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   class StubDisk
-    def [](name)
-      @name = name
+    def [](_name)
       self
     end
     def exists?
@@ -36,19 +35,19 @@ class GrouperTest < TestBase
   end
   class StubExternals
     def grouper
-      @grouper ||= Grouper.new(self)
+      Grouper.new(self)
     end
     def disk
-      @disk ||= StubDisk.new
+      StubDisk.new
     end
   end
 
   test '42F', %w(
   group_create raises when id's dir cannot be created
   ) do
-    externals = StubExternals.new
+    grouper = StubExternals.new.grouper
     error = assert_raises(ArgumentError) {
-      externals.grouper.group_create(starter.manifest)
+      grouper.group_create(starter.manifest)
     }
     assert error.message.start_with?('id:invalid'), error.message
   end
