@@ -71,8 +71,7 @@ Creates a group practice-session from the given manifest.
 ```
 - returns the id of the created group practice-session, eg
 ```
-  { "group_create": "55D3B9"
-  }
+  { "group_create": "55D3B9" }
 ```
 
 - - - -
@@ -200,8 +199,7 @@ Creates an individual practice-session from the given manifest.
 ```
 - returns the id of the created individual practice-session, eg
 ```
-  { "kata_create": "A551C5"
-  }
+  { "kata_create": "A551C5" }
 ```
 
 - - - -
