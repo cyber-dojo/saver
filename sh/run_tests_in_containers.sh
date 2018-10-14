@@ -18,12 +18,12 @@ run_server_tests()
   docker exec \
     --user root \
     "${SERVER_CID}" \
-      sh -c 'rm -rf /groups/* && chown -R grouper:grouper /groups'
+      sh -c 'rm -rf /groups/* && chown -R saver:saver /groups'
 
   docker exec \
     --user root \
     "${SERVER_CID}" \
-      sh -c 'rm -rf /katas/* && chown -R grouper:grouper /katas'
+      sh -c 'rm -rf /katas/* && chown -R saver:saver /katas'
 
   docker exec \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \

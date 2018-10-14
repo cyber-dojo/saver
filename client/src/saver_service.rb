@@ -63,7 +63,7 @@ class SaverService
   include HttpJsonService
 
   def hostname
-    'grouper'
+    'saver'
   end
 
   def port

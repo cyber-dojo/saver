@@ -6,33 +6,33 @@ volumes:
 
 services:
 
-  grouper_client:
+  saver_client:
     build:
       context: client
     user: nobody
-    image: cyberdojo/grouper-client
+    image: cyberdojo/saver-client
     init: true
-    container_name: test-grouper-client
+    container_name: test-saver-client
     read_only: true
     tmpfs: /tmp
     restart: 'no'
     depends_on:
       - starter
-      - grouper
+      - saver
     ports:
       - 4538:4538
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  grouper:
+  saver:
     build:
       context: server
       args:
         - SHA
-    user: grouper
-    image: cyberdojo/grouper
+    user: saver
+    image: cyberdojo/saver
     init: true
-    container_name: test-grouper-server
+    container_name: test-saver-server
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -49,12 +49,12 @@ services:
   prometheus:
     image: cyberdojo/prometheus
     init: true
-    container_name: test-grouper-prometheus
+    container_name: test-saver-prometheus
 
   grafana:
     image: cyberdojo/grafana
     init: true
-    container_name: test-grouper-grafana
+    container_name: test-saver-grafana
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
@@ -71,7 +71,7 @@ services:
     user: nobody
     image: cyberdojo/starter
     init: true
-    container_name: test-grouper-starter
+    container_name: test-saver-starter
     read_only: true
     tmpfs: /tmp
     volumes:

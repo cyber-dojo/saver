@@ -9,24 +9,24 @@ RUN adduser \
   -D       `# no password` \
   -H       `# no home dir` \
   -u 19663 `# user-id`     \
-  grouper  `# user-name`
+  saver    `# user-name`
 
-ARG                     GROUPER_HOME=/app
-COPY .                ${GROUPER_HOME}
-RUN  chown -R grouper ${GROUPER_HOME}
+ARG                   SAVER_HOME=/app
+COPY .              ${SAVER_HOME}
+RUN  chown -R saver ${SAVER_HOME}
 
 # - - - - - - - - - - - - - - - - -
 # git commit sha image is built from
 # - - - - - - - - - - - - - - - - -
 
 ARG SHA
-RUN echo ${SHA} > ${GROUPER_HOME}/sha.txt
+RUN echo ${SHA} > ${SAVER_HOME}/sha.txt
 
 # - - - - - - - - - - - - - - - - - -
 # bring it up
 # - - - - - - - - - - - - - - - - - -
 
-USER grouper
+USER saver
 EXPOSE 4537
 CMD [ "./up.sh" ]
 
