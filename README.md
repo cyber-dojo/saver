@@ -126,7 +126,7 @@ Asks whether the group practice-session with the given id exists.
 ## POST group_join
 Join the group practice-session with the given group id.
 The indexes parameter, when sorted, must be (0..63).to_a
-and determines the join attempt order.
+and determines the avatar join attempt order.
 - parameters, eg
 ```
   { "id": "55D3B9",
@@ -147,8 +147,10 @@ who has joined the group practice-session with the given id.
 ```
   { "id": "55D3B9" }
 ```
-- returns, eg
+- returns null if the id does not exist, or the index:id of the
+individual practice-sessions if it does. eg
 ```
+  { "group_joined": null }
   { "group_joined": {
        "6": "D6A57F",
       "34": "C4AC8B",
