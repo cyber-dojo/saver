@@ -44,7 +44,6 @@ services:
       - prometheus
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # monitoring
 
   prometheus:
     image: cyberdojo/prometheus
@@ -65,7 +64,6 @@ services:
       - 3002:3000
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # starter is used in tests for creating start-point manifests
 
   starter:
     user: nobody
