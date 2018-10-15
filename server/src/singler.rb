@@ -57,6 +57,8 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_tags(id)
+    # A cache of colours/time-stamps for all [test] events.
+    # Helps optimize dashboard traffic-lights views.
     assert_kata_exists(id)
     tags_read(id)
   end
