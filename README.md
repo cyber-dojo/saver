@@ -45,6 +45,20 @@ Returns the git commit sha used to create the docker image.
 
 - - - -
 
+## GET group_exists?
+Asks whether the group practice-session with the given id exists.
+- parameters, eg
+```
+  { "id": "55D3B9" }
+```
+- returns true if it does, false if it doesn't, eg
+```
+  { "group_exists?": true   }
+  { "group_exists?": false  }
+```
+
+- - - -
+
 ## POST group_create
 Creates a group practice-session from the given manifest.
 - parameters, eg
@@ -104,20 +118,6 @@ Returns the group manifest used to create the group practice-session with the gi
         }
       }
     }
-```
-
-- - - -
-
-## GET group_exists?
-Asks whether the group practice-session with the given id exists.
-- parameters, eg
-```
-  { "id": "55D3B9" }
-```
-- returns true if it does, false if it doesn't, eg
-```
-  { "group_exists?": true   }
-  { "group_exists?": false  }
 ```
 
 - - - -
