@@ -1,6 +1,0 @@
-
-When saver generates a group-id it must not clash
-with an id already used in storer; if it did it would
-greatly complicate handling of that id; for example,
-when entering an id to rejoin, would that id be used
-as a old storer id or a new saver id.
