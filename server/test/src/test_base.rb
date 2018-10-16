@@ -96,8 +96,4 @@ class TestBase < HexMiniTest
     externals.singler
   end
 
-  def storer
-    externals.storer
-  end
-
 end

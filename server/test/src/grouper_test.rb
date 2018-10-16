@@ -22,16 +22,6 @@ class GrouperTest < TestBase
   # group_create(manifest) group_manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '379', %w(
-  check 5A0F824303 exists in storer as test data
-  ready for test that
-  saver will reject generated id that already exists in storer ) do
-    id = '5A0F824303'
-    assert storer.kata_exists?(id)
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   class StubDisk
     def [](_name)
       self
@@ -46,6 +36,9 @@ class GrouperTest < TestBase
   class StubExternals
     def grouper
       Grouper.new(self)
+    end
+    def storer
+      StorerService.new
     end
     def disk
       StubDisk.new

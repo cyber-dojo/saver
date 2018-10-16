@@ -2,8 +2,8 @@ require_relative 'http_json_service'
 
 class StorerService
 
-  def kata_exists?(kata_id)
-    get(__method__, kata_id)
+  def katas_completed(partial_id)
+    get(__method__, partial_id)
   end
 
   private
