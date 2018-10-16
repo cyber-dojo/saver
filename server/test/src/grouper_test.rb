@@ -25,7 +25,7 @@ class GrouperTest < TestBase
   test '379', %w(
   check 5A0F824303 exists in storer as test data
   ready for test that
-  saver will reject id that already exists in storer ) do
+  saver will reject generated id that already exists in storer ) do
     id = '5A0F824303'
     assert storer.kata_exists?(id)
   end
@@ -49,6 +49,9 @@ class GrouperTest < TestBase
     end
     def disk
       StubDisk.new
+    end
+    def id_validator
+      IdValidator.new(self)
     end
   end
 

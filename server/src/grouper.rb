@@ -118,7 +118,7 @@ class Grouper
   def generate_id
     loop do
       id = Base58.string(6)
-      if !group_exists?(id)
+      if id_validator.valid?(id)
         return id
       end
     end
@@ -138,6 +138,10 @@ class Grouper
 
   def singler
     @externals.singler
+  end
+
+  def id_validator
+    @externals.id_validator
   end
 
 end
