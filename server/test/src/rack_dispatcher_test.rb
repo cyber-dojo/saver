@@ -18,7 +18,7 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('unknown',
       {},
       400,
-      'ClientError',
+      'SaverService',
       'json:malformed')
   end
 
@@ -43,13 +43,13 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('group_manifest',
       { id: malformed_id },
       500,
-      'ArgumentError',
+      'SaverService',
       'id:malformed'
     )
     assert_dispatch_raises('group_join',
       {  id: malformed_id },
       500,
-      'ArgumentError',
+      'SaverService',
       'id:malformed'
     )
   end
@@ -113,7 +113,7 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('kata_tags',
       { id: malformed_id },
       500,
-      'ArgumentError',
+      'SaverService',
       'id:malformed'
     )
     assert_dispatch_raises('kata_tag',
@@ -121,7 +121,7 @@ class RackDispatcherTest < TestBase
           n: malformed_n
       },
       500,
-      'ArgumentError',
+      'SaverService',
       'n:malformed'
     )
   end

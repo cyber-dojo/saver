@@ -21,7 +21,7 @@ class RackDispatcher
       'exception' => {
         'path' => path,
         'body' => body,
-        'class' => error.class.name,
+        'class' => 'SaverService',
         'message' => error.message,
         'backtrace' => error.backtrace
       }

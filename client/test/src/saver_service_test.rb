@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require 'json'
 
-class GrouperServiceTest < TestBase
+class SaverServiceTest < TestBase
 
   def self.hex_prefix
     '6AA'
@@ -31,7 +31,7 @@ class GrouperServiceTest < TestBase
     assert_equal 'SaverService', error.service_name
     assert_equal 'group_manifest', error.method_name
     json = JSON.parse(error.message)
-    assert_equal 'ArgumentError', json['class']
+    assert_equal 'SaverService', json['class']
     assert_equal 'id:malformed', json['message']
     assert_equal 'Array', json['backtrace'].class.name
   end
@@ -99,7 +99,7 @@ class GrouperServiceTest < TestBase
     assert_equal 'SaverService', error.service_name
     assert_equal 'kata_manifest', error.method_name
     json = JSON.parse(error.message)
-    assert_equal 'ArgumentError', json['class']
+    assert_equal 'SaverService', json['class']
     assert_equal 'id:malformed', json['message']
     assert_equal 'Array', json['backtrace'].class.name
   end
