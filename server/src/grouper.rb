@@ -36,8 +36,8 @@ class Grouper
 
   def group_join(id, indexes)
     assert_group_exists(id)
-    index = indexes.detect { |index|
-      group_dir(id,index).make
+    index = indexes.detect { |new_index|
+      group_dir(id,new_index).make
     }
     if index.nil?
       nil
