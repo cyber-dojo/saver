@@ -41,8 +41,8 @@ services:
       - /tmp/katas:/katas:rw
     depends_on:
       - storer
-      - starter # for tests
       - prometheus
+      - starter # for tests
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
