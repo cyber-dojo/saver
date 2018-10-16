@@ -19,11 +19,11 @@ class WellFormedArgs
     unless arg.is_a?(Hash)
       malformed
     end
-    unless all_required_keys?
-      malformed
+    missing_key? do |name|
+      malformed("missing key[#{name}]")
     end
-    if any_unknown_key?
-      malformed
+    unknown_key? do |name|
+      malformed("unknown key[#{name}]")
     end
 
     arg.keys.each do |key|
@@ -205,8 +205,12 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def all_required_keys?
-    REQUIRED_KEYS.all? { |required_key| arg.keys.include?(required_key) }
+  def missing_key?
+    REQUIRED_KEYS.each do |key|
+      unless arg.keys.include?(key)
+        yield key
+      end
+    end
   end
 
   REQUIRED_KEYS = %w(
@@ -219,8 +223,12 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def any_unknown_key?
-    arg.keys.any? { |key| !KNOWN_KEYS.include?(key) }
+  def unknown_key?
+    arg.keys.each do |key|
+      unless KNOWN_KEYS.include?(key)
+        yield key
+      end
+    end
   end
 
   KNOWN_KEYS = REQUIRED_KEYS + %w(
@@ -255,8 +263,8 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def malformed
-    raise ArgumentError.new("#{arg_name}:malformed")
+  def malformed(msg = '')
+    raise ClientError.new("malformed:#{arg_name}:#{msg}")
   end
 
 end

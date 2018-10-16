@@ -42,15 +42,15 @@ class RackDispatcherTest < TestBase
   'dispatch raises when any argument is malformed' do
     assert_dispatch_raises('group_manifest',
       { id: malformed_id },
-      500,
+      400,
       'SaverService',
-      'id:malformed'
+      'malformed:id:'
     )
     assert_dispatch_raises('group_join',
       {  id: malformed_id },
-      500,
+      400,
       'SaverService',
-      'id:malformed'
+      'malformed:id:'
     )
   end
 
@@ -112,17 +112,17 @@ class RackDispatcherTest < TestBase
   'dispatch raises when any argument is malformed' do
     assert_dispatch_raises('kata_tags',
       { id: malformed_id },
-      500,
+      400,
       'SaverService',
-      'id:malformed'
+      'malformed:id:'
     )
     assert_dispatch_raises('kata_tag',
       {  id: well_formed_id,
           n: malformed_n
       },
-      500,
+      400,
       'SaverService',
-      'n:malformed'
+      'malformed:n:'
     )
   end
 

@@ -46,6 +46,32 @@ class WellFormedArgsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '593',
+  'manifest raises when required key is missing' do
+    manifest = starter.manifest
+    manifest.delete('display_name')
+    json = { manifest:manifest }.to_json
+    error = assert_raises(ClientError) {
+      WellFormedArgs.new(json).manifest
+    }
+    assert_equal 'malformed:manifest:missing key[display_name]', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '594',
+  'manifest raises when unknown key exists' do
+    manifest = starter.manifest
+    manifest['x'] = false
+    json = { manifest:manifest }.to_json
+    error = assert_raises(ClientError) {
+      WellFormedArgs.new(json).manifest
+    }
+    assert_equal 'malformed:manifest:unknown key[x]', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test '592',
   'manifest raises when malformed' do
     malformed_manifests.each do |malformed|
@@ -53,7 +79,7 @@ class WellFormedArgsTest < TestBase
       error = assert_raises {
         WellFormedArgs.new(json).manifest
       }
-      assert_equal 'manifest:malformed', error.message, malformed
+      assert_equal 'malformed:manifest:', error.message, malformed
     end
   end
 
@@ -62,8 +88,6 @@ class WellFormedArgsTest < TestBase
     bad_year = ["2018",3,28, 11,33,13]
     [
       [],                                                 # ! Hash
-      {},                                                 # required key missing
-      starter.manifest.merge({x:false}),                  # unknown key
       starter.manifest.merge({visible_files:[]}),            # ! Hash
       starter.manifest.merge({visible_files:{'s' => [4]}}),  # ! Hash{s->s}
       starter.manifest.merge({display_name:42}),          # ! String
@@ -102,7 +126,7 @@ class WellFormedArgsTest < TestBase
 
   test '61B',
   'id raises when malformed' do
-    expected = 'id:malformed'
+    expected = 'malformed:id:'
     malformed_ids.each do |malformed|
       json = { id:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -135,7 +159,7 @@ class WellFormedArgsTest < TestBase
 
   test '087',
   'indexes raises when malformed' do
-    expected = 'indexes:malformed'
+    expected = 'malformed:indexes:'
     malformed_indexes.each do |malformed|
       json = { indexes:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -172,7 +196,7 @@ class WellFormedArgsTest < TestBase
 
   test '238',
   'n raises when malformed' do
-    expected = 'n:malformed'
+    expected = 'malformed:n:'
     malformeds = [ nil, true, [1], {}, '', '23', -2 ]
     malformeds.each do |malformed|
       json = { n:malformed }.to_json
@@ -196,7 +220,7 @@ class WellFormedArgsTest < TestBase
 
   test '847',
   'files raises when malformed' do
-    expected = 'files:malformed'
+    expected = 'malformed:files:'
     malformed_files.each do |malformed|
       json = { files:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -227,7 +251,7 @@ class WellFormedArgsTest < TestBase
 
   test 'FF5',
   'now raises when malformed' do
-    expected = 'now:malformed'
+    expected = 'malformed:now:'
     malformed_nows.each do |malformed|
       json = { now:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -258,7 +282,7 @@ class WellFormedArgsTest < TestBase
 
   test 'E36',
   'stdout raises when malformed' do
-    expected = 'stdout:malformed'
+    expected = 'malformed:stdout:'
     malformed_stdouts.each do |malformed|
       json = { stdout:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -284,7 +308,7 @@ class WellFormedArgsTest < TestBase
 
   test '8DC',
   'stderr raises when malformed' do
-    expected = 'stderr:malformed'
+    expected = 'malformed:stderr:'
     malformed_stderrs.each do |malformed|
       json = { stderr:malformed }.to_json
       wfa = WellFormedArgs.new(json)
@@ -312,7 +336,7 @@ class WellFormedArgsTest < TestBase
 
   test 'CD4',
   'status raises when malformed' do
-    expected = 'status:malformed'
+    expected = 'malformed:status:'
     malformeds = [ nil, true, [1], {}, '', '23', -1, 256 ]
     malformeds.each do |malformed|
       json = { status:malformed }.to_json
@@ -338,7 +362,7 @@ class WellFormedArgsTest < TestBase
 
   test '042',
   'colour raises when malformed' do
-    expected = 'colour:malformed'
+    expected = 'malformed:colour:'
     malformed_colours.each do |malformed|
       json = { colour:malformed }.to_json
       wfa = WellFormedArgs.new(json)
