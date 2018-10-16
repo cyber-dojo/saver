@@ -29,4 +29,11 @@ class IdValidatorTest < TestBase
     refute id_validator.valid?(id)
   end
 
+  # - - - - - - - - - - - - - - - - -
+
+  test '1D6',
+  'valid?(id) is true if session with that id does not already exist in grouper or storer' do
+    assert id_validator.valid?('5aD353')
+  end
+
 end
