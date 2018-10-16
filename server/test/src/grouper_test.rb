@@ -106,7 +106,7 @@ class GrouperTest < TestBase
 
   test '423', %w(
   group_create(manifest) can be passed the id
-  and raises when a group with that id already exists ) do
+  and raises when a saver group with that id already exists ) do
     explicit_id = 'A01DE8'
     manifest = starter.manifest
     manifest['id'] = explicit_id
@@ -119,6 +119,20 @@ class GrouperTest < TestBase
       group_create(manifest)
     }
     assert_equal "id:invalid:#{id}", error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '424', %w(
+  group_create(manifest) can be passed the id
+  and uses that id when a storer practice session with that id already exists
+  since it is assumed porter is porting that very session
+  ) do
+    storer_id = '5A0F824303'[0..5]
+    manifest = starter.manifest
+    manifest['id'] = storer_id
+    id = group_create(manifest)
+    assert_equal id, storer_id
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
