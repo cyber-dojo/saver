@@ -1,4 +1,4 @@
-require_relative 'http_json_service'
+require_relative '../../src/http_json_service'
 
 class ExternalStarter
 

@@ -36,3 +36,8 @@ wait_till_up "test-${MY_NAME}-storer"
 wait_till_up "test-${MY_NAME}-starter"
 wait_till_up "test-${MY_NAME}-prometheus"
 wait_till_up "test-${MY_NAME}-grafana"
+
+docker exec \
+  --user root \
+    "test-${MY_NAME}-storer" \
+      sh -c 'cd /usr/src/cyber-dojo/katas && rm -rf *'

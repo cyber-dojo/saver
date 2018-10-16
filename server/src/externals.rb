@@ -1,6 +1,7 @@
 require_relative 'external_disk_writer'
 require_relative 'grouper'
 require_relative 'singler'
+require_relative 'storer_service'
 require_relative 'image'
 
 class Externals
@@ -15,6 +16,10 @@ class Externals
 
   def singler
     @singler ||= Singler.new(disk)
+  end
+
+  def storer
+    @storer ||= StorerService.new
   end
 
   def image
