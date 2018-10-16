@@ -59,16 +59,16 @@ class RackDispatcher
     [target, name, args]
   end
 
+  def image
+    @externals.image
+  end
+
   def grouper
     @externals.grouper
   end
 
   def singler
     @externals.singler
-  end
-
-  def image
-    @externals.image
   end
 
   # - - - - - - - - - - - - - - - -
@@ -95,13 +95,21 @@ class RackDispatcher
   def self.well_formed_args(*names)
     names.each do |name|
       define_method name, &lambda {
-        @well_formed_args.send(name)
+        @well_formed_args.public_send(name)
       }
     end
   end
 
-  well_formed_args :manifest, :id, :indexes
-  well_formed_args :n, :files, :now, :stdout, :stderr, :status, :colour
+  well_formed_args :manifest,
+                   :id,
+                   :indexes,
+                   :n,
+                   :files,
+                   :now,
+                   :stdout,
+                   :stderr,
+                   :status,
+                   :colour
 
   # - - - - - - - - - - - - - - - -
 
