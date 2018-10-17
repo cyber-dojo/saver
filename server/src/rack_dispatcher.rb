@@ -71,6 +71,10 @@ class RackDispatcher
     ]
   end
 
+  def code(error)
+    error.is_a?(ClientError) ? 400 : 500
+  end
+
   def plain(body)
     JSON.generate(body)
   end
@@ -79,9 +83,7 @@ class RackDispatcher
     JSON.pretty_generate(body)
   end
 
-  def code(error)
-    error.is_a?(ClientError) ? 400 : 500
-  end
+  # - - - - - - - - - - - - - - - -
 
   def self.well_formed_args(*names)
     names.each do |name|
