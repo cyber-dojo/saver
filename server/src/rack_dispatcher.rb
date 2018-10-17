@@ -35,6 +35,9 @@ class RackDispatcher
 
   def validated_name_args(name, body)
     @well_formed_args = WellFormedArgs.new(body)
+    image = @externals.image
+    grouper = @externals.grouper
+    singler = @externals.singler
     args = case name
       when /^sha$/            then [image]
 
@@ -57,18 +60,6 @@ class RackDispatcher
     name += '?' if query?(name)
     target = args.shift
     [target, name, args]
-  end
-
-  def image
-    @externals.image
-  end
-
-  def grouper
-    @externals.grouper
-  end
-
-  def singler
-    @externals.singler
   end
 
   # - - - - - - - - - - - - - - - -
