@@ -11,7 +11,7 @@ class RackDispatcher
 
   def call(env)
     request = @request_class.new(env)
-    path = request.path_info[1..-1] # lose leading /
+    path = request.path_info[1..-1]
     body = request.body.read
     target, name, args = validated_name_args(path, body)
     result = target.public_send(name, *args)
