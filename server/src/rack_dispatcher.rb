@@ -52,7 +52,7 @@ class RackDispatcher
       when /^kata_tag$/       then [singler, id, n]
 
       else
-        raise ClientError, 'json:malformed'
+        raise ClientError, "#{name}:unknown:"
     end
     name += '?' if query?(name)
     target = args.shift
