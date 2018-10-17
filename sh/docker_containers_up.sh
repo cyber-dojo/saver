@@ -41,3 +41,13 @@ docker exec \
   --user root \
     "test-${MY_NAME}-storer" \
       sh -c 'cd /usr/src/cyber-dojo/katas && rm -rf *'
+
+docker exec \
+  --user root \
+    "test-${MY_NAME}-server" \
+      sh -c 'cd /groups && rm -rf *'
+
+docker exec \
+  --user root \
+    "test-${MY_NAME}-server" \
+      sh -c 'cd /katas && rm -rf *'
