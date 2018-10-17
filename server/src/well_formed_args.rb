@@ -1,4 +1,5 @@
 require_relative 'base58'
+require_relative 'client_error'
 require 'json'
 
 # Checks for arguments synactic correctness
@@ -8,7 +9,7 @@ class WellFormedArgs
   def initialize(s)
     @args = JSON.parse(s)
   rescue
-    raise ArgumentError.new('json:malformed')
+    raise ClientError.new('json:malformed')
   end
 
   # - - - - - - - - - - - - - - - -
