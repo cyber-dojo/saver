@@ -18,7 +18,6 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('xyz',
       {},
       400,
-      'SaverService',
       'xyz:unknown:')
   end
 
@@ -43,13 +42,11 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('group_manifest',
       { id: malformed_id },
       400,
-      'SaverService',
       'malformed:id:'
     )
     assert_dispatch_raises('group_join',
       {  id: malformed_id },
       400,
-      'SaverService',
       'malformed:id:'
     )
   end
@@ -113,7 +110,6 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('kata_tags',
       { id: malformed_id },
       400,
-      'SaverService',
       'malformed:id:'
     )
     assert_dispatch_raises('kata_tag',
@@ -121,7 +117,6 @@ class RackDispatcherTest < TestBase
           n: malformed_n
       },
       400,
-      'SaverService',
       'malformed:n:'
     )
   end
@@ -275,26 +270,27 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_dispatch_raises(name, args, status, class_name, message)
+  def assert_dispatch_raises(name, args, status, message)
     response,stderr = with_captured_stderr { rack_call(name, args) }
     body = args.to_json
     assert_equal status, response[0]
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_exception(response[2][0], name, body, class_name, message)
-    assert_exception(stderr,         name, body, class_name, message)
+    assert_exception(response[2][0], name, body, message)
+    assert_exception(stderr,         name, body, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception(s, name, body, class_name, message)
+  def assert_exception(s, name, body, message)
     json = JSON.parse(s)
     exception = json['exception']
     refute_nil exception
     assert_equal name, exception['path']
     assert_equal body, exception['body']
-    assert_equal class_name, exception['class']
+    assert_equal 'SaverService', exception['class']
     assert_equal message, exception['message']
     assert_equal 'Array', exception['backtrace'].class.name
+    assert_equal 'String', exception['backtrace'][0].class.name
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
