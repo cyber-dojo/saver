@@ -72,7 +72,11 @@ class RackDispatcher
   end
 
   def code(error)
-    error.is_a?(ClientError) ? 400 : 500
+    if error.is_a?(ClientError)
+      400
+    else
+      500
+    end
   end
 
   def plain(body)
