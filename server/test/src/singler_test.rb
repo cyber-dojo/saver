@@ -79,12 +79,16 @@ class SinglerTest < TestBase
     manifest = starter.manifest
     ell = 'L'
 
-    id = '12345' + ell.upcase
+    id = '2ta29' + ell.upcase
     manifest['id'] = id
     assert_equal id, kata_create(manifest)
 
-    id = '12345' + ell.downcase
+    id = '2ta29' + ell.downcase
     manifest['id'] = id
+    # Note that this call to kata_create() will fail
+    # with an exception if the file-system is case
+    # insensitive since it will see the dir as already
+    # existing. Windows and Mac users beware!
     assert_equal id, kata_create(manifest)
   end
 
