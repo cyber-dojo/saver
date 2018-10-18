@@ -37,6 +37,8 @@ wait_till_up "test-${MY_NAME}-starter"
 wait_till_up "test-${MY_NAME}-prometheus"
 wait_till_up "test-${MY_NAME}-grafana"
 
+# - - - - - - - - - - - - - - - - - - - -
+
 docker exec \
   --user root \
     "test-${MY_NAME}-storer" \
@@ -45,9 +47,9 @@ docker exec \
 docker exec \
   --user root \
     "test-${MY_NAME}-server" \
-      sh -c 'cd /groups && rm -rf *'
+      sh -c 'cd /groups && rm -rf * && chown -R saver:saver /groups'
 
 docker exec \
   --user root \
     "test-${MY_NAME}-server" \
-      sh -c 'cd /katas && rm -rf *'
+      sh -c 'cd /katas && rm -rf * && chown -R saver:saver /katas'

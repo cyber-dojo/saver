@@ -16,16 +16,7 @@ readonly COVERAGE_ROOT=/tmp/coverage
 run_server_tests()
 {
   docker exec \
-    --user root \
-    "${SERVER_CID}" \
-      sh -c 'rm -rf /groups/* && chown -R saver:saver /groups'
-
-  docker exec \
-    --user root \
-    "${SERVER_CID}" \
-      sh -c 'rm -rf /katas/* && chown -R saver:saver /katas'
-
-  docker exec \
+    --user saver:saver \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \
     "${SERVER_CID}" \
       sh -c "cd /app/test && ./run.sh ${*}"
@@ -48,6 +39,7 @@ run_server_tests()
 run_client_tests()
 {
   docker exec \
+    --user nobody:nogroup \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \
     "${CLIENT_CID}" \
       sh -c "cd /app/test && ./run.sh ${*}"
@@ -91,4 +83,3 @@ else
   echo
   exit 1
 fi
-

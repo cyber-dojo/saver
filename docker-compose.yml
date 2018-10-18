@@ -9,7 +9,7 @@ services:
   saver_client:
     build:
       context: client
-    user: nobody
+    user: nobody:nogroup
     image: cyberdojo/saver-client
     init: true
     container_name: test-saver-client
@@ -29,7 +29,7 @@ services:
       context: server
       args:
         - SHA
-    user: saver
+    user: saver:saver
     image: cyberdojo/saver
     init: true
     container_name: test-saver-server
@@ -47,7 +47,7 @@ services:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   storer:
-    user: storer
+    user: storer:storer
     image: cyberdojo/storer
     init: true
     container_name: test-saver-storer
@@ -79,7 +79,7 @@ services:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   starter:
-    user: nobody
+    user: nobody:nogroup
     image: cyberdojo/starter
     init: true
     container_name: test-saver-starter
