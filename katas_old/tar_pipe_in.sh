@@ -4,7 +4,7 @@ set -e
 # called from pipe_build_up_test.sh
 
 readonly MY_DIR="$( cd "$( dirname "${0}" )" && pwd )"
-readonly KATA_IDS=(5A0F824303)
+readonly KATA_IDS=(5A0F824303 1F00C1BFC8)
 readonly STORER_CONTAINER='test-saver-storer'
 
 # this must be set to the same value as Storer's path.
