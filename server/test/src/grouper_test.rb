@@ -126,7 +126,7 @@ class GrouperTest < TestBase
   test '424', %w(
   group_create(manifest) can be passed the id
   and uses that id when a storer practice session with that id already exists
-  since it is assumed porter is porting that very session
+  since it is assumed porter is porting that session
   ) do
     storer_id = '5A0F824303'[0..5]
     manifest = starter.manifest
