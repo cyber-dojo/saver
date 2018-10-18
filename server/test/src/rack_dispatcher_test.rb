@@ -16,7 +16,7 @@ class RackDispatcherTest < TestBase
   test 'E5A',
   'dispatch raises when method name is unknown' do
     assert_dispatch_raises('xyz',
-      {},
+      {}.to_json,
       400,
       'xyz:unknown:')
   end
@@ -27,7 +27,7 @@ class RackDispatcherTest < TestBase
 
   test 'E41',
   'dispatch to sha' do
-    assert_dispatch('sha', {},
+    assert_dispatch('sha', {}.to_json,
       "hello from #{stub_name}.sha"
     )
   end
@@ -40,12 +40,12 @@ class RackDispatcherTest < TestBase
   test 'E5B',
   'dispatch raises when any argument is malformed' do
     assert_dispatch_raises('group_manifest',
-      { id: malformed_id },
+      { id: malformed_id }.to_json,
       400,
       'malformed:id:'
     )
     assert_dispatch_raises('group_join',
-      {  id: malformed_id },
+      {  id: malformed_id }.to_json,
       400,
       'malformed:id:'
     )
@@ -56,7 +56,7 @@ class RackDispatcherTest < TestBase
   test 'E60',
   'dispatch to group_exists' do
     assert_dispatch('group_exists',
-      { id: well_formed_id },
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.group_exists?"
     )
   end
@@ -66,7 +66,7 @@ class RackDispatcherTest < TestBase
   test 'E5C',
   'dispatch to group_create' do
     assert_dispatch('group_create',
-      { manifest: starter.manifest },
+      { manifest: starter.manifest }.to_json,
       "hello from #{stub_name}.group_create"
     )
   end
@@ -76,7 +76,7 @@ class RackDispatcherTest < TestBase
   test 'E5E',
   'dispatch to group_manifest' do
     assert_dispatch('group_manifest',
-      { id: well_formed_id },
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.group_manifest"
     )
   end
@@ -86,7 +86,7 @@ class RackDispatcherTest < TestBase
   test 'E63',
   'dispatch to group_join' do
     assert_dispatch('group_join',
-      { id: well_formed_id, indexes: well_formed_indexes },
+      { id: well_formed_id, indexes: well_formed_indexes }.to_json,
       "hello from #{stub_name}.group_join"
     )
   end
@@ -96,7 +96,7 @@ class RackDispatcherTest < TestBase
   test 'E64',
   'dispatch to group_joined' do
     assert_dispatch('group_joined',
-      { id: well_formed_id},
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.group_joined"
     )
   end
@@ -108,14 +108,14 @@ class RackDispatcherTest < TestBase
   test 'A5B',
   'dispatch raises when any argument is malformed' do
     assert_dispatch_raises('kata_tags',
-      { id: malformed_id },
+      { id: malformed_id }.to_json,
       400,
       'malformed:id:'
     )
     assert_dispatch_raises('kata_tag',
       {  id: well_formed_id,
           n: malformed_n
-      },
+      }.to_json,
       400,
       'malformed:n:'
     )
@@ -126,7 +126,7 @@ class RackDispatcherTest < TestBase
   test 'A60',
   'dispatch to kata_exists' do
     assert_dispatch('kata_exists',
-      { id: well_formed_id },
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.kata_exists?"
     )
   end
@@ -135,7 +135,7 @@ class RackDispatcherTest < TestBase
 
   test 'A5C',
   'dispatch to kata_create' do
-    args = { manifest: starter.manifest }
+    args = { manifest: starter.manifest }.to_json
     assert_dispatch('kata_create', args,
       "hello from #{stub_name}.kata_create"
     )
@@ -147,7 +147,7 @@ class RackDispatcherTest < TestBase
   'kata_create(manifest) can include group which holds group-id' do
     manifest = starter.manifest
     manifest['group'] = '18Q67A'
-    args = { manifest: manifest }
+    args = { manifest: manifest }.to_json
     assert_dispatch('kata_create', args,
       "hello from #{stub_name}.kata_create"
     )
@@ -158,7 +158,7 @@ class RackDispatcherTest < TestBase
   test 'A5E',
   'dispatch to kata_manifest' do
     assert_dispatch('kata_manifest',
-      { id: well_formed_id },
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.kata_manifest"
     )
   end
@@ -176,7 +176,7 @@ class RackDispatcherTest < TestBase
         stderr: well_formed_stderr,
         status: well_formed_status,
         colour: well_formed_colour
-      },
+      }.to_json,
       "hello from #{stub_name}.kata_ran_tests"
     )
   end
@@ -186,7 +186,7 @@ class RackDispatcherTest < TestBase
   test 'A71',
   'dispatch to kata_tags' do
     assert_dispatch('kata_tags',
-      { id: well_formed_id },
+      { id: well_formed_id }.to_json,
       "hello from #{stub_name}.kata_tags"
     )
   end
@@ -198,7 +198,7 @@ class RackDispatcherTest < TestBase
     assert_dispatch('kata_tag',
       { id: well_formed_id,
          n: well_formed_n
-      },
+      }.to_json,
       "hello from #{stub_name}.kata_tag"
     )
   end
@@ -272,11 +272,10 @@ class RackDispatcherTest < TestBase
 
   def assert_dispatch_raises(name, args, status, message)
     response,stderr = with_captured_stderr { rack_call(name, args) }
-    body = args.to_json
     assert_equal status, response[0]
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_exception(response[2][0], name, body, message)
-    assert_exception(stderr,         name, body, message)
+    assert_exception(response[2][0], name, args, message)
+    assert_exception(stderr,         name, args, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -306,7 +305,7 @@ class RackDispatcherTest < TestBase
 
   def rack_call(name, args)
     rack = RackDispatcher.new(self, RackRequestStub)
-    env = { path_info:name, body:args.to_json }
+    env = { path_info:name, body:args }
     rack.call(env)
   end
 
