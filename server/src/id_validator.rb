@@ -8,7 +8,7 @@ class IdValidator
   def valid?(id)
     if grouper.group_exists?(id)
       false
-    elsif storer.katas_completed(id) != ''
+    elsif storer.katas_completed(id) != []
       false
     else
       true
