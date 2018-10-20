@@ -2,7 +2,7 @@ require_relative 'base58'
 require_relative 'client_error'
 require 'json'
 
-# Checks for arguments synactic correctness
+# Checks for arguments syntactic correctness
 
 class WellFormedArgs
 

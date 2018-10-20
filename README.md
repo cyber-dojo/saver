@@ -47,7 +47,7 @@ Returns the git commit sha used to create the docker image.
 
 ## GET group_exists?
 Asks whether the group practice-session with the given id exists.
-- parameters, eg
+- parameter, eg
 ```
   { "id": "55D3B9" }
 ```
@@ -61,7 +61,7 @@ Asks whether the group practice-session with the given id exists.
 
 ## POST group_create
 Creates a group practice-session from the given manifest.
-- parameters, eg
+- parameter, eg
 ```
     { "manifest": {
                    "created": [2017,12,15, 11,13,38],
@@ -142,7 +142,7 @@ Returns the individual practice-session avatar-index and id, eg
 ## GET group_joined
 Returns the individual practice-session avatar-index and id of everyone
 who has joined the group practice-session with the given id.
-- parameters, eg
+- parameter, eg
 ```
   { "id": "55D3B9" }
 ```
@@ -162,7 +162,7 @@ individual practice-sessions if it does. eg
 
 ## GET kata_exists?
 Asks whether the individual practice-session with the given id exists.
-- parameters, eg
+- parameter, eg
 ```
   { "id": "15B9AD" }
 ```
@@ -176,7 +176,7 @@ Asks whether the individual practice-session with the given id exists.
 
 ## POST kata_create
 Creates an individual practice-session from the given manifest.
-- parameters, eg
+- parameter, eg
 ```
     { "manifest": {
                    "created": [2017,12,15, 11,13,38],
@@ -273,7 +273,7 @@ Returns tags, eg
 ## GET kata_tags
 Returns details of all traffic-lights, for the individual practice-session
 with the given id.
-- parameters, eg
+- parameter, eg
 ```
   { "id": "A551C5" }
 ```
