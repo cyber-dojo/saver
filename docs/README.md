@@ -259,7 +259,7 @@ with the given traffic-light colour.
      "colour": "red"
   }
 ```
-Returns tags, eg
+Returns kata_events(id), eg
 ```
   { "kata_ran_tests": [
       {  "event": "created", "time": [2016,12,5, 11,15,18], "number": 0 },
