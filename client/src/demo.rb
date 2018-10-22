@@ -34,11 +34,11 @@ class Demo
       pre('kata_ran_tests') {
         saver.kata_ran_tests(@kid, 1, edited_files, now, stdout, stderr, status, colour)
       },
-      pre('kata_tags') {
-        saver.kata_tags(@kid)
+      pre('kata_events') {
+        saver.kata_events(@kid)
       },
-      pre('kata_tag') {
-        saver.kata_tag(@kid, 1)
+      pre('kata_event') {
+        saver.kata_event(@kid, 1)
       }
     ].join
     [ 200, { 'Content-Type' => 'text/html' }, [ html ] ]
@@ -130,5 +130,3 @@ class Demo
   end
 
 end
-
-
