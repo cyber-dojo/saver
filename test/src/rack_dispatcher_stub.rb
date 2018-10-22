@@ -38,6 +38,6 @@ class RackDispatcherStub
                        :kata_create,
                        :kata_manifest,
                        :kata_ran_tests,
-                       :kata_tags,
-                       :kata_tag
+                       :kata_events,
+                       :kata_event
 end

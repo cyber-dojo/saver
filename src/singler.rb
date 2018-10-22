@@ -35,7 +35,7 @@ class Singler
   def kata_manifest(id)
     assert_kata_exists(id)
     manifest = json_parse(kata_dir(id).read(manifest_filename))
-    manifest['visible_files'] = kata_tag(id, 0)['files']
+    manifest['visible_files'] = kata_event(id, 0)['files']
     manifest
   end
 
@@ -56,7 +56,7 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_tags(id)
+  def kata_events(id)
     # A cache of colours/time-stamps for all [test] events.
     # Helps optimize dashboard traffic-lights views.
     assert_kata_exists(id)
@@ -65,7 +65,7 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_tag(id, n)
+  def kata_event(id, n)
     if n == -1
       assert_kata_exists(id)
       n = tag_most_recent(id)

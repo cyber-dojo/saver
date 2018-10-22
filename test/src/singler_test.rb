@@ -146,14 +146,14 @@ class SinglerTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # kata_ran_tests(id,...), kata_tags(id), kata_tag(id,n)
+  # kata_ran_tests(id,...), kata_events(id), kata_event(id,n)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '821',
-  'kata_tags raises when id does not exist' do
+  'kata_events raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
-      kata_tags(id)
+      kata_events(id)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -161,10 +161,10 @@ class SinglerTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '822',
-  'kata_tag raises when n does not exist' do
+  'kata_event raises when n does not exist' do
     id = stub_kata_create('AB5AEE')
     error = assert_raises(ArgumentError) {
-      kata_tag(id, 1)
+      kata_event(id, 1)
     }
     assert_equal 'n:invalid:1', error.message
   end
@@ -184,7 +184,7 @@ class SinglerTest < TestBase
 
   test '824', %w(
   kata_ran_tests raises when n is -1
-  because -1 can only be used on tag()
+  because -1 can only be used on kata_event()
   ) do
     id = stub_kata_create('FCF211')
     error = assert_raises(ArgumentError) {
@@ -210,27 +210,27 @@ class SinglerTest < TestBase
 
   test '826', %w(
   kata_ran_tests raises when n already exists
-  and does not add a new tag,
+  and does not add a new event,
   in other words it fails atomically ) do
     id = stub_kata_create('C7112B')
-    expected = []
-    expected << tags0
-    assert_equal expected, kata_tags(id)
+    expected_events = []
+    expected_events << event0
+    assert_equal expected_events, kata_events(id)
 
     kata_ran_tests(*make_args(id, 1, edited_files))
-    expected << {
+    expected_events << {
       'colour' => red,
       'time' => time_now,
       'number' => 1
     }
-    assert_equal expected, kata_tags(id)
+    assert_equal expected_events, kata_events(id)
 
     error = assert_raises(ArgumentError) {
       kata_ran_tests(*make_args(id, 1, edited_files))
     }
     assert_equal 'n:invalid:1', error.message
 
-    assert_equal expected, kata_tags(id)
+    assert_equal expected_events, kata_events(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -248,36 +248,36 @@ class SinglerTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '829',
-  'after kata_ran_tests() there is one more tag' do
+  'after kata_ran_tests() there is one more event' do
     id = stub_kata_create('9DD618')
 
-    expected_tags = [tags0]
-    diagnostic = '#0 kata_tags(id)'
-    assert_equal expected_tags, kata_tags(id), diagnostic
+    expected_events = [event0]
+    diagnostic = '#0 kata_events(id)'
+    assert_equal expected_events, kata_events(id), diagnostic
 
     files = starter.manifest['visible_files']
-    expected = rag_tag(files, '', '', 0)
-    assert_equal expected, kata_tag(id, 0), 'kata_tag(id,0)'
-    assert_equal expected, kata_tag(id, -1), 'kata_tag(id,-1)'
+    expected = rag_event(files, '', '', 0)
+    assert_equal expected, kata_event(id, 0), 'kata_event(id,0)'
+    assert_equal expected, kata_event(id, -1), 'kata_event(id,-1)'
 
     kata_ran_tests(*make_args(id, 1, edited_files))
 
-    expected_tags << {
+    expected_events << {
       'colour' => red,
       'time'   => time_now,
-      'number' => (now_tag=1)
+      'number' => (now_event=1)
     }
-    diagnostic = '#1 kata_tags(id)'
-    assert_equal expected_tags, kata_tags(id), diagnostic
+    diagnostic = '#1 kata_events(id)'
+    assert_equal expected_events, kata_events(id), diagnostic
 
-    expected = rag_tag(edited_files, stdout, stderr, status)
-    assert_equal expected, kata_tag(id, 1), 'kata_tag(id,1)'
-    assert_equal expected, kata_tag(id, -1), 'kata_tag(id,-1)'
+    expected = rag_event(edited_files, stdout, stderr, status)
+    assert_equal expected, kata_event(id, 1), 'kata_event(id,1)'
+    assert_equal expected, kata_event(id, -1), 'kata_event(id,-1)'
   end
 
   private
 
-  def tags0
+  def event0
     {
       'event'  => 'created',
       'time'   => creation_time,
@@ -285,7 +285,7 @@ class SinglerTest < TestBase
     }
   end
 
-  def rag_tag(files, stdout, stderr, status)
+  def rag_event(files, stdout, stderr, status)
     {
       'files' => files,
       'stdout' => stdout,

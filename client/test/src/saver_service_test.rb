@@ -119,54 +119,56 @@ class SaverServiceTest < TestBase
   test '8F9', %w(
   after kata_create() then
   and kata_exists?() is true
-  and the kata_tags has tag0
+  and the kata_events has event0
   and the kata_manifest can be retrieved ) do
     manifest = starter.manifest
     id = saver.kata_create(manifest)
     assert saver.kata_exists?(id)
-    assert_equal([tag0], saver.kata_tags(id))
+    assert_equal([event0], saver.kata_events(id))
 
     files = manifest['visible_files']
-    expected = {
+    expected_events = {
       'files' => files,
       'stdout' => '',
       'stderr' => '',
       'status' => 0
     }
-    assert_equal expected, saver.kata_tag(id, 0)
-    assert_equal expected, saver.kata_tag(id, -1)
+    assert_equal expected_events, saver.kata_event(id, 0)
+    assert_equal expected_events, saver.kata_event(id, -1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '820',
-  'kata_ran_tests() returns tags' do
-    # This is an optimization to avoid web service
-    # having to make a call back to storer to get the
-    # tag numbers for the new traffic-light's diff handler.
+  test '820', %w(
+  kata_ran_tests() returns events
+  which is an optimization to avoid web service
+  having to make a call back to saver to get the
+  event numbers for the new traffic-light's diff handler
+  and I'd like to make kata_ran_tests() return nothing
+  ) do
     id = saver.kata_create(starter.manifest)
-    tag1_files = starter.manifest['visible_files']
-    tag1_files.delete('hiker.h')
+    event1_files = starter.manifest['visible_files']
+    event1_files.delete('hiker.h')
     now = [2016,12,5, 21,1,34]
     stdout = 'missing include'
     stderr = 'assert failed'
     status = 6
     colour = 'amber'
-    tags = saver.kata_ran_tests(id, 1, tag1_files, now, stdout, stderr, status, colour)
-    expected = [
-      tag0,
+    events = saver.kata_ran_tests(id, 1, event1_files, now, stdout, stderr, status, colour)
+    expected_events = [
+      event0,
       {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1}
     ]
-    assert_equal expected, tags
+    assert_equal expected_events, events
 
     now = [2016,12,5, 21,2,15]
-    tags = saver.kata_ran_tests(id, 2, tag1_files, now, stdout, stderr, status, colour)
-    expected = [
-      tag0,
+    events = saver.kata_ran_tests(id, 2, event1_files, now, stdout, stderr, status, colour)
+    expected_events = [
+      event0,
       {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1},
       {"colour"=>"amber", "time"=>[2016,12,5, 21,2,15], "number"=>2}
     ]
-    assert_equal expected, tags
+    assert_equal expected_events, events
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -190,7 +192,7 @@ class SaverServiceTest < TestBase
 
   private
 
-  def tag0
+  def event0
     {
       'event'  => 'created',
       'time'   => starter.creation_time,

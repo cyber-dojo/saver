@@ -27,8 +27,8 @@ API:
 - [POST kata_create(manifest)](#post-kata_createmanifest)
 - [GET kata_manifest(id)](#get-kata_manifestid)
 - [POST kata_ran_tests(id,n,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidnfilesnowstdoutstderrstatuscolour)
-- [GET kata_tags(id)](#get-kata_tagsid)
-- [GET kata_tag(id,n)](#get-kata_tagidn)
+- [GET kata_events(id)](#get-kata_eventsid)
+- [GET kata_event(id,n)](#get-kata_eventidn)
 
 - - - -
 
@@ -270,8 +270,8 @@ Returns tags, eg
 
 - - - -
 
-## GET kata_tags(id)
-Returns details of all traffic-lights, for the individual practice-session
+## GET kata_events(id)
+Returns details of all events, for the individual practice-session
 with the given id.
 - parameter, eg
 ```
@@ -290,10 +290,10 @@ with the given id.
 
 - - - -
 
-## GET kata_tag(id,n)
+## GET kata_event(id,n)
 Returns the files, stdout, stderr, status,
 for the individual practice-session with the given id,
-and the given tag number n.
+and the given event number n.
 - parameters, eg
 ```
   { "id": "A551C5",

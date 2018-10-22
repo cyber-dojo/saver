@@ -123,12 +123,12 @@ class RackDispatcherTest < TestBase
 
   test 'A5B',
   'dispatch raises when any argument is malformed' do
-    assert_dispatch_raises('kata_tags',
+    assert_dispatch_raises('kata_events',
       { id: malformed_id }.to_json,
       400,
       'malformed:id:'
     )
-    assert_dispatch_raises('kata_tag',
+    assert_dispatch_raises('kata_event',
       {  id: well_formed_id,
           n: malformed_n
       }.to_json,
@@ -200,22 +200,22 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A71',
-  'dispatch to kata_tags' do
-    assert_dispatch('kata_tags',
+  'dispatch to kata_events' do
+    assert_dispatch('kata_events',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.kata_tags"
+      "hello from #{stub_name}.kata_events"
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A72',
-  'dispatch to kata_tag' do
-    assert_dispatch('kata_tag',
+  'dispatch to kata_event' do
+    assert_dispatch('kata_event',
       { id: well_formed_id,
          n: well_formed_n
       }.to_json,
-      "hello from #{stub_name}.kata_tag"
+      "hello from #{stub_name}.kata_event"
     )
   end
 

@@ -46,12 +46,12 @@ class TestBase < HexMiniTest
     singler.kata_ran_tests(id, n, files, now, stdout, stderr, status, colour)
   end
 
-  def kata_tags(id)
-    singler.kata_tags(id)
+  def kata_events(id)
+    singler.kata_events(id)
   end
 
-  def kata_tag(id, n)
-    singler.kata_tag(id, n)
+  def kata_event(id, n)
+    singler.kata_event(id, n)
   end
 
   #- - - - - - - - - - - - - - -
