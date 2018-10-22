@@ -17,10 +17,10 @@ API:
     * If the method completes, the key equals the method's name.
     * If the method raises an exception, the key equals "exception".
 
-- [GET sha](#get-sha)
-- [GET group_exists?](#get-group_exists)
-- [POST group_create](#post-group_create)
-- [GET group_manifest](#get-group_manifest)
+- [GET sha()](#get-sha)
+- [GET group_exists?(id)](#get-group_existsid)
+- [POST group_create(manifest)](#post-group_createmanifest)
+- [GET group_manifest(id)](#get-group_manifestid)
 - [POST group_join](#post-group_join)
 - [GET group_joined](#get-group_joined)
 - [GET kata_exists?](#get-kata_exists)
@@ -32,7 +32,7 @@ API:
 
 - - - -
 
-## GET sha
+## GET sha()
 Returns the git commit sha used to create the docker image.
 - parameters, none
 ```
@@ -45,7 +45,7 @@ Returns the git commit sha used to create the docker image.
 
 - - - -
 
-## GET group_exists?
+## GET group_exists?(id)
 Asks whether the group practice-session with the given id exists.
 - parameter, eg
 ```
@@ -59,7 +59,7 @@ Asks whether the group practice-session with the given id exists.
 
 - - - -
 
-## POST group_create
+## POST group_create(manifest)
 Creates a group practice-session from the given manifest.
 - parameter, eg
 ```
@@ -90,7 +90,7 @@ Creates a group practice-session from the given manifest.
 
 - - - -
 
-## GET group_manifest
+## GET group_manifest(id)
 Returns the group manifest used to create the group practice-session with the given id.
 - parameter, eg
 ```
