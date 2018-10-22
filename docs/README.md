@@ -21,14 +21,14 @@ API:
 - [GET group_exists?(id)](#get-group_existsid)
 - [POST group_create(manifest)](#post-group_createmanifest)
 - [GET group_manifest(id)](#get-group_manifestid)
-- [POST group_join](#post-group_join)
-- [GET group_joined](#get-group_joined)
-- [GET kata_exists?](#get-kata_exists)
-- [POST kata_create](#post-kata_create)
-- [GET kata_manifest](#get-kata_manifest)
-- [POST kata_ran_tests](#post-kata_ran_tests)
-- [GET kata_tags](#get-kata_tags)
-- [GET kata_tag](#get-kata_tag)
+- [POST group_join(id,indexes)](#post-group_joinidindexes)
+- [GET group_joined(id)](#get-group_joinedid)
+- [GET kata_exists?(id)](#get-kata_existsid)
+- [POST kata_create(manifest)](#post-kata_createmanifest)
+- [GET kata_manifest(id)](#get-kata_manifestid)
+- [POST kata_ran_tests(id,n,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidnfilesnowstdoutstderrstatuscolour)
+- [GET kata_tags(id)](#get-kata_tagsid)
+- [GET kata_tag(id,n)](#get-kata_tagidn)
 
 - - - -
 
@@ -122,7 +122,7 @@ Returns the group manifest used to create the group practice-session with the gi
 
 - - - -
 
-## POST group_join
+## POST group_join(id,indexes)
 Join the group practice-session with the given group id.
 The indexes parameter, when sorted, must be (0..63).to_a
 and determines the avatar join attempt order.
@@ -139,7 +139,7 @@ Returns the individual practice-session avatar-index and id, eg
 
 - - - -
 
-## GET group_joined
+## GET group_joined(id)
 Returns the individual practice-session avatar-index and id of everyone
 who has joined the group practice-session with the given id.
 - parameter, eg
@@ -160,7 +160,7 @@ individual practice-sessions if it does. eg
 
 - - - -
 
-## GET kata_exists?
+## GET kata_exists?(id)
 Asks whether the individual practice-session with the given id exists.
 - parameter, eg
 ```
@@ -174,7 +174,7 @@ Asks whether the individual practice-session with the given id exists.
 
 - - - -
 
-## POST kata_create
+## POST kata_create(manifest)
 Creates an individual practice-session from the given manifest.
 - parameter, eg
 ```
@@ -204,7 +204,7 @@ Creates an individual practice-session from the given manifest.
 
 - - - -
 
-## GET kata_manifest
+## GET kata_manifest(id)
 Returns the manifest used to create the individual practice-session with the given id.
 - parameter, eg
 ```
@@ -236,7 +236,7 @@ Returns the manifest used to create the individual practice-session with the giv
 
 - - - -
 
-## POST kata_ran_tests
+## POST kata_ran_tests(id,n,files,now,stdout,stderr,status,colour)
 In the individual practice-session with the given id,
 the given files were submitted as tag number n,
 at the given time, which produced the given stdout, stderr, status,
@@ -270,7 +270,7 @@ Returns tags, eg
 
 - - - -
 
-## GET kata_tags
+## GET kata_tags(id)
 Returns details of all traffic-lights, for the individual practice-session
 with the given id.
 - parameter, eg
@@ -290,7 +290,7 @@ with the given id.
 
 - - - -
 
-## GET kata_tag
+## GET kata_tag(id,n)
 Returns the files, stdout, stderr, status,
 for the individual practice-session with the given id,
 and the given tag number n.
