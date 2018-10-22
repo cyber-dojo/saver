@@ -86,4 +86,4 @@ services:
     read_only: true
     tmpfs: /tmp
     volumes:
-      - ./start_points:/app/start_points:ro
+      - ./test/start_points:/app/start_points:ro
