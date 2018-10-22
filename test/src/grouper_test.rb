@@ -174,13 +174,15 @@ class GrouperTest < TestBase
 
   test '1D3', %w(
   group_join with valid id succeeds and
-  manifest of joined participant contains group id ) do
+  manifest of joined participant contains
+  the group id and the avatar index ) do
     stub_id = stub_group_create('E9r17F')
     shuffled = indexes
     index,id = group_join(stub_id, shuffled)
     assert_equal shuffled[0], index
     manifest = singler.kata_manifest(id)
     assert_equal stub_id, manifest['group']
+    assert_equal index, manifest['index']
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

@@ -125,6 +125,20 @@ class SinglerTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
+  test '42B', %w(
+  kata_create() an individual practice-session
+  results in a manifest that does not contain entries
+  for group or index
+  ) do
+    manifest = starter.manifest
+    id = kata_create(manifest)
+    manifest = kata_manifest(id)
+    assert_nil manifest['group']
+    assert_nil manifest['index']
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
   test '42D',
   'kata_manifest raises when id does not exist' do
     id = 'B4AB37'

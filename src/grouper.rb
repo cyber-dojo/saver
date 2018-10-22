@@ -45,6 +45,7 @@ class Grouper
       manifest = group_manifest(id)
       manifest.delete('id')
       manifest['group'] = id
+      manifest['index'] = index
       sid = singler.kata_create(manifest)
       group_dir(id,index).write('id.json', json_pretty({ 'id' => sid }))
       [index, sid]
