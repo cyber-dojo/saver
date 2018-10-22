@@ -19,14 +19,14 @@ class Singler
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
     dir = kata_dir(id)
-    tag_write(id, 0, files, '', '', 0)
+    event_write(id, 0, files, '', '', 0)
     dir.write(manifest_filename, json_pretty(manifest))
-    tag0 = {
+    event0 = {
          'event' => 'created',
           'time' => manifest['created'],
         'number' => 0
       }
-    tags_append(id, tag0)
+    events_append(id, event0)
     id
   end
 
@@ -47,11 +47,11 @@ class Singler
       invalid('n', n)
     end
 
-    tag_write(id, n, files, stdout, stderr, status)
-    tag = { 'colour' => colour, 'time' => now, 'number' => n }
-    tags_append(id, tag)
+    event_write(id, n, files, stdout, stderr, status)
+    event = { 'colour' => colour, 'time' => now, 'number' => n }
+    events_append(id, event)
 
-    tags_read(id)
+    events_read(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -60,7 +60,7 @@ class Singler
     # A cache of colours/time-stamps for all [test] events.
     # Helps optimize dashboard traffic-lights views.
     assert_kata_exists(id)
-    tags_read(id)
+    events_read(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -68,13 +68,13 @@ class Singler
   def kata_event(id, n)
     if n == -1
       assert_kata_exists(id)
-      n = tag_most_recent(id)
+      n = event_most_recent(id)
     else
-      unless tag_exists?(id, n)
+      unless event_exists?(id, n)
         invalid('n', n)
       end
     end
-    tag_read(id, n)
+    event_read(id, n)
   end
 
   private
@@ -111,31 +111,31 @@ class Singler
 
   # - - - - - - - - - - - - - -
 
-  def tags_append(id, tag)
-    kata_dir(id).append(tags_filename, json_plain(tag) + "\n")
+  def events_append(id, event)
+    kata_dir(id).append(events_filename, json_plain(event) + "\n")
   end
 
-  def tags_read(id)
-    tags_read_lined(id).lines.map{ |line|
+  def events_read(id)
+    events_read_lined(id).lines.map{ |line|
       json_parse(line)
     }
   end
 
-  def tags_read_lined(id)
-    kata_dir(id).read(tags_filename)
+  def events_read_lined(id)
+    kata_dir(id).read(events_filename)
   end
 
-  def tags_filename
-    'tags.json'
+  def events_filename
+    'events.json'
   end
 
   # - - - - - - - - - - - - - -
 
-  def tag_exists?(id, n)
+  def event_exists?(id, n)
     kata_dir(id, n).exists?
   end
 
-  def tag_write(id, n, files, stdout, stderr, status)
+  def event_write(id, n, files, stdout, stderr, status)
     dir = kata_dir(id,n)
     unless dir.make
       invalid('n', n)
@@ -146,19 +146,19 @@ class Singler
       'stderr' => stderr,
       'status' => status
     }
-    dir.write(tag_filename, json_pretty(json))
+    dir.write(event_filename, json_pretty(json))
   end
 
-  def tag_read(id, n)
-    json_parse(kata_dir(id,n).read(tag_filename))
+  def event_read(id, n)
+    json_parse(kata_dir(id,n).read(event_filename))
   end
 
-  def tag_most_recent(id)
-    tags_read_lined(id).count("\n") - 1
+  def event_most_recent(id)
+    events_read_lined(id).count("\n") - 1
   end
 
-  def tag_filename
-    'tag.json'
+  def event_filename
+    'event.json'
   end
 
   # - - - - - - - - - - - - - -
