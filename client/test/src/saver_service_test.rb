@@ -157,17 +157,15 @@ class SaverServiceTest < TestBase
     events = saver.kata_ran_tests(id, 1, event1_files, now, stdout, stderr, status, colour)
     expected_events = [
       event0,
-      {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1}
+      { 'colour'=>'amber', 'time'=>now, 'number'=>1 }
     ]
     assert_equal expected_events, events
 
     now = [2016,12,5, 21,2,15]
     events = saver.kata_ran_tests(id, 2, event1_files, now, stdout, stderr, status, colour)
-    expected_events = [
-      event0,
-      {"colour"=>"amber", "time"=>[2016,12,5, 21,1,34], "number"=>1},
-      {"colour"=>"amber", "time"=>[2016,12,5, 21,2,15], "number"=>2}
-    ]
+    expected_events <<
+       { 'colour' => 'amber', 'time' => now, 'number'=> 2 }
+
     assert_equal expected_events, events
   end
 
