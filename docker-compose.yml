@@ -26,7 +26,7 @@ services:
 
   saver:
     build:
-      context: server
+      context: .
       args:
         - SHA
     user: saver:saver
