@@ -57,18 +57,18 @@ class Grouper
 
   def group_joined(id)
     if !group_exists?(id)
-      result = nil
+      ids = nil
     else
-      result = {}
+      ids = []
       64.times { |index|
         dir = group_dir(id, index)
         if dir.exists?
           json = json_parse(dir.read('kid.json'))
-          result[index] = json['id']
+          ids << json['id']
         end
       }
     end
-    result
+    ids
   end
 
   private

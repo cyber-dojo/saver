@@ -177,11 +177,12 @@ class GrouperTest < TestBase
   and returns the kata's id
   and the manifest of joined participant contains
   the group id and the avatar index ) do
-    stub_id = stub_group_create('E9r17F')
+    gid = stub_group_create('E9r17F')
     shuffled = indexes
-    kid = group_join(stub_id, shuffled)
-    manifest = singler.kata_manifest(kid)
-    assert_equal stub_id, manifest['group']
+    kid = group_join(gid, shuffled)
+    assert kata_exists?(kid)
+    manifest = kata_manifest(kid)
+    assert_equal gid, manifest['group']
     assert_equal shuffled[0], manifest['index']
   end
 
@@ -191,19 +192,28 @@ class GrouperTest < TestBase
   group_join with a valid id succeeds 64 times
   then its full and it fails with nil
   ) do
-    stub_id = stub_group_create('z47983')
-    joined = []
+    gid = stub_group_create('z47983')
+    kids = []
+    avatar_indexes = []
     64.times do
-      kid = group_join(stub_id, indexes)
+      kid = group_join(gid, indexes)
+      refute_nil kid
       assert kid.is_a?(String), "kid is a #{kid.class.name}!"
-      assert singler.kata_exists?(kid), "!singler.kata_exists?(#{kid})"
-      index = singler.kata_manifest(kid)['index']
-      refute joined.include?(index), "joined.include?(#{index})!"
-      joined << index
+      assert_equal 6, kid.size
+      assert kata_exists?(kid), "!kata_exists?(#{kid})"
+      kids << kid
+      assert_equal kids.sort, group_joined(gid).sort
+
+      index = kata_manifest(kid)['index']
+      refute_nil index
+      assert index.is_a?(Integer), "index is a #{index.class.name}"
+      assert (0..63).include?(index), "!(0..63).include?(#{index})"
+      refute avatar_indexes.include?(index), "avatar_indexes.include?(#{index})!"
+      avatar_indexes << index
     end
-    refute_equal (0..63).to_a, joined
-    assert_equal (0..63).to_a, joined.sort
-    assert_nil group_join(stub_id, indexes)
+    refute_equal (0..63).to_a, avatar_indexes
+    assert_equal (0..63).to_a, avatar_indexes.sort
+    assert_nil group_join(gid, indexes)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -217,16 +227,17 @@ class GrouperTest < TestBase
 
   test '1D5',
   'group_joined information can be retrieved' do
-    stub_id = stub_group_create('58k563')
-    hash = group_joined(stub_id)
-    assert_equal({}, hash, 'someone has already joined!')
+    gid = stub_group_create('58k563')
+    kids = group_joined(gid)
+    expected = []
+    assert_equal(expected, kids, 'someone has already joined!')
     (1..4).to_a.each do |n|
-      kid = group_join(stub_id, indexes)
-      index = singler.kata_manifest(kid)['index']
-      hash = group_joined(stub_id)
-      assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
-      assert_equal n, hash.size, 'incorrect size!'
-      assert_equal kid, hash[index], 'does not round-trip!'
+      kid = group_join(gid, indexes)
+      expected << kid
+      kids = group_joined(gid)
+      assert kids.is_a?(Array), "kids is a #{kids.class.name}!"
+      assert_equal n, kids.size, 'incorrect size!'
+      assert_equal expected.sort, kids.sort, 'does not round-trip!'
     end
   end
 

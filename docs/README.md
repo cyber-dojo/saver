@@ -147,7 +147,7 @@ Returns the individual practice-session id if not full, eg
 - - - -
 
 ## GET group_joined(id)
-Returns the individual practice-session avatar-index and id of everyone
+Returns the individual practice-session ids of everyone
 who has joined the group practice-session with the given id.
 - parameter, eg
 ```
@@ -157,13 +157,13 @@ who has joined the group practice-session with the given id.
 ```
   { "group_joined": null }
 ```
-- returns the index:id of the individual practice-sessions if it does, eg
+- returns the ids of the individual practice-sessions if it does, eg
 ```
-{ "group_joined": {
-     "6": "D6a57F",
-    "34": "C4Ac8b",
-    "11": "454F91"
-  }
+{ "group_joined": [
+     "D6a57F",
+     "C4Ac8b",
+     "454F91"
+  ]
 }
 ```
 
