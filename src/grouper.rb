@@ -46,10 +46,9 @@ class Grouper
       manifest.delete('id')
       manifest['group'] = id
       manifest['index'] = index
-      kid = singler.kata_create(manifest)
-      # TODO: no need for json here
-      group_dir(id,index).write('kid.json', json_pretty({ 'id' => kid }))
-      kid
+      kata_id = singler.kata_create(manifest)
+      group_dir(id,index).write('kata.id', kata_id)
+      kata_id
     end
   end
 
@@ -57,18 +56,18 @@ class Grouper
 
   def group_joined(id)
     if !group_exists?(id)
-      ids = nil
+      kata_ids = nil
     else
-      ids = []
+      kata_ids = []
       64.times { |index|
         dir = group_dir(id, index)
         if dir.exists?
-          json = json_parse(dir.read('kid.json'))
-          ids << json['id']
+          kata_id = dir.read('kata.id')
+          kata_ids << kata_id
         end
       }
     end
-    ids
+    kata_ids
   end
 
   private
