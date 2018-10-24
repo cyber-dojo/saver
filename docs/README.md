@@ -49,11 +49,14 @@ Returns the git commit sha used to create the docker image.
 Asks whether the group practice-session with the given id exists.
 - parameter, eg
 ```
-  { "id": "55D3B9" }
+  { "id": "55d3B9" }
 ```
-- returns true if it does, false if it doesn't, eg
+- returns true if it does, eg
 ```
   { "group_exists?": true   }
+```
+- returns false if it doesn't, eg
+```
   { "group_exists?": false  }
 ```
 
@@ -85,7 +88,7 @@ Creates a group practice-session from the given manifest.
 ```
 - returns the id of the created group practice-session, eg
 ```
-  { "group_create": "55D3B9" }
+  { "group_create": "55d3B9" }
 ```
 
 - - - -
@@ -94,12 +97,12 @@ Creates a group practice-session from the given manifest.
 Returns the group manifest used to create the group practice-session with the given id.
 - parameter, eg
 ```
-  { "id": "55D3B9" }
+  { "id": "55d3B9" }
 ```
 - returns, eg
 ```
     { "group_manifest": {
-                        "id": "55D3B9",
+                        "id": "55d3B9",
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
@@ -128,13 +131,17 @@ The indexes parameter, when sorted, must be (0..63).to_a
 and determines the avatar join attempt order.
 - parameters, eg
 ```
-  { "id": "55D3B9",
+  { "id": "55d3B9",
     "indexes": [61, 8, 28, ..., 13, 32, 42]
   }
 ```
-Returns the individual practice-session avatar-index and id, eg
+Returns null if the group is full, eg
 ```
-  { "group_join": [ 6, "D6A57F" ] }
+  { "group_join": null }
+```
+Returns the individual practice-session id if not full, eg
+```
+  { "group_join": "D6a57F" }
 ```
 
 - - - -
@@ -144,18 +151,20 @@ Returns the individual practice-session avatar-index and id of everyone
 who has joined the group practice-session with the given id.
 - parameter, eg
 ```
-  { "id": "55D3B9" }
+  { "id": "55d3B9" }
 ```
-- returns null if the id does not exist, or the index:id of the
-individual practice-sessions if it does. eg
+- returns null if the id does not exist, eg
 ```
   { "group_joined": null }
-  { "group_joined": {
-       "6": "D6A57F",
-      "34": "C4AC8B",
-      "11": "454F91"
-    }
+```
+- returns the index:id of the individual practice-sessions if it does, eg
+```
+{ "group_joined": {
+     "6": "D6a57F",
+    "34": "C4Ac8b",
+    "11": "454F91"
   }
+}
 ```
 
 - - - -
@@ -164,11 +173,14 @@ individual practice-sessions if it does. eg
 Asks whether the individual practice-session with the given id exists.
 - parameter, eg
 ```
-  { "id": "15B9AD" }
+  { "id": "15B9aD" }
 ```
-- returns true if it does, false if it doesn't, eg
+- returns true if it does, eg
 ```
   { "kata_exist?": true   }
+```
+- returns false if it doesn't, eg
+```
   { "kata_exist?": false  }
 ```
 
@@ -199,7 +211,7 @@ Creates an individual practice-session from the given manifest.
 ```
 - returns the id of the created individual practice-session, eg
 ```
-  { "kata_create": "A551C5" }
+  { "kata_create": "a551C5" }
 ```
 
 - - - -
@@ -208,12 +220,12 @@ Creates an individual practice-session from the given manifest.
 Returns the manifest used to create the individual practice-session with the given id.
 - parameter, eg
 ```
-  { "id": "A551C5" }
+  { "id": "a551C5" }
 ```
 - returns, eg
 ```
     { "kata_manifest": {
-                        "id": "A551C5",
+                        "id": "a551C5",
                    "created": [2017,12,15, 11,13,38],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
@@ -243,7 +255,7 @@ at the given time, which produced the given stdout, stderr, status,
 with the given traffic-light colour.
 - parameters, eg
 ```
-  {      "id": "A551C5",
+  {      "id": "a551C5",
           "n": 3,
       "files": {       "hiker.h" : "ifndef HIKER_INCLUDED\n...",
                        "hiker.c" : "#include \"hiker.h\"...",
@@ -275,11 +287,11 @@ Returns details of all events, for the individual practice-session
 with the given id.
 - parameter, eg
 ```
-  { "id": "A551C5" }
+  { "id": "a551C5" }
 ```
 - returns, eg
 ```
-  { "kata_tags": [
+  { "kata_events": [
       {  "event": "created", "time": [2016,12,5, 11,15,18], "number": 0 },
       { "colour": "red,      "time": [2016,12,6, 12,31,15], "number": 1 },
       { "colour": "green",   "time": [2016,12,6, 12,32,56], "number": 2 },
@@ -296,13 +308,13 @@ for the individual practice-session with the given id,
 and the given event number n.
 - parameters, eg
 ```
-  { "id": "A551C5",
+  { "id": "a551C5",
      "n": 3
   }
 ```
 - returns, eg
 ```
-  { "kata_tag": {
+  { "kata_event": {
            "files": {
               "hiker.h" : "ifndef HIKER_INCLUDED\n...",
               "hiker.c" : "#include \"hiker.h\"...",
