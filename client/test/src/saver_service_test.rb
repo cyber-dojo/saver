@@ -147,11 +147,7 @@ class SaverServiceTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '820', %w(
-  kata_ran_tests() returns events
-  which is an optimization to avoid web service
-  having to make a call back to saver to get the
-  event numbers for the new traffic-light's diff handler
-  and I'd like to make kata_ran_tests() return nothing
+  kata_ran_tests() returns nothing
   ) do
     id = saver.kata_create(starter.manifest)
     event1_files = starter.manifest['visible_files']
@@ -161,19 +157,38 @@ class SaverServiceTest < TestBase
     stderr = 'assert failed'
     status = 6
     colour = 'amber'
-    events = saver.kata_ran_tests(id, 1, event1_files, now, stdout, stderr, status, colour)
+    result = saver.kata_ran_tests(id, 1, event1_files, now, stdout, stderr, status, colour)
+    assert_nil result
+
     expected_events = [
       event0,
       { 'colour'=>'amber', 'time'=>now }
     ]
-    assert_equal expected_events, events
+    assert_equal expected_events, saver.kata_events(id)
+    assert_equal({
+      'files' => event1_files,
+      'stdout' => stdout,
+      'stderr' => stderr,
+      'status' => status
+      }, saver.kata_event(id, 1))
 
     now = [2016,12,5, 21,2,15]
-    events = saver.kata_ran_tests(id, 2, event1_files, now, stdout, stderr, status, colour)
+    event2_files = event1_files
+    event2_files['extra.hpp'] = '#include <stdio.h>'
+    stdout = 'all tests passed'
+    stderr = ''
+    status = 0
+    colour = 'green'
+    events = saver.kata_ran_tests(id, 2, event2_files, now, stdout, stderr, status, colour)
     expected_events <<
-       { 'colour' => 'amber', 'time' => now }
-
-    assert_equal expected_events, events
+       { 'colour' => 'green', 'time' => now }
+    assert_equal expected_events, saver.kata_events(id)
+    assert_equal({
+      'files' => event2_files,
+      'stdout' => stdout,
+      'stderr' => stderr,
+      'status' => status
+      }, saver.kata_event(id, 2))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -271,14 +271,7 @@ with the given traffic-light colour.
      "colour": "red"
   }
 ```
-Returns kata_events(id), eg
-```
-  { "kata_ran_tests": [
-      {  "event": "created", "time": [2016,12,5, 11,15,18], "number": 0 },
-      { "colour": "red,      "time": [2016,12,6, 12,31,15], "number": 1 }
-    ]
-  }
-```
+Returns nothing.
 
 - - - -
 
@@ -292,10 +285,10 @@ with the given id.
 - returns, eg
 ```
   { "kata_events": [
-      {  "event": "created", "time": [2016,12,5, 11,15,18], "number": 0 },
-      { "colour": "red,      "time": [2016,12,6, 12,31,15], "number": 1 },
-      { "colour": "green",   "time": [2016,12,6, 12,32,56], "number": 2 },
-      { "colour": "amber",   "time": [2016,12,6, 12,43,19], "number": 3 }
+      {  "event": "created", "time": [2016,12,5, 11,15,18] },
+      { "colour": "red,      "time": [2016,12,6, 12,31,15] },
+      { "colour": "green",   "time": [2016,12,6, 12,32,56] },
+      { "colour": "amber",   "time": [2016,12,6, 12,43,19] }
     ]
   }
 ```

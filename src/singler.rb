@@ -49,8 +49,7 @@ class Singler
     event_write(id, n, files, stdout, stderr, status)
     event = { 'colour' => colour, 'time' => now }
     events_append(id, event)
-
-    events_read(id)
+    nil
   end
 
   # - - - - - - - - - - - - - - - - - - -
