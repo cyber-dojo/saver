@@ -46,7 +46,7 @@ Returns the git commit sha used to create the docker image.
 - - - -
 
 ## GET group_exists?(id)
-Asks whether the group practice-session with the given id exists.
+Asks whether a group practice-session with the given id exists.
 - parameter, eg
 ```
   { "id": "55d3B9" }
@@ -79,7 +79,7 @@ Creates a group practice-session from the given manifest.
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",
-         "instructions" : "Write a program that...",
+         "readme.txt" : "Write a program that...",
              "makefile" : "CFLAGS += -I. -Wall...",
         "cyber-dojo.sh" : "make"
         }
@@ -115,7 +115,7 @@ Returns the group manifest used to create the group practice-session with the gi
                "hiker.h": "#ifndef HIKER_INCLUDED...",
                "hiker.c": "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>\n...",
-         "instructions" : "Write a program that...",
+           "readme.txt" : "Write a program that...",
              "makefile" : "CFLAGS += -I. -Wall...",
         "cyber-dojo.sh" : "make"
         }
@@ -170,7 +170,7 @@ who has joined the group practice-session with the given id.
 - - - -
 
 ## GET kata_exists?(id)
-Asks whether the individual practice-session with the given id exists.
+Asks whether an individual practice-session with the given id exists.
 - parameter, eg
 ```
   { "id": "15B9aD" }
@@ -203,7 +203,7 @@ Creates an individual practice-session from the given manifest.
                                "hiker.h": "#ifndef HIKER_INCLUDED...",
                                "hiker.c": "#include \"hiker.h\"...",
                         "hiker.tests.c" : "#include <assert.h>\n...",
-                         "instructions" : "Write a program that...",
+                           "readme.txt" : "Write a program that...",
                              "makefile" : "CFLAGS += -I. -Wall...",
                         "cyber-dojo.sh" : "make"
                      }
@@ -238,7 +238,7 @@ Returns the manifest used to create the individual practice-session with the giv
                                "hiker.h": "#ifndef HIKER_INCLUDED...",
                                "hiker.c": "#include \"hiker.h\"...",
                         "hiker.tests.c" : "#include <assert.h>\n...",
-                         "instructions" : "Write a program that...",
+                           "readme.txt" : "Write a program that...",
                              "makefile" : "CFLAGS += -I. -Wall...",
                         "cyber-dojo.sh" : "make"
                      }
@@ -260,7 +260,7 @@ with the given traffic-light colour.
       "files": {       "hiker.h" : "ifndef HIKER_INCLUDED\n...",
                        "hiker.c" : "#include \"hiker.h\"...",
                  "hiker.tests.c" : "#include <assert.h>\n...",
-                  "instructions" : "Write a program that...",
+                    "readme.txt" : "Write a program that...",
                       "makefile" : "CFLAGS += -I. -Wall...",
                  "cyber-dojo.sh" : "make"
                }
@@ -296,7 +296,7 @@ with the given id.
 - - - -
 
 ## GET kata_event(id,n)
-Returns the files, stdout, stderr, status,
+Returns [files, stdout, stderr, status],
 for the individual practice-session with the given id,
 and the given event number n.
 - parameters, eg
@@ -312,7 +312,7 @@ and the given event number n.
               "hiker.h" : "ifndef HIKER_INCLUDED\n...",
               "hiker.c" : "#include \"hiker.h\"...",
         "hiker.tests.c" : "#include <assert.h>...",
-         "instructions" : "Write a program that...",
+           "readme.txt" : "Write a program that...",
              "makefile" : "CFLAGS += -I. -Wall...",
         "cyber-dojo.sh" : "make"
       },
