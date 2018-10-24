@@ -23,8 +23,7 @@ class Singler
     dir.write(manifest_filename, json_pretty(manifest))
     event0 = {
          'event' => 'created',
-          'time' => manifest['created'],
-        'number' => 0
+          'time' => manifest['created']
       }
     events_append(id, event0)
     id
@@ -48,7 +47,7 @@ class Singler
     end
 
     event_write(id, n, files, stdout, stderr, status)
-    event = { 'colour' => colour, 'time' => now, 'number' => n }
+    event = { 'colour' => colour, 'time' => now }
     events_append(id, event)
 
     events_read(id)
