@@ -69,22 +69,24 @@ class SaverServiceTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '64E',
-  'group_join succeeds with valid id' do
-    id = saver.group_create(starter.manifest)
-    joined = saver.group_joined(id)
+  'group_join succeeds with valid kata-id' do
+    gid = saver.group_create(starter.manifest)
+    joined = saver.group_joined(gid)
     assert_equal({}, joined, 'someone has already joined!')
     indexes = (0..63).to_a.shuffle
     (1..4).to_a.each do |n|
-      index,sid = *saver.group_join(id, indexes)
+      kid = saver.group_join(gid, indexes)
+      index = saver.kata_manifest(kid)['index']
+
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
       assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
       assert_equal indexes[n-1], index, "#{n}: index is not #{indexes[n-1]}!"
-      assert sid.is_a?(String), "#{n}: sid is a #{id.class.name}!"
-      joined = saver.group_joined(id)
+      assert kid.is_a?(String), "#{n}: kata-id is a #{kid.class.name}!"
+      joined = saver.group_joined(gid)
       assert joined.is_a?(Hash), "#{n}: joined is a #{hash.class.name}!"
       assert_equal n, joined.size, "#{n}: incorrect size!"
-      diagnostic = "#{n}: #{sid}, #{index}, #{joined}"
-      assert_equal sid, joined[index.to_s], diagnostic
+      diagnostic = "#{n}: #{kid}, #{index}, #{joined}"
+      assert_equal kid, joined[index.to_s], diagnostic
     end
   end
 

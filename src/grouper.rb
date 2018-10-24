@@ -46,9 +46,10 @@ class Grouper
       manifest.delete('id')
       manifest['group'] = id
       manifest['index'] = index
-      sid = singler.kata_create(manifest)
-      group_dir(id,index).write('id.json', json_pretty({ 'id' => sid }))
-      [index, sid]
+      kid = singler.kata_create(manifest)
+      # TODO: no need for json here
+      group_dir(id,index).write('kid.json', json_pretty({ 'id' => kid }))
+      kid
     end
   end
 
@@ -62,7 +63,7 @@ class Grouper
       64.times { |index|
         dir = group_dir(id, index)
         if dir.exists?
-          json = json_parse(dir.read('id.json'))
+          json = json_parse(dir.read('kid.json'))
           result[index] = json['id']
         end
       }

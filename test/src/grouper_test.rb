@@ -74,7 +74,7 @@ class GrouperTest < TestBase
   test '42C', %w(
   kata_create() does NOT raise when the id is provided
   and contains the letter L (ell, lowercase or uppercase)
-  (this is for backward compatibility; katas in storer
+  (this is for backwards compatibility; katas in storer
   have ids with ells and I want porter to have to only map
   ids that are not unique in their first 6 characters)
   ) do
@@ -173,59 +173,60 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D3', %w(
-  group_join with valid id succeeds and
-  manifest of joined participant contains
+  group_join a non-full group with valid id succeeds
+  and returns the kata's id
+  and the manifest of joined participant contains
   the group id and the avatar index ) do
     stub_id = stub_group_create('E9r17F')
     shuffled = indexes
-    index,id = group_join(stub_id, shuffled)
-    assert_equal shuffled[0], index
-    manifest = singler.kata_manifest(id)
+    kid = group_join(stub_id, shuffled)
+    manifest = singler.kata_manifest(kid)
     assert_equal stub_id, manifest['group']
-    assert_equal index, manifest['index']
+    assert_equal shuffled[0], manifest['index']
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D4',
-  'group_join with a valid id succeeds 64 times then fails with nil' do
-    stub_id = stub_group_create('D47983')
+  test '1D4', %w(
+  group_join with a valid id succeeds 64 times
+  then its full and it fails with nil
+  ) do
+    stub_id = stub_group_create('z47983')
     joined = []
     64.times do
-      index,id = *group_join(stub_id, indexes)
-      assert index.is_a?(Integer), "index is a #{index.class.name}!"
-      assert (0..63).include?(index), "index(#{index}) not in (0..63)!"
-      assert id.is_a?(String), "id is a #{id.class.name}!"
-      assert singler.kata_exists?(id), "!singler.kata_exists?(#{id})"
+      kid = group_join(stub_id, indexes)
+      assert kid.is_a?(String), "kid is a #{kid.class.name}!"
+      assert singler.kata_exists?(kid), "!singler.kata_exists?(#{kid})"
+      index = singler.kata_manifest(kid)['index']
       refute joined.include?(index), "joined.include?(#{index})!"
       joined << index
     end
     refute_equal (0..63).to_a, joined
     assert_equal (0..63).to_a, joined.sort
-    n = group_join(stub_id, indexes)
-    assert_nil n
+    assert_nil group_join(stub_id, indexes)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
   'group_joined returns nil when the id does not exist' do
-    assert_nil group_joined('B4AB37')
+    assert_nil group_joined('B4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D5',
   'group_joined information can be retrieved' do
-    stub_id = stub_group_create('58A563')
+    stub_id = stub_group_create('58k563')
     hash = group_joined(stub_id)
     assert_equal({}, hash, 'someone has already joined!')
     (1..4).to_a.each do |n|
-      index,sid = group_join(stub_id, indexes)
+      kid = group_join(stub_id, indexes)
+      index = singler.kata_manifest(kid)['index']
       hash = group_joined(stub_id)
       assert hash.is_a?(Hash), "hash is a #{hash.class.name}!"
       assert_equal n, hash.size, 'incorrect size!'
-      assert_equal sid, hash[index], 'does not round-trip!'
+      assert_equal kid, hash[index], 'does not round-trip!'
     end
   end
 
