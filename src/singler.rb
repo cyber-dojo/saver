@@ -19,7 +19,7 @@ class Singler
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
     dir = kata_dir(id)
-    event_write(id, 0, files, '', '', 0)
+    event_write(id, 0, files, '', '', '')
     dir.write(manifest_filename, json_pretty(manifest))
     event0 = {
          'event' => 'created',

@@ -269,7 +269,7 @@ class SinglerTest < TestBase
     assert_equal expected_events, kata_events(id), diagnostic
 
     files = starter.manifest['visible_files']
-    expected = rag_event(files, '', '', 0)
+    expected = rag_event(files, '', '', '')
     assert_equal expected, kata_event(id, 0), 'kata_event(id,0)'
     assert_equal expected, kata_event(id, -1), 'kata_event(id,-1)'
 

@@ -138,7 +138,7 @@ class SaverServiceTest < TestBase
       'files' => files,
       'stdout' => '',
       'stderr' => '',
-      'status' => 0
+      'status' => ''
     }
     assert_equal expected_events, saver.kata_event(id, 0)
     assert_equal expected_events, saver.kata_event(id, -1)
