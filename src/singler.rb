@@ -19,7 +19,7 @@ class Singler
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
     dir = kata_dir(id)
-    event_write(id, 0, files, '', '', '')
+    event_write(id, 0, { 'files' => files })
     dir.write(manifest_filename, json_pretty(manifest))
     event0 = {
          'event' => 'created',
@@ -45,10 +45,13 @@ class Singler
     unless n >= 1
       invalid('n', n)
     end
-
-    event_write(id, n, files, stdout, stderr, status)
-    event = { 'colour' => colour, 'time' => now }
-    events_append(id, event)
+    event_write(id, n, {
+      'files' => files,
+      'stdout' => stdout,
+      'stderr' => stderr,
+      'status' => status
+    })
+    events_append(id, { 'colour' => colour, 'time' => now })
     nil
   end
 
@@ -133,18 +136,12 @@ class Singler
     kata_dir(id, n).exists?
   end
 
-  def event_write(id, n, files, stdout, stderr, status)
+  def event_write(id, n, event)
     dir = kata_dir(id,n)
     unless dir.make
       invalid('n', n)
     end
-    json = {
-      'files' => files,
-      'stdout' => stdout,
-      'stderr' => stderr,
-      'status' => status
-    }
-    dir.write(event_filename, json_pretty(json))
+    dir.write(event_filename, json_pretty(event))
   end
 
   def event_read(id, n)

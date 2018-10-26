@@ -134,14 +134,9 @@ class SaverServiceTest < TestBase
     assert_equal([event0], saver.kata_events(id))
 
     files = manifest['visible_files']
-    expected_events = {
-      'files' => files,
-      'stdout' => '',
-      'stderr' => '',
-      'status' => ''
-    }
-    assert_equal expected_events, saver.kata_event(id, 0)
-    assert_equal expected_events, saver.kata_event(id, -1)
+    expected = { 'files' => files }
+    assert_equal expected, saver.kata_event(id, 0)
+    assert_equal expected, saver.kata_event(id, -1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
