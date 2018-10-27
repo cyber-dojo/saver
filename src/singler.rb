@@ -40,12 +40,12 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, n, files, now, stdout, stderr, status, colour)
+  def kata_ran_tests(id, index, files, now, stdout, stderr, status, colour)
     assert_kata_exists(id)
-    unless n >= 1
-      invalid('n', n)
+    unless index >= 1
+      invalid('index', index)
     end
-    event_write(id, n, {
+    event_write(id, index, {
       'files' => files,
       'stdout' => stdout,
       'stderr' => stderr,
@@ -66,16 +66,16 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_event(id, n)
-    if n == -1
+  def kata_event(id, index)
+    if index == -1
       assert_kata_exists(id)
-      n = event_most_recent(id)
+      index = event_most_recent(id)
     else
-      unless event_exists?(id, n)
-        invalid('n', n)
+      unless event_exists?(id, index)
+        invalid('index', index)
       end
     end
-    event_read(id, n)
+    event_read(id, index)
   end
 
   private
@@ -132,20 +132,20 @@ class Singler
 
   # - - - - - - - - - - - - - -
 
-  def event_exists?(id, n)
-    kata_dir(id, n).exists?
+  def event_exists?(id, index)
+    kata_dir(id, index).exists?
   end
 
-  def event_write(id, n, event)
-    dir = kata_dir(id,n)
+  def event_write(id, index, event)
+    dir = kata_dir(id, index)
     unless dir.make
-      invalid('n', n)
+      invalid('index', index)
     end
     dir.write(event_filename, json_pretty(event))
   end
 
-  def event_read(id, n)
-    json_parse(kata_dir(id,n).read(event_filename))
+  def event_read(id, index)
+    json_parse(kata_dir(id, index).read(event_filename))
   end
 
   def event_most_recent(id)

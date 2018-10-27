@@ -180,7 +180,7 @@ class SinglerTest < TestBase
     error = assert_raises(ArgumentError) {
       kata_event(id, 1)
     }
-    assert_equal 'n:invalid:1', error.message
+    assert_equal 'index:invalid:1', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -197,33 +197,33 @@ class SinglerTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '824', %w(
-  kata_ran_tests raises when n is -1
+  kata_ran_tests raises when index is -1
   because -1 can only be used on kata_event()
   ) do
     id = stub_kata_create('FCF211')
     error = assert_raises(ArgumentError) {
       kata_ran_tests(*make_args(id, -1, edited_files))
     }
-    assert_equal 'n:invalid:-1', error.message
+    assert_equal 'index:invalid:-1', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '825', %w(
-  kata_ran_tests raises when n is 0
+  kata_ran_tests raises when index is 0
   because 0 is used for kata_create()
   ) do
     id = stub_kata_create('08739D')
     error = assert_raises(ArgumentError) {
       kata_ran_tests(*make_args(id, 0, edited_files))
     }
-    assert_equal 'n:invalid:0', error.message
+    assert_equal 'index:invalid:0', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '826', %w(
-  kata_ran_tests raises when n already exists
+  kata_ran_tests raises when index already exists
   and does not add a new event,
   in other words it fails atomically ) do
     id = stub_kata_create('C7112B')
@@ -241,7 +241,7 @@ class SinglerTest < TestBase
     error = assert_raises(ArgumentError) {
       kata_ran_tests(*make_args(id, 1, edited_files))
     }
-    assert_equal 'n:invalid:1', error.message
+    assert_equal 'index:invalid:1', error.message
 
     assert_equal expected_events, kata_events(id)
   end
@@ -249,7 +249,7 @@ class SinglerTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '827', %w(
-  kata_ran_tests does NOT raise when n-1 does not exist
+  kata_ran_tests does NOT raise when index-1 does not exist
   and the reason for this is partly speed
   and partly robustness against temporary singler failure ) do
     id = stub_kata_create('710145')

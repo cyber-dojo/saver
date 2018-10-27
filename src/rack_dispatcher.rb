@@ -50,9 +50,9 @@ class RackDispatcher
       when /^kata_exists$/    then [singler, id]
       when /^kata_create$/    then [singler, manifest]
       when /^kata_manifest$/  then [singler, id]
-      when /^kata_ran_tests$/ then [singler, id, n, files, now, stdout, stderr, status, colour]
+      when /^kata_ran_tests$/ then [singler, id, index, files, now, stdout, stderr, status, colour]
       when /^kata_events$/    then [singler, id]
-      when /^kata_event$/     then [singler, id, n]
+      when /^kata_event$/     then [singler, id, index]
 
       else
         raise ClientError, "#{name}:unknown:"
@@ -100,7 +100,7 @@ class RackDispatcher
   well_formed_args :manifest,
                    :id,
                    :indexes,
-                   :n,
+                   :index,
                    :files,
                    :now,
                    :stdout,

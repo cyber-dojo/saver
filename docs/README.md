@@ -26,9 +26,9 @@ API:
 - [GET kata_exists?(id)](#get-kata_existsid)
 - [POST kata_create(manifest)](#post-kata_createmanifest)
 - [GET kata_manifest(id)](#get-kata_manifestid)
-- [POST kata_ran_tests(id,n,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidnfilesnowstdoutstderrstatuscolour)
+- [POST kata_ran_tests(id,index,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidindexfilesnowstdoutstderrstatuscolour)
 - [GET kata_events(id)](#get-kata_eventsid)
-- [GET kata_event(id,n)](#get-kata_eventidn)
+- [GET kata_event(id,index)](#get-kata_eventidindex)
 
 - - - -
 
@@ -248,15 +248,15 @@ Returns the manifest used to create the individual practice-session with the giv
 
 - - - -
 
-## POST kata_ran_tests(id,n,files,now,stdout,stderr,status,colour)
+## POST kata_ran_tests(id,index,files,now,stdout,stderr,status,colour)
 In the individual practice-session with the given id,
-the given files were submitted as tag number n,
+the given files were submitted as the given index number,
 at the given time, which produced the given stdout, stderr, status,
 with the given traffic-light colour.
 - parameters, eg
 ```
   {      "id": "a551C5",
-          "n": 3,
+      "index": 3,
       "files": {       "hiker.h" : "ifndef HIKER_INCLUDED\n...",
                        "hiker.c" : "#include \"hiker.h\"...",
                  "hiker.tests.c" : "#include <assert.h>\n...",
@@ -295,14 +295,14 @@ with the given id.
 
 - - - -
 
-## GET kata_event(id,n)
+## GET kata_event(id,index)
 Returns [files, stdout, stderr, status],
 for the individual practice-session with the given id,
-and the given event number n.
+and the given event index.
 - parameters, eg
 ```
-  { "id": "a551C5",
-     "n": 3
+  {    "id": "a551C5",
+    "index": 3
   }
 ```
 - returns, eg

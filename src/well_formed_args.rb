@@ -115,7 +115,7 @@ class WellFormedArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def n
+  def index
     @arg_name = __method__.to_s
     unless arg.is_a?(Integer)
       malformed

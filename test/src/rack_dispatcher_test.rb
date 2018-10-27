@@ -130,10 +130,10 @@ class RackDispatcherTest < TestBase
     )
     assert_dispatch_raises('kata_event',
       {  id: well_formed_id,
-          n: malformed_n
+         index: malformed_index
       }.to_json,
       400,
-      'malformed:n:'
+      'malformed:index:'
     )
   end
 
@@ -185,7 +185,7 @@ class RackDispatcherTest < TestBase
   'dispatch to kata_ran_tests' do
     assert_dispatch('kata_ran_tests',
       {     id: well_formed_id,
-             n: well_formed_n,
+         index: well_formed_index,
          files: well_formed_files,
            now: well_formed_now,
         stdout: well_formed_stdout,
@@ -213,7 +213,7 @@ class RackDispatcherTest < TestBase
   'dispatch to kata_event' do
     assert_dispatch('kata_event',
       { id: well_formed_id,
-         n: well_formed_n
+        index: well_formed_index
       }.to_json,
       "hello from #{stub_name}.kata_event"
     )
@@ -239,11 +239,11 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - -
 
-  def well_formed_n
+  def well_formed_index
     2
   end
 
-  def malformed_n
+  def malformed_index
     '23' # !Integer
   end
 

@@ -182,27 +182,27 @@ class WellFormedArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # n
+  # index
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '237',
-  'n does not raise when well-formed' do
+  'index does not raise when well-formed' do
     oks = [ -1, 0, 104 ]
-    oks.each do |n|
-      json = { n:n }.to_json
-      assert_equal n, WellFormedArgs.new(json).n
+    oks.each do |index|
+      json = { index:index }.to_json
+      assert_equal index, WellFormedArgs.new(json).index
     end
   end
 
   test '238',
-  'n raises when malformed' do
-    expected = 'malformed:n:'
+  'index raises when malformed' do
+    expected = 'malformed:index:'
     malformeds = [ nil, true, [1], {}, '', '23', -2 ]
     malformeds.each do |malformed|
-      json = { n:malformed }.to_json
+      json = { index:malformed }.to_json
       wfa = WellFormedArgs.new(json)
       diagnostic = ":#{malformed.to_s}:"
-      error = assert_raises(diagnostic) { wfa.n }
+      error = assert_raises(diagnostic) { wfa.index }
       assert_equal expected, error.message, diagnostic
     end
   end
