@@ -175,7 +175,7 @@ class Singler
   def generate_id
     loop do
       id = Base58.string(6)
-      if !kata_exists?(id)
+      unless kata_exists?(id)
         return id
       end
     end

@@ -175,15 +175,15 @@ class GrouperTest < TestBase
   test '1D3', %w(
   group_join a non-full group with valid id succeeds
   and returns the kata's id
-  and the manifest of joined participant contains
+  and the manifest of the joined participant contains
   the group id and the avatar index ) do
     gid = stub_group_create('E9r17F')
     shuffled = indexes
     kid = group_join(gid, shuffled)
     assert kata_exists?(kid)
     manifest = kata_manifest(kid)
-    assert_equal gid, manifest['group']
-    assert_equal shuffled[0], manifest['index']
+    assert_equal gid, manifest['group_id']
+    assert_equal shuffled[0], manifest['group_index']
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -204,7 +204,7 @@ class GrouperTest < TestBase
       kids << kid
       assert_equal kids.sort, group_joined(gid).sort
 
-      index = kata_manifest(kid)['index']
+      index = kata_manifest(kid)['group_index']
       refute_nil index
       assert index.is_a?(Integer), "index is a #{index.class.name}"
       assert (0..63).include?(index), "!(0..63).include?(#{index})"

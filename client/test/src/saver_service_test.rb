@@ -81,7 +81,7 @@ class SaverServiceTest < TestBase
       assert kid.is_a?(String), "kid is a #{kid.class.name}"
       assert_equal 6, kid.size
 
-      index = saver.kata_manifest(kid)['index']
+      index = saver.kata_manifest(kid)['group_index']
       assert index.is_a?(Integer), "#{n}: index is a #{index.class.name}!"
       assert (0..63).include?(index), "#{n}: index(#{index}) not in (0..63)!"
       assert_equal indexes[n-1], index, "#{n}: index is not #{indexes[n-1]}!"

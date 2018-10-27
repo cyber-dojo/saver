@@ -44,8 +44,8 @@ class Grouper
     else
       manifest = group_manifest(id)
       manifest.delete('id')
-      manifest['group'] = id
-      manifest['index'] = index
+      manifest['group_id'] = id
+      manifest['group_index'] = index
       kata_id = singler.kata_create(manifest)
       group_dir(id,index).write('kata.id', kata_id)
       kata_id
