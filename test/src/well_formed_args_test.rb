@@ -58,8 +58,8 @@ class WellFormedArgsTest < TestBase
   end
 
   def malformed_manifests
-    bad_month = [2018,-3,28, 11,33,13]
-    bad_year = ["2018",3,28, 11,33,13]
+    string_year = ["2018",3,28, 11,33,13]
+    negative_month = [2018,-3,28, 11,33,13]
     {
       [] => 'manifest:!Hash',
 
@@ -74,8 +74,8 @@ class WellFormedArgsTest < TestBase
 
       smm({created:nil})       => 'manifest["created"]:!Array',
       smm({created:[]})        => 'manifest["created"]:size==0 -> !6',
-      smm({created:bad_month}) => 'manifest["created"]:argument out of range',
-      smm({created:bad_year})  => 'manifest["created"]:[0]=="2018" -> !Integer',
+      smm({created:string_year})  => 'manifest["created"]:[0] -> !Integer',
+      smm({created:negative_month}) => 'manifest["created"]:argument out of range',
 
       smm({display_name:42})   => 'manifest["display_name"]:!String',
       smm({image_name:{}})     => 'manifest["image_name"]:!String',
@@ -83,28 +83,28 @@ class WellFormedArgsTest < TestBase
       smm({exercise:true})     => 'manifest["exercise"]:!String',
 
       smm({visible_files:[]}) => 'manifest["visible_files"]:!Hash',
-      smm({visible_files:{'s' => [4]}}) => 'manifest["visible_files"]:["s"] !String',
+      smm({visible_files:{'s' => [4]}}) => 'manifest["visible_files"]:["s"] -> !String',
 
       smm({filename_extension:true}) => 'manifest["filename_extension"]:!Array',
       smm({filename_extension:{}}) => 'manifest["filename_extension"]:!Array',
-      smm({filename_extension:[23]}) => 'manifest["filename_extension"]:[0] !String',
-      smm({filename_extension:['.rb',23]}) => 'manifest["filename_extension"]:[1] !String',
+      smm({filename_extension:[23]}) => 'manifest["filename_extension"]:[0] -> !String',
+      smm({filename_extension:['.rb',23]}) => 'manifest["filename_extension"]:[1] -> !String',
 
       smm({highlight_filenames:1}) => 'manifest["highlight_filenames"]:!Array',
-      smm({highlight_filenames:[1]}) => 'manifest["highlight_filenames"]:[0] !String',
-      smm({highlight_filenames:['.txt',1]}) => 'manifest["highlight_filenames"]:[1] !String',
+      smm({highlight_filenames:[1]}) => 'manifest["highlight_filenames"]:[0] -> !String',
+      smm({highlight_filenames:['.txt',1]}) => 'manifest["highlight_filenames"]:[1] -> !String',
 
       smm({progress_regexs:{}}) => 'manifest["progress_regexs"]:!Array',
-      smm({progress_regexs:[1]}) => 'manifest["progress_regexs"]:[0] !String',
-      smm({progress_regexs:['xxx',1]}) => 'manifest["progress_regexs"]:[1] !String',
+      smm({progress_regexs:[1]}) => 'manifest["progress_regexs"]:[0] -> !String',
+      smm({progress_regexs:['xxx',1]}) => 'manifest["progress_regexs"]:[1] -> !String',
 
       smm({tab_size:true}) => 'manifest["tab_size"]:!Integer',
-      smm({tab_size:0}) => 'manifest["tab_size"]:0 -> (1..8)',
-      smm({tab_size:9}) => 'manifest["tab_size"]:9 -> (1..8)',
+      smm({tab_size:0}) => 'manifest["tab_size"]:!(1..8)',
+      smm({tab_size:9}) => 'manifest["tab_size"]:!(1..8)',
 
       smm({max_seconds:nil}) => 'manifest["max_seconds"]:!Integer',
-      smm({max_seconds:0}) => 'manifest["max_seconds"]:0 -> (1..20)',
-      smm({max_seconds:21}) => 'manifest["max_seconds"]:21 -> (1..20)',
+      smm({max_seconds:0}) => 'manifest["max_seconds"]:!(1..20)',
+      smm({max_seconds:21}) => 'manifest["max_seconds"]:!(1..20)',
     }
   end
 
@@ -179,9 +179,9 @@ class WellFormedArgsTest < TestBase
       "string" => '!Array',
       false => '!Array',
       {} => '!Array',
-      [] => 'size==0 -> 64',
-      [0,1] => 'size==2 -> 64',
-      [62,63] => 'size==2 -> 64',
+      [] => 'size==0 -> !64',
+      [0,1] => 'size==2 -> !64',
+      [62,63] => 'size==2 -> !64',
       (1..64).to_a => '!(0..63)',
     }
   end
@@ -247,9 +247,9 @@ class WellFormedArgsTest < TestBase
   def malformed_files
     {
       [] => '!Hash',
-      { "x" => 42   } => '["x"] !String',
-      { "y" => true } => '["y"] !String',
-      { "z" => nil  } => '["z"] !String',
+      { "x" => 42   } => '["x"] -> !String',
+      { "y" => true } => '["y"] -> !String',
+      { "z" => nil  } => '["z"] -> !String',
     }
   end
 
@@ -286,8 +286,8 @@ class WellFormedArgsTest < TestBase
       [2018,3,28, 19,18,1,0] => 'size==7 -> !6',
       [2018,-3,28, 19,18,45] => 'argument out of range',
       [2018,30,11, 19,18,45] => 'argument out of range',
-      ["2018",3,28, 19,18,45] => '[0]=="2018" -> !Integer',
-      [{},3,28, 19,18,45] => '[0]=={} -> !Integer',
+      ["2018",3,28, 19,18,45] => '[0] -> !Integer',
+      [{},3,28, 19,18,45] => '[0] -> !Integer',
     }
   end
 
