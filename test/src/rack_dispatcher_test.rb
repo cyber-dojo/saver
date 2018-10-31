@@ -58,12 +58,12 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('group_manifest',
       { id: malformed_id }.to_json,
       400,
-      'malformed:id:'
+      'malformed:id:!Base58:'
     )
     assert_dispatch_raises('group_join',
       {  id: malformed_id }.to_json,
       400,
-      'malformed:id:'
+      'malformed:id:!Base58:'
     )
   end
 
@@ -126,14 +126,14 @@ class RackDispatcherTest < TestBase
     assert_dispatch_raises('kata_events',
       { id: malformed_id }.to_json,
       400,
-      'malformed:id:'
+      'malformed:id:!Base58:'
     )
     assert_dispatch_raises('kata_event',
       {  id: well_formed_id,
          index: malformed_index
       }.to_json,
       400,
-      'malformed:index:'
+      'malformed:index:!Integer:'
     )
   end
 

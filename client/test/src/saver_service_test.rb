@@ -32,7 +32,7 @@ class SaverServiceTest < TestBase
     assert_equal 'group_manifest', error.method_name
     json = JSON.parse(error.message)
     assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:id:', json['message']
+    assert_equal 'malformed:id:!Base58:', json['message']
     assert_equal 'Array', json['backtrace'].class.name
   end
 
@@ -107,7 +107,7 @@ class SaverServiceTest < TestBase
     assert_equal 'kata_manifest', error.method_name
     json = JSON.parse(error.message)
     assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:id:', json['message']
+    assert_equal 'malformed:id:!Base58:', json['message']
     assert_equal 'Array', json['backtrace'].class.name
   end
 
