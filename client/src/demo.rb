@@ -32,7 +32,7 @@ class Demo
         saver.kata_manifest(@kid)
       },
       pre('kata_ran_tests') {
-        saver.kata_ran_tests(@kid, 1, edited_files, now, stdout, stderr, status, colour)
+        saver.kata_ran_tests(@kid, 1, edited_files, now, duration, stdout, stderr, status, colour)
       },
       pre('kata_events') {
         saver.kata_events(@kid)
@@ -55,6 +55,10 @@ class Demo
 
   def now
     [2016,12,2, 6,14,37]
+  end
+
+  def duration
+    1.89
   end
 
   def stdout
