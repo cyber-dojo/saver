@@ -148,16 +148,17 @@ class SaverServiceTest < TestBase
     event1_files = starter.manifest['visible_files']
     event1_files.delete('hiker.h')
     now = [2016,12,5, 21,1,34]
+    duration = 1.67
     stdout = 'missing include'
     stderr = 'assert failed'
     status = 6
     colour = 'amber'
-    result = saver.kata_ran_tests(id, 1, event1_files, now, stdout, stderr, status, colour)
+    result = saver.kata_ran_tests(id, 1, event1_files, now, duration, stdout, stderr, status, colour)
     assert_nil result
 
     expected_events = [
       event0,
-      { 'colour'=>'amber', 'time'=>now }
+      { 'colour' => 'amber', 'time' => now, 'duration' => duration }
     ]
     assert_equal expected_events, saver.kata_events(id)
     assert_equal({
@@ -168,15 +169,16 @@ class SaverServiceTest < TestBase
       }, saver.kata_event(id, 1))
 
     now = [2016,12,5, 21,2,15]
+    duration = 0.67
     event2_files = event1_files
     event2_files['extra.hpp'] = '#include <stdio.h>'
     stdout = 'all tests passed'
     stderr = ''
     status = 0
     colour = 'green'
-    events = saver.kata_ran_tests(id, 2, event2_files, now, stdout, stderr, status, colour)
+    events = saver.kata_ran_tests(id, 2, event2_files, now, duration, stdout, stderr, status, colour)
     expected_events <<
-       { 'colour' => 'green', 'time' => now }
+       { 'colour' => 'green', 'time' => now, 'duration' => duration }
     assert_equal expected_events, saver.kata_events(id)
     assert_equal({
       'files' => event2_files,
@@ -198,11 +200,12 @@ class SaverServiceTest < TestBase
     files = starter.manifest['visible_files']
     files['very_large'] = 'X'*1024*500
     now = [2016,12,5, 21,1,34]
+    duration = 2.56
     stdout = 'missing include'
     stderr = 'assertion failed'
     status = 41
     colour = 'amber'
-    saver.kata_ran_tests(id, 1, files, now, stdout, stderr, status, colour)
+    saver.kata_ran_tests(id, 1, files, now, duration, stdout, stderr, status, colour)
   end
 
   private

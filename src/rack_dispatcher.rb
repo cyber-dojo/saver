@@ -50,7 +50,7 @@ class RackDispatcher
       when /^kata_exists$/    then [singler, id]
       when /^kata_create$/    then [singler, manifest]
       when /^kata_manifest$/  then [singler, id]
-      when /^kata_ran_tests$/ then [singler, id, index, files, now, stdout, stderr, status, colour]
+      when /^kata_ran_tests$/ then [singler, id, index, files, now, duration, stdout, stderr, status, colour]
       when /^kata_events$/    then [singler, id]
       when /^kata_event$/     then [singler, id, index]
 
@@ -103,6 +103,7 @@ class RackDispatcher
                    :index,
                    :files,
                    :now,
+                   :duration,
                    :stdout,
                    :stderr,
                    :status,

@@ -41,7 +41,7 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, index, files, now, stdout, stderr, status, colour)
+  def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
     assert_kata_exists(id)
     unless index >= 1
       invalid('index', index)
@@ -52,7 +52,7 @@ class Singler
       'stderr' => stderr,
       'status' => status
     })
-    events_append(id, { 'colour' => colour, 'time' => now })
+    events_append(id, { 'colour' => colour, 'time' => now, 'duration' => duration })
     nil
   end
 

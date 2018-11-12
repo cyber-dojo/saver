@@ -74,6 +74,10 @@ class WellFormedArgs
     well_formed_time('now', args['now'])
   end
 
+  def duration
+    well_formed_duration('duration', args['duration'])
+  end
+
   def stdout
     well_formed_string('stdout', args['stdout'])
   end
@@ -161,6 +165,18 @@ class WellFormedArgs
     unless (1..20).include?(arg)
       malformed(arg_name, "!(1..20)")
     end
+  end
+
+  # - - - - - - - - - - - - - - - -
+
+  def well_formed_duration(arg_name, arg)
+    unless arg.is_a?(Float)
+      malformed(arg_name, '!Float')
+    end
+    unless arg >= 0.0
+      malformed(arg_name, '!(>= 0.0)')
+    end
+    arg
   end
 
   # - - - - - - - - - - - - - - - -

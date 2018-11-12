@@ -292,6 +292,41 @@ class WellFormedArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # duration
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '9E0',
+  'duration does not raise when well-formed' do
+    duration = 0.0
+    json = { duration:duration }.to_json
+    assert_equal duration, WellFormedArgs.new(json).duration
+    duration = 0.34
+    json = { duration:duration }.to_json
+    assert_equal duration, WellFormedArgs.new(json).duration
+  end
+
+  test '9E1',
+  'duration raises when malformed' do
+    malformed_durations.each do |malformed, message|
+      json = { duration:malformed }.to_json
+      wfa = WellFormedArgs.new(json)
+      error = assert_raises(ClientError) { wfa.duration }
+      expected = "malformed:duration:#{message}:"
+      assert_equal expected, error.message, malformed.to_s
+    end
+  end
+
+  def malformed_durations
+    {
+      {} => '!Float',
+      nil => '!Float',
+      true => '!Float',
+      42 => '!Float',
+      -0.4 => '!(>= 0.0)'
+    }
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # stdout
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -234,7 +234,8 @@ class SinglerTest < TestBase
     kata_ran_tests(*make_args(id, 1, edited_files))
     expected_events << {
       'colour' => red,
-      'time' => time_now
+      'time' => time_now,
+      'duration' => duration
     }
     assert_equal expected_events, kata_events(id)
 
@@ -277,7 +278,8 @@ class SinglerTest < TestBase
 
     expected_events << {
       'colour' => red,
-      'time'   => time_now
+      'time' => time_now,
+      'duration' => duration
     }
     diagnostic = '#1 kata_events(id)'
     assert_equal expected_events, kata_events(id), diagnostic
@@ -306,7 +308,7 @@ class SinglerTest < TestBase
   end
 
   def make_args(id, n, files)
-    [ id, n, files, time_now, stdout, stderr, status, red ]
+    [ id, n, files, time_now, duration, stdout, stderr, status, red ]
   end
 
   def edited_files
@@ -319,6 +321,10 @@ class SinglerTest < TestBase
 
   def time_now
     [2016,12,2, 6,14,57]
+  end
+
+  def duration
+    1.778
   end
 
   def stdout

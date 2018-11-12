@@ -42,8 +42,8 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, n, files, now, stdout, stderr, status, colour)
-    singler.kata_ran_tests(id, n, files, now, stdout, stderr, status, colour)
+  def kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
+    singler.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
   end
 
   def kata_events(id)

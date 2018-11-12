@@ -46,8 +46,8 @@ class SaverService
 
   # - - - - - - - - - - - -
 
-  def kata_ran_tests(id, index ,files, now, stdout, stderr, status, colour)
-    post(__method__, id, index, files, now, stdout, stderr, status, colour)
+  def kata_ran_tests(id, index ,files, now, duration, stdout, stderr, status, colour)
+    post(__method__, id, index, files, now, duration, stdout, stderr, status, colour)
   end
 
   def kata_events(id)

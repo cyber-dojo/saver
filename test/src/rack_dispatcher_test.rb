@@ -188,6 +188,7 @@ class RackDispatcherTest < TestBase
          index: well_formed_index,
          files: well_formed_files,
            now: well_formed_now,
+      duration: well_formed_duration,
         stdout: well_formed_stdout,
         stderr: well_formed_stderr,
         status: well_formed_status,
@@ -255,6 +256,10 @@ class RackDispatcherTest < TestBase
 
   def well_formed_now
     [2018,3,28, 21,11,39]
+  end
+
+  def well_formed_duration
+    0.456
   end
 
   def well_formed_stdout
