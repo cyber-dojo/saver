@@ -54,11 +54,11 @@ class Demo
   end
 
   def now
-    [2016,12,2, 6,14,37]
+    [2016,12,2, 6,14,37,456]
   end
 
   def duration
-    1.89
+    1.8934
   end
 
   def stdout

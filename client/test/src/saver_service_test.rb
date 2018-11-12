@@ -147,7 +147,7 @@ class SaverServiceTest < TestBase
     id = saver.kata_create(starter.manifest)
     event1_files = starter.manifest['visible_files']
     event1_files.delete('hiker.h')
-    now = [2016,12,5, 21,1,34]
+    now = [2016,12,5, 21,1,34,6574]
     duration = 1.67
     stdout = 'missing include'
     stderr = 'assert failed'
@@ -168,7 +168,7 @@ class SaverServiceTest < TestBase
       'status' => status
       }, saver.kata_event(id, 1))
 
-    now = [2016,12,5, 21,2,15]
+    now = [2016,12,5, 21,2,15,564]
     duration = 0.67
     event2_files = event1_files
     event2_files['extra.hpp'] = '#include <stdio.h>'
@@ -199,7 +199,7 @@ class SaverServiceTest < TestBase
 
     files = starter.manifest['visible_files']
     files['very_large'] = 'X'*1024*500
-    now = [2016,12,5, 21,1,34]
+    now = [2016,12,5, 21,1,34,567]
     duration = 2.56
     stdout = 'missing include'
     stderr = 'assertion failed'

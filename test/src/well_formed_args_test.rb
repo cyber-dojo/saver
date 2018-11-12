@@ -58,8 +58,8 @@ class WellFormedArgsTest < TestBase
   end
 
   def malformed_manifests
-    string_year = ["2018",3,28, 11,33,13]
-    negative_month = [2018,-3,28, 11,33,13]
+    string_year = ["2018",3,28, 11,33,13,67]
+    negative_month = [2018,-3,28, 11,33,13,789]
     {
       [] => 'manifest:!Hash',
 
@@ -73,7 +73,7 @@ class WellFormedArgsTest < TestBase
       smm({id:'12345'})      => 'manifest["id"]:size==5 -> !6',
 
       smm({created:nil})       => 'manifest["created"]:!Array',
-      smm({created:[]})        => 'manifest["created"]:size==0 -> !6',
+      smm({created:[]})        => 'manifest["created"]:size==0 -> !7',
       smm({created:string_year})  => 'manifest["created"]:[0] -> !Integer',
       smm({created:negative_month}) => 'manifest["created"]:argument out of range',
 
@@ -259,7 +259,7 @@ class WellFormedArgsTest < TestBase
 
   test 'FF4',
   'now does not raise when well-formed' do
-    now = [2018,3,28, 19,18,45]
+    now = [2018,3,28, 19,18,45,356]
     json = { now:now }.to_json
     assert_equal now, WellFormedArgs.new(json).now
   end
@@ -281,13 +281,13 @@ class WellFormedArgsTest < TestBase
       nil => '!Array',
       true => '!Array',
       42 => '!Array',
-      [] => 'size==0 -> !6',
-      [2018,3,28, 19,18] => 'size==5 -> !6',
-      [2018,3,28, 19,18,1,0] => 'size==7 -> !6',
-      [2018,-3,28, 19,18,45] => 'argument out of range',
-      [2018,30,11, 19,18,45] => 'argument out of range',
-      ["2018",3,28, 19,18,45] => '[0] -> !Integer',
-      [{},3,28, 19,18,45] => '[0] -> !Integer',
+      [] => 'size==0 -> !7',
+      [2018,3,28, 19,18,1] => 'size==6 -> !7',
+      [2018,3,28, 19,18,1,0,0] => 'size==8 -> !7',
+      [2018,-3,28, 19,18,45,934] => 'argument out of range',
+      [2018,30,11, 19,18,45,934] => 'argument out of range',
+      ["2018",3,28, 19,18,45,934] => '[0] -> !Integer',
+      [2018,{},28, 19,18,45,934] => '[1] -> !Integer',
     }
   end
 

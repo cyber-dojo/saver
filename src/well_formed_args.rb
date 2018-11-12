@@ -252,8 +252,8 @@ class WellFormedArgs
     unless arg.is_a?(Array)
       malformed(arg_name, '!Array')
     end
-    unless arg.size == 6
-      malformed(arg_name, "size==#{arg.size} -> !6")
+    unless arg.size == 7
+      malformed(arg_name, "size==#{arg.size} -> !7")
     end
     arg.each_with_index do |n,index|
       unless n.is_a?(Integer)

@@ -255,7 +255,7 @@ class RackDispatcherTest < TestBase
   end
 
   def well_formed_now
-    [2018,3,28, 21,11,39]
+    [2018,3,28, 21,11,39,6543]
   end
 
   def well_formed_duration
