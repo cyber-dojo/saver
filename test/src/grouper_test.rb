@@ -83,7 +83,7 @@ class GrouperTest < TestBase
 
     id = '12345' + ell.upcase
     manifest['id'] = id
-    assert_equal id, group_create(manifest)
+    assert_equal id, group_create(manifest.clone)
 
     id = '12345' + ell.downcase
     manifest['id'] = id
@@ -153,7 +153,7 @@ class GrouperTest < TestBase
     id = '0ADDE7'
     m = starter.manifest
     m['id'] = id
-    group_create(m)
+    group_create(m.clone)
     assert_equal m, group_manifest(id)
   end
 

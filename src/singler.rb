@@ -1,4 +1,5 @@
 require_relative 'base58'
+require_relative 'liner'
 require 'json'
 
 class Singler
@@ -126,6 +127,10 @@ class Singler
     kata_dir(id).read(events_filename)
   end
 
+  def event_most_recent(id)
+    events_read_lined(id).count("\n") - 1
+  end
+
   def events_filename
     'events.json'
   end
@@ -141,15 +146,18 @@ class Singler
     unless dir.make
       invalid('index', index)
     end
+    event['files'] = lined(event['files'])
+    line(event, 'stdout')
+    line(event, 'stderr')
     dir.write(event_filename, json_pretty(event))
   end
 
   def event_read(id, index)
-    json_parse(kata_dir(id, index).read(event_filename))
-  end
-
-  def event_most_recent(id)
-    events_read_lined(id).count("\n") - 1
+    event = json_parse(kata_dir(id, index).read(event_filename))
+    event['files'] = unlined(event['files'])
+    unline(event, 'stdout')
+    unline(event, 'stderr')
+    event
   end
 
   def event_filename
@@ -178,6 +186,22 @@ class Singler
       unless kata_exists?(id)
         return id
       end
+    end
+  end
+
+  # - - - - - - - - - - - - - -
+
+  include Liner
+
+  def line(event, key)
+    if event.has_key?(key)
+      event[key] = event[key].lines
+    end
+  end
+
+  def unline(event, key)
+    if event.has_key?(key)
+      event[key] = event[key].join
     end
   end
 

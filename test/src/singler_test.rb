@@ -81,7 +81,7 @@ class SinglerTest < TestBase
 
     id = '2ta29' + ell.upcase
     manifest['id'] = id
-    assert_equal id, kata_create(manifest)
+    assert_equal id, kata_create(manifest.clone)
 
     id = '2ta29' + ell.downcase
     manifest['id'] = id
