@@ -77,7 +77,7 @@ class Grouper
   private
 
   include Liner
-  
+
   def group_id(manifest)
     id = manifest['id']
     if id.nil?
@@ -117,7 +117,7 @@ class Grouper
   end
 
   def json_parse(s)
-    JSON.parse(s)
+    JSON.parse!(s)
   end
 
   # - - - - - - - - - - - - - -

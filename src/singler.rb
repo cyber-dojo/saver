@@ -175,7 +175,7 @@ class Singler
   end
 
   def json_parse(s)
-    JSON.parse(s)
+    JSON.parse!(s)
   end
 
   # - - - - - - - - - - - - - -
