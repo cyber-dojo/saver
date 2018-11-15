@@ -23,6 +23,7 @@ API:
 - [GET group_manifest(id)](#get-group_manifestid)
 - [POST group_join(id,indexes)](#post-group_joinidindexes)
 - [GET group_joined(id)](#get-group_joinedid)
+- [GET group_events(id)](#get-group_eventsid)
 - [GET kata_exists?(id)](#get-kata_existsid)
 - [POST kata_create(manifest)](#post-kata_createmanifest)
 - [GET kata_manifest(id)](#get-kata_manifestid)
@@ -164,6 +165,45 @@ who has joined the group practice-session with the given id.
      "C4Ac8b",
      "454F91"
   ]
+}
+```
+
+- - - -
+
+## GET group_events(id)
+Returns the index and events of all the individual practice-sessions
+of everyone who has joined the group practice-session with the given id.
+A BatchMethod designed for web's dashboard.
+- parameter, eg
+```
+  { "id": "55d3B9" }
+```
+- returns null if the id does not exist, eg
+```
+  { "group_events": null }
+```
+- returns...
+```
+{ "group_events": {
+    "D6a57F": {
+      "index": 7,
+      "events": [
+        ...
+      ]
+    },
+    "C4Ac8b": {
+      "index": 34,
+      "events": [
+        ...
+      ]
+    },
+    "454F91": {
+      "index": 59,
+      "events": [
+        ...
+      ]
+    }
+  }
 }
 ```
 

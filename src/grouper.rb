@@ -74,6 +74,27 @@ class Grouper
     kata_ids
   end
 
+  # - - - - - - - - - - - - - - - - - - -
+
+  def group_events(id)
+    if !group_exists?(id)
+      events = nil
+    else
+      events = {}
+      64.times { |index|
+        dir = group_dir(id, index)
+        if dir.exists?
+          kata_id = dir.read('kata.id')
+          events[kata_id] = {
+            'index' => index,
+            'events' => singler.kata_events(kata_id)
+          }
+        end
+      }
+    end
+    events
+  end
+
   private
 
   include Liner

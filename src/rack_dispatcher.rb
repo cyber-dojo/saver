@@ -46,6 +46,7 @@ class RackDispatcher
       when /^group_manifest$/ then [grouper, id]
       when /^group_join$/     then [grouper, id, indexes]
       when /^group_joined$/   then [grouper, id]
+      when /^group_events$/   then [grouper, id]
 
       when /^kata_exists$/    then [singler, id]
       when /^kata_create$/    then [singler, manifest]
