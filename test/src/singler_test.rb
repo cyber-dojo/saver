@@ -189,7 +189,7 @@ class SinglerTest < TestBase
   'ran_tests raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
-      kata_ran_tests(*make_args(id, 1, edited_files))
+      kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
     assert_equal "id:invalid:#{id}", error.message
   end
@@ -202,7 +202,7 @@ class SinglerTest < TestBase
   ) do
     id = stub_kata_create('FCF211')
     error = assert_raises(ArgumentError) {
-      kata_ran_tests(*make_args(id, -1, edited_files))
+      kata_ran_tests(*make_ran_test_args(id, -1, edited_files))
     }
     assert_equal 'index:invalid:-1', error.message
   end
@@ -215,7 +215,7 @@ class SinglerTest < TestBase
   ) do
     id = stub_kata_create('08739D')
     error = assert_raises(ArgumentError) {
-      kata_ran_tests(*make_args(id, 0, edited_files))
+      kata_ran_tests(*make_ran_test_args(id, 0, edited_files))
     }
     assert_equal 'index:invalid:0', error.message
   end
@@ -231,7 +231,7 @@ class SinglerTest < TestBase
     expected_events << event0
     assert_equal expected_events, kata_events(id)
 
-    kata_ran_tests(*make_args(id, 1, edited_files))
+    kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
     expected_events << {
       'colour' => red,
       'time' => time_now,
@@ -240,7 +240,7 @@ class SinglerTest < TestBase
     assert_equal expected_events, kata_events(id)
 
     error = assert_raises(ArgumentError) {
-      kata_ran_tests(*make_args(id, 1, edited_files))
+      kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
     assert_equal 'index:invalid:1', error.message
 
@@ -254,9 +254,9 @@ class SinglerTest < TestBase
   and the reason for this is partly speed
   and partly robustness against temporary singler failure ) do
     id = stub_kata_create('710145')
-    kata_ran_tests(*make_args(id, 1, edited_files))
-    # ran_tests(*make_args(id, 2, ...)) assume failed
-    kata_ran_tests(*make_args(id, 3, edited_files)) # <====
+    kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
+    # ran_tests(*make_ran_test_args(id, 2, ...)) assume failed
+    kata_ran_tests(*make_ran_test_args(id, 3, edited_files)) # <====
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -274,7 +274,7 @@ class SinglerTest < TestBase
     assert_equal expected, kata_event(id, 0), 'kata_event(id,0)'
     assert_equal expected, kata_event(id, -1), 'kata_event(id,-1)'
 
-    kata_ran_tests(*make_args(id, 1, edited_files))
+    kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
 
     expected_events << {
       'colour' => red,
@@ -291,13 +291,6 @@ class SinglerTest < TestBase
 
   private
 
-  def event0
-    {
-      'event'  => 'created',
-      'time'   => creation_time
-    }
-  end
-
   def rag_event(files, stdout, stderr, status)
     {
       'files' => files,
@@ -305,42 +298,6 @@ class SinglerTest < TestBase
       'stderr' => stderr,
       'status' => status
     }
-  end
-
-  def make_args(id, n, files)
-    [ id, n, files, time_now, duration, stdout, stderr, status, red ]
-  end
-
-  def edited_files
-    { 'cyber-dojo.sh' => 'gcc',
-      'hiker.c'       => '#include "hiker.h"',
-      'hiker.h'       => '#ifndef HIKER_INCLUDED',
-      'hiker.tests.c' => '#include <assert.h>'
-    }
-  end
-
-  def time_now
-    [2016,12,2, 6,14,57]
-  end
-
-  def duration
-    1.778
-  end
-
-  def stdout
-    ''
-  end
-
-  def stderr
-    'Assertion failed: answer() == 42'
-  end
-
-  def status
-    23
-  end
-
-  def red
-    'red'
   end
 
 end

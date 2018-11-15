@@ -26,6 +26,10 @@ class TestBase < HexMiniTest
     grouper.group_joined(id)
   end
 
+  def group_events(id)
+    grouper.group_events(id)
+  end
+
   # - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
@@ -84,6 +88,49 @@ class TestBase < HexMiniTest
 
   def creation_time
     starter.creation_time
+  end
+
+  def make_ran_test_args(id, n, files)
+    [ id, n, files, time_now, duration, stdout, stderr, status, red ]
+  end
+
+  def time_now
+    [2016,12,2, 6,14,57]
+  end
+
+  def duration
+    1.778
+  end
+
+  def stdout
+    ''
+  end
+
+  def stderr
+    'Assertion failed: answer() == 42'
+  end
+
+  def status
+    23
+  end
+
+  def red
+    'red'
+  end
+
+  def edited_files
+    { 'cyber-dojo.sh' => 'gcc',
+      'hiker.c'       => '#include "hiker.h"',
+      'hiker.h'       => '#ifndef HIKER_INCLUDED',
+      'hiker.tests.c' => '#include <assert.h>'
+    }
+  end
+
+  def event0
+    {
+      'event'  => 'created',
+      'time'   => creation_time
+    }
   end
 
   private

@@ -219,7 +219,7 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
-  'group_joined returns nil when the id does not exist' do
+  'group_joined returns null when the id does not exist' do
     assert_nil group_joined('B4aB37')
   end
 
@@ -239,6 +239,40 @@ class GrouperTest < TestBase
       assert_equal n, kids.size, 'incorrect size!'
       assert_equal expected.sort, kids.sort, 'does not round-trip!'
     end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+  # group_events
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A04', %w(
+  group_events returns null when the id does not exist ) do
+      assert_nil group_events('B4aB37')
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A05', %w(
+  group_events is a BatchMethod for web's dashboard ) do
+    gid = stub_group_create('e8ArPs')
+    kid1 = group_join(gid, indexes)
+    index1 = kata_manifest(kid1)['group_index']
+    kid2 = group_join(gid, indexes)
+    index2 = kata_manifest(kid2)['group_index']
+    kata_ran_tests(*make_ran_test_args(kid1, 1, edited_files))
+
+    expected = {
+      kid1 => {
+        'index' => index1,
+        'events' => [event0, { 'colour' => 'red', 'time' => time_now, 'duration' => duration }]
+      },
+      kid2 => {
+        'index' => index2,
+        'events' => [event0]
+      }
+    }
+    actual = group_events(gid)
+    assert_equal expected, actual
   end
 
   private

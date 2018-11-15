@@ -32,7 +32,8 @@ class RackDispatcherStub
                        :group_create,
                        :group_manifest,
                        :group_join,
-                       :group_joined
+                       :group_joined,
+                       :group_events
 
   define_singler_stubs :kata_exists?,
                        :kata_create,

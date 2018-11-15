@@ -118,6 +118,16 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E65',
+  'dispatch to group_events' do
+    assert_dispatch('group_events',
+      { id: well_formed_id }.to_json,
+      "hello from #{stub_name}.group_events"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # singler
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
