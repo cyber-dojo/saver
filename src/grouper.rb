@@ -63,13 +63,10 @@ class Grouper
       kata_ids = nil
     else
       kata_ids = []
-      64.times { |index|
-        dir = group_dir(id, index)
-        if dir.exists?
-          kata_id = dir.read('kata.id')
-          kata_ids << kata_id
-        end
-      }
+      kata_indexes(id) do |index|
+        kata_id = group_dir(id,index).read('kata.id')
+        kata_ids << kata_id
+      end
     end
     kata_ids
   end
@@ -81,16 +78,13 @@ class Grouper
       events = nil
     else
       events = {}
-      64.times { |index|
-        dir = group_dir(id, index)
-        if dir.exists?
-          kata_id = dir.read('kata.id')
-          events[kata_id] = {
-            'index' => index,
-            'events' => singler.kata_events(kata_id)
-          }
-        end
-      }
+      kata_indexes(id) do |index|
+        kata_id = group_dir(id,index).read('kata.id')
+        events[kata_id] = {
+          'index' => index,
+          'events' => singler.kata_events(kata_id)
+        }
+      end
     end
     events
   end
@@ -107,6 +101,17 @@ class Grouper
       invalid('id', id)
     end
     id
+  end
+
+  def kata_indexes(id)
+    dir_name = group_dir(id).name
+    Dir.glob("#{dir_name}/**/kata.id").each do |path|
+      re = /(\d{1,2})\/kata\.id/
+      m = path.match(re)
+      if m
+        yield m.captures[0].to_i
+      end
+    end
   end
 
   def group_dir(id, index=nil)
