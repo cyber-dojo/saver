@@ -7,4 +7,5 @@ docker run \
    --rm -it \
    --volume /var/run/docker.sock:/var/run/docker.sock \
    cyberdojo/inserter \
-     test-saver-storer
+     test-saver-storer \
+       old
