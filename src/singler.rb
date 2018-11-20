@@ -112,6 +112,7 @@ class Singler
   end
 
   # - - - - - - - - - - - - - -
+  # events
 
   def events_append(id, event)
     kata_dir(id).append(events_filename, json_plain(event) + "\n")
@@ -136,6 +137,7 @@ class Singler
   end
 
   # - - - - - - - - - - - - - -
+  # event
 
   def event_exists?(id, index)
     kata_dir(id, index).exists?
