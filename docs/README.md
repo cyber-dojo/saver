@@ -297,16 +297,35 @@ with the given traffic-light colour.
 ```
   {      "id": "a551C5",
       "index": 3,
-      "files": {       "hiker.h": "ifndef HIKER_INCLUDED\n...",
-                       "hiker.c": "#include \"hiker.h\"...",
-                 "hiker.tests.c": "#include <assert.h>\n...",
-                    "readme.txt": "Write a program that...",
-                      "makefile": "CFLAGS += -I. -Wall...",
-                 "cyber-dojo.sh": "make"
-               }
+      "files": {       
+        "hiker.h": {
+          "content" => "ifndef HIKER_INCLUDED\n..."
+        },
+        "hiker.c": {
+          "content" => "#include \"hiker.h\"..."
+        },
+        "hiker.tests.c": {
+          "content" => "#include <assert.h>\n..."
+        },
+        "readme.txt": {
+          "content" => "Write a program that..."
+        },
+        "makefile": {
+          "content" => "CFLAGS += -I. -Wall..."
+        },
+        "cyber-dojo.sh": {
+          "content" => "make"
+        }
+     }
         "now": [2016,12,6, 12,31,15],
-     "stdout": "",
-     "stderr": "Assert failed: answer() == 42",
+     "stdout": {
+       "content" => "",
+       "truncated" => false
+     },
+     "stderr": {
+       "content" => "Assert failed: answer() == 42",
+       "truncated" => false
+     },
      "status": 23,
      "colour": "red"
   }

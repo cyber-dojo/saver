@@ -22,7 +22,7 @@ class Grouper
     unless dir.make
       invalid('id', id)
     end
-    manifest['visible_files'] = lined(manifest['visible_files'])
+    manifest['visible_files'] = lined_files(manifest['visible_files'])
     dir.write(manifest_filename, json_pretty(manifest))
     id
   end
@@ -32,7 +32,7 @@ class Grouper
   def group_manifest(id)
     assert_group_exists(id)
     manifest = json_parse(group_dir(id).read(manifest_filename))
-    manifest['visible_files'] = unlined(manifest['visible_files'])
+    manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
   end
 

@@ -78,13 +78,14 @@ class GrouperTest < TestBase
   have ids with ells and I want porter to have to only map
   ids that are not unique in their first 6 characters)
   ) do
-    manifest = starter.manifest
     ell = 'L'
 
+    manifest = starter.manifest
     id = '12345' + ell.upcase
     manifest['id'] = id
-    assert_equal id, group_create(manifest.clone)
+    assert_equal id, group_create(manifest)
 
+    manifest = starter.manifest
     id = '12345' + ell.downcase
     manifest['id'] = id
     assert_equal id, group_create(manifest)
@@ -151,10 +152,12 @@ class GrouperTest < TestBase
   test '42E',
   'group_create() group_manifest() round-trip' do
     id = '0ADDE7'
-    m = starter.manifest
-    m['id'] = id
-    group_create(m.clone)
-    assert_equal m, group_manifest(id)
+    manifest = starter.manifest
+    manifest['id'] = id
+    group_create(manifest)
+    expected = starter.manifest
+    expected['id'] = id
+    assert_equal expected, group_manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

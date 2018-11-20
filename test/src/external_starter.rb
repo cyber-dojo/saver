@@ -17,8 +17,6 @@ class ExternalStarter
 
   private
 
-  include HttpJsonService
-
   def language_manifest(display_name, exercise_name)
     get(__method__, display_name, exercise_name)
   end
@@ -32,6 +30,8 @@ class ExternalStarter
   end
 
   # - - - - - - - - - - - - - - -
+
+  include HttpJsonService
 
   def hostname
     'starter'

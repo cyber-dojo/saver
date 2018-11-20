@@ -81,6 +81,8 @@ class Singler
 
   private
 
+  include Liner
+
   def kata_id(manifest)
     id = manifest['id']
     if id.nil?
@@ -147,18 +149,18 @@ class Singler
     dir = kata_dir(id, index)
     unless dir.make
       invalid('index', index)
-    end
-    event['files'] = lined(event['files'])
-    line(event, 'stdout')
-    line(event, 'stderr')
+    end        
+    event['files'] = lined_files(event['files'])
+    lined_file(event['stdout'])
+    lined_file(event['stderr'])
     dir.write(event_filename, json_pretty(event))
   end
 
   def event_read(id, index)
     event = json_parse(kata_dir(id, index).read(event_filename))
-    event['files'] = unlined(event['files'])
-    unline(event, 'stdout')
-    unline(event, 'stderr')
+    event['files'] = unlined_files(event['files'])
+    unlined_file(event['stdout'])
+    unlined_file(event['stderr'])
     event
   end
 
@@ -188,22 +190,6 @@ class Singler
       unless kata_exists?(id)
         return id
       end
-    end
-  end
-
-  # - - - - - - - - - - - - - -
-
-  include Liner
-
-  def line(event, key)
-    if event.has_key?(key)
-      event[key] = event[key].lines
-    end
-  end
-
-  def unline(event, key)
-    if event.has_key?(key)
-      event[key] = event[key].join
     end
   end
 

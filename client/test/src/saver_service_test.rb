@@ -149,8 +149,8 @@ class SaverServiceTest < TestBase
     event1_files.delete('hiker.h')
     now = [2016,12,5, 21,1,34,6574]
     duration = 1.67
-    stdout = 'missing include'
-    stderr = 'assert failed'
+    stdout = file_form('missing include')
+    stderr = file_form('assert failed')
     status = 6
     colour = 'amber'
     result = saver.kata_ran_tests(id, 1, event1_files, now, duration, stdout, stderr, status, colour)
@@ -171,9 +171,9 @@ class SaverServiceTest < TestBase
     now = [2016,12,5, 21,2,15,564]
     duration = 0.67
     event2_files = event1_files
-    event2_files['extra.hpp'] = '#include <stdio.h>'
-    stdout = 'all tests passed'
-    stderr = ''
+    event2_files['extra.hpp'] = file_form('#include <stdio.h>')
+    stdout = file_form('all tests passed')
+    stderr = file_form('')
     status = 0
     colour = 'green'
     events = saver.kata_ran_tests(id, 2, event2_files, now, duration, stdout, stderr, status, colour)
@@ -198,11 +198,11 @@ class SaverServiceTest < TestBase
     id = saver.kata_create(starter.manifest)
 
     files = starter.manifest['visible_files']
-    files['very_large'] = 'X'*1024*500
+    files['very_large'] = file_form('X'*1024*500)
     now = [2016,12,5, 21,1,34,567]
     duration = 2.56
-    stdout = 'missing include'
-    stderr = 'assertion failed'
+    stdout = file_form('missing include')
+    stderr = file_form('assertion failed')
     status = 41
     colour = 'amber'
     saver.kata_ran_tests(id, 1, files, now, duration, stdout, stderr, status, colour)
@@ -214,6 +214,12 @@ class SaverServiceTest < TestBase
     {
       'event'  => 'created',
       'time'   => starter.creation_time
+    }
+  end
+
+  def file_form(content, truncated = false)
+    { 'content' => content,
+      'truncated' => truncated
     }
   end
 

@@ -103,11 +103,11 @@ class TestBase < HexMiniTest
   end
 
   def stdout
-    ''
+    file_form('')
   end
 
   def stderr
-    'Assertion failed: answer() == 42'
+    file_form('Assertion failed: answer() == 42')
   end
 
   def status
@@ -119,10 +119,16 @@ class TestBase < HexMiniTest
   end
 
   def edited_files
-    { 'cyber-dojo.sh' => 'gcc',
-      'hiker.c'       => '#include "hiker.h"',
-      'hiker.h'       => '#ifndef HIKER_INCLUDED',
-      'hiker.tests.c' => '#include <assert.h>'
+    { 'cyber-dojo.sh' => file_form('gcc'),
+      'hiker.c'       => file_form('#include "hiker.h"'),
+      'hiker.h'       => file_form('#ifndef HIKER_INCLUDED'),
+      'hiker.tests.c' => file_form('#include <assert.h>')
+    }
+  end
+
+  def file_form(content, truncated = false)
+    { 'content' => content,
+      'truncated' => truncated
     }
   end
 

@@ -61,7 +61,7 @@ class WellFormedArgsTest < TestBase
     string_year = ["2018",3,28, 11,33,13,67]
     negative_month = [2018,-3,28, 11,33,13,789]
     {
-      [] => 'manifest:!Hash',
+      [] => 'manifest:!Hash (Array)',
 
       smd('display_name') => 'manifest["display_name"]:missing',
 
@@ -82,8 +82,10 @@ class WellFormedArgsTest < TestBase
       smm({runner_choice:nil}) => 'manifest["runner_choice"]:!String',
       smm({exercise:true})     => 'manifest["exercise"]:!String',
 
-      smm({visible_files:[]}) => 'manifest["visible_files"]:!Hash',
-      smm({visible_files:{'s' => [4]}}) => 'manifest["visible_files"]:["s"] -> !String',
+      smm({visible_files:[]}) => 'manifest["visible_files"]:!Hash (Array)',
+      smm({visible_files:{'s' => [4]}}) => 'manifest["visible_files"]:["s"] !Hash (Array)',
+      smm({visible_files:{'s' => {}}}) => 'manifest["visible_files"]:["s"]["content"] missing',
+      smm({visible_files:{'s' => {'content'=>4}}}) => 'manifest["visible_files"]:["s"]["content"] -> !String (Integer)',      
 
       smm({filename_extension:true}) => 'manifest["filename_extension"]:!Array',
       smm({filename_extension:{}}) => 'manifest["filename_extension"]:!Array',
@@ -228,7 +230,7 @@ class WellFormedArgsTest < TestBase
 
   test '846',
   'files does not raise when well-formed' do
-    files = { 'cyber-dojo.sh' => 'make' }
+    files = { 'cyber-dojo.sh' => file_form('make') }
     json = { files:files }.to_json
     assert_equal files, WellFormedArgs.new(json).files
   end
@@ -246,10 +248,12 @@ class WellFormedArgsTest < TestBase
 
   def malformed_files
     {
-      [] => '!Hash',
-      { "x" => 42   } => '["x"] -> !String',
-      { "y" => true } => '["y"] -> !String',
-      { "z" => nil  } => '["z"] -> !String',
+      nil => '!Hash (NilClass)',
+      [] => '!Hash (Array)',
+      { 'a' => [] } => '["a"] !Hash (Array)',
+      { 'x' => file_form(42)   } => '["x"]["content"] -> !String (Integer)',
+      { 'y' => file_form(true) } => '["y"]["content"] -> !String (TrueClass)',
+      { 'z' => file_form(nil)  } => '["z"]["content"] -> !String (NilClass)',
     }
   end
 
@@ -332,24 +336,30 @@ class WellFormedArgsTest < TestBase
 
   test 'E35',
   'stdout does not raise when well-formed' do
-    stdout = 'gsdfg'
+    stdout = file_form('gsdfg')
     json = { stdout:stdout }.to_json
     assert_equal stdout, WellFormedArgs.new(json).stdout
   end
 
   test 'E36',
   'stdout raises when malformed' do
-    malformed_stdouts.each do |malformed|
+    malformed_stdouts.each do |malformed,message|
       json = { stdout:malformed }.to_json
       wfa = WellFormedArgs.new(json)
       error = assert_raises(ClientError) { wfa.stdout }
-      expected = 'malformed:stdout:!String:'
+      expected = "malformed:stdout:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
   end
 
   def malformed_stdouts
-    [ nil, true, [1], {} ]
+    { nil => '!Hash (NilClass)',
+      true => '!Hash (TrueClass)',
+      [1] => '!Hash (Array)',
+      {} => '["content"] missing',
+      file_form([]) => '["content"] -> !String (Array)',
+      file_form(false) => '["content"] -> !String (FalseClass)',
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -358,24 +368,30 @@ class WellFormedArgsTest < TestBase
 
   test '8DB',
   'stderr does not raise when well-formed' do
-    stderr = 'ponoi'
+    stderr = file_form('aesthetics', true)
     json = { stderr:stderr }.to_json
     assert_equal stderr, WellFormedArgs.new(json).stderr
   end
 
   test '8DC',
   'stderr raises when malformed' do
-    malformed_stderrs.each do |malformed|
+    malformed_stderrs.each do |malformed,message|
       json = { stderr:malformed }.to_json
       wfa = WellFormedArgs.new(json)
       error = assert_raises(ClientError) { wfa.stderr }
-      expected = 'malformed:stderr:!String:'
+      expected = "malformed:stderr:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
   end
 
   def malformed_stderrs
-    [ nil, true, [1], {} ]
+    { nil => '!Hash (NilClass)',
+      true => '!Hash (TrueClass)',
+      [1] => '!Hash (Array)',
+      {} => '["content"] missing',
+      file_form(42) => '["content"] -> !String (Integer)',
+      file_form(true) => '["content"] -> !String (TrueClass)',
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -76,13 +76,14 @@ class SinglerTest < TestBase
   have ids with ells and I want porter to have to only map
   ids that are not unique in their first 6 characters)
   ) do
-    manifest = starter.manifest
     ell = 'L'
 
+    manifest = starter.manifest
     id = '2ta29' + ell.upcase
     manifest['id'] = id
-    assert_equal id, kata_create(manifest.clone)
+    assert_equal id, kata_create(manifest)
 
+    manifest = starter.manifest
     id = '2ta29' + ell.downcase
     manifest['id'] = id
     # Note that this call to kata_create() will fail
@@ -152,11 +153,13 @@ class SinglerTest < TestBase
 
   test '42E',
   'create/manifest round-trip' do
-    m = starter.manifest
-    m['id'] = '0ADDE7'
-    id = kata_create(m.clone)
+    manifest = starter.manifest
+    manifest['id'] = '0ADDE7'
+    id = kata_create(manifest)
     assert_equal '0ADDE7', id
-    assert_equal m, kata_manifest(id)
+    expected = starter.manifest
+    expected['id'] = id
+    assert_equal expected, kata_manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
