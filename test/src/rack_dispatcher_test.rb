@@ -261,7 +261,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - -
 
   def well_formed_files
-    { 'cyber-dojo.sh' => file_form('make') }
+    { 'cyber-dojo.sh' => file('make') }
   end
 
   def well_formed_now
@@ -273,11 +273,11 @@ class RackDispatcherTest < TestBase
   end
 
   def well_formed_stdout
-    file_form('tweedle-dee')
+    file('tweedle-dee')
   end
 
   def well_formed_stderr
-    file_form('tweedle-dum')
+    file('tweedle-dum')
   end
 
   def well_formed_status

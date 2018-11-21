@@ -79,13 +79,12 @@ class WellFormedArgsTest < TestBase
 
       smm({display_name:42})   => 'manifest["display_name"]:!String',
       smm({image_name:{}})     => 'manifest["image_name"]:!String',
-      smm({runner_choice:nil}) => 'manifest["runner_choice"]:!String',
       smm({exercise:true})     => 'manifest["exercise"]:!String',
 
       smm({visible_files:[]}) => 'manifest["visible_files"]:!Hash (Array)',
       smm({visible_files:{'s' => [4]}}) => 'manifest["visible_files"]:["s"] !Hash (Array)',
       smm({visible_files:{'s' => {}}}) => 'manifest["visible_files"]:["s"]["content"] missing',
-      smm({visible_files:{'s' => {'content'=>4}}}) => 'manifest["visible_files"]:["s"]["content"] -> !String (Integer)',      
+      smm({visible_files:{'s' => {'content'=>4}}}) => 'manifest["visible_files"]:["s"]["content"] -> !String (Integer)',
 
       smm({filename_extension:true}) => 'manifest["filename_extension"]:!Array',
       smm({filename_extension:{}}) => 'manifest["filename_extension"]:!Array',
@@ -230,7 +229,7 @@ class WellFormedArgsTest < TestBase
 
   test '846',
   'files does not raise when well-formed' do
-    files = { 'cyber-dojo.sh' => file_form('make') }
+    files = { 'cyber-dojo.sh' => file('make') }
     json = { files:files }.to_json
     assert_equal files, WellFormedArgs.new(json).files
   end
@@ -251,9 +250,9 @@ class WellFormedArgsTest < TestBase
       nil => '!Hash (NilClass)',
       [] => '!Hash (Array)',
       { 'a' => [] } => '["a"] !Hash (Array)',
-      { 'x' => file_form(42)   } => '["x"]["content"] -> !String (Integer)',
-      { 'y' => file_form(true) } => '["y"]["content"] -> !String (TrueClass)',
-      { 'z' => file_form(nil)  } => '["z"]["content"] -> !String (NilClass)',
+      { 'x' => file(42)   } => '["x"]["content"] -> !String (Integer)',
+      { 'y' => file(true) } => '["y"]["content"] -> !String (TrueClass)',
+      { 'z' => file(nil)  } => '["z"]["content"] -> !String (NilClass)',
     }
   end
 
@@ -336,7 +335,7 @@ class WellFormedArgsTest < TestBase
 
   test 'E35',
   'stdout does not raise when well-formed' do
-    stdout = file_form('gsdfg')
+    stdout = file('gsdfg')
     json = { stdout:stdout }.to_json
     assert_equal stdout, WellFormedArgs.new(json).stdout
   end
@@ -357,8 +356,8 @@ class WellFormedArgsTest < TestBase
       true => '!Hash (TrueClass)',
       [1] => '!Hash (Array)',
       {} => '["content"] missing',
-      file_form([]) => '["content"] -> !String (Array)',
-      file_form(false) => '["content"] -> !String (FalseClass)',
+      file([]) => '["content"] -> !String (Array)',
+      file(false) => '["content"] -> !String (FalseClass)',
     }
   end
 
@@ -368,7 +367,7 @@ class WellFormedArgsTest < TestBase
 
   test '8DB',
   'stderr does not raise when well-formed' do
-    stderr = file_form('aesthetics', true)
+    stderr = file('aesthetics', true)
     json = { stderr:stderr }.to_json
     assert_equal stderr, WellFormedArgs.new(json).stderr
   end
@@ -389,8 +388,8 @@ class WellFormedArgsTest < TestBase
       true => '!Hash (TrueClass)',
       [1] => '!Hash (Array)',
       {} => '["content"] missing',
-      file_form(42) => '["content"] -> !String (Integer)',
-      file_form(true) => '["content"] -> !String (TrueClass)',
+      file(42) => '["content"] -> !String (Integer)',
+      file(true) => '["content"] -> !String (TrueClass)',
     }
   end
 

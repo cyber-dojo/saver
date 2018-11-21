@@ -35,7 +35,7 @@ class WellFormedArgs
         well_formed_id(arg_name, value)
       when 'display_name', 'exercise'
         well_formed_string(arg_name, value)
-      when 'image_name', 'runner_choice'
+      when 'image_name'
         well_formed_string(arg_name, value)
       when 'visible_files'
         well_formed_files(arg_name, value)
@@ -109,7 +109,6 @@ class WellFormedArgs
   REQUIRED_KEYS = %w(
     display_name
     image_name
-    runner_choice
     created
     visible_files
   )
