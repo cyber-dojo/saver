@@ -77,14 +77,26 @@ Creates a group practice-session from the given manifest.
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
              "visible_files": {
-                           "hiker.h": "#ifndef HIKER_INCLUDED...",
-                           "hiker.c": "#include \"hiker.h\"...",
-                     "hiker.tests.c": "#include <assert.h>\n...",
-                        "readme.txt": "Write a program that...",
-                          "makefile": "CFLAGS += -I. -Wall...",
-                     "cyber-dojo.sh": "make"
-                    }
-      }
+                       "hiker.h": {
+                         "content": "#ifndef HIKER_INCLUDED..."
+                       },
+                       "hiker.c": {
+                         "content": "#include \"hiker.h\"..."
+                       },
+                 "hiker.tests.c": {
+                         "content": "#include <assert.h>\n..."
+                       },
+                    "readme.txt": {
+                         "content": "Write a program that..."
+                       },
+                      "makefile": {
+                         "content": "CFLAGS += -I. -Wall..."
+                      },
+                 "cyber-dojo.sh": {
+                         "content": "make"
+                 }
+            }
+        }
     }
 ```
 - returns the id of the created group practice-session, eg
@@ -113,14 +125,26 @@ Returns the group manifest used to create the group practice-session with the gi
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
              "visible_files": {
-                           "hiker.h": "#ifndef HIKER_INCLUDED...",
-                           "hiker.c": "#include \"hiker.h\"...",
-                     "hiker.tests.c": "#include <assert.h>\n...",
-                        "readme.txt": "Write a program that...",
-                          "makefile": "CFLAGS += -I. -Wall...",
-                     "cyber-dojo.sh": "make"
-                    }
-      }
+                      "hiker.h": {
+                        "content": "#ifndef HIKER_INCLUDED..."
+                      },
+                      "hiker.c": {
+                        "content": "#include \"hiker.h\"..."
+                      },
+                "hiker.tests.c": {
+                        "content": "#include <assert.h>\n..."
+                      },
+                   "readme.txt": {
+                        "content": "Write a program that..."
+                      },
+                     "makefile": {
+                        "content": "CFLAGS += -I. -Wall..."
+                     },
+                "cyber-dojo.sh": {
+                        "content": "make"
+                }
+            }
+        }
     }
 ```
 
@@ -239,14 +263,26 @@ Creates an individual practice-session from the given manifest.
                "max_seconds": 10,
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
-             "visible_files": {
-                               "hiker.h": "#ifndef HIKER_INCLUDED...",
-                               "hiker.c": "#include \"hiker.h\"...",
-                         "hiker.tests.c": "#include <assert.h>\n...",
-                            "readme.txt": "Write a program that...",
-                              "makefile": "CFLAGS += -I. -Wall...",
-                         "cyber-dojo.sh": "make"
+                  "visible_files": {
+                           "hiker.h": {
+                             "content": "#ifndef HIKER_INCLUDED..."
+                           },
+                           "hiker.c": {
+                             "content": "#include \"hiker.h\"..."
+                           },
+                     "hiker.tests.c": {
+                             "content": "#include <assert.h>\n..."
+                           },
+                        "readme.txt": {
+                             "content": "Write a program that..."
+                           },
+                          "makefile": {
+                             "content": "CFLAGS += -I. -Wall..."
+                          },
+                     "cyber-dojo.sh": {
+                             "content": "make"
                      }
+                 }
     }
 ```
 - returns the id of the created individual practice-session, eg
@@ -275,14 +311,26 @@ Returns the manifest used to create the individual practice-session with the giv
         "filename_extension": [ ".c", "*.h" ],
                   "tab_size": 4,
              "visible_files": {
-                               "hiker.h": "#ifndef HIKER_INCLUDED...",
-                               "hiker.c": "#include \"hiker.h\"...",
-                         "hiker.tests.c": "#include <assert.h>\n...",
-                            "readme.txt": "Write a program that...",
-                              "makefile": "CFLAGS += -I. -Wall...",
-                         "cyber-dojo.sh": "make"
-                     }
-      }
+                       "hiker.h": {
+                         "content": "#ifndef HIKER_INCLUDED..."
+                       },
+                       "hiker.c": {
+                         "content": "#include \"hiker.h\"..."
+                       },
+                 "hiker.tests.c": {
+                         "content": "#include <assert.h>\n..."
+                       },
+                    "readme.txt": {
+                         "content": "Write a program that..."
+                       },
+                      "makefile": {
+                         "content": "CFLAGS += -I. -Wall..."
+                      },
+                 "cyber-dojo.sh": {
+                         "content": "make"
+                 }
+            }
+        }
     }
 ```
 
@@ -297,34 +345,34 @@ with the given traffic-light colour.
 ```
   {      "id": "a551C5",
       "index": 3,
+        "now": [2016,12,6, 12,31,15],      
       "files": {       
-        "hiker.h": {
-          "content" => "ifndef HIKER_INCLUDED\n..."
-        },
-        "hiker.c": {
-          "content" => "#include \"hiker.h\"..."
-        },
+              "hiker.h": {
+                "content": "ifndef HIKER_INCLUDED\n..."
+              },
+              "hiker.c": {
+                "content": "#include \"hiker.h\"..."
+              },
         "hiker.tests.c": {
-          "content" => "#include <assert.h>\n..."
+                "content": "#include <assert.h>\n..."
         },
-        "readme.txt": {
-          "content" => "Write a program that..."
-        },
-        "makefile": {
-          "content" => "CFLAGS += -I. -Wall..."
-        },
+           "readme.txt": {
+                "content": "Write a program that..."
+           },
+             "makefile": {
+                "content": "CFLAGS += -I. -Wall..."
+             },
         "cyber-dojo.sh": {
-          "content" => "make"
+                "content": "make"
         }
      }
-        "now": [2016,12,6, 12,31,15],
      "stdout": {
-       "content" => "",
-       "truncated" => false
+         "content": "",
+       "truncated": false
      },
      "stderr": {
-       "content" => "Assert failed: answer() == 42",
-       "truncated" => false
+         "content": "Assert failed: answer() == 42",
+       "truncated": false
      },
      "status": 23,
      "colour": "red"
@@ -367,16 +415,34 @@ and the given event index.
 - returns, eg
 ```
   { "kata_event": {
-           "files": {
-              "hiker.h": "ifndef HIKER_INCLUDED\n...",
-              "hiker.c": "#include \"hiker.h\"...",
-        "hiker.tests.c": "#include <assert.h>...",
-           "readme.txt": "Write a program that...",
-             "makefile": "CFLAGS += -I. -Wall...",
-        "cyber-dojo.sh": "make"
+      "files": {
+              "hiker.h": {
+                "content": "ifndef HIKER_INCLUDED\n..."
+              },
+              "hiker.c": {
+                "content": "#include \"hiker.h\"..."
+              },
+        "hiker.tests.c": {
+                "content": "#include <assert.h>..."
+              },
+           "readme.txt": {
+                "content": "Write a program that..."
+           },
+             "makefile": {
+                "content": "CFLAGS += -I. -Wall..."
+             },
+        "cyber-dojo.sh": {
+                "content": "make"
+              },
       },
-      "stdout": "",
-      "stderr": "Assert failed: answer() == 42",
+      "stdout": {
+          "content": "",
+        "truncated": false
+      },
+      "stderr": {
+          "content": "Assert failed: answer() == 42",
+        "truncated": false
+      },
       "status": 23,
     }
   }
