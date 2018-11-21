@@ -68,7 +68,7 @@ Creates a group practice-session from the given manifest.
 - parameter, eg
 ```
     { "manifest": {
-                   "created": [2017,12,15, 11,13,38],
+                   "created": [2017,12,15, 11,13,38,456],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
              "runner_choice": "stateless",
@@ -116,7 +116,7 @@ Returns the group manifest used to create the group practice-session with the gi
 ```
     { "group_manifest": {
                         "id": "55d3B9",
-                   "created": [2017,12,15, 11,13,38],
+                   "created": [2017,12,15, 11,13,38,456],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
              "runner_choice": "stateless",
@@ -255,7 +255,7 @@ Creates an individual practice-session from the given manifest.
 - parameter, eg
 ```
     { "manifest": {
-                   "created": [2017,12,15, 11,13,38],
+                   "created": [2017,12,15, 11,13,38,456],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
              "runner_choice": "stateless",
@@ -302,7 +302,7 @@ Returns the manifest used to create the individual practice-session with the giv
 ```
     { "kata_manifest": {
                         "id": "a551C5",
-                   "created": [2017,12,15, 11,13,38],
+                   "created": [2017,12,15, 11,13,38,456],
               "display_name": "C (gcc), assert",
                 "image_name": "cyberdojofoundation/gcc_assert",
              "runner_choice": "stateless",
@@ -345,7 +345,7 @@ with the given traffic-light colour.
 ```
   {      "id": "a551C5",
       "index": 3,
-        "now": [2016,12,6, 12,31,15],      
+        "now": [2016,12,6, 12,31,15,823],      
       "files": {       
               "hiker.h": {
                 "content": "ifndef HIKER_INCLUDED\n..."
@@ -392,10 +392,10 @@ with the given id.
 - returns, eg
 ```
   { "kata_events": [
-      {  "event": "created", "time": [2016,12,5, 11,15,18] },
-      { "colour": "red,      "time": [2016,12,6, 12,31,15] },
-      { "colour": "green",   "time": [2016,12,6, 12,32,56] },
-      { "colour": "amber",   "time": [2016,12,6, 12,43,19] }
+      {  "event": "created", "time": [2016,12,5, 11,15,18,340] },
+      { "colour": "red,      "time": [2016,12,6, 12,31,15,134] },
+      { "colour": "green",   "time": [2016,12,6, 12,32,56,833] },
+      { "colour": "amber",   "time": [2016,12,6, 12,43,19, 29] }
     ]
   }
 ```
