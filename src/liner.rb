@@ -2,15 +2,11 @@
 module Liner # mix-in
 
   def lined_files(files)
-    files.each {|_filename,file|
-      lined_file(file)
-    }
+    files.each {|_filename,file| lined_file(file) }
   end
 
   def unlined_files(files)
-    files.each {|_filename,file|
-      unlined_file(file)
-    }
+    files.each {|_filename,file| unlined_file(file) }
   end
 
   def lined_file(file)
