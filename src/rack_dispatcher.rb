@@ -16,7 +16,7 @@ class RackDispatcher
     target, name, args = validated_name_args(path, body)
     result = target.public_send(name, *args)
     json_response(200, plain({ name => result }))
-  rescue => error
+  rescue Exception => error
     diagnostic = pretty({
       'exception' => {
         'path' => path,
