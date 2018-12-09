@@ -29,6 +29,23 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  class SyntaxErrorRackDispatcherStub
+    def sha
+      fail SyntaxError, 'fubar'
+    end
+  end
+
+  test 'F1B',
+  'dispatch returns 500 status when implementation has syntax error' do
+    @stub = SyntaxErrorRackDispatcherStub.new
+    assert_dispatch_raises('sha',
+      {}.to_json,
+      500,
+      'fubar')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'E5A',
   'dispatch raises when method name is unknown' do
     assert_dispatch_raises('xyz',
