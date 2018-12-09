@@ -13,35 +13,27 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   class ThrowingRackDispatcherStub
+    def initialize(klass, message)
+      @klass = klass
+      @message = message
+    end
     def sha
-      fail ArgumentError, 'wibble'
+      fail @klass, @message
     end
   end
 
   test 'F1A',
   'dispatch returns 500 status when implementation raises' do
-    @stub = ThrowingRackDispatcherStub.new
-    assert_dispatch_raises('sha',
-      {}.to_json,
-      500,
-      'wibble')
+    @stub = ThrowingRackDispatcherStub.new(ArgumentError, 'wibble')
+    assert_dispatch_raises('sha', {}.to_json, 500, 'wibble')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  class SyntaxErrorRackDispatcherStub
-    def sha
-      fail SyntaxError, 'fubar'
-    end
-  end
-
   test 'F1B',
   'dispatch returns 500 status when implementation has syntax error' do
-    @stub = SyntaxErrorRackDispatcherStub.new
-    assert_dispatch_raises('sha',
-      {}.to_json,
-      500,
-      'fubar')
+    @stub = ThrowingRackDispatcherStub.new(SyntaxError, 'fubar')
+    assert_dispatch_raises('sha', {}.to_json, 500, 'fubar')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
