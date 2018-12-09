@@ -37,9 +37,9 @@ class GrouperTest < TestBase
     def grouper
       Grouper.new(self)
     end
-    def storer
-      StorerService.new
-    end
+    #def storer
+    #  StorerService.new
+    #end
     def disk
       StubDisk.new
     end

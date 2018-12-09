@@ -23,11 +23,11 @@ class IdValidatorTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test '1D5',
-  'valid?(id) is false if session with that id already already exists in storer' do
-    id = '1F00C1BFC8'
-    refute id_validator.valid?(id)
-  end
+  #test '1D5',
+  #'valid?(id) is false if session with that id already already exists in storer' do
+  #  id = '1F00C1BFC8'
+  #  refute id_validator.valid?(id)
+  #end
 
   # - - - - - - - - - - - - - - - - -
 

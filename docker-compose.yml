@@ -40,21 +40,21 @@ services:
       - /tmp/groups:/groups:rw
       - /tmp/katas:/katas:rw
     depends_on:
-      - storer
+      #- storer
       - prometheus
       - starter # for tests
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  storer:
-    user: storer:storer
-    image: cyberdojo/storer
-    init: true
-    container_name: test-saver-storer
-    read_only: true
-    tmpfs: /tmp
-    volumes:
-      - /tmp/storer:/usr/src/cyber-dojo/katas:rw
+  #storer:
+  #  user: storer:storer
+  #  image: cyberdojo/storer
+  #  init: true
+  #  container_name: test-saver-storer
+  #  read_only: true
+  #  tmpfs: /tmp
+  #  volumes:
+  #    - /tmp/storer:/usr/src/cyber-dojo/katas:rw
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

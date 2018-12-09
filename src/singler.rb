@@ -149,7 +149,7 @@ class Singler
     dir = kata_dir(id, index)
     unless dir.make
       invalid('index', index)
-    end        
+    end
     event['files'] = lined_files(event['files'])
     lined_file(event['stdout'])
     lined_file(event['stderr'])

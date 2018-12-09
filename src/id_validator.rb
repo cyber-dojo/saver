@@ -8,8 +8,8 @@ class IdValidator
   def valid?(id)
     if grouper.group_exists?(id)
       false
-    elsif storer.katas_completed(id) != []
-      false
+    #elsif storer.katas_completed(id) != []
+    #  false
     else
       true
     end
@@ -21,8 +21,8 @@ class IdValidator
     @externals.grouper
   end
 
-  def storer
-    @externals.storer
-  end
+  #def storer
+  #  @externals.storer
+  #end
 
 end
