@@ -2,7 +2,8 @@
 set -e
 
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && pwd )"
-readonly MY_NAME="${ROOT_DIR##*/}"
+#readonly MY_NAME="${ROOT_DIR##*/}"
+readonly MY_NAME=saver
 readonly SH_DIR="${ROOT_DIR}/sh"
 
 "${SH_DIR}/build_docker_images.sh"
