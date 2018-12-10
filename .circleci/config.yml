@@ -22,7 +22,7 @@ jobs:
 
   deploy-image-to-beta:
     docker:
-      - image: lfaoro/gcloud-kubectl-helm
+      - image: cyberdojo/gcloud-kubectl-helm
     steps:
       - run:
           name: authenticate with gcloud and deploy with helm
