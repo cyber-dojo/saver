@@ -35,15 +35,3 @@ wait_till_up "test-${MY_NAME}-client"
 wait_till_up "test-${MY_NAME}-starter"
 wait_till_up "test-${MY_NAME}-prometheus"
 wait_till_up "test-${MY_NAME}-grafana"
-
-# - - - - - - - - - - - - - - - - - - - -
-
-docker exec \
-  --user root \
-    "test-${MY_NAME}-server" \
-      sh -c 'cd /cyber-dojo/groups && rm -rf * && chown -R saver:saver /cyber-dojo/groups'
-
-docker exec \
-  --user root \
-    "test-${MY_NAME}-server" \
-      sh -c 'cd /cyber-dojo/katas && rm -rf * && chown -R saver:saver /cyber-dojo/katas'

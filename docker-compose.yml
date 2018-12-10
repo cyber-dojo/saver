@@ -34,10 +34,10 @@ services:
     init: true
     container_name: test-saver-server
     read_only: true
-    tmpfs: /tmp
+    tmpfs:
+      - /cyber-dojo:uid=19663,gid=19663
+      - /tmp:uid=19663,gid=19663
     restart: 'no'
-    volumes:
-      - /tmp/cyber-dojo:/cyber-dojo:rw
     depends_on:
       - prometheus
       - starter # for tests

@@ -29,4 +29,3 @@ RUN echo ${SHA} > ${SAVER_HOME}/sha.txt
 USER saver
 EXPOSE 4537
 CMD [ "./up.sh" ]
-
