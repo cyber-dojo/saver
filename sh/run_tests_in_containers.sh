@@ -4,7 +4,6 @@ declare server_status=0
 declare client_status=0
 
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
-#readonly MY_NAME="${ROOT_DIR##*/}"
 readonly MY_NAME=saver
 
 readonly SERVER_CID=`docker ps --all --quiet --filter "name=test-${MY_NAME}-server"`
