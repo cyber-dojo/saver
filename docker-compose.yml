@@ -37,8 +37,7 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - /tmp/groups:/groups:rw
-      - /tmp/katas:/katas:rw
+      - /tmp/cyber-dojo:/cyber-dojo:rw
     depends_on:
       - prometheus
       - starter # for tests

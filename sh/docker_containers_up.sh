@@ -41,9 +41,9 @@ wait_till_up "test-${MY_NAME}-grafana"
 docker exec \
   --user root \
     "test-${MY_NAME}-server" \
-      sh -c 'cd /groups && rm -rf * && chown -R saver:saver /groups'
+      sh -c 'cd /cyber-dojo/groups && rm -rf * && chown -R saver:saver /cyber-dojo/groups'
 
 docker exec \
   --user root \
     "test-${MY_NAME}-server" \
-      sh -c 'cd /katas && rm -rf * && chown -R saver:saver /katas'
+      sh -c 'cd /cyber-dojo/katas && rm -rf * && chown -R saver:saver /cyber-dojo/katas'

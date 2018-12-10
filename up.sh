@@ -1,8 +1,14 @@
 #!/bin/bash
 set -e
 
-# The --host is needed for IPv4 and IPv6 addresses
+if [[ ! -d /cyber-dojo/groups ]]; then
+  mkdir -p /cyber-dojo/groups
+fi
+if [[ ! -d /cyber-dojo/katas ]]; then
+  mkdir -p /cyber-dojo/katas
+fi
 
+# The --host is needed for IPv4 and IPv6 addresses
 bundle exec rackup \
   --warn \
   --host 0.0.0.0 \

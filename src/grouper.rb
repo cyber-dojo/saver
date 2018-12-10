@@ -117,7 +117,7 @@ class Grouper
   def group_dir(id, index=nil)
     # Using 2/2/2 split.
     # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    args = ['', 'cyber-dojo', 'groups', id[0..1], id[2..3], id[4..5]]
     unless index.nil?
       args << index.to_s
     end
