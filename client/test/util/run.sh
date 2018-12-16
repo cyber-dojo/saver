@@ -6,20 +6,18 @@ if [ ! -f /.dockerenv ]; then
   exit 1
 fi
 
+readonly ARGS=(${*})
 readonly MY_DIR="$( cd "$( dirname "${0}" )" && pwd )"
 readonly TEST_LOG=${COVERAGE_ROOT}/test.log
 
 mkdir -p ${COVERAGE_ROOT}
-cd ${MY_DIR}/src
-
+cd ${MY_DIR}/..
 readonly FILES=(*_test.rb)
-readonly ARGS=(${*})
 
-ruby -e "([ '../coverage.rb' ] + %w(${FILES[*]})).each{ |file| require './'+file }" \
+ruby -e "([ './util/coverage.rb' ] + %w(${FILES[*]})).each{ |file| require './'+file }" \
   -- ${ARGS[@]} | tee ${TEST_LOG}
 
-cd ${MY_DIR} \
-  && ruby ./check_test_results.rb \
-       ${TEST_LOG} \
-       ${COVERAGE_ROOT}/index.html \
-          > ${COVERAGE_ROOT}/done.txt
+ruby ${MY_DIR}/check_test_results.rb \
+  ${TEST_LOG} \
+  ${COVERAGE_ROOT}/index.html \
+    > ${COVERAGE_ROOT}/done.txt

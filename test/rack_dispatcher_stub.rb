@@ -1,5 +1,5 @@
-require_relative '../../src/grouper'
-require_relative '../../src/singler'
+require_relative '../src/grouper'
+require_relative '../src/singler'
 
 class RackDispatcherStub
 

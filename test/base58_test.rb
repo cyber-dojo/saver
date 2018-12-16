@@ -1,6 +1,6 @@
 require_relative 'test_base'
-require_relative '../../src/base58'
-require_relative '../../src/external_disk_writer'
+require_relative '../src/base58'
+require_relative '../src/external_disk_writer'
 require 'open3'
 
 class Base58Test < TestBase

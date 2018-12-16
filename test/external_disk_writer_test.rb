@@ -1,5 +1,5 @@
 require_relative 'test_base'
-require_relative '../../src/external_disk_writer'
+require_relative '../src/external_disk_writer'
 
 class ExternalDiskWriterTest < TestBase
 

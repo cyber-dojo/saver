@@ -19,7 +19,7 @@ run_server_tests()
     --user saver:saver \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \
     "${SERVER_CID}" \
-      sh -c "cd /app/test && ./run.sh ${*}"
+      sh -c "/app/test/util/run.sh ${*}"
 
   server_status=$?
 
@@ -42,7 +42,7 @@ run_client_tests()
     --user nobody:nogroup \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \
     "${CLIENT_CID}" \
-      sh -c "cd /app/test && ./run.sh ${*}"
+      sh -c "/app/test/util/run.sh ${*}"
 
   client_status=$?
 

@@ -1,5 +1,5 @@
 require_relative 'test_base'
-require_relative '../../src/well_formed_args'
+require_relative '../src/well_formed_args'
 
 class WellFormedArgsTest < TestBase
 

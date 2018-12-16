@@ -1,4 +1,4 @@
-require_relative '../../src/image'
+require_relative '../src/image'
 require_relative 'test_base'
 
 class ImageTest < TestBase
