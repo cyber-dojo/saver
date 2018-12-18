@@ -8,11 +8,10 @@ RUN adduser \
   saver    `# user-name`
 
 ARG HOME=/app
-COPY . ${HOME}
-RUN  chown -R saver ${HOME}
-
 ARG SHA
+COPY . ${HOME}
 RUN echo ${SHA} > ${HOME}/sha.txt
+RUN chown -R saver ${HOME}
 
 EXPOSE 4537
 USER saver
