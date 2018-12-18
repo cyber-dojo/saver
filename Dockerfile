@@ -7,12 +7,12 @@ RUN adduser \
   -u 19663 `# user-id`     \
   saver    `# user-name`
 
-ARG                   SAVER_HOME=/app
-COPY .              ${SAVER_HOME}
-RUN  chown -R saver ${SAVER_HOME}
+ARG HOME=/app
+COPY . ${HOME}
+RUN  chown -R saver ${HOME}
 
 ARG SHA
-RUN echo ${SHA} > ${SAVER_HOME}/sha.txt
+RUN echo ${SHA} > ${HOME}/sha.txt
 
 EXPOSE 4537
 USER saver
