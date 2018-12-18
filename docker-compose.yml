@@ -24,8 +24,6 @@ services:
   saver:
     build:
       context: .
-      args:
-        - SHA
     user: saver:saver
     image: cyberdojo/saver
     init: true
