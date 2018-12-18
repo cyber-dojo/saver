@@ -33,5 +33,3 @@ docker-compose \
 wait_till_up "test-${MY_NAME}-server"
 wait_till_up "test-${MY_NAME}-client"
 wait_till_up "test-${MY_NAME}-starter"
-wait_till_up "test-${MY_NAME}-prometheus"
-wait_till_up "test-${MY_NAME}-grafana"

@@ -1,9 +1,6 @@
 
 version: '2.2'
 
-volumes:
-  grafana_data: {}
-
 services:
 
   saver_client:
@@ -39,28 +36,7 @@ services:
       - /tmp:uid=19663,gid=19663
     restart: 'no'
     depends_on:
-      - prometheus
       - starter # for tests
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  prometheus:
-    image: cyberdojo/prometheus
-    init: true
-    container_name: test-saver-prometheus
-
-  grafana:
-    image: cyberdojo/grafana
-    init: true
-    container_name: test-saver-grafana
-    volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    env_file:
-      - ./grafana.env
-    ports:
-      - 3002:3000
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
