@@ -7,6 +7,10 @@ class RackDispatcherExternalsStub
 
   attr_reader :stub
 
+  def env
+    stub
+  end
+
   def grouper
     stub
   end

@@ -10,6 +10,9 @@ RUN adduser \
 COPY . /app
 RUN chown -R saver /app
 
+ARG SHA
+ENV SHA=${SHA}
+
 EXPOSE 4537
 USER saver
 CMD [ "./up.sh" ]

@@ -35,11 +35,11 @@ class RackDispatcher
 
   def validated_name_args(name, body)
     @well_formed_args = WellFormedArgs.new(body)
-    image = @externals.image
+    env = @externals.env
     grouper = @externals.grouper
     singler = @externals.singler
     args = case name
-      when /^sha$/            then [image]
+      when /^sha$/            then [env]
 
       when /^group_exists$/   then [grouper, id]
       when /^group_create$/   then [grouper, manifest]

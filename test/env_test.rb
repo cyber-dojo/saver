@@ -1,14 +1,10 @@
-require_relative '../src/image'
+require_relative '../src/env'
 require_relative 'test_base'
 
-class ImageTest < TestBase
+class EnvTest < TestBase
 
   def self.hex_prefix
     '2A8'
-  end
-
-  def sha
-    Image.new(externals.disk).sha
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -18,6 +14,12 @@ class ImageTest < TestBase
     sha.each_char do |ch|
       assert "0123456789abcdef".include?(ch)
     end
+  end
+
+  private
+
+  def sha
+    Env.new.sha
   end
 
 end

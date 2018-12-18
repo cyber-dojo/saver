@@ -1,7 +1,7 @@
 require_relative 'external_disk_writer'
 require_relative 'grouper'
 require_relative 'singler'
-require_relative 'image'
+require_relative 'env'
 require_relative 'id_validator'
 
 class Externals
@@ -18,8 +18,8 @@ class Externals
     @singler ||= Singler.new(disk)
   end
 
-  def image
-    @image ||= Image.new(disk)
+  def env
+    @sha ||= Env.new
   end
 
   def id_validator

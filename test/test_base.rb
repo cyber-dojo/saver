@@ -3,7 +3,7 @@ require_relative 'external_starter'
 require_relative '../src/externals'
 
 class TestBase < HexMiniTest
-
+  
   def group_exists?(id)
     grouper.group_exists?(id)
   end
