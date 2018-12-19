@@ -19,8 +19,4 @@ class RackDispatcherExternalsStub
     stub
   end
 
-  def image
-    stub
-  end
-
 end
