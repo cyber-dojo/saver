@@ -15,7 +15,7 @@ if [[ ! -d /${dir} ]]; then
   fi
   echo "remember to run this on the target VM."
   echo "For example"
-  echo "  \$ docker-machine ssh default 'sudo mkdir /${dir}'"
+  echo "  \$ docker-machine ssh default sudo mkdir /${dir}"
   exit 1
 fi
 
@@ -32,7 +32,7 @@ if [ $? -ne 0 ] ; then
   fi
   echo "remember to run this on the target VM."
   echo "For example"
-  echo "  \$ docker-machine ssh default 'sudo chown ${uid} /${dir}'"
+  echo "  \$ docker-machine ssh default sudo chown ${uid} /${dir}"
   exit 2
 else
   rmdir /${dir}/${probe}
