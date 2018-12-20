@@ -8,9 +8,10 @@ class IdentityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test '2C6',
-  'uid=19663(saver), gid=65533(nogroup)' do
-    assert_equal %w( saver 19663 ), [user_name,uid]
+  test '2C6', %w[
+  the user running all the server tests has
+  uid=19664(porter), gid=65533(nogroup) ] do
+    assert_equal %w( porter 19664 ), [user_name,uid]
     assert_equal %w( nogroup 65533 ), [group_name,gid]
   end
 
