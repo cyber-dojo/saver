@@ -32,8 +32,8 @@ services:
     container_name: test-saver-server
     read_only: true
     tmpfs:
-      - /cyber-dojo:uid=19663,gid=19663
-      - /tmp:uid=19663,gid=19663
+      - /cyber-dojo:uid=19663,gid=65534
+      - /tmp:uid=19663,gid=65534
     restart: 'no'
     depends_on:
       - starter # for tests

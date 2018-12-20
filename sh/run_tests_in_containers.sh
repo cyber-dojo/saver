@@ -16,7 +16,7 @@ readonly COVERAGE_ROOT=/tmp/coverage
 run_server_tests()
 {
   docker exec \
-    --user saver:saver \
+    --user saver:nogroup \
     --env COVERAGE_ROOT=${COVERAGE_ROOT} \
     "${SERVER_CID}" \
       sh -c "/app/test/util/run.sh ${*}"
