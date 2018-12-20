@@ -29,7 +29,7 @@ if [ $? -ne 0 ] ; then
   echo "username=${username} (uid=${uid})"
   echo "group=${group} (gid=${gid})"
   echo "Please run:"
-  echo "  $ [sudo] chown ${cmd}"
+  echo "  $ [sudo] ${cmd}"
   echo "If you are running on Docker-Toolbox remember"
   echo "to run this on the target VM. For example:"
   echo "  \$ docker-machine ssh ${vm_target} sudo ${cmd}"
