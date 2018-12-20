@@ -26,14 +26,14 @@ services:
       context: .
       args:
         - SHA
-    user: saver:saver
+    user: saver
     image: cyberdojo/saver
     init: true
     container_name: test-saver-server
     read_only: true
     tmpfs:
-      - /cyber-dojo:uid=19663,gid=65534
-      - /tmp:uid=19663,gid=65534
+      - /cyber-dojo:uid=19663,gid=65533
+      - /tmp:uid=19663,gid=65533
     restart: 'no'
     depends_on:
       - starter # for tests
