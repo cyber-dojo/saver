@@ -10,7 +10,6 @@ alt="cyber-dojo yin/yang logo" width="50px" height="50px"/>
 - A docker-containerized micro-service for [cyber-dojo](http://cyber-dojo.org).
 - Creates group and individual practice sessions.
 - Stores the files, [stdout, stderr, status], and traffic-light of every test event.
-- Work in progress - not yet used
 
 API:
   * All methods receive their named arguments in a json hash.
