@@ -17,7 +17,9 @@ jobs:
               | docker login -u "${DOCKER_USER}" --password-stdin
             ./pipe_build_up_test.sh
             readonly project=${CIRCLE_PROJECT_REPONAME}
-            echo "project=:${project}:saver:"
+            if [ "${project}" = "saver" ]; then
+              curl --fail -X POST https://circleci.com/api/v1.1/project/github/cyber-dojo/differ/build?circle-token=${CIRCLECI_BUILD_TOKEN}            
+            fi
             docker tag cyberdojo/saver:latest cyberdojo/saver:${CIRCLE_SHA1:0:7}
             docker tag cyberdojo/saver:latest cyberdojo/saver:beta
             docker push cyberdojo/saver:${CIRCLE_SHA1:0:7}
