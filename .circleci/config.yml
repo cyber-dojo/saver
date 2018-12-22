@@ -12,18 +12,14 @@ jobs:
       - run:
           name: build saver docker image and push image to docker hub
           command: |
-            set -o errexit
-            echo "${DOCKER_PASS}" \
-              | docker login -u "${DOCKER_USER}" --password-stdin
+            set -e
+            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
             ./pipe_build_up_test.sh
             readonly project=${CIRCLE_PROJECT_REPONAME}
-            if [ "${project}" = "saver" ]; then
-              curl --fail -X POST https://circleci.com/api/v1.1/project/github/cyber-dojo/differ/build?circle-token=${CIRCLECI_BUILD_TOKEN}            
-            fi
-            docker tag cyberdojo/saver:latest cyberdojo/saver:${CIRCLE_SHA1:0:7}
-            docker tag cyberdojo/saver:latest cyberdojo/saver:beta
-            docker push cyberdojo/saver:${CIRCLE_SHA1:0:7}
-            docker push cyberdojo/saver:beta
+            docker tag  cyberdojo/${project}:latest cyberdojo/${project}:${CIRCLE_SHA1:0:7}
+            docker tag  cyberdojo/${project}:latest cyberdojo/${project}:beta
+            docker push cyberdojo/${project}:${CIRCLE_SHA1:0:7}
+            docker push cyberdojo/${project}:beta
 
   deploy-image-to-beta:
     docker:
