@@ -1,4 +1,4 @@
-FROM  cyberdojo/rack-base
+FROM cyberdojo/rack-base
 LABEL maintainer=jon@jaggersoft.com
 
 RUN adduser \

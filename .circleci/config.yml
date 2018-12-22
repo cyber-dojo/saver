@@ -16,6 +16,8 @@ jobs:
             echo "${DOCKER_PASS}" \
               | docker login -u "${DOCKER_USER}" --password-stdin
             ./pipe_build_up_test.sh
+            readonly project=${CIRCLE_PROJECT_REPONAME}
+            echo "project=:${project}:saver:"
             docker tag cyberdojo/saver:latest cyberdojo/saver:${CIRCLE_SHA1:0:7}
             docker tag cyberdojo/saver:latest cyberdojo/saver:beta
             docker push cyberdojo/saver:${CIRCLE_SHA1:0:7}
