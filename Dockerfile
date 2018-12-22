@@ -8,8 +8,9 @@ RUN adduser \
   -G nogroup `# group`       \
   saver      `# user-name`
 
-COPY . /app
-RUN chown -R saver /app
+WORKDIR /app
+COPY . .
+RUN chown -R saver .
 
 ARG SHA
 ENV SHA=${SHA}
