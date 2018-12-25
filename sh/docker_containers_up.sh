@@ -44,14 +44,14 @@ wait_till_up()
       sleep 0.1
     fi
   done
-  echo "${name} not up after 20 tries"
-  docker logs "${1}"
+  echo "${name} not up after ${max_tries} tries"
+  docker logs "${name}"
   exit 1
 }
 
 # - - - - - - - - - - - - - - - - - - - -
 
-exit_unless_started_cleanly()
+exit_unless_clean()
 {
   local name="${1}"
   local docker_logs=$(docker logs "${name}")
@@ -80,8 +80,8 @@ docker-compose \
 
 readonly MY_NAME=saver
 
-wait_until_ready            "test-${MY_NAME}-server" 4537
-exit_unless_started_cleanly "test-${MY_NAME}-server"
+wait_until_ready  "test-${MY_NAME}-server" 4537
+exit_unless_clean "test-${MY_NAME}-server"
 
 wait_till_up "test-${MY_NAME}-client"
 wait_till_up "test-${MY_NAME}-starter"
