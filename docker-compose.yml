@@ -30,6 +30,8 @@ services:
     image: cyberdojo/saver
     init: true
     container_name: test-saver-server
+    ports:
+      - 4537:4537
     read_only: true
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
