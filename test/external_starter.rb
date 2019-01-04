@@ -1,14 +1,18 @@
-require_relative '../src/http_json_service'
+require_relative '../src/http_helper'
 
 class ExternalStarter
 
   def manifest
-    json = language_manifest(display_name, exercise_name)
+    json = language_manifest(default_display_name, default_exercise_name)
     manifest = json['manifest']
     manifest['created'] = creation_time
-    manifest['exercise'] = exercise_name
+    manifest['exercise'] = default_exercise_name
     manifest['visible_files']['readme.txt'] = json['exercise']
     manifest
+  end
+
+  def language_manifest(display_name, exercise_name)
+    http.get(display_name, exercise_name)
   end
 
   def creation_time
@@ -17,28 +21,18 @@ class ExternalStarter
 
   private
 
-  def language_manifest(display_name, exercise_name)
-    get(__method__, display_name, exercise_name)
-  end
-
-  def display_name
+  def default_display_name
     'C (gcc), assert'
   end
 
-  def exercise_name
+  def default_exercise_name
     'Fizz_Buzz'
   end
 
   # - - - - - - - - - - - - - - -
 
-  include HttpJsonService
-
-  def hostname
-    'starter'
-  end
-
-  def port
-    4527
+  def http
+    HttpHelper.new(self, 'starter', 4527)
   end
 
 end
