@@ -210,6 +210,7 @@ class WellFormedArgs
       unless content.is_a?(String)
         malformed(arg_name, "[#{filename.inspect}][\"content\"] -> !String (#{content.class.name})")
       end
+      # TODO: add content.size limit
     }
     arg
   end
@@ -227,6 +228,7 @@ class WellFormedArgs
     unless content.is_a?(String)
       malformed(arg_name, "[\"content\"] -> !String (#{content.class.name})")
     end
+    # TODO: add content.size limit    
     arg
   end
 
