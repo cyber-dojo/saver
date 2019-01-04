@@ -23,16 +23,17 @@ class IdValidatorTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  #test '1D5',
-  #'valid?(id) is false if session with that id already already exists in storer' do
-  #  id = '1F00C1BFC8'
-  #  refute id_validator.valid?(id)
-  #end
+  test '1D5',
+  'valid?(id) is false if session with that id has been ported from storer' do
+    assert id_validator.valid?('112233')
+    refute id_validator.valid?('33EBEA')
+  end
 
   # - - - - - - - - - - - - - - - - -
 
-  test '1D6',
-  'valid?(id) is true if session with that id does not already exist in grouper or storer' do
+  test '1D6', %w(
+  valid?(id) is true if session with that id does not already exist in grouper
+  and has not been ported from storer ) do
     assert id_validator.valid?('5aD353')
   end
 
