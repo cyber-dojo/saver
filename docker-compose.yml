@@ -38,7 +38,23 @@ services:
       - /tmp:uid=19663,gid=65533
     restart: 'no'
     depends_on:
+      - ported
       - starter # for tests
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  ported:
+    user: nobody
+    image: cyberdojo/ported
+    init: true
+    container_name: test-saver-ported
+    read_only: true
+    ports:
+      - 4547:4547
+    tmpfs: /tmp
+    restart: 'no'
+    volumes:
+      - ./test/data/porter:/porter:ro
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
