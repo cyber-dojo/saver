@@ -1,6 +1,6 @@
 require 'open3'
 
-class ExternalDirWriter
+class ExternalDir
 
   def initialize(name)
     @name = name

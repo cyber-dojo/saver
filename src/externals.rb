@@ -1,4 +1,4 @@
-require_relative 'external_disk_writer'
+require_relative 'external_disk'
 require_relative 'grouper'
 require_relative 'singler'
 require_relative 'env'
@@ -7,7 +7,7 @@ require_relative 'id_validator'
 class Externals
 
   def disk
-    @disk ||= ExternalDiskWriter.new
+    @disk ||= ExternalDisk.new
   end
 
   def grouper

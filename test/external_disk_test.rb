@@ -1,14 +1,14 @@
 require_relative 'test_base'
-require_relative '../src/external_disk_writer'
+require_relative '../src/external_disk'
 
-class ExternalDiskWriterTest < TestBase
+class ExternalDiskTest < TestBase
 
   def self.hex_prefix
     'FDF'
   end
 
   def disk
-    ExternalDiskWriter.new
+    ExternalDisk.new
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

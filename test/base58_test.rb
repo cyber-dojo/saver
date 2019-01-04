@@ -1,6 +1,6 @@
 require_relative 'test_base'
 require_relative '../src/base58'
-require_relative '../src/external_disk_writer'
+require_relative '../src/external_disk'
 require 'open3'
 
 class Base58Test < TestBase
@@ -31,7 +31,7 @@ class Base58Test < TestBase
   every letter of the alphabet can be used as part of a dir name
   which contains files that can be written to and read from
   ) do
-    disk = ExternalDiskWriter.new
+    disk = ExternalDisk.new
     diagnostic = 'forward slash is the dir separator'
     refute alphabet.include?('/'), diagnostic
     diagnostic = 'dot is a dir navigator'
