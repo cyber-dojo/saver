@@ -149,4 +149,8 @@ class TestBase < HexMiniTest
     externals.singler
   end
 
+  def ported
+    externals.ported
+  end
+
 end

@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require_relative '../src/http_helper'
 
-class HttpTest < TestBase
+class ServiceStarterTest < TestBase
 
   def self.hex_prefix
     '84E'
