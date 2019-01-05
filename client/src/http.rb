@@ -12,7 +12,7 @@ class Http
 
   def get(*args)
     name = name_of(caller)
-    json = request(hostname, port, name, args_hash(name, *args)) { |url|
+    json = request(name, args_hash(name, *args)) { |url|
       Net::HTTP::Get.new(url)
     }
     response(json, name)
@@ -20,7 +20,7 @@ class Http
 
   def post(*args)
     name = name_of(caller)
-    json = request(hostname, port, name, args_hash(name, *args)) { |url|
+    json = request(name, args_hash(name, *args)) { |url|
       Net::HTTP::Post.new(url)
     }
     response(json, name)
@@ -34,7 +34,7 @@ class Http
     /`(?<name>[^']*)/ =~ caller[0] && name
   end
 
-  def request(hostname, port, path, named_args)
+  def request(path, named_args)
     url = URI.parse("http://#{hostname}:#{port}/#{path}")
     req = yield url
     req.content_type = 'application/json'
