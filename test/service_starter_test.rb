@@ -1,5 +1,5 @@
 require_relative 'test_base'
-require_relative '../src/http_helper'
+require_relative '../src/http'
 
 class ServiceStarterTest < TestBase
 
@@ -32,7 +32,7 @@ class ServiceStarterTest < TestBase
   end
 
   def http
-    HttpHelper.new(self, 'starter', 4527)
+    Http.new(self, 'starter', 4527)
   end
 
 end

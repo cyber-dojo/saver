@@ -1,4 +1,4 @@
-require_relative '../src/http_helper'
+require_relative '../src/http'
 
 class ExternalStarter
 
@@ -32,7 +32,7 @@ class ExternalStarter
   # - - - - - - - - - - - - - - -
 
   def http
-    HttpHelper.new(self, 'starter', 4527)
+    Http.new(self, 'starter', 4527)
   end
 
 end

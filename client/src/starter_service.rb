@@ -1,9 +1,9 @@
-require_relative 'http_helper'
+require_relative 'http'
 
 class StarterService
 
   def initialize
-    @http = HttpHelper.new(self, 'starter', 4527)
+    @http = Http.new(self, 'starter', 4527)
   end
 
   def manifest

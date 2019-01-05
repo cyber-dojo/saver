@@ -1,9 +1,9 @@
-require_relative '../src/http_helper'
+require_relative 'http'
 
 class ExternalMapper
 
   def initialize
-    @http = HttpHelper.new(self, 'mapper', 4547)
+    @http = Http.new(self, 'mapper', 4547)
   end
 
   def ready?

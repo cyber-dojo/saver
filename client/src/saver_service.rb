@@ -1,9 +1,9 @@
-require_relative 'http_helper'
+require_relative 'http'
 
 class SaverService
 
   def initialize
-    @http = HttpHelper.new(self, 'saver', 4537)
+    @http = Http.new(self, 'saver', 4537)
   end
 
   # - - - - - - - - - - - -
