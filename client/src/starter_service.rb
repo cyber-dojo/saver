@@ -1,6 +1,10 @@
-require_relative 'http_json_service'
+require_relative 'http_helper'
 
 class StarterService
+
+  def initialize
+    @http = HttpHelper.new(self, 'starter', 4527)
+  end
 
   def manifest
     json = language_manifest(display_name, exercise_name)
@@ -17,8 +21,10 @@ class StarterService
 
   private
 
+  attr_reader :http
+
   def language_manifest(display_name, exercise_name)
-    get(__method__, display_name, exercise_name)
+    http.get(display_name, exercise_name)
   end
 
   def display_name
@@ -27,18 +33,6 @@ class StarterService
 
   def exercise_name
     'Fizz_Buzz'
-  end
-
-  # - - - - - - - - - - - - - - -
-
-  include HttpJsonService
-
-  def hostname
-    'starter'
-  end
-
-  def port
-    4527
   end
 
 end

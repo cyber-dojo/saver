@@ -35,14 +35,13 @@ class SaverServiceTest < TestBase
 
   test '966',
   %w( malformed id on any method raises ) do
-    error = assert_raises { saver.group_manifest(nil) }
-    assert_equal 'ServiceError', error.class.name
-    assert_equal 'SaverService', error.service_name
-    assert_equal 'group_manifest', error.method_name
+    error = assert_raises(ServiceError) { saver.group_manifest(nil) }
+    assert_equal 'SaverService', error.service_name, error
+    assert_equal 'group_manifest', error.method_name, error
     json = JSON.parse(error.message)
-    assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:id:!Base58:', json['message']
-    assert_equal 'Array', json['backtrace'].class.name
+    assert_equal 'SaverService', json['class'], json
+    assert_equal 'malformed:id:!Base58:', json['message'], json
+    assert_equal 'Array', json['backtrace'].class.name, json
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -110,14 +109,13 @@ class SaverServiceTest < TestBase
 
   test '866',
   %w( malformed id on any method raises ) do
-    error = assert_raises { saver.kata_manifest(nil) }
-    assert_equal 'ServiceError', error.class.name
-    assert_equal 'SaverService', error.service_name
-    assert_equal 'kata_manifest', error.method_name
+    error = assert_raises(ServiceError) { saver.kata_manifest(nil) }
+    assert_equal 'SaverService', error.service_name, error.message
+    assert_equal 'kata_manifest', error.method_name, error.message
     json = JSON.parse(error.message)
-    assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:id:!Base58:', json['message']
-    assert_equal 'Array', json['backtrace'].class.name
+    assert_equal 'SaverService', json['class'], json
+    assert_equal 'malformed:id:!Base58:', json['message'], json
+    assert_equal 'Array', json['backtrace'].class.name, json
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -9,6 +9,12 @@ class Http
     }
   end
 
+  def post(hostname, port, path, named_args)
+    call(hostname, port, path, named_args) { |url|
+      Net::HTTP::Post.new(url)
+    }
+  end
+
   private
 
   def call(hostname, port, path, named_args)

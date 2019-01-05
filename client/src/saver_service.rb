@@ -1,77 +1,75 @@
-require_relative 'http_json_service'
+require_relative 'http_helper'
 
 class SaverService
 
+  def initialize
+    @http = HttpHelper.new(self, 'saver', 4537)
+  end
+
+  # - - - - - - - - - - - -
+
   def ready?
-    get(__method__)
-  end 
+    http.get
+  end
 
   def sha
-    get(__method__)
+    http.get
   end
 
   # - - - - - - - - - - - -
 
   def group_exists?(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   def group_create(manifest)
-    post(__method__, manifest)
+    http.post(manifest)
   end
 
   def group_manifest(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   # - - - - - - - - - - - -
 
   def group_join(id, indexes)
-    post(__method__, id, indexes)
+    http.post(id, indexes)
   end
 
   def group_joined(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   # - - - - - - - - - - - -
 
   def kata_exists?(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   def kata_create(manifest)
-    post(__method__, manifest)
+    http.post(manifest)
   end
 
   def kata_manifest(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   # - - - - - - - - - - - -
 
   def kata_ran_tests(id, index ,files, now, duration, stdout, stderr, status, colour)
-    post(__method__, id, index, files, now, duration, stdout, stderr, status, colour)
+    http.post(id, index, files, now, duration, stdout, stderr, status, colour)
   end
 
   def kata_events(id)
-    get(__method__, id)
+    http.get(id)
   end
 
   def kata_event(id, index)
-    get(__method__, id, index)
+    http.get(id, index)
   end
 
   private
 
-  include HttpJsonService
-
-  def hostname
-    'saver'
-  end
-
-  def port
-    4537
-  end
+  attr_reader :http
 
 end
