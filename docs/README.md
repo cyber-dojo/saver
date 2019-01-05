@@ -18,6 +18,7 @@ API:
     * If the method completes, the key equals the method's name.
     * If the method raises an exception, the key equals "exception".
 
+- [GET ready?()](#get-ready)
 - [GET sha()](#get-sha)
 - [GET group_exists?(id)](#get-group_existsid)
 - [POST group_create(manifest)](#post-group_createmanifest)
@@ -31,6 +32,19 @@ API:
 - [POST kata_ran_tests(id,index,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidindexfilesnowstdoutstderrstatuscolour)
 - [GET kata_events(id)](#get-kata_eventsid)
 - [GET kata_event(id,index)](#get-kata_eventidindex)
+
+- - - -
+
+## GET ready?()
+- parameters, none
+```
+  {}
+```
+- returns true if the service is ready, otherwise false.
+```
+  { "ready?": true }
+  { "ready?": false }
+```
 
 - - - -
 
