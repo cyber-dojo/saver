@@ -1,30 +1,42 @@
 require_relative 'service_error'
-require_relative 'http_helper'
 require 'json'
+require 'net/http'
 
 class Http
 
   def initialize(parent, hostname, port)
-    @helper = HttpHelper.new
     @parent = parent
     @hostname = hostname
     @port = port
   end
 
   def get(*args)
-    call('get', name_of(caller), *args)
+    name = name_of(caller)
+    json = request(name, args_hash(name, *args)) { |url|
+      Net::HTTP::Get.new(url)
+    }
+    response(json, name)
   end
 
   private
 
-  attr_reader :helper, :parent, :hostname, :port
+  attr_reader :parent, :hostname, :port
 
   def name_of(caller)
     /`(?<name>[^']*)/ =~ caller[0] && name
   end
 
-  def call(gp, method, *args)
-    json = helper.public_send(gp, hostname, port, method, args_hash(method, *args))
+  def request(path, named_args)
+    url = URI.parse("http://#{hostname}:#{port}/#{path}")
+    req = yield url
+    req.content_type = 'application/json'
+    req.body = named_args.to_json
+    service = Net::HTTP.new(url.host, url.port)
+    response = service.request(req)
+    JSON.parse(response.body)
+  end
+
+  def response(json, method)
     fail_unless(method, 'bad json') { json.class.name == 'Hash' }
     exception = json['exception']
     fail_unless(method, pretty(exception)) { exception.nil? }
