@@ -1,5 +1,5 @@
 require_relative 'external_disk'
-require_relative 'external_ported'
+require_relative 'external_mapper'
 require_relative 'grouper'
 require_relative 'singler'
 require_relative 'env'
@@ -27,8 +27,8 @@ class Externals
     @id_validator ||= IdValidator.new(self)
   end
 
-  def ported
-    @ported ||= ExternalPorted.new
+  def mapper
+    @ported ||= ExternalMapper.new
   end
 
 end

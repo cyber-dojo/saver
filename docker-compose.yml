@@ -38,16 +38,16 @@ services:
       - /tmp:uid=19663,gid=65533
     restart: 'no'
     depends_on:
-      - ported
+      - mapper
       - starter # for tests
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  ported:
+  mapper:
     user: nobody
-    image: cyberdojo/ported
+    image: cyberdojo/mapper
     init: true
-    container_name: test-saver-ported
+    container_name: test-saver-mapper
     read_only: true
     ports:
       - 4547:4547

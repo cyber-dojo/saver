@@ -78,14 +78,6 @@ class TestBase < HexMiniTest
 
   #- - - - - - - - - - - - - - -
 
-  def starter
-    ExternalStarter.new
-  end
-
-  def externals
-    @externals ||= Externals.new
-  end
-
   def creation_time
     starter.creation_time
   end
@@ -149,8 +141,16 @@ class TestBase < HexMiniTest
     externals.singler
   end
 
-  def ported
-    externals.ported
+  def mapper
+    externals.mapper
+  end
+
+  def externals
+    @externals ||= Externals.new
+  end
+
+  def starter
+    ExternalStarter.new # only needed in tests
   end
 
 end

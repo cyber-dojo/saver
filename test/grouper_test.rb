@@ -37,8 +37,8 @@ class GrouperTest < TestBase
     def grouper
       Grouper.new(self)
     end
-    def ported
-      ExternalPorted.new
+    def mapper
+      ExternalMapper.new
     end
     def disk
       StubDisk.new

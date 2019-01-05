@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly name=saver # name of the service
+readonly service_name=saver
 readonly dir=cyber-dojo
 readonly uid=19663
 readonly username=saver
@@ -11,7 +11,7 @@ readonly vm_target=${DOCKER_MACHINE_NAME:-default}
 if [[ ! -d /${dir} ]]; then
   cmd="mkdir /${dir}"
   echo "ERROR"
-  echo "The ${name} service needs to volume-mount /${dir}"
+  echo "The ${service_name} service needs to volume-mount /${dir}"
   echo "Please run:"
   echo "  \$ [sudo] ${cmd}"
   echo "If you are running on Docker-Toolbox remember"
@@ -25,7 +25,7 @@ mkdir /${dir}/${probe} 2>/dev/null
 if [ $? -ne 0 ] ; then
   cmd="chown ${uid}:${gid} /${dir}"
   echo "ERROR"
-  echo "The ${name} service needs write access to /${dir}"
+  echo "The ${service_name} service needs write access to /${dir}"
   echo "username=${username} (uid=${uid})"
   echo "group=${group} (gid=${gid})"
   echo "Please run:"

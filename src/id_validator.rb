@@ -8,7 +8,7 @@ class IdValidator
   def valid?(id)
     if grouper.group_exists?(id)
       false
-    elsif ported.ported?(id)
+    elsif mapper.mapped?(id)
       false
     else
       true
@@ -21,8 +21,8 @@ class IdValidator
     @externals.grouper
   end
 
-  def ported
-    @externals.ported
+  def mapper
+    @externals.mapper
   end
 
 end

@@ -1,12 +1,12 @@
 require_relative '../src/http_helper'
 
-class ExternalPorted
+class ExternalMapper
 
   def initialize
-    @http = HttpHelper.new(self, 'ported', 4547)
+    @http = HttpHelper.new(self, 'mapper', 4547)
   end
 
-  def ported?(id6)
+  def mapped?(id6)
     http.get(id6)
   end
 
