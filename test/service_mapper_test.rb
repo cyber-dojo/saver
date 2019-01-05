@@ -9,7 +9,8 @@ class ServiceMapperTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test '1E0',
-  %w( 200 example ) do
+  %w( 200 examples ) do
+    assert mapper.ready?
     assert mapper.mapped?('33EBEA')
     refute mapper.mapped?('112233')
   end

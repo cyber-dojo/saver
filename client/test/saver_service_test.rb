@@ -8,6 +8,15 @@ class SaverServiceTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # ready
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '834',
+  %w( ready? ) do
+    assert saver.ready?
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # sha
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

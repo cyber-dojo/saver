@@ -39,6 +39,7 @@ class RackDispatcher
     grouper = @externals.grouper
     singler = @externals.singler
     args = case name
+      when /^ready$/          then [grouper]
       when /^sha$/            then [env]
 
       when /^group_exists$/   then [grouper, id]
@@ -113,7 +114,7 @@ class RackDispatcher
   # - - - - - - - - - - - - - - - -
 
   def query?(name)
-    ['group_exists','kata_exists'].include?(name)
+    ['ready','group_exists','kata_exists'].include?(name)
   end
 
 end

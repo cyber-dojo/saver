@@ -2,6 +2,10 @@ require_relative 'http_json_service'
 
 class SaverService
 
+  def ready?
+    get(__method__)
+  end 
+
   def sha
     get(__method__)
   end

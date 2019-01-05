@@ -4,6 +4,10 @@ require_relative '../src/externals'
 
 class TestBase < HexMiniTest
 
+  def ready?
+    grouper.ready?
+  end
+
   def group_exists?(id)
     grouper.group_exists?(id)
   end

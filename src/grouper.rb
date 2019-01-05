@@ -8,6 +8,10 @@ class Grouper
     @externals = externals
   end
 
+  def ready?
+    mapper.ready?
+  end
+
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
@@ -166,15 +170,21 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def disk
-    @externals.disk
-  end
-
-  def singler
-    @externals.singler
+    externals.disk
   end
 
   def id_validator
-    @externals.id_validator
+    externals.id_validator
   end
+
+  def mapper
+    externals.mapper
+  end
+
+  def singler
+    externals.singler
+  end
+
+  attr_reader :externals
 
 end

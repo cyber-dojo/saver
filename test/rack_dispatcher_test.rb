@@ -47,7 +47,18 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # image
+  # ready?
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E40',
+  'dispatch to ready' do
+    assert_dispatch('ready', {}.to_json,
+      "hello from #{stub_name}.ready?"
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # sha
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E41',
@@ -56,7 +67,6 @@ class RackDispatcherTest < TestBase
       "hello from #{stub_name}.sha"
     )
   end
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # grouper
@@ -300,12 +310,16 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_dispatch(name, args, stubbed)
-    if name.end_with?('_exists')
+    if query?(name)
       qname = name + '?'
     else
       qname = name
     end
     assert_rack_call(name, args, { qname => stubbed })
+  end
+
+  def query?(name)
+    ['ready','group_exists','kata_exists'].include?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

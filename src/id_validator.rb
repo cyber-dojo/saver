@@ -18,11 +18,13 @@ class IdValidator
   private
 
   def grouper
-    @externals.grouper
+    externals.grouper
   end
 
   def mapper
-    @externals.mapper
+    externals.mapper
   end
+
+  attr_reader :externals
 
 end
