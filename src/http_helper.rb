@@ -51,7 +51,7 @@ class HttpHelper
 
   def fail_unless(name, message, &block)
     unless block.call
-      fail ServiceError.new(self.class.name, name, message)
+      fail ServiceError.new(parent.class.name, name, message)
     end
   end
 
