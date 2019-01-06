@@ -18,6 +18,7 @@ API:
     * If the method completes, the key equals the method's name.
     * If the method raises an exception, the key equals "exception".
 
+#
 - [GET ready?()](#get-ready)
 - [GET sha()](#get-sha)
 #
