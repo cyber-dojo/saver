@@ -43,7 +43,7 @@ API:
 ```
   {}
 ```
-- returns true if the service is ready, otherwise false.
+- returns true if the service is ready, otherwise false, eg
 ```
   { "ready?": true }
   { "ready?": false }
@@ -70,12 +70,9 @@ Asks whether a group practice-session with the given id exists.
 ```
   { "id": "55d3B9" }
 ```
-- returns true if it does, eg
+- returns true if it does, false if it doesn't, eg
 ```
   { "group_exists?": true   }
-```
-- returns false if it doesn't, eg
-```
   { "group_exists?": false  }
 ```
 
@@ -255,12 +252,9 @@ Asks whether an individual practice-session with the given id exists.
 ```
   { "id": "15B9aD" }
 ```
-- returns true if it does, eg
+- returns true if it does, false if it doesn't, eg
 ```
   { "kata_exist?": true   }
-```
-- returns false if it doesn't, eg
-```
   { "kata_exist?": false  }
 ```
 
