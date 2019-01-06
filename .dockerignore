@@ -2,12 +2,17 @@
 
 *
 
--#-----!Except these dirs
+#-----!Except these dirs
 
 !src
 !test
 
--#-----!Except these files
+#-----!Except these files
 
 !config.ru
 !up.sh
+
+#-----but do ignore these
+
+test/porter_data
+test/starter_data

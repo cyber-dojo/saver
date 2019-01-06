@@ -54,7 +54,7 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - ./test/data/porter:/porter:ro
+      - ./test/porter_data:/porter:ro
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
