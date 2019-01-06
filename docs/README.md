@@ -20,12 +20,14 @@ API:
 
 - [GET ready?()](#get-ready)
 - [GET sha()](#get-sha)
+#
 - [GET group_exists?(id)](#get-group_existsid)
 - [POST group_create(manifest)](#post-group_createmanifest)
 - [GET group_manifest(id)](#get-group_manifestid)
 - [POST group_join(id,indexes)](#post-group_joinidindexes)
 - [GET group_joined(id)](#get-group_joinedid)
 - [GET group_events(id)](#get-group_eventsid)
+#
 - [GET kata_exists?(id)](#get-kata_existsid)
 - [POST kata_create(manifest)](#post-kata_createmanifest)
 - [GET kata_manifest(id)](#get-kata_manifestid)
