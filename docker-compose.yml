@@ -5,7 +5,7 @@ services:
 
   saver_client:
     build:
-      context: client
+      context: test_client
     user: nobody:nogroup
     image: cyberdojo/saver-client
     init: true
@@ -30,6 +30,8 @@ services:
     image: cyberdojo/saver
     init: true
     container_name: test-saver-server
+    volumes:
+      - ./test_server:/app/test:ro
     ports:
       - 4537:4537
     read_only: true
@@ -54,7 +56,7 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - ./test/porter_data:/porter:ro
+      - ./test_server/porter_data:/porter:ro
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -66,4 +68,4 @@ services:
     read_only: true
     tmpfs: /tmp
     volumes:
-      - ./test/starter_data:/app/start_points:ro
+      - ./test_server/starter_data:/app/start_points:ro
