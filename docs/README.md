@@ -1,5 +1,4 @@
 
-[![Build Status](https://travis-ci.org/cyber-dojo/saver.svg?branch=master)](https://travis-ci.org/cyber-dojo/saver)
 [![CircleCI](https://circleci.com/gh/cyber-dojo/saver.svg?style=svg)](https://circleci.com/gh/cyber-dojo/saver)
 
 <img src="https://raw.githubusercontent.com/cyber-dojo/nginx/master/images/home_page_logo.png"
@@ -10,7 +9,7 @@ alt="cyber-dojo yin/yang logo" width="50px" height="50px"/>
 - A docker-containerized micro-service for [cyber-dojo](http://cyber-dojo.org).
 - Creates group and individual practice sessions.
 - Stores the files, [stdout, stderr, status], and traffic-light of every test event.
-- Stores data in a host dir volume-mounted to /cyber-dojo
+- Stores data in a dir volume-mounted to /cyber-dojo
 
 API:
   * All methods receive their named arguments in a json hash.
