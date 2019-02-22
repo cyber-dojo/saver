@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-image:
+  build-publish:
 
     machine:
       enabled: true
@@ -10,25 +10,31 @@ jobs:
     steps:
       - checkout
       - run:
-          name: build saver docker image and push image to docker hub
+          name: build docker image and push image to docker hub
           command: |
-            set -e
+            set -ev
             ./pipe_build_up_test.sh
+      - run:
+          name: push tagged docker image to docker hub
+          command: |
+            set -ev
             readonly project=${CIRCLE_PROJECT_REPONAME}
             docker tag  cyberdojo/${project}:latest cyberdojo/${project}:${CIRCLE_SHA1:0:7}
             docker tag  cyberdojo/${project}:latest cyberdojo/${project}:beta
             echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
             docker push cyberdojo/${project}:${CIRCLE_SHA1:0:7}
             docker push cyberdojo/${project}:beta
+            # old architecture
+            docker push cyberdojo/${project}:latest
 
-  deploy-image-to-beta:
+  deploy-to-beta:
     docker:
       - image: cyberdojo/gcloud-kubectl-helm
     steps:
       - run:
           name: authenticate with gcloud and deploy with helm
           command: |
-            set -o errexit
+            set -ev
             echo $GCP_K8S_CREDENTIALS > /gcp/gcp-credentials.json
             gcloud auth activate-service-account "$SERVICE_ACCOUNT" --key-file=/gcp/gcp-credentials.json
             gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE" --project "$PROJECT"
@@ -41,13 +47,13 @@ workflows:
   version: 2
   build-publish-deploy:
     jobs:
-      - build-image:
+      - build-publish:
           context: cyberdojo-context
           filters:
             branches:
               only:
                   - master
-      - deploy-image-to-beta:
+      - deploy-to-beta:
           context: cyberdojo-context
           requires:
-            - build-image
+            - build-publish
