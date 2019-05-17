@@ -12,10 +12,11 @@ alt="cyber-dojo yin/yang logo" width="50px" height="50px"/>
 - Stores data in a dir volume-mounted to /cyber-dojo
 
 API:
-  * All methods receive their named arguments in a json hash.
-  * All methods return a json hash with a single key.
-    * If the method completes, the key equals the method's name.
-    * If the method raises an exception, the key equals "exception".
+  * All methods receive a json hash.
+    * The hash contains any method arguments as key-value pairs.
+  * All methods return a json hash.
+    * If the method completes, a key equals the method's name.
+    * If the method raises an exception, a key equals "exception".
 
 #
 - [GET ready?()](#get-ready)
@@ -64,7 +65,7 @@ Returns the git commit sha used to create the docker image.
 - - - -
 
 ## GET group_exists?(id)
-Asks whether a group practice-session with the given id exists.
+Asks whether a group practice-session with the given **id** exists.
 - parameter, eg
 ```
   { "id": "55d3B9" }
@@ -78,7 +79,7 @@ Asks whether a group practice-session with the given id exists.
 - - - -
 
 ## POST group_create(manifest)
-Creates a group practice-session from the given manifest.
+Creates a group practice-session from the given **manifest**.
 - parameter, eg
 ```
     { "manifest": {
@@ -120,7 +121,7 @@ Creates a group practice-session from the given manifest.
 - - - -
 
 ## GET group_manifest(id)
-Returns the group manifest used to create the group practice-session with the given id.
+Returns the group manifest used to create the group practice-session with the given **id**.
 - parameter, eg
 ```
   { "id": "55d3B9" }
@@ -163,8 +164,8 @@ Returns the group manifest used to create the group practice-session with the gi
 - - - -
 
 ## POST group_join(id,indexes)
-Join the group practice-session with the given group id.
-The indexes parameter, when sorted, must be (0..63).to_a
+Join the group practice-session with the given group **id**.
+The **indexes** parameter, when sorted, must be (0..63).to_a
 and determines the avatar join attempt order.
 - parameters, eg
 ```
@@ -185,7 +186,7 @@ Returns the individual practice-session id if not full, eg
 
 ## GET group_joined(id)
 Returns the individual practice-session ids of everyone
-who has joined the group practice-session with the given id.
+who has joined the group practice-session with the given **id**.
 - parameter, eg
 ```
   { "id": "55d3B9" }
@@ -208,7 +209,7 @@ who has joined the group practice-session with the given id.
 
 ## GET group_events(id)
 Returns the index and events of all the individual practice-sessions
-of everyone who has joined the group practice-session with the given id.
+of everyone who has joined the group practice-session with the given **id**.
 A BatchMethod designed for web's dashboard.
 - parameter, eg
 ```
@@ -246,7 +247,7 @@ A BatchMethod designed for web's dashboard.
 - - - -
 
 ## GET kata_exists?(id)
-Asks whether an individual practice-session with the given id exists.
+Asks whether an individual practice-session with the given **id** exists.
 - parameter, eg
 ```
   { "id": "15B9aD" }
@@ -260,7 +261,7 @@ Asks whether an individual practice-session with the given id exists.
 - - - -
 
 ## POST kata_create(manifest)
-Creates an individual practice-session from the given manifest.
+Creates an individual practice-session from the given **manifest**.
 - parameter, eg
 ```
     { "manifest": {
@@ -301,7 +302,7 @@ Creates an individual practice-session from the given manifest.
 - - - -
 
 ## GET kata_manifest(id)
-Returns the manifest used to create the individual practice-session with the given id.
+Returns the manifest used to create the individual practice-session with the given **id**.
 - parameter, eg
 ```
   { "id": "a551C5" }
@@ -344,10 +345,10 @@ Returns the manifest used to create the individual practice-session with the giv
 - - - -
 
 ## POST kata_ran_tests(id,index,files,now,stdout,stderr,status,colour)
-In the individual practice-session with the given id,
-the given files were submitted as the given index number,
-at the given time, which produced the given stdout, stderr, status,
-with the given traffic-light colour.
+In the individual practice-session with the given **id**,
+the given **files** were submitted as the given **index** number,
+at the given time **now**, which produced the given **stdout**, **stderr**, **status**,
+with the given traffic-light **colour**.
 - parameters, eg
 ```
   {      "id": "a551C5",
@@ -391,7 +392,7 @@ Returns nothing.
 
 ## GET kata_events(id)
 Returns details of all events, for the individual practice-session
-with the given id.
+with the given **id**.
 - parameter, eg
 ```
   { "id": "a551C5" }
@@ -411,8 +412,8 @@ with the given id.
 
 ## GET kata_event(id,index)
 Returns [files, stdout, stderr, status],
-for the individual practice-session with the given id,
-and the given event index.
+for the individual practice-session with the given **id**,
+and the given event **index**.
 - parameters, eg
 ```
   {    "id": "a551C5",
