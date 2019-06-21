@@ -29,7 +29,7 @@ jobs:
             PUBLISH=publish-tagged-image.sh
             curl -O --fail ${CIRCLECI_SCRIPT_DIR}/${PUBLISH}
             chmod 700 ./${PUBLISH}
-            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin            
+            echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
             ./${PUBLISH}
       - run:
           name: Trigger dependent repos
@@ -49,10 +49,10 @@ jobs:
           command: |
             set -ev
             echo $GCP_K8S_CREDENTIALS > /gcp/gcp-credentials.json
-            gcloud auth activate-service-account "$SERVICE_ACCOUNT" --key-file=/gcp/gcp-credentials.json
-            gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE" --project "$PROJECT"
-            helm init --client-only
-            helm repo add praqma https://praqma-helm-repo.s3.amazonaws.com/
+            #gcloud auth activate-service-account "$SERVICE_ACCOUNT" --key-file=/gcp/gcp-credentials.json
+            #gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE" --project "$PROJECT"
+            #helm init --client-only
+            #helm repo add praqma https://praqma-helm-repo.s3.amazonaws.com/
             #helm upgrade --install --namespace=beta --set-string image.saver.tag=${CIRCLE_SHA1:0:7} beta-cyber-dojo praqma/cyber-dojo
 
 workflows:
