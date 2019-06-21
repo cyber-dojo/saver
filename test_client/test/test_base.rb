@@ -4,6 +4,10 @@ require_relative '../src/starter_service'
 
 class TestBase < HexMiniTest
 
+  def initialize(arg)
+    super(arg)
+  end
+
   def saver
     SaverService.new
   end

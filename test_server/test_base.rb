@@ -4,6 +4,10 @@ require_relative '../src/externals'
 
 class TestBase < HexMiniTest
 
+  def initialize(arg)
+    super(arg)
+  end
+
   def ready?
     grouper.ready?
   end

@@ -183,7 +183,7 @@ class SaverServiceTest < TestBase
     stderr = file_form('')
     status = 0
     colour = 'green'
-    events = saver.kata_ran_tests(id, 2, event2_files, now, duration, stdout, stderr, status, colour)
+    saver.kata_ran_tests(id, 2, event2_files, now, duration, stdout, stderr, status, colour)
     expected_events <<
        { 'colour' => 'green', 'time' => now, 'duration' => duration }
     assert_equal expected_events, saver.kata_events(id)

@@ -15,6 +15,16 @@ def cleaned(s)
   s = s.encode('UTF-8', 'UTF-16')
 end
 
+def coloured(tf)
+  red = 31
+  green = 32
+  colourize(tf ? green : red, tf)
+end
+
+def colourize(code, word)
+  "\e[#{code}m#{word}\e[0m"
+end
+
 def get_index_stats(name)
   html = `cat #{ARGV[1]}`
   html = cleaned(html)
@@ -51,6 +61,9 @@ def get_test_log_stats
 
   stats = {}
 
+  warning_regex = /: warning:/m
+  stats[:warning_count] = test_log.scan(warning_regex).size
+
   finished_pattern = "Finished in (#{number})s, (#{number}) runs/s, (#{number}) assertions/s"
   m = test_log.match(Regexp.new(finished_pattern))
   stats[:time]               = f2(m[1])
@@ -76,12 +89,16 @@ src_stats  = get_index_stats('src')
 
 # - - - - - - - - - - - - - - - - - - - - - - -
 
+test_count    = log_stats[:test_count]
 failure_count = log_stats[:failure_count]
 error_count   = log_stats[:error_count]
+warning_count = log_stats[:warning_count]
 skip_count    = log_stats[:skip_count]
 test_duration = log_stats[:time].to_f
+
 src_coverage  = src_stats[:coverage].to_f
 test_coverage = test_stats[:coverage].to_f
+
 line_ratio    = (test_stats[:line_count].to_f / src_stats[:line_count].to_f)
 hits_ratio    = (src_stats[:hits_per_line].to_f / test_stats[:hits_per_line].to_f)
 
@@ -89,8 +106,10 @@ hits_ratio    = (src_stats[:hits_per_line].to_f / test_stats[:hits_per_line].to_
 
 table =
   [
+    [ 'tests',                  test_count,     '!=',   0 ],
     [ 'failures',               failure_count,  '==',   0 ],
     [ 'errors',                 error_count,    '==',   0 ],
+    [ 'warnings',               warning_count,  '==',   0 ],
     [ 'skips',                  skip_count,     '==',   0 ],
     [ 'duration(test)[s]',      test_duration,  '<=',  10 ],
     [ 'coverage(src)[%]',       src_coverage,   '==', 100 ],
@@ -106,7 +125,7 @@ print "\n"
 table.each do |name,value,op,limit|
   result = eval("#{value} #{op} #{limit}")
   puts "%s | %s %s %s | %s" % [
-    name.rjust(25), value.to_s.rjust(7), op, limit.to_s.rjust(5), result.to_s
+    name.rjust(25), value.to_s.rjust(7), op, limit.to_s.rjust(5), coloured(result)
   ]
   done << result
 end
