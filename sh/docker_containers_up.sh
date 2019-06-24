@@ -108,7 +108,7 @@ wait_until_ready  "test-saver-server" 4537
 exit_unless_clean "test-saver-server"
 
 wait_until_ready  "test-saver-mapper" 4547
-# exit_unless_clean "test-saver-mapper"
+exit_unless_clean "test-saver-mapper"
 
 wait_until_ready  "test-saver-languages" 4524
 exit_unless_clean "test-saver-languages"
