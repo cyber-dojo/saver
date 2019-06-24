@@ -49,6 +49,8 @@ if [[ ! -d /${dir}/katas ]]; then
   mkdir /${dir}/katas
 fi
 
+export RUBYOPT=-w
+
 rackup             \
   --warn           \
   --host 0.0.0.0   \
