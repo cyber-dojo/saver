@@ -1,18 +1,14 @@
-require_relative '../src/http'
+require_relative 'external_exercises'
+require_relative 'external_languages'
 
 class Starter
 
   def manifest
-    json = language_manifest(default_display_name, default_exercise_name)
-    manifest = json['manifest']
-    manifest['created'] = creation_time
-    manifest['exercise'] = default_exercise_name
-    manifest['visible_files']['readme.txt'] = json['exercise']
-    manifest
-  end
-
-  def language_manifest(display_name, exercise_name)
-    http.get(display_name, exercise_name)
+    lm = languages.manifest(default_display_name)
+    em = exercises.manifest(default_exercise_name)
+    lm['visible_files'].merge!(em['visible_files'])
+    lm['created'] = creation_time
+    lm
   end
 
   def creation_time
@@ -26,13 +22,17 @@ class Starter
   end
 
   def default_exercise_name
-    'Fizz_Buzz'
+    'Fizz Buzz'
   end
 
   # - - - - - - - - - - - - - - -
 
-  def http
-    Http.new(self, 'starter', 4527)
+  def exercises
+    ExternalExercises.new
+  end
+
+  def languages
+    ExternalLanguages.new
   end
 
 end

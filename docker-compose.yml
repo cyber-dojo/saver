@@ -41,7 +41,8 @@ services:
     restart: 'no'
     depends_on:
       - mapper
-      - starter # for tests
+      - languages # for tests
+      - exercises # for tests
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -71,13 +72,15 @@ services:
     tmpfs: /tmp
     restart: 'no'
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   exercises:
     user: nobody
     image: cyberdojo/exercises
     init: true
     container_name: test-saver-exercises
     ports:
-      - 4525:4525    
+      - 4525:4525
     read_only: true
     tmpfs: /tmp
     restart: 'no'

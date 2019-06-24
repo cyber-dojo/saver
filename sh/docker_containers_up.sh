@@ -117,4 +117,3 @@ wait_until_ready  "test-saver-exercises" 4525
 exit_unless_clean "test-saver-exercises"
 
 wait_till_up "test-saver-client"
-wait_till_up "test-saver-starter"
