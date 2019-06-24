@@ -1,6 +1,6 @@
 require_relative 'hex_mini_test'
 require_relative '../src/saver_service'
-require_relative '../src/starter_service'
+require_relative '../src/starter'
 
 class TestBase < HexMiniTest
 
@@ -13,7 +13,7 @@ class TestBase < HexMiniTest
   end
 
   def starter
-    StarterService.new
+    Starter.new
   end
 
 end

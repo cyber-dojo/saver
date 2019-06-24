@@ -1,5 +1,5 @@
 require_relative 'saver_service'
-require_relative 'starter_service'
+require_relative 'starter'
 
 class Demo
 
@@ -130,7 +130,7 @@ class Demo
   end
 
   def starter
-    StarterService.new
+    Starter.new
   end
 
 end

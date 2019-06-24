@@ -14,8 +14,9 @@ services:
     tmpfs: /tmp
     restart: 'no'
     depends_on:
-      - starter
       - saver
+      - languages
+      - exercises
     ports:
       - 4538:4538
 
@@ -84,15 +85,3 @@ services:
     read_only: true
     tmpfs: /tmp
     restart: 'no'
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  starter:
-    user: nobody:nogroup
-    image: cyberdojo/starter
-    init: true
-    container_name: test-saver-starter
-    read_only: true
-    tmpfs: /tmp
-    volumes:
-      - ./test_server/starter_data:/app/start_points:ro
