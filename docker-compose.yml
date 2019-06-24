@@ -51,12 +51,32 @@ services:
     init: true
     container_name: test-saver-mapper
     read_only: true
-    ports:
-      - 4547:4547
     tmpfs: /tmp
     restart: 'no'
     volumes:
       - ./test_server/porter_data:/porter:ro
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  languages:
+    user: nobody
+    image: cyberdojo/languages-small
+    init: true
+    container_name: test-saver-languages
+    read_only: true
+    tmpfs: /tmp
+    restart: 'no'
+    # port 4524
+
+  exercises:
+    user: nobody
+    image: cyberdojo/exercises
+    init: true
+    container_name: test-saver-exercises
+    read_only: true
+    tmpfs: /tmp
+    restart: 'no'
+    # port 4525
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
