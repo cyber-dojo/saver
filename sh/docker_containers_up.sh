@@ -37,7 +37,7 @@ wait_until_ready()
       echo 'OK'
       return
     else
-      sleep 0.1
+      sleep 0.2
     fi
   done
   echo 'FAIL'
@@ -106,6 +106,15 @@ docker-compose \
 
 wait_until_ready  "test-saver-server" 4537
 exit_unless_clean "test-saver-server"
+
+wait_until_ready  "test-saver-mapper" 4547
+# exit_unless_clean "test-saver-mapper"
+
+wait_until_ready  "test-saver-languages" 4524
+exit_unless_clean "test-saver-languages"
+
+wait_until_ready  "test-saver-exercises" 4525
+exit_unless_clean "test-saver-exercises"
 
 wait_till_up "test-saver-client"
 wait_till_up "test-saver-starter"

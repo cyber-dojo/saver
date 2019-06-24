@@ -1,5 +1,5 @@
 require_relative 'hex_mini_test'
-require_relative 'external_starter'
+require_relative 'starter'
 require_relative '../src/externals'
 
 class TestBase < HexMiniTest
@@ -158,7 +158,7 @@ class TestBase < HexMiniTest
   end
 
   def starter
-    ExternalStarter.new # only needed in tests
+    Starter.new # only needed in tests
   end
 
 end

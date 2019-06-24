@@ -50,6 +50,8 @@ services:
     image: cyberdojo/mapper
     init: true
     container_name: test-saver-mapper
+    ports:
+      - 4547:4547
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -63,20 +65,22 @@ services:
     image: cyberdojo/languages-small
     init: true
     container_name: test-saver-languages
+    ports:
+      - 4524:4524
     read_only: true
     tmpfs: /tmp
     restart: 'no'
-    # port 4524
 
   exercises:
     user: nobody
     image: cyberdojo/exercises
     init: true
     container_name: test-saver-exercises
+    ports:
+      - 4525:4525    
     read_only: true
     tmpfs: /tmp
     restart: 'no'
-    # port 4525
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

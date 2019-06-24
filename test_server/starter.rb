@@ -1,6 +1,6 @@
 require_relative '../src/http'
 
-class ExternalStarter
+class Starter
 
   def manifest
     json = language_manifest(default_display_name, default_exercise_name)
