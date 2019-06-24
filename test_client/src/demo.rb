@@ -48,8 +48,8 @@ class Demo
 
   def edited_files
     files = starter.manifest['visible_files']
-    edited = files['hiker.c']
-    files['hiker.c'] = edited.sub('6 * 9', '6 * 7')
+    hiker_c = files['hiker.c']
+    hiker_c['content'].sub!('6 * 9', '6 * 7')
     files
   end
 
@@ -62,11 +62,11 @@ class Demo
   end
 
   def stdout
-    'All tests passed'
+    { 'content' => 'All tests passed' }
   end
 
   def stderr
-    ''
+    { 'content' => '' }
   end
 
   def status
