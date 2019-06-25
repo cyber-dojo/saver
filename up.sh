@@ -8,7 +8,7 @@ readonly gid=65533
 readonly group=nogroup
 readonly vm_target=${DOCKER_MACHINE_NAME:-default}
 
-if [[ ! -d /${dir} ]]; then
+if [ ! -d /${dir} ]; then
   cmd="mkdir /${dir}"
   echo "ERROR"
   echo "The ${service_name} service needs to volume-mount /${dir}"
@@ -41,11 +41,11 @@ fi
 # - - - - - - - - - - - - - - - - - - - - -
 set -e
 
-if [[ ! -d /${dir}/groups ]]; then
+if [ ! -d /${dir}/groups ]; then
   mkdir /${dir}/groups
 fi
 
-if [[ ! -d /${dir}/katas ]]; then
+if [ ! -d /${dir}/katas ]; then
   mkdir /${dir}/katas
 fi
 
