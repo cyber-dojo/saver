@@ -7,7 +7,7 @@ fullnameOverride: "saver"
 
 # deployment spec
 replicaCount: 1
-
+updateStrategy: "Recreate"
 
 volumes:
   - name: saver-tmp-dir
