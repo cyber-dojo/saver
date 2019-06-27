@@ -9,19 +9,19 @@ fullnameOverride: "saver"
 replicaCount: 1
 
 
-volumes: 
+volumes:
   - name: saver-tmp-dir
     emptyDir: {}
   - name: saver-data
     persistentVolumeClaim:
-      claimName: saver-data  
-       
+      claimName: saver-data
+
 initContainers:
 - name: volume-mount-hack
   image: busybox
   tag: latest
   command: [ "/bin/sh"]
-  args: 
+  args:
     - "-c"
     - "chown -R 19663:65533 /cyber-dojo"
   volumeMounts:
@@ -29,7 +29,7 @@ initContainers:
     mountPath: /cyber-dojo
 # containers
 # provide default values that you HAVE to overwrite in your values.yaml file
-containers: 
+containers:
   - name: saver
     image: cyberdojo/saver
     tag: "a6d71a0"
@@ -40,11 +40,11 @@ containers:
       - name: saver-tmp-dir
         mountPath: /tmp
         readOnly: false
-      - name: saver-data 
+      - name: saver-data
         mountPath: /cyber-dojo
-        
 
-    resources: 
+
+    resources:
       limits:
        memory: 256Mi
       requests:
@@ -57,7 +57,7 @@ containers:
     #   port: 80
 
 envFromSecret: {}
- 
+
 
 nodeSelector: {}
 
@@ -66,12 +66,11 @@ affinity: {}
 tolerations: []
 
 # service
-service: 
+service:
   port: 4537
 
-pvc: 
+pvc:
   name: saver-data
-  storage: 500Gi   
-
-  
-  
+  storage: 500Gi
+  matchLabels:
+    target: "saver"
