@@ -2,12 +2,19 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# app name
 fullnameOverride: "saver"
 
-# deployment spec
 replicaCount: 1
 updateStrategy: "Recreate"
+
+service:
+  port: 4537
+
+pvc:
+  name: saver-data
+  storage: 500Gi
+  matchLabels:
+    target: "saver"
 
 volumes:
   - name: saver-tmp-dir
@@ -27,8 +34,7 @@ initContainers:
   volumeMounts:
   - name: saver-data
     mountPath: /cyber-dojo
-# containers
-# provide default values that you HAVE to overwrite in your values.yaml file
+
 containers:
   - name: saver
     image: cyberdojo/saver
@@ -42,35 +48,22 @@ containers:
         readOnly: false
       - name: saver-data
         mountPath: /cyber-dojo
-
-
     resources:
       limits:
        memory: 256Mi
       requests:
        memory: 256Mi
     # livenessProbe:
-    #   path: /health
-    #   port: 80
+    #   path: /sha
+    #   port: 4537
     # readinessProbe:
-    #   path: /health
-    #   port: 80
+    #   path: /ready?
+    #   port: 4537
 
 envFromSecret: {}
-
 
 nodeSelector: {}
 
 affinity: {}
 
 tolerations: []
-
-# service
-service:
-  port: 4537
-
-pvc:
-  name: saver-data
-  storage: 500Gi
-  matchLabels:
-    target: "saver"
