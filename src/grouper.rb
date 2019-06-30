@@ -108,12 +108,9 @@ class Grouper
   end
 
   def kata_indexes(id)
-    dir_name = group_dir(id).name
-    Dir.glob("#{dir_name}/**/kata.id").each do |path|
-      re = /(\d{1,2})\/kata\.id/
-      m = path.match(re)
-      if m
-        yield m.captures[0].to_i
+    (0..63).each do |index|
+      if group_dir(id,index).exists?
+        yield index
       end
     end
   end
