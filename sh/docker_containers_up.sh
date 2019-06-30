@@ -18,8 +18,10 @@ curl_cmd()
 {
   local -r port="${1}"
   local -r path="${2}"
-  local -r cmd="curl --output /tmp/curl-probe --silent --fail --data {} -X GET http://${IP_ADDRESS}:${port}/${path}"
-  if ${cmd} && [ "$(cat /tmp/curl-probe)" = '{"ready?":true}' ]; then
+  local -r probe_filename='/tmp/curl-probe'
+  local -r cmd="curl --output ${probe_filename} --silent --fail --data {} -X GET http://${IP_ADDRESS}:${port}/${path}"
+  rm -f "${probe_filename}"
+  if ${cmd} && [ "$(cat "${probe_filename}")" = '{"ready?":true}' ]; then
     true
   else
     false
@@ -48,7 +50,7 @@ wait_until_ready()
   echo "${name} not ready after ${max_tries} tries"
   if [ -f /tmp/curl-probe ]; then
     echo "$(cat /tmp/curl-probe)"
-  fi  
+  fi
   docker logs ${name}
   exit 1
 }
