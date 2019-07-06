@@ -1,15 +1,15 @@
-require_relative '../src/http'
+require_relative '../src/http_json/request_packer'
+require_relative '../src/http_json/response_unpacker'
 
 class ExternalLanguages
 
-  def manifest(name)
-    http.get(name)
+  def initialize(externals)
+    requester = HttpJson::RequestPacker.new(externals, 'languages', 4524)
+    @http = HttpJson::ResponseUnpacker.new(requester)
   end
 
-  private
-
-  def http
-    Http.new(self, 'languages', 4524)
+  def manifest(name)
+    @http.get(__method__, { name:name })
   end
 
 end

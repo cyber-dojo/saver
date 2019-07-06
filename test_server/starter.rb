@@ -3,6 +3,10 @@ require_relative 'external_languages'
 
 class Starter
 
+  def initialize(externals)
+    @externals = externals
+  end
+
   def manifest
     lm = languages.manifest(default_display_name)
     em = exercises.manifest(default_exercise_name)
@@ -28,11 +32,11 @@ class Starter
   # - - - - - - - - - - - - - - -
 
   def exercises
-    ExternalExercises.new
+    ExternalExercises.new(@externals)
   end
 
   def languages
-    ExternalLanguages.new
+    ExternalLanguages.new(@externals)
   end
 
 end

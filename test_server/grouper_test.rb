@@ -38,13 +38,16 @@ class GrouperTest < TestBase
       Grouper.new(self)
     end
     def mapper
-      ExternalMapper.new
+      ExternalMapper.new(self)
     end
     def disk
       StubDisk.new
     end
     def id_validator
       IdValidator.new(self)
+    end
+    def http
+      Net::HTTP
     end
   end
 

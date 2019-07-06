@@ -4,6 +4,7 @@ require_relative 'external_mapper'
 require_relative 'grouper'
 require_relative 'id_validator'
 require_relative 'singler'
+require 'net/http'
 
 class Externals
 
@@ -13,6 +14,10 @@ class Externals
 
   def grouper
     @grouper ||= Grouper.new(self)
+  end
+
+  def http
+    @http ||= Net::HTTP
   end
 
   def singler
@@ -28,7 +33,7 @@ class Externals
   end
 
   def mapper
-    @ported ||= ExternalMapper.new
+    @ported ||= ExternalMapper.new(self)
   end
 
 end

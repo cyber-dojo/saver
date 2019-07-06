@@ -158,7 +158,7 @@ class TestBase < HexMiniTest
   end
 
   def starter
-    Starter.new # only needed in tests
+    Starter.new(externals) # only needed in tests
   end
 
 end

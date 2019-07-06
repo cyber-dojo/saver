@@ -19,7 +19,7 @@ class ServiceMapperTest < TestBase
 
   test '1E1',
   %w( 400 example ) do
-    error = assert_raises(ServiceError) { mapper.four_hundred }
+    error = assert_raises(RuntimeError) { mapper.four_hundred }
     json = JSON.parse!(error.message)
     assert_equal 'MapperService', json['class']
   end
