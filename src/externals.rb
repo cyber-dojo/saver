@@ -11,6 +11,9 @@ class Externals
   def disk
     @disk ||= ExternalDisk.new
   end
+  def disk=(obj)
+    @disk = obj
+  end
 
   def grouper
     @grouper ||= Grouper.new(self)

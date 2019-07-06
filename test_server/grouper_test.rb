@@ -33,28 +33,11 @@ class GrouperTest < TestBase
       false
     end
   end
-  class StubExternals
-    def grouper
-      Grouper.new(self)
-    end
-    def mapper
-      ExternalMapper.new(self)
-    end
-    def disk
-      StubDisk.new
-    end
-    def id_validator
-      IdValidator.new(self)
-    end
-    def http
-      Net::HTTP
-    end
-  end
 
   test '42F', %w(
   group_create raises when id's dir cannot be created
   ) do
-    grouper = StubExternals.new.grouper
+    externals.disk = StubDisk.new
     error = assert_raises(ArgumentError) {
       grouper.group_create(starter.manifest)
     }
