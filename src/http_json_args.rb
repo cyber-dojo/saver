@@ -8,8 +8,7 @@ class HttpJsonArgs
   # Exception messages use the words 'body' and 'path'
   # to match RackDispatcher's exception keys.
 
-  def initialize(externals, body)
-    @externals = externals
+  def initialize(body)
     @args = JSON.parse!(body)
     unless @args.is_a?(Hash)
       fail HttpJson::RequestError, 'body is not JSON Hash'
@@ -20,10 +19,10 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def get(path)
-    env = @externals.env
-    grouper = @externals.grouper
-    singler = @externals.singler
+  def get(path, externals)
+    env = externals.env
+    grouper = externals.grouper
+    singler = externals.singler
     args = case path
     when '/ready'          then [grouper, 'ready?']
     when '/sha'            then [env, 'sha']
@@ -48,6 +47,10 @@ class HttpJsonArgs
     name = args.shift
     [target, name, args]
   end
+
+  # - - - - - - - - - - - - - - - -
+
+  attr_reader :args
 
   def manifest
     arg = @args['manifest']
@@ -86,8 +89,6 @@ class HttpJsonArgs
     end
     arg
   end
-
-  attr_reader :args
 
   # - - - - - - - - - - - - - - - -
 
