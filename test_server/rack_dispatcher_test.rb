@@ -38,12 +38,22 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E5A',
-  'dispatch raises when method name is unknown' do
+  test 'E2A',
+  'dispatch raises 400 when method name is unknown' do
     assert_dispatch_raises('xyz',
       {}.to_json,
       400,
-      'xyz:unknown:')
+      'unknown path')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E2B',
+  'dispatch returns 500 status when JSON is malformed' do
+    assert_dispatch_raises('xyz',
+      [].to_json,
+      400,
+      'body is not JSON Hash')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -326,7 +336,7 @@ class RackDispatcherTest < TestBase
 
   def assert_dispatch_raises(name, args, status, message)
     response,stderr = with_captured_stderr { rack_call(name, args) }
-    assert_equal status, response[0]
+    assert_equal status, response[0], "message:#{message},stderr:#{stderr}"
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
     assert_exception(response[2][0], name, args, message)
     assert_exception(stderr,         name, args, message)
@@ -335,15 +345,15 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_exception(s, name, body, message)
-    json = JSON.parse(s)
+    json = JSON.parse!(s)
     exception = json['exception']
     refute_nil exception
-    assert_equal name, exception['path']
-    assert_equal body, exception['body']
-    assert_equal 'SaverService', exception['class']
-    assert_equal message, exception['message']
-    assert_equal 'Array', exception['backtrace'].class.name
-    assert_equal 'String', exception['backtrace'][0].class.name
+    assert_equal '/'+name, exception['path'], "path:#{__LINE__}"
+    assert_equal body, exception['body'], "body:#{__LINE__}"
+    assert_equal 'SaverService', exception['class'], "exception['class']:#{__LINE__}"
+    assert_equal message, exception['message'], "exception['message']:#{__LINE__}"
+    assert_equal 'Array', exception['backtrace'].class.name, "exception['backtrace'].class.name:#{__LINE__}"
+    assert_equal 'String', exception['backtrace'][0].class.name, "exception['backtrace'][0].class.name:#{__LINE__}"
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

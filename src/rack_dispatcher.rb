@@ -1,5 +1,5 @@
-require_relative 'client_error'
-require_relative 'well_formed_args'
+require_relative 'http_json/request_error'
+require_relative 'http_json_args'
 require 'json'
 
 class RackDispatcher
@@ -11,110 +11,44 @@ class RackDispatcher
 
   def call(env)
     request = @request_class.new(env)
-    path = request.path_info[1..-1]
+    path = request.path_info
     body = request.body.read
-    target, name, args = validated_name_args(path, body)
+    target, name, args = HttpJsonArgs.new(@externals, body).get(path)
     result = target.public_send(name, *args)
-    json_response(200, plain({ name => result }))
+    json_response(200, { name => result })
+  rescue HttpJson::RequestError => error
+    json_response(400, diagnostic(path, body, error))
   rescue Exception => error
-    diagnostic = pretty({
-      'exception' => {
-        'path' => path,
-        'body' => body,
-        'class' => 'SaverService',
-        'message' => error.message,
-        'backtrace' => error.backtrace
-      }
-    })
-    $stderr.puts(diagnostic)
-    $stderr.flush
-    json_response(code(error), diagnostic)
+    json_response(500, diagnostic(path, body, error))
   end
 
-  private # = = = = = = = = = = = = = = = = = = =
+  private
 
-  def validated_name_args(name, body)
-    @well_formed_args = WellFormedArgs.new(body)
-    env = @externals.env
-    grouper = @externals.grouper
-    singler = @externals.singler
-    args = case name
-      when /^ready$/          then [grouper]
-      when /^sha$/            then [env]
-
-      when /^group_exists$/   then [grouper, id]
-      when /^group_create$/   then [grouper, manifest]
-      when /^group_manifest$/ then [grouper, id]
-      when /^group_join$/     then [grouper, id, indexes]
-      when /^group_joined$/   then [grouper, id]
-      when /^group_events$/   then [grouper, id]
-
-      when /^kata_exists$/    then [singler, id]
-      when /^kata_create$/    then [singler, manifest]
-      when /^kata_manifest$/  then [singler, id]
-      when /^kata_ran_tests$/ then [singler, id, index, files, now, duration, stdout, stderr, status, colour]
-      when /^kata_events$/    then [singler, id]
-      when /^kata_event$/     then [singler, id, index]
-
-      else
-        raise ClientError, "#{name}:unknown:"
+  def json_response(status, json)
+    if status == 200
+      body = JSON.fast_generate(json)
+    else
+      body = JSON.pretty_generate(json)
+      $stderr.puts(body)
+      $stderr.flush
     end
-    name += '?' if query?(name)
-    target = args.shift
-    [target, name, args]
-  end
-
-  # - - - - - - - - - - - - - - - -
-
-  def json_response(status, body)
     [ status,
       { 'Content-Type' => 'application/json' },
       [ body ]
     ]
   end
 
-  def code(error)
-    if error.is_a?(ClientError)
-      400
-    else
-      500
-    end
-  end
-
-  def plain(body)
-    JSON.generate(body)
-  end
-
-  def pretty(body)
-    JSON.pretty_generate(body)
-  end
-
   # - - - - - - - - - - - - - - - -
 
-  def self.well_formed_args(*names)
-    names.each do |name|
-      define_method name, &lambda {
-        @well_formed_args.public_send(name)
+  def diagnostic(path, body, error)
+    { 'exception' => {
+        'path' => path,
+        'body' => body,
+        'class' => 'SaverService',
+        'message' => error.message,
+        'backtrace' => error.backtrace
       }
-    end
-  end
-
-  well_formed_args :manifest,
-                   :id,
-                   :indexes,
-                   :index,
-                   :files,
-                   :now,
-                   :duration,
-                   :stdout,
-                   :stderr,
-                   :status,
-                   :colour
-
-  # - - - - - - - - - - - - - - - -
-
-  def query?(name)
-    ['ready','group_exists','kata_exists'].include?(name)
+    }
   end
 
 end

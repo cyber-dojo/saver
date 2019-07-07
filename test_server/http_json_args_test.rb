@@ -1,7 +1,7 @@
 require_relative 'test_base'
-require_relative '../src/well_formed_args'
-
-class WellFormedArgsTest < TestBase
+require_relative '../src/http_json_args'
+require_relative '../src/http_json/request_error'
+class HttpJsonArgsTest < TestBase
 
   def self.hex_prefix
     '0A1'
@@ -13,15 +13,15 @@ class WellFormedArgsTest < TestBase
 
   test 'A04',
   'ctor raises when its string arg is not valid json' do
-    expected = 'json:malformed'
+    expected = 'body is not JSON'
     # abc is not a valid top-level json element
-    error = assert_raises { WellFormedArgs.new('abc') }
+    error = assert_raises { HttpJsonArgs.new(externals, 'abc') }
     assert_equal expected, error.message
     # nil is null in json
-    error = assert_raises { WellFormedArgs.new('{"x":nil}') }
+    error = assert_raises { HttpJsonArgs.new(externals, '{"x":nil}') }
     assert_equal expected, error.message
     # keys have to be strings in json
-    error = assert_raises { WellFormedArgs.new('{42:"answer"}') }
+    error = assert_raises { HttpJsonArgs.new(externals, '{42:"answer"}') }
     assert_equal expected, error.message
   end
 
@@ -33,7 +33,7 @@ class WellFormedArgsTest < TestBase
   'manifest does not raise when well-formed' do
     well_formed_manifests.each do |manifest|
       json = { manifest:manifest }.to_json
-      WellFormedArgs.new(json).manifest
+      HttpJsonArgs.new(externals, json).manifest
     end
   end
 
@@ -50,8 +50,8 @@ class WellFormedArgsTest < TestBase
   'manifest raises when malformed' do
     malformed_manifests.each do |malformed, message|
       json = { manifest:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.manifest }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.manifest }
       expected = "malformed:#{message}:"
       assert_equal expected, error.message, malformed
     end
@@ -127,15 +127,15 @@ class WellFormedArgsTest < TestBase
   'id does not raise when well-formed' do
     id = 'A1B2kn'
     json = { id:id }.to_json
-    assert_equal id, WellFormedArgs.new(json).id
+    assert_equal id, HttpJsonArgs.new(externals, json).id
   end
 
   test '61B',
   'id raises when malformed' do
     malformed_ids.each do |malformed,message|
       json = { id:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises { wfa.id }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.id }
       expected = "malformed:id:#{message}:"
       assert_equal expected, error.message, malformed
     end
@@ -160,15 +160,15 @@ class WellFormedArgsTest < TestBase
   test '086',
   'indexes does not raise when well-formed' do
     json = { indexes:(0..63).to_a }.to_json
-    WellFormedArgs.new(json).indexes
+    HttpJsonArgs.new(externals, json).indexes
   end
 
   test '087',
   'indexes raises when malformed' do
     malformed_indexes.each do |malformed, message|
       json = { indexes:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.indexes }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.indexes }
       expected = "malformed:indexes:#{message}:"
       assert_equal expected, error.message, malformed
     end
@@ -196,7 +196,7 @@ class WellFormedArgsTest < TestBase
     well_formed_indexes = [ -1, 0, 1, 2, 55, 104 ]
     well_formed_indexes.each do |index|
       json = { index:index }.to_json
-      assert_equal index, WellFormedArgs.new(json).index
+      assert_equal index, HttpJsonArgs.new(externals, json).index
     end
   end
 
@@ -204,8 +204,8 @@ class WellFormedArgsTest < TestBase
   'index raises when malformed' do
     malformed_index.each do |malformed,message|
       json = { index:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.index }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.index }
       expected = "malformed:index:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -231,15 +231,15 @@ class WellFormedArgsTest < TestBase
   'files does not raise when well-formed' do
     files = { 'cyber-dojo.sh' => file('make') }
     json = { files:files }.to_json
-    assert_equal files, WellFormedArgs.new(json).files
+    assert_equal files, HttpJsonArgs.new(externals, json).files
   end
 
   test '847',
   'files raises when malformed' do
     malformed_files.each do |malformed, message|
       json = { files:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.files }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.files }
       expected = "malformed:files:#{message}:"
       assert_equal expected, error.message, malformed
     end
@@ -264,15 +264,15 @@ class WellFormedArgsTest < TestBase
   'now does not raise when well-formed' do
     now = [2018,3,28, 19,18,45,356]
     json = { now:now }.to_json
-    assert_equal now, WellFormedArgs.new(json).now
+    assert_equal now, HttpJsonArgs.new(externals, json).now
   end
 
   test 'FF5',
   'now raises when malformed' do
     malformed_nows.each do |malformed, message|
       json = { now:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.now }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.now }
       expected = "malformed:now:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -302,18 +302,18 @@ class WellFormedArgsTest < TestBase
   'duration does not raise when well-formed' do
     duration = 0.0
     json = { duration:duration }.to_json
-    assert_equal duration, WellFormedArgs.new(json).duration
+    assert_equal duration, HttpJsonArgs.new(externals, json).duration
     duration = 0.34
     json = { duration:duration }.to_json
-    assert_equal duration, WellFormedArgs.new(json).duration
+    assert_equal duration, HttpJsonArgs.new(externals, json).duration
   end
 
   test '9E1',
   'duration raises when malformed' do
     malformed_durations.each do |malformed, message|
       json = { duration:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.duration }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.duration }
       expected = "malformed:duration:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -337,15 +337,15 @@ class WellFormedArgsTest < TestBase
   'stdout does not raise when well-formed' do
     stdout = file('gsdfg')
     json = { stdout:stdout }.to_json
-    assert_equal stdout, WellFormedArgs.new(json).stdout
+    assert_equal stdout, HttpJsonArgs.new(externals, json).stdout
   end
 
   test 'E36',
   'stdout raises when malformed' do
     malformed_stdouts.each do |malformed,message|
       json = { stdout:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.stdout }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.stdout }
       expected = "malformed:stdout:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -369,15 +369,15 @@ class WellFormedArgsTest < TestBase
   'stderr does not raise when well-formed' do
     stderr = file('aesthetics', true)
     json = { stderr:stderr }.to_json
-    assert_equal stderr, WellFormedArgs.new(json).stderr
+    assert_equal stderr, HttpJsonArgs.new(externals, json).stderr
   end
 
   test '8DC',
   'stderr raises when malformed' do
     malformed_stderrs.each do |malformed,message|
       json = { stderr:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.stderr }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.stderr }
       expected = "malformed:stderr:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -402,7 +402,7 @@ class WellFormedArgsTest < TestBase
     oks = [ 0, 24, 255 ]
     oks.each do |status|
       json = { status:status }.to_json
-      assert_equal status, WellFormedArgs.new(json).status
+      assert_equal status, HttpJsonArgs.new(externals, json).status
     end
   end
 
@@ -410,8 +410,8 @@ class WellFormedArgsTest < TestBase
   'status raises when malformed' do
     malformed_statuses.each do |malformed,message|
       json = { status:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.status }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.status }
       expected = "malformed:status:#{message}:"
       assert_equal expected, error.message, malformed.to_s
     end
@@ -439,7 +439,7 @@ class WellFormedArgsTest < TestBase
     colours = [ 'red', 'amber', 'green', 'timed_out' ]
     colours.each do |colour|
       json = { colour:colour }.to_json
-      assert_equal colour, WellFormedArgs.new(json).colour
+      assert_equal colour, HttpJsonArgs.new(externals, json).colour
     end
   end
 
@@ -447,8 +447,8 @@ class WellFormedArgsTest < TestBase
   'colour raises when malformed' do
     malformed_colours.each do |malformed,message|
       json = { colour:malformed }.to_json
-      wfa = WellFormedArgs.new(json)
-      error = assert_raises(ClientError) { wfa.colour }
+      wfa = HttpJsonArgs.new(externals, json)
+      error = assert_raises(HttpJson::RequestError) { wfa.colour }
       expected = "malformed:colour:#{message}:"
       assert_equal expected, error.message, malformed
     end
