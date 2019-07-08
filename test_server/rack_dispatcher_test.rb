@@ -1,4 +1,3 @@
-require_relative 'rack_dispatcher_externals_stub'
 require_relative 'rack_dispatcher_stub'
 require_relative 'rack_request_stub'
 require_relative 'test_base'
@@ -371,8 +370,23 @@ class RackDispatcherTest < TestBase
     @stub ||= RackDispatcherStub.new
   end
 
+  class RackDispatcherExternalsStubAdapter
+    def initialize(stub)
+      @stub = stub
+    end
+    def env
+      @stub
+    end
+    def grouper
+      @stub
+    end
+    def singler
+      @stub
+    end
+  end
+
   def rack_call(name, args)
-    externals_stub = RackDispatcherExternalsStub.new(stub)
+    externals_stub = RackDispatcherExternalsStubAdapter.new(stub)
     rack = RackDispatcher.new(externals_stub, RackRequestStub)
     env = { path_info:name, body:args }
     rack.call(env)
