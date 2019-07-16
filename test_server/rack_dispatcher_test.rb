@@ -401,14 +401,12 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def with_captured_stderr
-    begin
-      old_stderr = $stderr
-      $stderr = StringIO.new('', 'w')
-      response = yield
-      return [ response, $stderr.string ]
-    ensure
-      $stderr = old_stderr
-    end
+    old_stderr = $stderr
+    $stderr = StringIO.new('', 'w')
+    response = yield
+    return [ response, $stderr.string ]
+  ensure
+    $stderr = old_stderr
   end
 
 end
