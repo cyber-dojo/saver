@@ -48,7 +48,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2B',
-  'dispatch returns 500 status when JSON is malformed' do
+  'dispatch returns 400 status when JSON is malformed' do
     assert_dispatch_raises('xyz',
       [].to_json,
       400,
@@ -82,7 +82,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E5B',
-  'dispatch raises when any argument is malformed' do
+  'dispatch raises 400 when any argument is malformed' do
     assert_dispatch_raises('group_manifest',
       { id: malformed_id }.to_json,
       400,
@@ -160,7 +160,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A5B',
-  'dispatch raises when any argument is malformed' do
+  'dispatch raises 400 when any argument is malformed' do
     assert_dispatch_raises('kata_events',
       { id: malformed_id }.to_json,
       400,
