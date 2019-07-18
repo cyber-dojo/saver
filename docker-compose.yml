@@ -31,6 +31,8 @@ services:
     image: cyberdojo/saver
     init: true
     container_name: test-saver-server
+    environment:
+      - NO_PROMETHEUS
     volumes:
       - ./test_server:/app/test:ro
     ports:
