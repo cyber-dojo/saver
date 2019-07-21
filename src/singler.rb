@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'base58'
 require_relative 'liner'
 require 'json'
