@@ -1,0 +1,6 @@
+
+pvc:
+  name: saver-data
+  storage: 500Gi
+  matchLabels:
+    target: "saver"

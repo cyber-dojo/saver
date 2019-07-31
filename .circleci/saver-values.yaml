@@ -5,16 +5,9 @@
 fullnameOverride: "saver"
 
 replicaCount: 1
-updateStrategy: "Recreate"
 
 service:
   port: 4537
-
-pvc:
-  name: saver-data
-  storage: 500Gi
-  matchLabels:
-    target: "saver"
 
 volumes:
   - name: saver-tmp-dir
@@ -38,7 +31,7 @@ initContainers:
 containers:
   - name: saver
     image: cyberdojo/saver
-    tag: "a6d71a0"
+    tag: ""
     securityContext:
       runAsUser: 19663
       fsGroup: 65533
@@ -53,12 +46,12 @@ containers:
         memory: 256Mi
       requests:
         memory: 256Mi
-      livenessProbe:
-        path: /sha
-        port: 4537
-      readinessProbe:
-        path: /ready?
-        port: 4537
+      #livenessProbe:
+      #  path: /sha
+      #  port: 4537
+      #readinessProbe:
+      #  path: /ready?
+      #  port: 4537
 
 envFromSecret: {}
 
