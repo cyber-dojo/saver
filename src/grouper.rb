@@ -66,18 +66,10 @@ class Grouper
 
   def group_joined(id)
     if !group_exists?(id)
-      kata_ids = nil
+      nil
     else
-      # TODO: create an ExternalDisk.read([]) batch method.
-      # Now simply ask to read all 64 files.
-      # If the file does not exist, return nil.
-      kata_ids = []
-      kata_indexes(id) do |index|
-        kata_id = disk.read(group_dir(id,index)+'/'+'kata.id')
-        kata_ids << kata_id
-      end
+      kata_indexes(id).map{ |kata_id,_| kata_id }
     end
-    kata_ids
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -86,12 +78,8 @@ class Grouper
     if !group_exists?(id)
       events = nil
     else
-      # TODO: create an ExternalDisk.read([]) batch method.
-      # Now simply ask to read all 64 files.
-      # If the file does not exist, return nil.
       events = {}
-      kata_indexes(id) do |index|
-        kata_id = disk.read(group_dir(id,index)+'/'+'kata.id')
+      kata_indexes(id).each do |kata_id,index|
         events[kata_id] = {
           'index' => index,
           'events' => singler.kata_events(kata_id)
@@ -119,11 +107,11 @@ class Grouper
   end
 
   def kata_indexes(id)
-    (0..63).each do |index|
-      if disk.exist?(group_dir(id,index))
-        yield index
-      end
+    filenames = (0..63).map do |index|
+      group_dir(id,index)+'/'+'kata.id'
     end
+    reads = disk.read(filenames)
+    reads.each.with_index(0).select{|kata_id,_| kata_id}
   end
 
   def group_dir(id, index=nil)
