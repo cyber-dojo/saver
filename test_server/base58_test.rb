@@ -39,17 +39,16 @@ class Base58Test < TestBase
     diagnostic = 'single quote to protect all other letters'
     refute alphabet.include?("'"), diagnostic
     alphabet.each_char do |letter|
-      name = "/tmp/base/#{letter}"
-      dir = disk[name]
-      refute dir.exists?
-      dir.make
-      assert dir.exists?
+      dir = "/tmp/base/#{letter}"
+      refute disk.exist?(dir)
+      disk.make(dir)
+      assert disk.exist?(dir)
       filename = 'readme.txt'
       content = 'hello world'
-      dir.write(filename, content)
-      assert_equal content, dir.read(filename)
-      dir.append(filename, content.reverse)
-      assert_equal content+content.reverse, dir.read(filename)
+      disk.write(dir+'/'+filename, content)
+      assert_equal content, disk.read(dir+'/'+filename)
+      disk.append(dir+'/'+filename, content.reverse)
+      assert_equal content+content.reverse, disk.read(dir+'/'+filename)
     end
   end
 

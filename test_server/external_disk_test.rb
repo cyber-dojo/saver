@@ -14,54 +14,81 @@ class ExternalDiskTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '435',
-  'dir can already exist' do
-    dir = disk['/tmp']
-    assert dir.exists?
+  'exist? can already be true' do
+    assert disk.exist?('/tmp')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '436',
-  'dir.make succeeds if dir is made and fails if dir already exists' do
-    dir = disk['/cyber-dojo/groups/FD/F4/36']
-    assert dir.make
-    refute dir.make
+  'make succeeds once then fails' do
+    name = '/cyber-dojo/groups/FD/F4/36'
+    assert disk.make(name)
+    refute disk.make(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '437',
-  'dir.exists? is true after a successful dir.make' do
-    dir = disk['/cyber-dojo/groups/FD/F4/37']
-    refute dir.exists?
-    assert dir.make
-    assert dir.exists?
+  'exists? is true after a successful make' do
+    name = '/cyber-dojo/groups/FD/F4/37'
+    refute disk.exist?(name)
+    assert disk.make(name)
+    assert disk.exist?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '438',
-  'dir.read() reads back what dir.write() writes' do
-    dir = disk['/cyber-dojo/groups/FD/F4/38']
-    dir.make
-    filename = 'limerick.txt'
+  'read() reads back what write() writes' do
+    filename = '/cyber-dojo/groups/FD/F4/38/limerick.txt'
     content = 'the boy stood on the burning deck'
-    dir.write(filename, content)
-    assert_equal content, dir.read(filename)
+    disk.write(filename, content)
+    assert_equal content, disk.read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '439',
-  'dir.append() appends to the end' do
-    dir = disk['/cyber-dojo/groups/FD/F4/39']
-    dir.make
-    filename = 'readme.md'
+  'read() a non-existant file is nil' do
+    filename = '/cyber-dojo/groups/12/23/34/not-there.txt'
+    assert_nil disk.read(filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '440',
+  'read() accepts an array of filenames (BatchMethod)' do
+    dir = '/cyber-dojo/groups/34/56/78/'
+    there_not = dir + 'there-not.txt'
+    there_yes = dir + 'there-yes.txt'
+    disk.write(there_yes, 'content is this')
+    reads = disk.read([there_not, there_yes])
+    assert_equal [nil,'content is this'], reads
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '441',
+  'read() can read across different sub-dirs' do
+    filename1 = '/cyber-dojo/groups/C1/bc/1A/1/kata.id'
+    disk.write(filename1, 'be30e5')
+    filename2 = '/cyber-dojo/groups/C1/bc/1A/14/kata.id'
+    disk.write(filename2, 'De02CD')
+    reads = disk.read([filename1, filename2])
+    assert_equal ['be30e5','De02CD'], reads
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '539',
+  'append() appends to the end' do
+    filename = '/cyber-dojo/groups/FD/F4/39/readme.md'
     content = 'hello world'
-    dir.append(filename, content)
-    assert_equal content, dir.read(filename)
-    dir.append(filename, content.reverse)
-    assert_equal "#{content}#{content.reverse}", dir.read(filename)
+    disk.append(filename, content)
+    assert_equal content, disk.read(filename)
+    disk.append(filename, content.reverse)
+    assert_equal "#{content}#{content.reverse}", disk.read(filename)
   end
 
 end

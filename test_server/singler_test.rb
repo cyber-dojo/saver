@@ -50,20 +50,16 @@ class SinglerTest < TestBase
       @count = 0
     end
     attr_reader :count
-    def [](name)
-      @name = name
-      self
-    end
-    def exists?
+    def exist?(name)
       @count += 1
       if @count < 3
         true
       else
-        @disk[@name].exists?
+        @disk.exist?(name)
       end
     end
     def method_missing(m, *args)
-      @disk[@name].send(m, *args)
+      @disk.send(m, *args)
     end
   end
 

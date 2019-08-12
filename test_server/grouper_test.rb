@@ -23,13 +23,10 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   class StubDisk
-    def [](_name)
-      self
-    end
-    def exists?
+    def exist?(_)
       false
     end
-    def make
+    def make(_)
       false
     end
   end

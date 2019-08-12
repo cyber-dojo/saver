@@ -4,28 +4,11 @@ require 'open3'
 
 class ExternalDisk
 
-  def [](name)
-    ExternalDir.new(name)
-  end
-
-end
-
-# - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-class ExternalDir
-
-  def initialize(name)
-    @name = name
-  end
-
-  attr_reader :name
-
-  def exists?
+  def exist?(name)
     File.directory?(name)
   end
 
-  def make
+  def make(name)
     # Returns true iff the dir does not already exist
     # and is made. Can't find a Ruby library method
     # that does this, so using shell.
@@ -39,25 +22,35 @@ class ExternalDir
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(filename, content)
+    make(File.dirname(filename))
     open(filename, 'a') { |fd| fd.write(content) }
   end
 
   def write(filename, content)
+    make(File.dirname(filename))
     open(filename, 'w') { |fd| fd.write(content) }
   end
 
-  def read(filename)
-    open(filename, 'r') { |fd| fd.read }
+  def read(arg)
+    if arg.is_a?(Array)
+      arg.map{ |filename| read_one(filename) }
+    else
+      read_one(arg)
+    end
   end
 
   private
 
-  def open(filename, mode)
-    File.open(pathed(filename), mode) { |fd| yield fd }
+  def read_one(filename)
+    if File.file?(filename)
+      open(filename, 'r') { |fd| fd.read }
+    else
+      nil
+    end
   end
 
-  def pathed(filename)
-    File.join(name, filename)
+  def open(filename, mode)
+    File.open(filename, mode) { |fd| yield fd }
   end
 
 end

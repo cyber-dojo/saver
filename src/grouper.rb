@@ -17,7 +17,7 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
-    group_dir(id).exists?
+    disk.exist?(group_dir(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -25,11 +25,11 @@ class Grouper
   def group_create(manifest)
     id = group_id(manifest)
     dir = group_dir(id)
-    unless dir.make
+    unless disk.make(dir)
       invalid('id', id)
     end
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    dir.write(manifest_filename, json_pretty(manifest))
+    disk.write(dir+'/'+manifest_filename, json_pretty(manifest))
     id
   end
 
@@ -37,7 +37,7 @@ class Grouper
 
   def group_manifest(id)
     assert_group_exists(id)
-    manifest = json_parse(group_dir(id).read(manifest_filename))
+    manifest = json_parse(disk.read(group_dir(id)+'/'+manifest_filename))
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
   end
@@ -47,7 +47,7 @@ class Grouper
   def group_join(id, indexes)
     assert_group_exists(id)
     index = indexes.detect { |new_index|
-      group_dir(id,new_index).make
+      disk.make(group_dir(id,new_index))
     }
     if index.nil?
       nil
@@ -57,7 +57,7 @@ class Grouper
       manifest['group_id'] = id
       manifest['group_index'] = index
       kata_id = singler.kata_create(manifest)
-      group_dir(id,index).write('kata.id', kata_id)
+      disk.write(group_dir(id,index)+'/'+'kata.id', kata_id)
       kata_id
     end
   end
@@ -68,9 +68,12 @@ class Grouper
     if !group_exists?(id)
       kata_ids = nil
     else
+      # TODO: create an ExternalDisk.read([]) batch method.
+      # Now simply ask to read all 64 files.
+      # If the file does not exist, return nil.
       kata_ids = []
       kata_indexes(id) do |index|
-        kata_id = group_dir(id,index).read('kata.id')
+        kata_id = disk.read(group_dir(id,index)+'/'+'kata.id')
         kata_ids << kata_id
       end
     end
@@ -83,9 +86,12 @@ class Grouper
     if !group_exists?(id)
       events = nil
     else
+      # TODO: create an ExternalDisk.read([]) batch method.
+      # Now simply ask to read all 64 files.
+      # If the file does not exist, return nil.
       events = {}
       kata_indexes(id) do |index|
-        kata_id = group_dir(id,index).read('kata.id')
+        kata_id = disk.read(group_dir(id,index)+'/'+'kata.id')
         events[kata_id] = {
           'index' => index,
           'events' => singler.kata_events(kata_id)
@@ -100,6 +106,9 @@ class Grouper
   include Liner
 
   def group_id(manifest)
+    # The manifest supplies the id only when the porter is porting
+    # old storer architecture sessions to the new saver architecture
+    # when it tries to maintain closely equivalent ids.
     id = manifest['id']
     if id.nil?
       manifest['id'] = id = generate_id
@@ -111,7 +120,7 @@ class Grouper
 
   def kata_indexes(id)
     (0..63).each do |index|
-      if group_dir(id,index).exists?
+      if disk.exist?(group_dir(id,index))
         yield index
       end
     end
@@ -124,7 +133,7 @@ class Grouper
     unless index.nil?
       args << index.to_s
     end
-    disk[File.join(*args)]
+    File.join(*args)
   end
 
   def manifest_filename
