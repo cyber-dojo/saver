@@ -78,6 +78,8 @@ class Grouper
     if !group_exists?(id)
       events = nil
     else
+      # TODO: Look into applying BatchMethod to the
+      # singler.kata_events(kata_id) calls.
       events = {}
       kata_indexes(id).each do |kata_id,index|
         events[kata_id] = {

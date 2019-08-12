@@ -13,7 +13,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
-    @disk.exist?(kata_dir(id))
+    @disk.exist?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -22,7 +22,7 @@ class Singler
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
     event_write(id, 0, { 'files' => files })
-    @disk.write(kata_dir(id)+'/'+manifest_filename, json_pretty(manifest))
+    @disk.write(id_path(id,manifest_filename), json_pretty(manifest))
     event0 = {
          'event' => 'created',
           'time' => manifest['created']
@@ -35,7 +35,7 @@ class Singler
 
   def kata_manifest(id)
     assert_kata_exists(id)
-    manifest = json_parse(@disk.read(kata_dir(id)+'/'+manifest_filename))
+    manifest = json_parse(@disk.read(id_path(id,manifest_filename)))
     manifest['visible_files'] = kata_event(id, 0)['files']
     manifest
   end
@@ -100,14 +100,11 @@ class Singler
     end
   end
 
-  def kata_dir(id, index=nil)
+  def id_path(id, *parts)
     # Using 2/2/2 split.
     # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
-    unless index.nil?
-      # index == 3 ==> 3rd [test-event]
-      args << index.to_s
-    end
+    parts.map!{ |part| part.to_s }
+    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]] + parts
     File.join(*args)
   end
 
@@ -119,7 +116,7 @@ class Singler
   # events
 
   def events_append(id, event)
-    @disk.append(kata_dir(id)+'/'+events_filename, json_plain(event) + "\n")
+    @disk.append(id_path(id,events_filename), json_plain(event) + "\n")
   end
 
   def events_read(id)
@@ -129,7 +126,7 @@ class Singler
   end
 
   def events_read_lined(id)
-    @disk.read(kata_dir(id)+'/'+events_filename)
+    @disk.read(id_path(id,events_filename))
   end
 
   def event_most_recent(id)
@@ -144,11 +141,11 @@ class Singler
   # event
 
   def event_exists?(id, index)
-    @disk.exist?(kata_dir(id, index))
+    @disk.exist?(id_path(id, index))
   end
 
   def event_write(id, index, event)
-    dir = kata_dir(id, index)
+    dir = id_path(id, index)
     unless @disk.make(dir)
       invalid('index', index)
     end
@@ -159,7 +156,7 @@ class Singler
   end
 
   def event_read(id, index)
-    event = json_parse(@disk.read(kata_dir(id, index)+'/'+event_filename))
+    event = json_parse(@disk.read(id_path(id, index, event_filename)))
     event['files'] = unlined_files(event['files'])
     unlined_file(event['stdout'])
     unlined_file(event['stderr'])
