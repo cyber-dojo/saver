@@ -103,8 +103,8 @@ class Singler
   def id_path(id, *parts)
     # Using 2/2/2 split.
     # See https://github.com/cyber-dojo/id-split-timer
-    parts.map!{ |part| part.to_s }
-    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]] + parts
+    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
     File.join(*args)
   end
 
@@ -145,14 +145,13 @@ class Singler
   end
 
   def event_write(id, index, event)
-    dir = id_path(id, index)
-    unless @disk.make(dir)
+    unless @disk.make(id_path(id, index))
       invalid('index', index)
     end
     event['files'] = lined_files(event['files'])
     lined_file(event['stdout'])
     lined_file(event['stderr'])
-    @disk.write(dir+'/'+event_filename, json_pretty(event))
+    @disk.write(id_path(id, index, event_filename), json_pretty(event))
   end
 
   def event_read(id, index)
