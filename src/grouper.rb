@@ -80,7 +80,7 @@ class Grouper
       # TODO: Look into applying BatchMethod to the
       # singler.kata_events(kata_id) calls
       # and also, to get the events directly from external_disk
-      # rather than from new singler service
+      # rather than via new singler service
       events = {}
       kata_indexes(id).each do |kata_id,index|
         events[kata_id] = {
@@ -113,7 +113,7 @@ class Grouper
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
     end
-    reads = disk.read(filenames) # BatchMethod
+    reads = saver.reads(filenames)
     reads.each.with_index(0).select{|kata_id,_| kata_id}
   end
 
@@ -159,19 +159,19 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def exist?(id, *parts)
-    disk.exist?(id_path(id, *parts))
+    saver.exist?(id_path(id, *parts))
   end
 
   def make?(id, *parts)
-    disk.make?(id_path(id, *parts))
+    saver.make?(id_path(id, *parts))
   end
 
   def write(id, *parts, content)
-    disk.write(id_path(id, *parts), content)
+    saver.write(id_path(id, *parts), content)
   end
 
   def read(id, *parts)
-    disk.read(id_path(id, *parts))
+    saver.read(id_path(id, *parts))
   end
 
   def id_path(id, *parts)
@@ -184,7 +184,7 @@ class Grouper
 
   # - - - - - - - - - - - - - -
 
-  def disk
+  def saver
     externals.disk
   end
 

@@ -192,23 +192,23 @@ class Singler
   # - - - - - - - - - - - - - -
 
   def make?(id, *parts)
-    disk.make?(id_path(id, *parts))
+    saver.make?(id_path(id, *parts))
   end
 
   def exist?(id, *parts)
-    disk.exist?(id_path(id, *parts))
+    saver.exist?(id_path(id, *parts))
   end
 
   def append(id, *parts, content)
-    disk.append(id_path(id, *parts), content)
+    saver.append(id_path(id, *parts), content)
   end
 
   def write(id, *parts, content)
-    disk.write(id_path(id, *parts), content)
+    saver.write(id_path(id, *parts), content)
   end
 
   def read(id, *parts)
-    disk.read(id_path(id, *parts))
+    saver.read(id_path(id, *parts))
   end
 
   def id_path(id, *parts)
@@ -219,6 +219,8 @@ class Singler
     File.join(*args)
   end
 
-  attr_reader :disk
+  def saver
+    @disk
+  end
 
 end

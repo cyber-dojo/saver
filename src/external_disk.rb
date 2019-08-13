@@ -23,34 +23,24 @@ class ExternalDisk
 
   def append(filename, content)
     make?(File.dirname(filename))
-    open(filename, 'a') { |fd| fd.write(content) }
+    File.open(filename, 'a') { |fd| fd.write(content) }
   end
 
   def write(filename, content)
     make?(File.dirname(filename))
-    open(filename, 'w') { |fd| fd.write(content) }
+    File.open(filename, 'w') { |fd| fd.write(content) }
   end
 
-  def read(arg)
-    if arg.is_a?(Array)
-      arg.map{ |filename| read_one(filename) }
-    else
-      read_one(arg)
-    end
+  def reads(filenames) # read() BatchMethod
+    filenames.map{ |filename| read(filename) }
   end
 
-  private
-
-  def read_one(filename)
+  def read(filename)
     if File.file?(filename)
-      open(filename, 'r') { |fd| fd.read }
+      File.open(filename, 'r') { |fd| fd.read }
     else
       nil
     end
-  end
-
-  def open(filename, mode)
-    File.open(filename, mode) { |fd| yield fd }
   end
 
 end

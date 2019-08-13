@@ -31,7 +31,7 @@ class ExternalDiskTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '437',
-  'exists? is true after a successful make' do
+  'exists? is true after make? is true' do
     name = '/cyber-dojo/groups/FD/F4/37'
     refute disk.exist?(name)
     assert disk.make?(name)
@@ -59,24 +59,24 @@ class ExternalDiskTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '440',
-  'read() accepts an array of filenames (BatchMethod)' do
+  'reads() is a read-BatchMethod' do
     dir = '/cyber-dojo/groups/34/56/78/'
     there_not = dir + 'there-not.txt'
     there_yes = dir + 'there-yes.txt'
     disk.write(there_yes, 'content is this')
-    reads = disk.read([there_not, there_yes])
+    reads = disk.reads([there_not, there_yes])
     assert_equal [nil,'content is this'], reads
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '441',
-  'read() can read across different sub-dirs' do
+  'reads() can read across different sub-dirs' do
     filename1 = '/cyber-dojo/groups/C1/bc/1A/1/kata.id'
     disk.write(filename1, 'be30e5')
     filename2 = '/cyber-dojo/groups/C1/bc/1A/14/kata.id'
     disk.write(filename2, 'De02CD')
-    reads = disk.read([filename1, filename2])
+    reads = disk.reads([filename1, filename2])
     assert_equal ['be30e5','De02CD'], reads
   end
 
