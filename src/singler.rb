@@ -45,7 +45,7 @@ class Singler
   def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
     assert_kata_exists(id)
     unless index >= 1
-      invalid('index', index)
+      fail invalid('index', index)
     end
     event_write(id, index, {
       'files' => files,
@@ -74,7 +74,7 @@ class Singler
       index = event_most_recent(id)
     else
       unless event_exists?(id, index)
-        invalid('index', index)
+        fail invalid('index', index)
       end
     end
     event_read(id, index)
@@ -89,14 +89,14 @@ class Singler
     if id.nil?
       manifest['id'] = id = generate_id
     elsif kata_exists?(id)
-      invalid('id', id)
+      fail invalid('id', id)
     end
     id
   end
 
   def assert_kata_exists(id)
     unless kata_exists?(id)
-      invalid('id', id)
+      fail invalid('id', id)
     end
   end
 
@@ -138,7 +138,7 @@ class Singler
 
   def event_write(id, index, event)
     unless make?(id, index)
-      invalid('index', index)
+      fail invalid('index', index)
     end
     event['files'] = lined_files(event['files'])
     lined_file(event['stdout'])
@@ -186,7 +186,7 @@ class Singler
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    fail ArgumentError.new("#{name}:invalid:#{value}")
+    ArgumentError.new("#{name}:invalid:#{value}")
   end
 
   # - - - - - - - - - - - - - -

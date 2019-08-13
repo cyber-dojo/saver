@@ -25,7 +25,7 @@ class Grouper
   def group_create(manifest)
     id = group_id(manifest)
     unless make?(id)
-      invalid('id', id)
+      fail invalid('id', id)
     end
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     write(id, manifest_filename, json_pretty(manifest))
@@ -104,7 +104,7 @@ class Grouper
     if id.nil?
       manifest['id'] = id = generate_id
     elsif group_exists?(id)
-      invalid('id', id)
+      fail invalid('id', id)
     end
     id
   end
@@ -125,7 +125,7 @@ class Grouper
 
   def assert_group_exists(id)
     unless group_exists?(id)
-      invalid('id', id)
+      fail invalid('id', id)
     end
   end
 
@@ -153,7 +153,7 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    fail ArgumentError.new("#{name}:invalid:#{value}")
+    ArgumentError.new("#{name}:invalid:#{value}")
   end
 
   # - - - - - - - - - - - - - -
