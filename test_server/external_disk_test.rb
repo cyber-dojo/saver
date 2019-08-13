@@ -23,8 +23,9 @@ class ExternalDiskTest < TestBase
   test '436',
   'make succeeds once then fails' do
     name = '/cyber-dojo/groups/FD/F4/36'
-    assert disk.make(name)
-    refute disk.make(name)
+    assert disk.make?(name)
+    refute disk.make?(name)
+    refute disk.make?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,7 +34,7 @@ class ExternalDiskTest < TestBase
   'exists? is true after a successful make' do
     name = '/cyber-dojo/groups/FD/F4/37'
     refute disk.exist?(name)
-    assert disk.make(name)
+    assert disk.make?(name)
     assert disk.exist?(name)
   end
 

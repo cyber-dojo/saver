@@ -24,7 +24,7 @@ class Grouper
 
   def group_create(manifest)
     id = group_id(manifest)
-    unless disk.make(id_path(id))
+    unless disk.make?(id_path(id))
       invalid('id', id)
     end
     manifest['visible_files'] = lined_files(manifest['visible_files'])
@@ -46,7 +46,7 @@ class Grouper
   def group_join(id, indexes)
     assert_group_exists(id)
     index = indexes.detect { |new_index|
-      disk.make(id_path(id,new_index))
+      disk.make?(id_path(id,new_index))
     }
     if index.nil?
       nil

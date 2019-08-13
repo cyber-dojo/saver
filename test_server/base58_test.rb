@@ -41,7 +41,7 @@ class Base58Test < TestBase
     alphabet.each_char do |letter|
       dir = "/tmp/base/#{letter}"
       refute disk.exist?(dir)
-      disk.make(dir)
+      assert disk.make?(dir)
       assert disk.exist?(dir)
       filename = 'readme.txt'
       content = 'hello world'

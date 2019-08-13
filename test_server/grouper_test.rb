@@ -26,7 +26,7 @@ class GrouperTest < TestBase
     def exist?(_)
       false
     end
-    def make(_)
+    def make?(_)
       false
     end
   end

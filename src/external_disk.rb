@@ -8,7 +8,7 @@ class ExternalDisk
     File.directory?(name)
   end
 
-  def make(name)
+  def make?(name)
     # Returns true iff the dir does not already exist
     # and is made. Can't find a Ruby library method
     # that does this, so using shell.
@@ -22,12 +22,12 @@ class ExternalDisk
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(filename, content)
-    make(File.dirname(filename))
+    make?(File.dirname(filename))
     open(filename, 'a') { |fd| fd.write(content) }
   end
 
   def write(filename, content)
-    make(File.dirname(filename))
+    make?(File.dirname(filename))
     open(filename, 'w') { |fd| fd.write(content) }
   end
 

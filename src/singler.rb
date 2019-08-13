@@ -200,7 +200,7 @@ class Singler
   # - - - - - - - - - - - - - -
 
   def make?(id, *parts)
-    @disk.make(id_path(id, *parts))
+    @disk.make?(id_path(id, *parts))
   end
 
   def exist?(id, *parts)
