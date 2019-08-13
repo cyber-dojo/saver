@@ -169,7 +169,7 @@ class Singler
   # - - - - - - - - - - - - - -
 
   def json_plain(o)
-    JSON.generate(o)
+    JSON.fast_generate(o)
   end
 
   def json_pretty(o)
