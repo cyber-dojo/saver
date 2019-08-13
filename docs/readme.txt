@@ -8,7 +8,8 @@ is to...
     def make(name)
     def append(filename, content)
     def write(filename, content)
-    def read(arg)
+    def reads(filenames)
+    def read(filename)
 
 - create a new service called grouper exposing grouper.rb
 - create a new service called katas exposing singler.rb
