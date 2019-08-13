@@ -17,18 +17,18 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
-    disk.exist?(id_path(id))
+    exist?(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def group_create(manifest)
     id = group_id(manifest)
-    unless disk.make?(id_path(id))
+    unless make?(id)
       invalid('id', id)
     end
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    disk.write(id_path(id,manifest_filename), json_pretty(manifest))
+    write(id, manifest_filename, json_pretty(manifest))
     id
   end
 
@@ -36,7 +36,7 @@ class Grouper
 
   def group_manifest(id)
     assert_group_exists(id)
-    manifest = json_parse(disk.read(id_path(id, manifest_filename)))
+    manifest = json_parse(read(id, manifest_filename))
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
   end
@@ -46,7 +46,7 @@ class Grouper
   def group_join(id, indexes)
     assert_group_exists(id)
     index = indexes.detect { |new_index|
-      disk.make?(id_path(id,new_index))
+      make?(id, new_index)
     }
     if index.nil?
       nil
@@ -56,7 +56,7 @@ class Grouper
       manifest['group_id'] = id
       manifest['group_index'] = index
       kata_id = singler.kata_create(manifest)
-      disk.write(id_path(id,index,'kata.id'), kata_id)
+      write(id, index, 'kata.id', kata_id)
       kata_id
     end
   end
@@ -78,7 +78,9 @@ class Grouper
       events = nil
     else
       # TODO: Look into applying BatchMethod to the
-      # singler.kata_events(kata_id) calls.
+      # singler.kata_events(kata_id) calls
+      # and also, to get the events directly from external_disk
+      # rather than from new singler service
       events = {}
       kata_indexes(id).each do |kata_id,index|
         events[kata_id] = {
@@ -111,16 +113,8 @@ class Grouper
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
     end
-    reads = disk.read(filenames)
+    reads = disk.read(filenames) # BatchMethod
     reads.each.with_index(0).select{|kata_id,_| kata_id}
-  end
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'cyber-dojo', 'groups', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   def manifest_filename
@@ -160,6 +154,32 @@ class Grouper
 
   def invalid(name, value)
     fail ArgumentError.new("#{name}:invalid:#{value}")
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def exist?(id, *parts)
+    disk.exist?(id_path(id, *parts))
+  end
+
+  def make?(id, *parts)
+    disk.make?(id_path(id, *parts))
+  end
+
+  def write(id, *parts, content)
+    disk.write(id_path(id, *parts), content)
+  end
+
+  def read(id, *parts)
+    disk.read(id_path(id, *parts))
+  end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'cyber-dojo', 'groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -

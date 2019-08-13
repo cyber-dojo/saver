@@ -100,14 +100,6 @@ class Singler
     end
   end
 
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
-  end
-
   def manifest_filename
     'manifest.json'
   end
@@ -200,23 +192,33 @@ class Singler
   # - - - - - - - - - - - - - -
 
   def make?(id, *parts)
-    @disk.make?(id_path(id, *parts))
+    disk.make?(id_path(id, *parts))
   end
 
   def exist?(id, *parts)
-    @disk.exist?(id_path(id, *parts))
+    disk.exist?(id_path(id, *parts))
   end
 
   def append(id, *parts, content)
-    @disk.append(id_path(id, *parts), content)
+    disk.append(id_path(id, *parts), content)
   end
 
   def write(id, *parts, content)
-    @disk.write(id_path(id, *parts), content)
+    disk.write(id_path(id, *parts), content)
   end
 
   def read(id, *parts)
-    @disk.read(id_path(id, *parts))
+    disk.read(id_path(id, *parts))
   end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
+  end
+
+  attr_reader :disk
 
 end
