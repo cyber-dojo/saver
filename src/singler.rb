@@ -13,7 +13,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
-    @disk.exist?(id_path(id))
+    exist?(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -22,7 +22,7 @@ class Singler
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
     event_write(id, 0, { 'files' => files })
-    @disk.write(id_path(id,manifest_filename), json_pretty(manifest))
+    write(id, manifest_filename, json_pretty(manifest))
     event0 = {
          'event' => 'created',
           'time' => manifest['created']
@@ -35,7 +35,7 @@ class Singler
 
   def kata_manifest(id)
     assert_kata_exists(id)
-    manifest = json_parse(@disk.read(id_path(id,manifest_filename)))
+    manifest = json_parse(read(id, manifest_filename))
     manifest['visible_files'] = kata_event(id, 0)['files']
     manifest
   end
@@ -116,7 +116,7 @@ class Singler
   # events
 
   def events_append(id, event)
-    @disk.append(id_path(id,events_filename), json_plain(event) + "\n")
+    append(id, events_filename, json_plain(event) + "\n")
   end
 
   def events_read(id)
@@ -126,7 +126,7 @@ class Singler
   end
 
   def events_read_lined(id)
-    @disk.read(id_path(id,events_filename))
+    read(id, events_filename)
   end
 
   def event_most_recent(id)
@@ -141,21 +141,21 @@ class Singler
   # event
 
   def event_exists?(id, index)
-    @disk.exist?(id_path(id, index))
+    exist?(id, index)
   end
 
   def event_write(id, index, event)
-    unless @disk.make(id_path(id, index))
+    unless make?(id, index)
       invalid('index', index)
     end
     event['files'] = lined_files(event['files'])
     lined_file(event['stdout'])
     lined_file(event['stderr'])
-    @disk.write(id_path(id, index, event_filename), json_pretty(event))
+    write(id, index, event_filename, json_pretty(event))
   end
 
   def event_read(id, index)
-    event = json_parse(@disk.read(id_path(id, index, event_filename)))
+    event = json_parse(read(id, index, event_filename))
     event['files'] = unlined_files(event['files'])
     unlined_file(event['stdout'])
     unlined_file(event['stderr'])
@@ -195,6 +195,28 @@ class Singler
 
   def invalid(name, value)
     fail ArgumentError.new("#{name}:invalid:#{value}")
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def make?(id, *parts)
+    @disk.make(id_path(id, *parts))
+  end
+
+  def exist?(id, *parts)
+    @disk.exist?(id_path(id, *parts))
+  end
+
+  def append(id, *parts, content)
+    @disk.append(id_path(id, *parts), content)
+  end
+
+  def write(id, *parts, content)
+    @disk.write(id_path(id, *parts), content)
+  end
+
+  def read(id, *parts)
+    @disk.read(id_path(id, *parts))
   end
 
 end
