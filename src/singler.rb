@@ -69,7 +69,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_event(id, index)
-    if index == -1
+    if index === -1
       assert_kata_exists(id)
       index = event_most_recent(id)
     else

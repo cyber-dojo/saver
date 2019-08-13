@@ -16,7 +16,7 @@ class ExternalDisk
     # -p creates intermediate dirs as required.
     # -v verbose mode, output each dir actually made
     stdout,stderr,r = Open3.capture3("mkdir -vp '#{name}'")
-    stdout != '' && stderr == '' && r.exitstatus == 0
+    stdout != '' && stderr === '' && r.exitstatus === 0
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
