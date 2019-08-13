@@ -77,15 +77,20 @@ class Grouper
     if !group_exists?(id)
       events = nil
     else
-      # TODO: Look into applying BatchMethod to the
-      # singler.kata_events(kata_id) calls
-      # and also, to get the events directly from external_disk
-      # rather than via new singler service
+      indexes = kata_indexes(id) # BatchMethod-1
+      filenames = indexes.map do |kata_id,_index|
+        args = ['', 'cyber-dojo', 'katas', kata_id[0..1], kata_id[2..3], kata_id[4..5]]
+        args << 'events.json'
+        File.join(*args)
+      end
+      katas_events = saver.reads(filenames) # BatchMethod-2
       events = {}
-      kata_indexes(id).each do |kata_id,index|
+      indexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
           'index' => index,
-          'events' => singler.kata_events(kata_id)
+          'events' => katas_events[offset].lines.map do |line|
+            JSON.parse!(line)
+          end
         }
       end
     end
@@ -114,7 +119,7 @@ class Grouper
       id_path(id, index, 'kata.id')
     end
     reads = saver.reads(filenames)
-    reads.each.with_index(0).select{|kata_id,_| kata_id}
+    reads.each.with_index(0).select{ |kata_id,_| kata_id }
   end
 
   def manifest_filename
