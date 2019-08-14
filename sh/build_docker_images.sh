@@ -7,3 +7,7 @@ export SHA=$(cd "${ROOT_DIR}" && git rev-parse HEAD)
 docker-compose \
   --file "${ROOT_DIR}/docker-compose.yml" \
   build
+
+readonly IMAGE=cyberdojo/saver
+docker tag ${IMAGE}:latest ${IMAGE}:${SHA:0:7}
+docker run --rm ${IMAGE}:latest sh -c 'echo ${SHA}'
