@@ -436,7 +436,7 @@ class HttpJsonArgsTest < TestBase
 
   test '041',
   'colour does not raise when well-formed' do
-    colours = [ 'red', 'amber', 'green', 'timed_out' ]
+    colours = [ 'red', 'amber', 'green', 'timed_out', 'faulty' ]
     colours.each do |colour|
       json = { colour:colour }.to_json
       assert_equal colour, HttpJsonArgs.new(json).colour
@@ -460,7 +460,7 @@ class HttpJsonArgsTest < TestBase
       true => '!String',
       {} => '!String',
       [] => '!String',
-      'RED' => "!['red'|'amber'|'green'|'timed_out']"
+      'RED' => "!['red'|'amber'|'green'|'timed_out','faulty']"
     }
   end
 

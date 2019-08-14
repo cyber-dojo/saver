@@ -341,8 +341,8 @@ class HttpJsonArgs
     unless arg.is_a?(String)
       malformed(arg_name, '!String')
     end
-    unless ['red','amber','green','timed_out'].include?(arg)
-      malformed(arg_name, "!['red'|'amber'|'green'|'timed_out']")
+    unless ['red','amber','green','timed_out','faulty'].include?(arg)
+      malformed(arg_name, "!['red'|'amber'|'green'|'timed_out','faulty']")
     end
     arg
   end
