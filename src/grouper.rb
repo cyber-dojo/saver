@@ -84,6 +84,10 @@ class Grouper
         File.join(*args)
       end
       katas_events = saver.reads(filenames) # BatchMethod-2
+      # TODO: look into appending all the kata_events[] info
+      # into a single string and then JSON.parsing that.
+      # TODO: look into using a faster json parser...
+      #       eg https://github.com/ohler55/oj
       events = {}
       indexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
@@ -105,6 +109,9 @@ class Grouper
     # The manifest supplies the id only when the porter is porting
     # old storer architecture sessions to the new saver architecture
     # when it tries to maintain closely equivalent ids.
+    # TODO: It would be nice to retire this porter requirement 
+    # since it contains an obvious race condition when you then
+    # go back to the saver with the make?() call.
     id = manifest['id']
     if id.nil?
       manifest['id'] = id = generate_id
