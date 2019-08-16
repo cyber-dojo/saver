@@ -79,22 +79,17 @@ class Grouper
     else
       indexes = kata_indexes(id) # BatchMethod-1
       filenames = indexes.map do |kata_id,_index|
-        args = ['', 'cyber-dojo', 'katas', kata_id[0..1], kata_id[2..3], kata_id[4..5]]
-        args << 'events.json'
+        args = ['', 'cyber-dojo', 'katas']
+        args += [kata_id[0..1], kata_id[2..3], kata_id[4..5]]
+        args += ['events.json']
         File.join(*args)
       end
       katas_events = saver.reads(filenames) # BatchMethod-2
-      # TODO: look into appending all the kata_events[] info
-      # into a single string and then JSON.parsing that.
-      # TODO: look into using a faster json parser...
-      #       eg https://github.com/ohler55/oj
       events = {}
       indexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
           'index' => index,
-          'events' => katas_events[offset].lines.map do |line|
-            JSON.parse!(line)
-          end
+          'events' => group_events_parse(katas_events[offset])
         }
       end
     end
@@ -109,7 +104,7 @@ class Grouper
     # The manifest supplies the id only when the porter is porting
     # old storer architecture sessions to the new saver architecture
     # when it tries to maintain closely equivalent ids.
-    # TODO: It would be nice to retire this porter requirement 
+    # TODO: It would be nice to retire this porter requirement
     # since it contains an obvious race condition when you then
     # go back to the saver with the make?() call.
     id = manifest['id']
@@ -139,6 +134,12 @@ class Grouper
     unless group_exists?(id)
       fail invalid('id', id)
     end
+  end
+
+  def group_events_parse(s)
+    s.lines.map { |line| JSON.parse!(line) }
+    # Alternative implemenation...
+    # JSON.parse!('[' + s.lines.join(',') + ']')
   end
 
   # - - - - - - - - - - - - - -
