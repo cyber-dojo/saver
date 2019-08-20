@@ -137,9 +137,9 @@ class Grouper
   end
 
   def group_events_parse(s)
-    s.lines.map { |line| JSON.parse!(line) }
-    # Alternative implemenation...
-    # JSON.parse!('[' + s.lines.join(',') + ']')
+    JSON.parse!('[' + s.lines.join(',') + ']')
+    # Alternative implemenation which tests show is slower.
+    # s.lines.map { |line| JSON.parse!(line) }
   end
 
   # - - - - - - - - - - - - - -

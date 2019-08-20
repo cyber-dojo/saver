@@ -90,7 +90,7 @@ class Demo
   # - - - - - - - - - - - - - - - - -
 
   def pre(name, &block)
-    result,duration = *timed { block.call }
+    result,duration = timed { block.call }
     [
       "<pre>/#{name}(#{duration}s)</pre>",
       "<pre style='#{style}'>",
