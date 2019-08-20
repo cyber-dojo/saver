@@ -116,7 +116,7 @@ class Demo
   end
 
   def background
-    'background: white;'
+    'background:LightGreen;'
   end
 
   def whitespace
