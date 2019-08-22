@@ -36,7 +36,7 @@ class SinglerTest < TestBase
   test '424',
   'kata_create() ignores a generated id
   when a kata with that id already exists' do
-    real_disk = ExternalDisk.new
+    real_disk = Saver.new
     stub_disk = StubDiskDir.new(real_disk)
     singler = Singler.new(stub_disk)
     manifest = starter.manifest

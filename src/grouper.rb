@@ -198,7 +198,7 @@ class Grouper
   # - - - - - - - - - - - - - -
 
   def saver
-    externals.disk
+    externals.saver
   end
 
   def id_validator

@@ -6,8 +6,8 @@ require 'json'
 
 class Singler
 
-  def initialize(disk)
-    @disk = disk
+  def initialize(saver)
+    @saver = saver
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -81,6 +81,8 @@ class Singler
   end
 
   private
+
+  attr_reader :saver
 
   include Liner
 
@@ -217,10 +219,6 @@ class Singler
     args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
     args += parts.map(&:to_s)
     File.join(*args)
-  end
-
-  def saver
-    @disk
   end
 
 end

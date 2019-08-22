@@ -34,7 +34,7 @@ class GrouperTest < TestBase
   test '42F', %w(
   group_create raises when id's dir cannot be created
   ) do
-    externals.disk = StubDisk.new
+    externals.instance_eval { @saver = StubDisk.new }
     error = assert_raises(ArgumentError) {
       grouper.group_create(starter.manifest)
     }

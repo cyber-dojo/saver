@@ -2,7 +2,7 @@
 
 require 'open3'
 
-class ExternalDisk
+class Saver
 
   def exist?(name)
     File.directory?(name)
