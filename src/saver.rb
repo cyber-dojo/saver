@@ -21,19 +21,27 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def append(filename, content)
-    make?(File.dirname(filename))
-    File.open(filename, 'a') { |fd| fd.write(content) }
-  end
-
   def write(filename, content)
-    make?(File.dirname(filename))
-    File.open(filename, 'w') { |fd| fd.write(content) }
+    if Dir.exist?(File.dirname(filename)) && !File.exist?(filename)
+      File.open(filename, 'w') { |fd| fd.write(content) }
+      true
+    else
+      false
+    end
   end
 
-  def reads(filenames) # read() BatchMethod
-    filenames.map{ |filename| read(filename) }
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def append(filename, content)
+    if Dir.exist?(File.dirname(filename)) && File.exist?(filename)
+      File.open(filename, 'a') { |fd| fd.write(content) }
+      true
+    else
+      false
+    end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(filename)
     if File.file?(filename)
@@ -41,6 +49,12 @@ class Saver
     else
       nil
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def reads(filenames) # read() BatchMethod
+    filenames.map{ |filename| read(filename) }
   end
 
 end

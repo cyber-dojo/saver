@@ -21,20 +21,41 @@ class Singler
   def kata_create(manifest)
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
+    make?(id)
+    make?(id, 0)
     event_write(id, 0, { 'files' => files })
     write(id, manifest_filename, json_pretty(manifest))
     event0 = {
          'event' => 'created',
           'time' => manifest['created']
       }
-    events_append(id, event0)
+    events_write(id, event0) # was events_append(id, event0)
     id
   end
+
+=begin
+  class BatchWriter
+    def initialize(saver)
+      @saver = saver
+    end
+    def event_write(id, index, event)
+      @saver.event_write(id, index, event)
+    end
+    def write(id, *parts, content)
+      @saver.write(id, *parts, content)
+    end
+    def events_append(id, event)
+      @saver.events_append(id, event)
+    end
+    def send
+    end
+  end
+=end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_manifest(id)
-    assert_kata_exists(id)
+    assert_kata_exists(id) # will become exist?(id) in Batch
     manifest = json_parse(read(id, manifest_filename))
     manifest['visible_files'] = kata_event(id, 0)['files']
     manifest
@@ -43,10 +64,11 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
-    assert_kata_exists(id)
     unless index >= 1
       fail invalid('index', index)
     end
+    assert_kata_exists(id) # will become exist?(id) in Batch
+    make?(id, index)
     event_write(id, index, {
       'files' => files,
       'stdout' => stdout,
@@ -62,7 +84,7 @@ class Singler
   def kata_events(id)
     # A cache of colours/time-stamps for all [test] events.
     # Helps optimize dashboard traffic-lights views.
-    assert_kata_exists(id)
+    assert_kata_exists(id) # will become exist?(id) in Batch
     events_read(id)
   end
 
@@ -109,6 +131,10 @@ class Singler
   # - - - - - - - - - - - - - -
   # events
 
+  def events_write(id, event0)
+    write(id, events_filename, json_plain(event0) + "\n")
+  end
+
   def events_append(id, event)
     append(id, events_filename, json_plain(event) + "\n")
   end
@@ -139,9 +165,9 @@ class Singler
   end
 
   def event_write(id, index, event)
-    unless make?(id, index)
-      fail invalid('index', index)
-    end
+    #unless make?(id, index)
+    #  fail invalid('index', index)
+    #end
     event['files'] = lined_files(event['files'])
     lined_file(event['stdout'])
     lined_file(event['stderr'])
