@@ -21,36 +21,19 @@ class Singler
   def kata_create(manifest)
     files = manifest.delete('visible_files')
     id = kata_id(manifest)
-    make?(id)
-    make?(id, 0)
-    event_write(id, 0, { 'files' => files })
-    write(id, manifest_filename, json_pretty(manifest))
     event0 = {
-         'event' => 'created',
-          'time' => manifest['created']
-      }
-    events_write(id, event0) # was events_append(id, event0)
+      'event' => 'created',
+      'time' => manifest['created']
+    }
+    saver.batch([
+      make_cmd(id),
+      make_cmd(id,0),
+      event_write_cmd(id, 0, { 'files' => files }),
+      write_cmd(id, manifest_filename, json_pretty(manifest)),
+      events_write_cmd(id, event0)
+    ])
     id
   end
-
-=begin
-  class BatchWriter
-    def initialize(saver)
-      @saver = saver
-    end
-    def event_write(id, index, event)
-      @saver.event_write(id, index, event)
-    end
-    def write(id, *parts, content)
-      @saver.write(id, *parts, content)
-    end
-    def events_append(id, event)
-      @saver.events_append(id, event)
-    end
-    def send
-    end
-  end
-=end
 
   # - - - - - - - - - - - - - - - - - - -
 
@@ -131,9 +114,13 @@ class Singler
   # - - - - - - - - - - - - - -
   # events
 
-  def events_write(id, event0)
-    write(id, events_filename, json_plain(event0) + "\n")
+  def events_write_cmd(id, event0)
+    ['write',id_path(id, events_filename), json_plain(event0) + "\n"]
   end
+
+  #def events_write(id, event0)
+  #  write(id, events_filename, json_plain(event0) + "\n")
+  #end
 
   def events_append(id, event)
     append(id, events_filename, json_plain(event) + "\n")
@@ -162,6 +149,13 @@ class Singler
 
   def event_exists?(id, index)
     exist?(id, index)
+  end
+
+  def event_write_cmd(id, index, event)
+    event['files'] = lined_files(event['files'])
+    lined_file(event['stdout'])
+    lined_file(event['stderr'])
+    ['write', id_path(id, index, event_filename), json_pretty(event)]
   end
 
   def event_write(id, index, event)
@@ -219,9 +213,15 @@ class Singler
 
   # - - - - - - - - - - - - - -
 
+  def make_cmd(id, *parts)
+    ['make?',id_path(id,*parts)]
+  end
+
   def make?(id, *parts)
     saver.make?(id_path(id, *parts))
   end
+
+  # - - - - - - - - - - - - - -
 
   def exist?(id, *parts)
     saver.exist?(id_path(id, *parts))
@@ -231,9 +231,17 @@ class Singler
     saver.append(id_path(id, *parts), content)
   end
 
+  # - - - - - - - - - - - - - -
+
+  def write_cmd(id, *parts, content)
+    ['write', id_path(id,*parts), content]
+  end
+
   def write(id, *parts, content)
     saver.write(id_path(id, *parts), content)
   end
+
+  # - - - - - - - - - - - - - -
 
   def read(id, *parts)
     saver.read(id_path(id, *parts))

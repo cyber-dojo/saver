@@ -141,4 +141,44 @@ class SaverTest < TestBase
     assert_equal ['be30e5','De02CD'], reads
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch()
+
+  test 'F44',
+  'batch() api starting example' do
+    filename = '/cyber-dojo/groups/e8/9e/23/joke.txt'
+    content = 'why is this cake 50p and all the rest are 25p'
+    commands = [
+      ['make?',File.dirname(filename)],
+      ['write',filename,content],
+      ['read',filename]
+    ]
+    results = saver.batch(commands)
+    assert results[0], 'make?'
+    assert results[1], 'write'
+    assert_equal content, results[2], 'read'
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'F45',
+  'batch() does not run trailing commands when command fails' do
+    filename = '/cyber-dojo/groups/Bc/99/48/punchline.txt'
+    content = 'thats medeira cake'
+    commands = [
+      ['make?',File.dirname(filename)], # true
+      ['make?',File.dirname(filename)], # false
+      ['write',filename,content],       # not processed
+      ['read',filename]                 # not processed
+    ]
+    results = saver.batch(commands)
+    assert_equal [true,false], results
+    assert_nil saver.read(filename)
+  end
+
+  # TODO: batch() exists? append()
+  # TODO: batch() raises for unknown command
+  # TODO: batch() raises for incorrect number of args
+  # TODO: all raise for args not being string - rack-dispatcher
+
 end

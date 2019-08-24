@@ -56,4 +56,26 @@ class Saver
     filenames.map{ |filename| read(filename) }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def batch(commands)
+    results = []
+    commands.each do |command|
+      name,*args = command
+      result = case name
+      #when 'exist?' then exist?(*args)
+      when 'make?'  then make?(*args)
+      when 'write'  then write(*args)
+      #when 'append' then append(*args)
+      when 'read'   then read(*args)
+      #else raise...
+      end
+      results << result
+      unless result
+        break
+      end
+    end
+    results
+  end
+
 end
