@@ -84,7 +84,7 @@ class Grouper
         args += ['events.json']
         File.join(*args)
       end
-      katas_events = saver.reads(filenames) # BatchMethod-2
+      katas_events = saver.batch_read(filenames)
       events = {}
       indexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
@@ -120,7 +120,7 @@ class Grouper
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
     end
-    reads = saver.reads(filenames)
+    reads = saver.batch_read(filenames)
     reads.each.with_index(0).select{ |kata_id,_| kata_id }
   end
 

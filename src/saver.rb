@@ -52,7 +52,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def reads(filenames) # read() BatchMethod
+  def batch_read(filenames)
     filenames.map{ |filename| read(filename) }
   end
 

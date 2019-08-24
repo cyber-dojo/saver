@@ -114,30 +114,30 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # reads()
-   
+  # batch_read()
+
   test '440',
-  'reads() is a read-BatchMethod' do
+  'batch_read() is a read() BatchMethod' do
     dirname = '/cyber-dojo/groups/34/56/78/'
     there_not = dirname + 'there-not.txt'
     there_yes = dirname + 'there-yes.txt'
     saver.make?(dirname)
     saver.write(there_yes, 'content is this')
-    reads = saver.reads([there_not, there_yes])
+    reads = saver.batch_read([there_not, there_yes])
     assert_equal [nil,'content is this'], reads
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '441',
-  'reads() can read across different sub-dirs' do
+  'batch_read() can read across different sub-dirs' do
     filename1 = '/cyber-dojo/groups/C1/bc/1A/1/kata.id'
     saver.make?(File.dirname(filename1))
     saver.write(filename1, 'be30e5')
     filename2 = '/cyber-dojo/groups/C1/bc/1A/14/kata.id'
     saver.make?(File.dirname(filename2))
     saver.write(filename2, 'De02CD')
-    reads = saver.reads([filename1, filename2])
+    reads = saver.batch_read([filename1, filename2])
     assert_equal ['be30e5','De02CD'], reads
   end
 
