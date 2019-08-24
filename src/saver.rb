@@ -12,9 +12,8 @@ class Saver
     # Returns true iff the dir does not already exist
     # and is made. Can't find a Ruby library method
     # that does this, so using shell.
-    # Note: FileUtils.mkdir_p() does not tell.
-    # -p creates intermediate dirs as required.
-    # -v verbose mode, output each dir actually made
+    #   -p creates intermediate dirs as required.
+    #   -v verbose mode, output each dir actually made
     stdout,stderr,r = Open3.capture3("mkdir -vp '#{name}'")
     stdout != '' && stderr === '' && r.exitstatus === 0
   end
@@ -33,7 +32,7 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(filename, content)
-    if Dir.exist?(File.dirname(filename)) && File.exist?(filename)
+    if File.exist?(filename)
       File.open(filename, 'a') { |fd| fd.write(content) }
       true
     else
