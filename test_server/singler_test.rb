@@ -181,6 +181,17 @@ class SinglerTest < TestBase
     }
     assert_equal 'index:invalid:1', error.message
   end
+  
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  test '722',
+  'kata_event raises when id does exist' do
+    id = '753c8C'
+    error = assert_raises(ArgumentError) {
+      kata_event(id, -1)
+    }
+    assert_equal "id:invalid:#{id}", error.message
+  end
 
   # - - - - - - - - - - - - - - - - - - - - -
 

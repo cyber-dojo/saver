@@ -13,7 +13,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
-    exist?(id)
+    saver.exist?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -27,9 +27,9 @@ class Singler
     }
     saver.batch([
       make_cmd(id),
-      make_cmd(id,0),
+      make_cmd(id, 0),
       event_write_cmd(id, 0, { 'files' => files }),
-      write_cmd(id, manifest_filename, json_pretty(manifest)),
+      manifest_write_cmd(id, manifest),
       events_write_cmd(id, event0)
     ])
     id
@@ -38,27 +38,46 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_manifest(id)
-    assert_kata_exists(id) # will become exist?(id) in Batch
-    manifest = json_parse(read(id, manifest_filename))
-    manifest['visible_files'] = kata_event(id, 0)['files']
+    kata_exists,manifest_src,event0_src = *saver.batch([
+      exist_cmd(id),
+      manifest_read_cmd(id),
+      event_read_cmd(id, 0)
+    ])
+    unless kata_exists
+      fail invalid('id', id)
+    end
+    manifest = json_parse(manifest_src)
+    event0 = event_unpack(event0_src)
+    manifest['visible_files'] = event0['files']
     manifest
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
-    unless index >= 1
-      fail invalid('index', index)
-    end
-    assert_kata_exists(id) # will become exist?(id) in Batch
-    make?(id, index)
-    event_write(id, index, {
+    event_n = {
       'files' => files,
       'stdout' => stdout,
       'stderr' => stderr,
       'status' => status
-    })
-    events_append(id, { 'colour' => colour, 'time' => now, 'duration' => duration })
+    }
+    event_summary = {
+      'colour' => colour,
+      'time' => now,
+      'duration' => duration
+    }
+    unless index >= 1
+      fail invalid('index', index)
+    end
+    results = saver.batch([
+      exist_cmd(id),
+      make_cmd(id, index),
+      event_write_cmd(id, index, event_n),
+      events_append_cmd(id, event_summary)
+    ])
+    unless results[0]
+      fail invalid('id', id)
+    end
     nil
   end
 
@@ -67,29 +86,105 @@ class Singler
   def kata_events(id)
     # A cache of colours/time-stamps for all [test] events.
     # Helps optimize dashboard traffic-lights views.
-    assert_kata_exists(id) # will become exist?(id) in Batch
-    events_read(id)
+    kata_exists,events = *saver.batch([
+      exist_cmd(id),
+      events_read_cmd(id)
+    ])
+    unless kata_exists
+      fail invalid('id', id)
+    end
+    events.lines.map { |line|
+      json_parse(line)
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_event(id, index)
     if index === -1
-      assert_kata_exists(id)
-      index = event_most_recent(id)
+      kata_exists,events_src = *saver.batch([
+        exist_cmd(id),
+        events_read_cmd(id)
+      ])
+      unless kata_exists
+        fail invalid('id', id)
+      end
+      index = events_src.count("\n") - 1
+      event_src = saver.batch([
+        event_read_cmd(id, index)
+      ])[0]
     else
-      unless event_exists?(id, index)
+      event_exists,event_src = *saver.batch([
+        exist_cmd(id, index),
+        event_read_cmd(id, index)
+      ])
+      unless event_exists
         fail invalid('index', index)
       end
     end
-    event_read(id, index)
+    event_unpack(event_src)
   end
 
   private
 
   attr_reader :saver
 
+  def exist_cmd(id, *parts)
+    ['exist?',id_path(id,*parts)]
+  end
+
+  def make_cmd(id, *parts)
+    ['make?',id_path(id,*parts)]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def manifest_write_cmd(id, manifest)
+    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+  end
+
+  def manifest_read_cmd(id)
+    ['read', id_path(id, manifest_filename)]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   include Liner
+
+  def event_write_cmd(id, index, event)
+    event['files'] = lined_files(event['files'])
+    lined_file(event['stdout'])
+    lined_file(event['stderr'])
+    ['write', id_path(id, index, event_filename), json_pretty(event)]
+  end
+
+  def event_read_cmd(id, index)
+    ['read', id_path(id, index, event_filename)]
+  end
+
+  def event_unpack(event_src)
+    event = json_parse(event_src)
+    event['files'] = unlined_files(event['files'])
+    unlined_file(event['stdout'])
+    unlined_file(event['stderr'])
+    event
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def events_write_cmd(id, event0)
+    ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
+  end
+
+  def events_append_cmd(id, event)
+    ['append', id_path(id, events_filename), json_plain(event) + "\n"]
+  end
+
+  def events_read_cmd(id)
+    ['read', id_path(id, events_filename)]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def kata_id(manifest)
     id = manifest['id']
@@ -101,79 +196,15 @@ class Singler
     id
   end
 
-  def assert_kata_exists(id)
-    unless kata_exists?(id)
-      fail invalid('id', id)
-    end
-  end
+  # - - - - - - - - - - - - - -
+  # filenames
 
   def manifest_filename
     'manifest.json'
   end
 
-  # - - - - - - - - - - - - - -
-  # events
-
-  def events_write_cmd(id, event0)
-    ['write',id_path(id, events_filename), json_plain(event0) + "\n"]
-  end
-
-  #def events_write(id, event0)
-  #  write(id, events_filename, json_plain(event0) + "\n")
-  #end
-
-  def events_append(id, event)
-    append(id, events_filename, json_plain(event) + "\n")
-  end
-
-  def events_read(id)
-    events_read_lined(id).lines.map{ |line|
-      json_parse(line)
-    }
-  end
-
-  def events_read_lined(id)
-    read(id, events_filename)
-  end
-
-  def event_most_recent(id)
-    events_read_lined(id).count("\n") - 1
-  end
-
   def events_filename
     'events.json'
-  end
-
-  # - - - - - - - - - - - - - -
-  # event
-
-  def event_exists?(id, index)
-    exist?(id, index)
-  end
-
-  def event_write_cmd(id, index, event)
-    event['files'] = lined_files(event['files'])
-    lined_file(event['stdout'])
-    lined_file(event['stderr'])
-    ['write', id_path(id, index, event_filename), json_pretty(event)]
-  end
-
-  def event_write(id, index, event)
-    #unless make?(id, index)
-    #  fail invalid('index', index)
-    #end
-    event['files'] = lined_files(event['files'])
-    lined_file(event['stdout'])
-    lined_file(event['stderr'])
-    write(id, index, event_filename, json_pretty(event))
-  end
-
-  def event_read(id, index)
-    event = json_parse(read(id, index, event_filename))
-    event['files'] = unlined_files(event['files'])
-    unlined_file(event['stdout'])
-    unlined_file(event['stderr'])
-    event
   end
 
   def event_filename
@@ -181,6 +212,7 @@ class Singler
   end
 
   # - - - - - - - - - - - - - -
+  # json
 
   def json_plain(o)
     JSON.fast_generate(o)
@@ -212,40 +244,6 @@ class Singler
   end
 
   # - - - - - - - - - - - - - -
-
-  def make_cmd(id, *parts)
-    ['make?',id_path(id,*parts)]
-  end
-
-  def make?(id, *parts)
-    saver.make?(id_path(id, *parts))
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def exist?(id, *parts)
-    saver.exist?(id_path(id, *parts))
-  end
-
-  def append(id, *parts, content)
-    saver.append(id_path(id, *parts), content)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def write_cmd(id, *parts, content)
-    ['write', id_path(id,*parts), content]
-  end
-
-  def write(id, *parts, content)
-    saver.write(id_path(id, *parts), content)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def read(id, *parts)
-    saver.read(id_path(id, *parts))
-  end
 
   def id_path(id, *parts)
     # Using 2/2/2 split.

@@ -150,13 +150,12 @@ class SaverTest < TestBase
     content = 'why is this cake 50p and all the rest are 25p'
     commands = [
       ['make?',File.dirname(filename)],
-      ['write',filename,content],
-      ['read',filename]
+      ['write',filename,content]
     ]
     results = saver.batch(commands)
     assert results[0], 'make?'
     assert results[1], 'write'
-    assert_equal content, results[2], 'read'
+    assert_equal content, saver.read(filename), 'read'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -168,8 +167,7 @@ class SaverTest < TestBase
     commands = [
       ['make?',File.dirname(filename)], # true
       ['make?',File.dirname(filename)], # false
-      ['write',filename,content],       # not processed
-      ['read',filename]                 # not processed
+      ['write',filename,content]        # not processed
     ]
     results = saver.batch(commands)
     assert_equal [true,false], results
