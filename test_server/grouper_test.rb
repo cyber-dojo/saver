@@ -84,7 +84,7 @@ class GrouperTest < TestBase
   and returns the kata's id
   and the manifest of the joined participant contains
   the group id and the avatar index ) do
-    gid = stub_group_create('E9r17F')
+    gid = group_create(starter.manifest)
     shuffled = indexes
     kid = group_join(gid, shuffled)
     assert kata_exists?(kid)
@@ -99,7 +99,7 @@ class GrouperTest < TestBase
   group_join with a valid id succeeds 64 times
   then its full and it fails with nil
   ) do
-    gid = stub_group_create('z47983')
+    gid = group_create(starter.manifest)
     kids = []
     avatar_indexes = []
     64.times do
@@ -126,7 +126,7 @@ class GrouperTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
-  'group_joined returns null when the id does not exist' do
+  'group_joined returns nil when the id does not exist' do
     assert_nil group_joined('B4aB37')
   end
 

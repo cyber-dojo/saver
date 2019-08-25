@@ -145,7 +145,7 @@ class SaverTest < TestBase
   # batch_until_false()
 
   test 'F44',
-  'batch() api starting example' do
+  'batch_until_false() api starting example' do
     filename = '/cyber-dojo/groups/e8/9e/23/joke.txt'
     content = 'why is this cake 50p and all the rest are 25p'
     commands = [
@@ -161,19 +161,34 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'F45',
-  'batch() does not run trailing commands when command fails' do
+  'batch_until_false() runs commands until one is false' do
     filename = '/cyber-dojo/groups/Bc/99/48/punchline.txt'
     content = 'thats medeira cake'
     commands = [
-      ['make?',File.dirname(filename)], # true
-      ['make?',File.dirname(filename)], # false
-      ['write',filename,content]        # not processed
+      ['make?',  File.dirname(filename)], # true
+      ['exist?', File.dirname(filename)], # true
+      ['make?', File.dirname(filename)],  # false
+      ['write',filename,content]          # not processed
     ]
     results = saver.batch_until_false(commands)
-    assert_equal [true,false], results
+    assert_equal [true,true,false], results
     assert_nil saver.read(filename)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A23',
+  'batch_until_true() runs commands until one is true' do
+    commands = [
+      ['exist?', '/tmp/12/34/45'],
+      ['exist?', '/tmp/12/34/67'],
+      ['make?',  '/tmp/12']
+    ]
+    results = saver.batch_until_true(commands)
+    assert_equal [false,false,true], results
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: batch_until_false() exists? append()
   # TODO: batch_until_false() raises for unknown command
   # TODO: batch_until_false() raises for incorrect number of args

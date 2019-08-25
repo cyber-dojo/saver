@@ -55,13 +55,13 @@ class Grouper
     unless group_exists?(id)
       fail invalid('id', id)
     end
-    index = indexes.detect { |new_index|
-      # Can't batch this because it needs to _stop_ on success
-      saver.make?(id_path(id, new_index))
-    }
-    if index.nil?
+    commands = indexes.map { |new_index| make_cmd(id, new_index) }
+    make_results = saver.batch_until_true(commands)
+    n = make_results.index(true)
+    if n.nil?
       nil
     else
+      index = indexes[n]
       manifest = group_manifest(id)
       manifest.delete('id')
       manifest['group_id'] = id
@@ -88,7 +88,7 @@ class Grouper
     if !group_exists?(id)
       events = nil
     else
-      indexes = kata_indexes(id) # BatchMethod-1
+      indexes = kata_indexes(id)
       filenames = indexes.map do |kata_id,_index|
         args = ['', 'cyber-dojo', 'katas']
         args += [kata_id[0..1], kata_id[2..3], kata_id[4..5]]
@@ -158,7 +158,7 @@ class Grouper
 
   def group_events_parse(s)
     JSON.parse!('[' + s.lines.join(',') + ']')
-    # Alternative implemenation, which tests show is slower.
+    # Alternative implementation, which tests show is slower.
     # s.lines.map { |line| JSON.parse!(line) }
   end
 

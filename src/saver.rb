@@ -56,9 +56,17 @@ class Saver
     filenames.map{ |filename| read(filename) }
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def batch_until_false(commands)
+    batch(commands) { |result| !result }
+  end
+
+  def batch_until_true(commands)
+    batch(commands) { |result| result }
+  end
+
+  private
+
+  def batch(commands, &block)
     results = []
     commands.each do |command|
       name,*args = command
@@ -71,7 +79,7 @@ class Saver
       #else raise...
       end
       results << result
-      unless result
+      if block.call(result)
         break
       end
     end

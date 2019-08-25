@@ -120,7 +120,7 @@ class Singler
       fail invalid('id', id)
     end
     json_parse('[' + events_src.lines.join(',') + ']')
-    # Alternative implemenation, which tests show is slower.
+    # Alternative implementation, which tests show is slower.
     # events_src.lines.map { |line| json_parse(line) }
   end
 
