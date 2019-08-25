@@ -7,20 +7,20 @@ require 'json'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Representation
 #
-# manifest
-#   Stored as two files. The visible_files are extracted and stored as
-#   event-zero files to allow a diff of the first traffic-light.
-#   kata_manifest() has to recombine these two files. In theory the
+# manifest.json
+#   The visible_files are extracted and stored as event-zero files.
+#   This allows a diff of the first traffic-light but means
+#   kata_manifest() has to recombine two files. In theory the
 #   manifest could store only the display_name and exercise_name and
 #   be recreated, on-demand, from the relevant start-point services.
-#   In practice, it creates a bad coupling, and it might not work
-#   anyway, since the start-point services can change over time.
+#   In practice, it doesn't work because the start-point services can
+#   change over time.
 #
-# individual-event
+# event.json (Individual event)
 #   The visible-files are stored in a lined-format so they be easily
 #   inspected on disk. Have to be unlined when read back.
 #
-# events-summary
+# events.json (All events)
 #   A cache of colours/time-stamps for all [test] events.
 #   Helps optimize dashboard traffic-lights views.
 #   Each event is stored as a single "\n" terminated line.
@@ -117,9 +117,9 @@ class Singler
     unless kata_exists
       fail invalid('id', id)
     end
-    events_src.lines.map { |line|
-      json_parse(line)
-    }
+    json_parse('[' + events_src.lines.join(',') + ']')
+    # Alternative implemenation, which tests show is slower.
+    # events_src.lines.map { |line| json_parse(line) }
   end
 
   # - - - - - - - - - - - - - - - - - - -

@@ -138,7 +138,7 @@ class Grouper
 
   def group_events_parse(s)
     JSON.parse!('[' + s.lines.join(',') + ']')
-    # Alternative implemenation which tests show is slower.
+    # Alternative implemenation, which tests show is slower.
     # s.lines.map { |line| JSON.parse!(line) }
   end
 

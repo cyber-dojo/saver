@@ -181,7 +181,7 @@ class SinglerTest < TestBase
     }
     assert_equal 'index:invalid:1', error.message
   end
-  
+
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '722',
