@@ -68,9 +68,18 @@ class TestBase < HexMiniTest
 
   #- - - - - - - - - - - - - - -
 
+  class StubIdGenerator
+    def initialize(id)
+      @id = id
+    end
+    attr_reader :id
+  end
+
   def stub_group_create(stub_id)
     manifest = starter.manifest
-    manifest['id'] = stub_id
+    externals.instance_eval {
+      @group_id_generator = StubIdGenerator.new(stub_id)
+    }
     id = group_create(manifest)
     assert_equal stub_id, id
     id
@@ -84,15 +93,6 @@ class TestBase < HexMiniTest
     id = kata_create(manifest)
     assert_equal stub_id, id
     id
-  end
-
-  class StubIdGenerator
-    def initialize(id)
-      @id = id
-    end
-    def id
-      @id
-    end
   end
 
   #- - - - - - - - - - - - - - -

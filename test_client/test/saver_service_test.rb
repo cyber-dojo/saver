@@ -56,17 +56,6 @@ class SaverServiceTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '591',
-  %w( group_create(manifest) can pass the id inside the manifest ) do
-    manifest = starter.manifest
-    explicit_id = '64DDD3'
-    manifest['id'] = explicit_id
-    id = saver.group_create(manifest)
-    assert_equal explicit_id, id
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test '5F9', %w(
   after group_create() then
   group_exists?() is true ) do

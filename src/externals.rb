@@ -1,6 +1,6 @@
 require_relative 'env'
 require_relative 'grouper'
-require_relative 'id_validator'
+require_relative 'group_id_generator'
 require_relative 'kata_id_generator'
 require_relative 'saver'
 require_relative 'singler'
@@ -32,8 +32,8 @@ class Externals
     @kata_id_generator ||= KataIdGenerator.new(self)
   end
 
-  def id_validator
-    @id_validator ||= IdValidator.new(self)
+  def group_id_generator
+    @group_id_generator ||= GroupIdGenerator.new(self)
   end
 
 end

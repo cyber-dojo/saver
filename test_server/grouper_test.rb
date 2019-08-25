@@ -22,101 +22,25 @@ class GrouperTest < TestBase
   # group_create(manifest) group_manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  class StubDisk
-    def exist?(_)
-      false
-    end
-    def make?(_)
-      false
-    end
-  end
-
   test '42F', %w(
   group_create raises when id's dir cannot be created
   ) do
-    externals.instance_eval { @saver = StubDisk.new }
+    id = grouper.group_create(starter.manifest)
     error = assert_raises(ArgumentError) {
-      grouper.group_create(starter.manifest)
-    }
-    assert error.message.start_with?('id:invalid'), error.message
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '421',
-  'group_create() generates id if one is not supplied' do
-    manifest = starter.manifest
-    refute manifest.key?('id')
-    id = group_create(manifest)
-    assert manifest.key?('id')
-    assert_equal id, manifest['id']
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '42C', %w(
-  kata_create() does NOT raise when the id is provided
-  and contains the letter L (ell, lowercase or uppercase)
-  (this is for backwards compatibility; katas in storer
-  have ids with ells and I want porter to have to only map
-  ids that are not unique in their first 6 characters)
-  ) do
-    ell = 'L'
-
-    manifest = starter.manifest
-    id = '12345' + ell.upcase
-    manifest['id'] = id
-    assert_equal id, group_create(manifest)
-
-    manifest = starter.manifest
-    id = '12345' + ell.downcase
-    manifest['id'] = id
-    assert_equal id, group_create(manifest)
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '422', %w(
-  group_create(manifest) can be passed the id
-  and its used when a group with that id does not already exist ) do
-    explicit_id = 'CE2BD6'
-    manifest = starter.manifest
-    manifest['id'] = explicit_id
-    id = group_create(manifest)
-    assert_equal explicit_id, id
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '423', %w(
-  group_create(manifest) can be passed the id
-  and raises when a saver group with that id already exists ) do
-    explicit_id = 'A01DE8'
-    manifest = starter.manifest
-    manifest['id'] = explicit_id
-    id = group_create(manifest)
-    assert_equal explicit_id, id
-
-    manifest = starter.manifest
-    manifest['id'] = id
-    error = assert_raises(ArgumentError) {
-      group_create(manifest)
+      stub_group_create(id)
     }
     assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '424', %w(
-  group_create(manifest) can be passed the id
-  and uses that id when a storer practice session with that id already exists
-  since it is assumed porter is porting that session
-  ) do
-    storer_id = '5A0F824303'[0..5]
+  test '421',
+  'group_create() generates id' do
     manifest = starter.manifest
-    manifest['id'] = storer_id
+    refute manifest.key?('id')
     id = group_create(manifest)
-    assert_equal id, storer_id
+    assert manifest.key?('id')
+    assert_equal id, manifest['id']
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -134,10 +58,7 @@ class GrouperTest < TestBase
 
   test '42E',
   'group_create() group_manifest() round-trip' do
-    id = '0ADDE7'
-    manifest = starter.manifest
-    manifest['id'] = id
-    group_create(manifest)
+    id = group_create(starter.manifest)
     expected = starter.manifest
     expected['id'] = id
     assert_equal expected, group_manifest(id)

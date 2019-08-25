@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'base58'
 require_relative 'liner'
 require 'json'
 
@@ -17,13 +16,13 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
-    saver.exist?(id_path(id))
+    exist?(id)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def group_create(manifest)
-    id = group_id(manifest)
+    id = manifest['id'] = group_id_generator.id
     unless make?(id)
       fail invalid('id', id)
     end
@@ -100,33 +99,6 @@ class Grouper
 
   include Liner
 
-  def group_id(manifest)
-    # The manifest supplies the id only when the porter is porting
-    # old storer architecture sessions to the new saver architecture
-    # when it tries to maintain closely equivalent ids.
-    # TODO: It would be nice to retire this porter requirement
-    # since it contains an obvious race condition when you then
-    # go back to the saver with the make?() call.
-    id = manifest['id']
-    if id.nil?
-      manifest['id'] = id = generate_id
-    elsif group_exists?(id)
-      fail invalid('id', id)
-    end
-    id
-  end
-
-  def generate_id
-    loop do
-      id = Base58.string(6)
-      if id_validator.valid?(id)
-        return id
-      end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - -
-
   def kata_indexes(id)
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
@@ -201,8 +173,8 @@ class Grouper
     externals.saver
   end
 
-  def id_validator
-    externals.id_validator
+  def group_id_generator
+    externals.group_id_generator
   end
 
   def singler
