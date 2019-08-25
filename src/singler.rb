@@ -80,6 +80,9 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
+    unless index >= 1
+      fail invalid('index', index)
+    end
     event_n = {
       'files' => files,
       'stdout' => stdout,
@@ -91,9 +94,6 @@ class Singler
       'time' => now,
       'duration' => duration
     }
-    unless index >= 1
-      fail invalid('index', index)
-    end
     results = saver.batch([
       exist_cmd(id),
       make_cmd(id, index),
