@@ -1,5 +1,4 @@
 require_relative 'env'
-require_relative 'external_mapper'
 require_relative 'grouper'
 require_relative 'id_validator'
 require_relative 'saver'
@@ -30,10 +29,6 @@ class Externals
 
   def id_validator
     @id_validator ||= IdValidator.new(self)
-  end
-
-  def mapper
-    @ported ||= ExternalMapper.new(self)
   end
 
 end

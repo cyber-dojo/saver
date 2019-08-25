@@ -43,24 +43,8 @@ services:
       - /tmp:uid=19663,gid=65533
     restart: 'no'
     depends_on:
-      - mapper
       - languages # for tests
       - exercises # for tests
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  mapper:
-    user: nobody
-    image: cyberdojo/mapper
-    init: true
-    container_name: test-saver-mapper
-    ports:
-      - 4547:4547
-    read_only: true
-    tmpfs: /tmp
-    restart: 'no'
-    volumes:
-      - ./test_server/porter_data:/porter:ro
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

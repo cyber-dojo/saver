@@ -13,7 +13,6 @@ class ExternalsTest < TestBase
     externals = Externals.new
     assert_equal 'Env',            externals.env.class.name
     assert_equal 'Saver',          externals.saver.class.name
-    assert_equal 'ExternalMapper', externals.mapper.class.name
     assert_equal 'Grouper',        externals.grouper.class.name
     assert_equal 'IdValidator',    externals.id_validator.class.name
   end

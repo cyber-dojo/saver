@@ -6,23 +6,13 @@ class IdValidator
   end
 
   def valid?(id)
-    if grouper.group_exists?(id)
-      false
-    elsif mapper.mapped?(id)
-      false
-    else
-      true
-    end
+    !grouper.group_exists?(id)
   end
 
   private
 
   def grouper
     externals.grouper
-  end
-
-  def mapper
-    externals.mapper
   end
 
   attr_reader :externals

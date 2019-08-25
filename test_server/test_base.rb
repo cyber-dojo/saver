@@ -149,10 +149,6 @@ class TestBase < HexMiniTest
     externals.singler
   end
 
-  def mapper
-    externals.mapper
-  end
-
   def externals
     @externals ||= Externals.new
   end

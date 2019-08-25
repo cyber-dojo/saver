@@ -11,7 +11,7 @@ class Grouper
   end
 
   def ready?
-    mapper.ready?
+    true
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -203,10 +203,6 @@ class Grouper
 
   def id_validator
     externals.id_validator
-  end
-
-  def mapper
-    externals.mapper
   end
 
   def singler
