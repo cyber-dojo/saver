@@ -152,14 +152,6 @@ class Singler
 
   private
 
-  def saver
-    @externals.saver
-  end
-
-  def kata_id_generator
-    @externals.kata_id_generator
-  end
-
   def exist_cmd(id, *parts)
     ['exist?', id_path(id, *parts)]
   end
@@ -262,6 +254,14 @@ class Singler
 
   def invalid(name, value)
     ArgumentError.new("#{name}:invalid:#{value}")
+  end
+
+  def saver
+    @externals.saver
+  end
+
+  def kata_id_generator
+    @externals.kata_id_generator
   end
 
 end
