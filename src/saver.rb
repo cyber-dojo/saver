@@ -58,7 +58,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch(commands)
+  def batch_until_false(commands)
     results = []
     commands.each do |command|
       name,*args = command

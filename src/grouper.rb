@@ -24,7 +24,7 @@ class Grouper
   def group_create(manifest)
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    group_exists,_write_result = saver.batch([
+    group_exists,_write_result = saver.batch_until_false([
       make_cmd(id),
       manifest_write_cmd(id, manifest)
     ])
@@ -37,7 +37,7 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_manifest(id)
-    group_exists,manifest_src = saver.batch([
+    group_exists,manifest_src = saver.batch_until_false([
       exist_cmd(id),
       manifest_read_cmd(id)
     ])
@@ -52,9 +52,12 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_join(id, indexes)
-    assert_group_exists(id)
+    unless group_exists?(id)
+      fail invalid('id', id)
+    end
     index = indexes.detect { |new_index|
-      make?(id, new_index) # TODO: batch this too!!!
+      # Can't batch this because it needs to _stop_ on success
+      saver.make?(id_path(id, new_index))
     }
     if index.nil?
       nil
@@ -64,7 +67,7 @@ class Grouper
       manifest['group_id'] = id
       manifest['group_index'] = index
       kata_id = singler.kata_create(manifest)
-      write(id, index, 'kata.id', kata_id)
+      saver.write(id_path(id, index, 'kata.id'), kata_id)
       kata_id
     end
   end
@@ -116,6 +119,7 @@ class Grouper
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
+
   def manifest_write_cmd(id, manifest)
     ['write', id_path(id, manifest_filename), json_pretty(manifest)]
   end
@@ -125,14 +129,6 @@ class Grouper
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-
-  def make?(id, *parts)
-    saver.make?(id_path(id, *parts))
-  end
-
-  def write(id, *parts, content)
-    saver.write(id_path(id, *parts), content)
-  end
 
   def id_path(id, *parts)
     # Using 2/2/2 split.
@@ -159,12 +155,6 @@ class Grouper
   end
 
   # - - - - - - - - - - - - - -
-
-  def assert_group_exists(id)
-    unless group_exists?(id)
-      fail invalid('id', id)
-    end
-  end
 
   def group_events_parse(s)
     JSON.parse!('[' + s.lines.join(',') + ']')

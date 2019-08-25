@@ -142,7 +142,7 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch()
+  # batch_until_false()
 
   test 'F44',
   'batch() api starting example' do
@@ -152,7 +152,7 @@ class SaverTest < TestBase
       ['make?',File.dirname(filename)],
       ['write',filename,content]
     ]
-    results = saver.batch(commands)
+    results = saver.batch_until_false(commands)
     assert results[0], 'make?'
     assert results[1], 'write'
     assert_equal content, saver.read(filename), 'read'
@@ -169,14 +169,14 @@ class SaverTest < TestBase
       ['make?',File.dirname(filename)], # false
       ['write',filename,content]        # not processed
     ]
-    results = saver.batch(commands)
+    results = saver.batch_until_false(commands)
     assert_equal [true,false], results
     assert_nil saver.read(filename)
   end
 
-  # TODO: batch() exists? append()
-  # TODO: batch() raises for unknown command
-  # TODO: batch() raises for incorrect number of args
+  # TODO: batch_until_false() exists? append()
+  # TODO: batch_until_false() raises for unknown command
+  # TODO: batch_until_false() raises for incorrect number of args
   # TODO: all raise for args not being string - rack-dispatcher
 
 end

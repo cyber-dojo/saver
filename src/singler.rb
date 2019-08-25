@@ -48,7 +48,7 @@ class Singler
       'event' => 'created',
       'time' => manifest['created']
     }
-    saver.batch([
+    saver.batch_until_false([
       make_cmd(id),
       make_cmd(id, 0),
       event_write_cmd(id, 0, { 'files' => files }),
@@ -62,7 +62,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_manifest(id)
-    kata_exists,manifest_src,event0_src = saver.batch([
+    kata_exists,manifest_src,event0_src = saver.batch_until_false([
       exist_cmd(id),
       manifest_read_cmd(id),
       event_read_cmd(id, 0)
@@ -93,7 +93,7 @@ class Singler
       'time' => now,
       'duration' => duration
     }
-    results = saver.batch([
+    results = saver.batch_until_false([
       exist_cmd(id),
       make_cmd(id, index),
       event_write_cmd(id, index, event_n),
@@ -112,7 +112,7 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_events(id)
-    kata_exists,events_src = saver.batch([
+    kata_exists,events_src = saver.batch_until_false([
       exist_cmd(id),
       events_read_cmd(id)
     ])
@@ -128,7 +128,7 @@ class Singler
 
   def kata_event(id, index)
     if index === -1
-      kata_exists,events_src = saver.batch([
+      kata_exists,events_src = saver.batch_until_false([
         exist_cmd(id),
         events_read_cmd(id)
       ])
@@ -139,7 +139,7 @@ class Singler
       cmd,*args = event_read_cmd(id, index)
       event_src = saver.send(cmd, *args)
     else
-      event_exists,event_src = saver.batch([
+      event_exists,event_src = saver.batch_until_false([
         exist_cmd(id, index),
         event_read_cmd(id, index)
       ])
