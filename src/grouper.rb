@@ -17,7 +17,7 @@ class Grouper
   # - - - - - - - - - - - - - - - - - - -
 
   def group_exists?(id)
-    exist?(id)
+    saver.exist?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -116,6 +116,17 @@ class Grouper
     id
   end
 
+  def generate_id
+    loop do
+      id = Base58.string(6)
+      if id_validator.valid?(id)
+        return id
+      end
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
   def kata_indexes(id)
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
@@ -150,17 +161,6 @@ class Grouper
 
   def json_parse(s)
     JSON.parse!(s)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def generate_id
-    loop do
-      id = Base58.string(6)
-      if id_validator.valid?(id)
-        return id
-      end
-    end
   end
 
   # - - - - - - - - - - - - - -

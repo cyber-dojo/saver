@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'base58'
 require_relative 'liner'
 require 'json'
 
@@ -30,8 +29,8 @@ require 'json'
 
 class Singler
 
-  def initialize(saver)
-    @saver = saver
+  def initialize(externals)
+    @externals = externals
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -44,7 +43,7 @@ class Singler
 
   def kata_create(manifest)
     files = manifest.delete('visible_files')
-    id = kata_id(manifest)
+    id = manifest['id'] = kata_id_generator.id
     event0 = {
       'event' => 'created',
       'time' => manifest['created']
@@ -153,7 +152,13 @@ class Singler
 
   private
 
-  attr_reader :saver
+  def saver
+    @externals.saver
+  end
+
+  def kata_id_generator
+    @externals.kata_id_generator
+  end
 
   def exist_cmd(id, *parts)
     ['exist?', id_path(id, *parts)]
@@ -215,14 +220,12 @@ class Singler
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_id(manifest)
-    id = manifest['id']
-    if id.nil?
-      manifest['id'] = id = generate_id
-    elsif kata_exists?(id)
-      fail invalid('id', id)
-    end
-    id
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -
@@ -253,27 +256,6 @@ class Singler
 
   def json_parse(s)
     JSON.parse!(s)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def generate_id
-    loop do
-      id = Base58.string(6)
-      unless kata_exists?(id)
-        return id
-      end
-    end
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -

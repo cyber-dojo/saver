@@ -78,10 +78,21 @@ class TestBase < HexMiniTest
 
   def stub_kata_create(stub_id)
     manifest = starter.manifest
-    manifest['id'] = stub_id
+    externals.instance_eval {
+      @kata_id_generator = StubIdGenerator.new(stub_id)
+    }
     id = kata_create(manifest)
     assert_equal stub_id, id
     id
+  end
+
+  class StubIdGenerator
+    def initialize(id)
+      @id = id
+    end
+    def id
+      @id
+    end
   end
 
   #- - - - - - - - - - - - - - -

@@ -23,101 +23,12 @@ class SinglerTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'kata_create() generates an id if one is not supplied' do
+  'kata_create() generates an id' do
     manifest = starter.manifest
     refute manifest.key?('id')
     id = kata_create(manifest)
     assert manifest.key?('id')
     assert_equal id, manifest['id']
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '424',
-  'kata_create() ignores a generated id
-  when a kata with that id already exists' do
-    real_disk = Saver.new
-    stub_disk = StubDiskDir.new(real_disk)
-    singler = Singler.new(stub_disk)
-    manifest = starter.manifest
-    singler.kata_create(manifest)
-    assert_equal 3, stub_disk.count
-  end
-
-  class StubDiskDir
-    def initialize(disk)
-      @disk = disk
-      @count = 0
-    end
-    attr_reader :count
-    def exist?(name)
-      @count += 1
-      if @count < 3
-        true
-      else
-        @disk.exist?(name)
-      end
-    end
-    def method_missing(m, *args)
-      @disk.send(m, *args)
-    end
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '42C', %w(
-  kata_create() does NOT raise when the id is provided
-  and contains the letter L (ell, lowercase or uppercase)
-  (this is for backward compatibility; katas in storer
-  have ids with ells and I want porter to have to only map
-  ids that are not unique in their first 6 characters)
-  ) do
-    ell = 'L'
-
-    manifest = starter.manifest
-    id = '2ta29' + ell.upcase
-    manifest['id'] = id
-    assert_equal id, kata_create(manifest)
-
-    manifest = starter.manifest
-    id = '2ta29' + ell.downcase
-    manifest['id'] = id
-    # Note that this call to kata_create() will fail
-    # with an exception if the file-system is case
-    # insensitive since it will see the dir as already
-    # existing. Windows and Mac users beware!
-    assert_equal id, kata_create(manifest)
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '422', %w(
-  kata_create(manifest) uses a given id
-  when the id does not already exist ) do
-    explicit_id = 'CE2BD6'
-    manifest = starter.manifest
-    manifest['id'] = explicit_id
-    id = kata_create(manifest)
-    assert_equal explicit_id, id
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '423', %w(
-  kata_create(manifest) raises
-  when it is passed an id that already exists ) do
-    explicit_id = 'A01DE8'
-    manifest = starter.manifest
-    manifest['id'] = explicit_id
-    id = kata_create(manifest)
-    assert_equal explicit_id, id
-
-    manifest = starter.manifest
-    manifest['id'] = id
-    error = assert_raises(ArgumentError) {
-      kata_create(manifest)
-    }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -149,10 +60,7 @@ class SinglerTest < TestBase
 
   test '42E',
   'create/manifest round-trip' do
-    manifest = starter.manifest
-    manifest['id'] = '0ADDE7'
-    id = kata_create(manifest)
-    assert_equal '0ADDE7', id
+    id = kata_create(starter.manifest)
     expected = starter.manifest
     expected['id'] = id
     assert_equal expected, kata_manifest(id)
