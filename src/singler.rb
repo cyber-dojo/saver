@@ -104,6 +104,9 @@ class Singler
     unless results[0]
       fail invalid('id', id)
     end
+    unless results[1]
+      fail invalid('index', index)
+    end
     nil
   end
 

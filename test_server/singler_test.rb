@@ -232,7 +232,6 @@ class SinglerTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   test '826', %w(
   kata_ran_tests raises when index already exists
   and does not add a new event,
@@ -257,7 +256,6 @@ class SinglerTest < TestBase
 
     assert_equal expected_events, kata_events(id)
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - -
 
