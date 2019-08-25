@@ -4,6 +4,30 @@ require_relative 'base58'
 require_relative 'liner'
 require 'json'
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Representation
+#
+# manifest
+#   Stored as two files. The visible_files are extracted and stored as
+#   event-zero files to allow a diff of the first traffic-light.
+#   kata_manifest() has to recombine these two files. In theory the
+#   manifest could store only the display_name and exercise_name and
+#   be recreated, on-demand, from the relevant start-point services.
+#   In practice, it creates a bad coupling, and it might not work
+#   anyway, since the start-point services can change over time.
+#
+# individual-event
+#   The visible-files are stored in a lined-format so they be easily
+#   inspected on disk. Have to be unlined when read back.
+#
+# events-summary
+#   A cache of colours/time-stamps for all [test] events.
+#   Helps optimize dashboard traffic-lights views.
+#   Each event is stored as a single "\n" terminated line.
+#   This is an optimization for kata_ran_tests() which need only
+#   append to the end of the file.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 class Singler
 
   def initialize(saver)
@@ -32,13 +56,14 @@ class Singler
       manifest_write_cmd(id, manifest),
       events_write_cmd(id, event0)
     ])
+    # TODO: check saver.batch() result === [true]*5
     id
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_manifest(id)
-    kata_exists,manifest_src,event0_src = *saver.batch([
+    kata_exists,manifest_src,event0_src = saver.batch([
       exist_cmd(id),
       manifest_read_cmd(id),
       event_read_cmd(id, 0)
@@ -75,6 +100,7 @@ class Singler
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
+    # TODO: check results === [true]*4
     unless results[0]
       fail invalid('id', id)
     end
@@ -84,16 +110,14 @@ class Singler
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_events(id)
-    # A cache of colours/time-stamps for all [test] events.
-    # Helps optimize dashboard traffic-lights views.
-    kata_exists,events = *saver.batch([
+    kata_exists,events_src = saver.batch([
       exist_cmd(id),
       events_read_cmd(id)
     ])
     unless kata_exists
       fail invalid('id', id)
     end
-    events.lines.map { |line|
+    events_src.lines.map { |line|
       json_parse(line)
     }
   end
@@ -102,7 +126,7 @@ class Singler
 
   def kata_event(id, index)
     if index === -1
-      kata_exists,events_src = *saver.batch([
+      kata_exists,events_src = saver.batch([
         exist_cmd(id),
         events_read_cmd(id)
       ])
@@ -110,11 +134,10 @@ class Singler
         fail invalid('id', id)
       end
       index = events_src.count("\n") - 1
-      event_src = saver.batch([
-        event_read_cmd(id, index)
-      ])[0]
+      cmd,*args = event_read_cmd(id, index)
+      event_src = saver.send(cmd, *args)
     else
-      event_exists,event_src = *saver.batch([
+      event_exists,event_src = saver.batch([
         exist_cmd(id, index),
         event_read_cmd(id, index)
       ])
@@ -130,14 +153,15 @@ class Singler
   attr_reader :saver
 
   def exist_cmd(id, *parts)
-    ['exist?',id_path(id,*parts)]
+    ['exist?', id_path(id, *parts)]
   end
 
   def make_cmd(id, *parts)
-    ['make?',id_path(id,*parts)]
+    ['make?', id_path(id, *parts)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+  # manifest
 
   def manifest_write_cmd(id, manifest)
     ['write', id_path(id, manifest_filename), json_pretty(manifest)]
@@ -148,6 +172,7 @@ class Singler
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+  # event
 
   include Liner
 
@@ -171,6 +196,7 @@ class Singler
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+  # events
 
   def events_write_cmd(id, event0)
     ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
@@ -239,18 +265,18 @@ class Singler
 
   # - - - - - - - - - - - - - -
 
-  def invalid(name, value)
-    ArgumentError.new("#{name}:invalid:#{value}")
-  end
-
-  # - - - - - - - - - - - - - -
-
   def id_path(id, *parts)
     # Using 2/2/2 split.
     # See https://github.com/cyber-dojo/id-split-timer
     args = ['', 'cyber-dojo', 'katas', id[0..1], id[2..3], id[4..5]]
     args += parts.map(&:to_s)
     File.join(*args)
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def invalid(name, value)
+    ArgumentError.new("#{name}:invalid:#{value}")
   end
 
 end
