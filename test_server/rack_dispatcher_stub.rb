@@ -1,4 +1,4 @@
-require_relative '../src/grouper'
+require_relative '../src/group'
 require_relative '../src/katas'
 
 class RackDispatcherStub
@@ -14,8 +14,8 @@ class RackDispatcherStub
     end
   end
 
-  def self.define_grouper_stubs(*names)
-    define_stubs(Grouper, *names)
+  def self.define_group_stubs(*names)
+    define_stubs(Group, *names)
   end
 
   def self.define_katas_stubs(*names)
@@ -32,12 +32,12 @@ class RackDispatcherStub
     "hello from #{self.class.name}.sha"
   end
 
-  define_grouper_stubs :group_exists?,
-                       :group_create,
-                       :group_manifest,
-                       :group_join,
-                       :group_joined,
-                       :group_events
+  define_group_stubs :group_exists?,
+                     :group_create,
+                     :group_manifest,
+                     :group_join,
+                     :group_joined,
+                     :group_events
 
   define_katas_stubs :kata_exists?,
                      :kata_create,

@@ -23,18 +23,18 @@ class HttpJsonArgs
 
   def get(path, externals)
     env = externals.env
-    grouper = externals.grouper
+    group = externals.group
     katas = externals.katas
     args = case path
-    when '/ready'          then [grouper, 'ready?']
+    when '/ready'          then [group, 'ready?']
     when '/sha'            then [env, 'sha']
 
-    when '/group_exists'   then [grouper, 'group_exists?', id]
-    when '/group_create'   then [grouper, 'group_create', manifest]
-    when '/group_manifest' then [grouper, 'group_manifest', id]
-    when '/group_join'     then [grouper, 'group_join', id, indexes]
-    when '/group_joined'   then [grouper, 'group_joined', id]
-    when '/group_events'   then [grouper, 'group_events', id]
+    when '/group_exists'   then [group, 'group_exists?', id]
+    when '/group_create'   then [group, 'group_create', manifest]
+    when '/group_manifest' then [group, 'group_manifest', id]
+    when '/group_join'     then [group, 'group_join', id, indexes]
+    when '/group_joined'   then [group, 'group_joined', id]
+    when '/group_events'   then [group, 'group_events', id]
 
     when '/kata_exists'    then [katas, 'kata_exists?', id]
     when '/kata_create'    then [katas, 'kata_create', manifest]

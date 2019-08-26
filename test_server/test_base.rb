@@ -9,33 +9,33 @@ class TestBase < HexMiniTest
   end
 
   def ready?
-    grouper.ready?
+    group.ready?
   end
 
   def group_exists?(id)
-    grouper.group_exists?(id)
+    group.group_exists?(id)
   end
 
   def group_create(manifest)
-    grouper.group_create(manifest)
+    group.group_create(manifest)
   end
 
   def group_manifest(id)
-    grouper.group_manifest(id)
+    group.group_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - -
 
   def group_join(id, indexes)
-    grouper.group_join(id, indexes)
+    group.group_join(id, indexes)
   end
 
   def group_joined(id)
-    grouper.group_joined(id)
+    group.group_joined(id)
   end
 
   def group_events(id)
-    grouper.group_events(id)
+    group.group_events(id)
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -152,8 +152,8 @@ class TestBase < HexMiniTest
 
   private
 
-  def grouper
-    externals.grouper
+  def group
+    externals.group
   end
 
   def katas

@@ -20,7 +20,7 @@ class GroupIdGeneratorTest < TestBase
       assert id.is_a?(String)
       assert_equal 6, id.length
       assert Base58.string?(id)
-      refute grouper.group_exists?(id)
+      refute group.group_exists?(id)
     end
   end
 

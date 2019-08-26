@@ -78,7 +78,7 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # grouper
+  # group
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E5B',
@@ -377,7 +377,7 @@ class RackDispatcherTest < TestBase
     def env
       @stub
     end
-    def grouper
+    def group
       @stub
     end
     def katas

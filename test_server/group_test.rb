@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class GrouperTest < TestBase
+class GroupTest < TestBase
 
   def self.hex_prefix
     '974'
@@ -25,7 +25,7 @@ class GrouperTest < TestBase
   test '42F', %w(
   group_create raises when id's dir cannot be created
   ) do
-    id = grouper.group_create(starter.manifest)
+    id = group_create(starter.manifest)
     error = assert_raises(ArgumentError) {
       stub_group_create(id)
     }

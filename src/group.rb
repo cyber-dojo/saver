@@ -4,7 +4,7 @@ require_relative 'katas'
 require_relative 'liner'
 require 'json'
 
-class Grouper
+class Group
 
   def initialize(externals)
     @externals = externals
