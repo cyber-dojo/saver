@@ -35,13 +35,13 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_exists?(id)
+  def exists?(id)
     saver.exist?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_create(manifest)
+  def create(manifest)
     files = manifest.delete('visible_files')
     id = manifest['id'] = kata_id_generator.id
     event0 = {
@@ -61,7 +61,7 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_manifest(id)
+  def manifest(id)
     kata_exists,manifest_src,event0_src = saver.batch_until_false([
       exist_cmd(id),
       manifest_read_cmd(id),
@@ -78,7 +78,7 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
+  def ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
     unless index >= 1
       fail invalid('index', index)
     end
@@ -111,7 +111,7 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_events(id)
+  def events(id)
     kata_exists,events_src = saver.batch_until_false([
       exist_cmd(id),
       events_read_cmd(id)
@@ -126,7 +126,7 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def kata_event(id, index)
+  def event(id, index)
     if index === -1
       kata_exists,events_src = saver.batch_until_false([
         exist_cmd(id),

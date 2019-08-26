@@ -22,26 +22,26 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - - -
 
   def get(path, externals)
-    env = externals.env
+    saver = externals.saver
     group = externals.group
     kata = externals.kata
     args = case path
-    when '/ready'          then [group, 'ready?']
-    when '/sha'            then [env, 'sha']
+    when '/sha'            then [saver, 'sha']
+    when '/ready'          then [saver, 'ready?']
 
-    when '/group_exists'   then [group, 'group_exists?', id]
-    when '/group_create'   then [group, 'group_create', manifest]
-    when '/group_manifest' then [group, 'group_manifest', id]
-    when '/group_join'     then [group, 'group_join', id, indexes]
-    when '/group_joined'   then [group, 'group_joined', id]
-    when '/group_events'   then [group, 'group_events', id]
+    when '/group_exists'   then [group, 'exists?', id]
+    when '/group_create'   then [group, 'create', manifest]
+    when '/group_manifest' then [group, 'manifest', id]
+    when '/group_join'     then [group, 'join', id, indexes]
+    when '/group_joined'   then [group, 'joined', id]
+    when '/group_events'   then [group, 'events', id]
 
-    when '/kata_exists'    then [kata, 'kata_exists?', id]
-    when '/kata_create'    then [kata, 'kata_create', manifest]
-    when '/kata_manifest'  then [kata, 'kata_manifest', id]
-    when '/kata_ran_tests' then [kata, 'kata_ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
-    when '/kata_events'    then [kata, 'kata_events', id]
-    when '/kata_event'     then [kata, 'kata_event', id, index]
+    when '/kata_exists'    then [kata, 'exists?', id]
+    when '/kata_create'    then [kata, 'create', manifest]
+    when '/kata_manifest'  then [kata, 'manifest', id]
+    when '/kata_ran_tests' then [kata, 'ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
+    when '/kata_events'    then [kata, 'events', id]
+    when '/kata_event'     then [kata, 'event', id, index]
     else
       fail HttpJson::RequestError, 'unknown path'
     end

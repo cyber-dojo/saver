@@ -9,7 +9,7 @@ class KataIdGenerator
   def id
     loop do
       id = Base58.string(6)
-      unless kata.kata_exists?(id)
+      unless kata.exists?(id)
         return id
       end
     end

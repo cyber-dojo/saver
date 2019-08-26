@@ -4,6 +4,16 @@ require 'open3'
 
 class Saver
 
+  def sha
+    ENV['SHA']    
+  end
+
+  def ready?
+    true
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def exist?(name)
     File.directory?(name)
   end

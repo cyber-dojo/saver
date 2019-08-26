@@ -1,4 +1,3 @@
-require_relative 'env'
 require_relative 'group'
 require_relative 'group_id_generator'
 require_relative 'kata'
@@ -30,10 +29,6 @@ class Externals
 
   def http
     @http ||= Net::HTTP
-  end
-
-  def env
-    @sha ||= Env.new
   end
 
 end

@@ -10,19 +10,15 @@ class Group
     @externals = externals
   end
 
-  def ready?
-    true
-  end
-
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_exists?(id)
+  def exists?(id)
     saver.exist?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_create(manifest)
+  def create(manifest)
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     group_exists,_write_result = saver.batch_until_false([
@@ -37,7 +33,7 @@ class Group
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_manifest(id)
+  def manifest(id)
     group_exists,manifest_src = saver.batch_until_false([
       exist_cmd(id),
       manifest_read_cmd(id)
@@ -52,8 +48,8 @@ class Group
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_join(id, indexes)
-    unless group_exists?(id)
+  def join(id, indexes)
+    unless exists?(id)
       fail invalid('id', id)
     end
     commands = indexes.map { |new_index| make_cmd(id, new_index) }
@@ -63,11 +59,11 @@ class Group
       nil
     else
       index = indexes[n]
-      manifest = group_manifest(id)
+      manifest = self.manifest(id)
       manifest.delete('id')
       manifest['group_id'] = id
       manifest['group_index'] = index
-      kata_id = kata.kata_create(manifest)
+      kata_id = kata.create(manifest)
       saver.write(id_path(id, index, 'kata.id'), kata_id)
       kata_id
     end
@@ -75,8 +71,8 @@ class Group
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_joined(id)
-    if !group_exists?(id)
+  def joined(id)
+    if !exists?(id)
       nil
     else
       kata_indexes(id).map{ |kata_id,_| kata_id }
@@ -85,8 +81,8 @@ class Group
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def group_events(id)
-    if !group_exists?(id)
+  def events(id)
+    if !exists?(id)
       events = nil
     else
       indexes = kata_indexes(id)

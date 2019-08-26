@@ -8,64 +8,6 @@ class TestBase < HexMiniTest
     super(arg)
   end
 
-  def ready?
-    group.ready?
-  end
-
-  def group_exists?(id)
-    group.group_exists?(id)
-  end
-
-  def group_create(manifest)
-    group.group_create(manifest)
-  end
-
-  def group_manifest(id)
-    group.group_manifest(id)
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def group_join(id, indexes)
-    group.group_join(id, indexes)
-  end
-
-  def group_joined(id)
-    group.group_joined(id)
-  end
-
-  def group_events(id)
-    group.group_events(id)
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def kata_exists?(id)
-    kata.kata_exists?(id)
-  end
-
-  def kata_create(manifest)
-    kata.kata_create(manifest)
-  end
-
-  def kata_manifest(id)
-    kata.kata_manifest(id)
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
-    kata.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
-  end
-
-  def kata_events(id)
-    kata.kata_events(id)
-  end
-
-  def kata_event(id, n)
-    kata.kata_event(id, n)
-  end
-
   #- - - - - - - - - - - - - - -
 
   class StubIdGenerator
@@ -80,7 +22,7 @@ class TestBase < HexMiniTest
     externals.instance_eval {
       @group_id_generator = StubIdGenerator.new(stub_id)
     }
-    id = group_create(manifest)
+    id = group.create(manifest)
     assert_equal stub_id, id
     id
   end
@@ -90,7 +32,7 @@ class TestBase < HexMiniTest
     externals.instance_eval {
       @kata_id_generator = StubIdGenerator.new(stub_id)
     }
-    id = kata_create(manifest)
+    id = kata.create(manifest)
     assert_equal stub_id, id
     id
   end

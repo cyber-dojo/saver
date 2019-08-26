@@ -9,7 +9,7 @@ class GroupIdGenerator
   def id
     loop do
       id = Base58.string(6)
-      unless group.group_exists?(id)
+      unless group.exists?(id)
         return id
       end
     end
