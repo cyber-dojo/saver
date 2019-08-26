@@ -27,7 +27,7 @@ require 'json'
 #   append to the end of the file.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-class Katas
+class Kata
 
   def initialize(externals)
     @externals = externals

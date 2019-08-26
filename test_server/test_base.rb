@@ -41,29 +41,29 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
-    katas.kata_exists?(id)
+    kata.kata_exists?(id)
   end
 
   def kata_create(manifest)
-    katas.kata_create(manifest)
+    kata.kata_create(manifest)
   end
 
   def kata_manifest(id)
-    katas.kata_manifest(id)
+    kata.kata_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
-    katas.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
+    kata.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
   end
 
   def kata_events(id)
-    katas.kata_events(id)
+    kata.kata_events(id)
   end
 
   def kata_event(id, n)
-    katas.kata_event(id, n)
+    kata.kata_event(id, n)
   end
 
   #- - - - - - - - - - - - - - -
@@ -156,8 +156,8 @@ class TestBase < HexMiniTest
     externals.group
   end
 
-  def katas
-    externals.katas
+  def kata
+    externals.kata
   end
 
   def externals

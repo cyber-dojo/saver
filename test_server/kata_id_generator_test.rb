@@ -20,7 +20,7 @@ class KataIdGeneratorTest < TestBase
       assert id.is_a?(String)
       assert_equal 6, id.length
       assert Base58.string?(id)
-      refute katas.kata_exists?(id)
+      refute kata.kata_exists?(id)
     end
   end
 

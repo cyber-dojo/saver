@@ -1,5 +1,5 @@
 require_relative '../src/group'
-require_relative '../src/katas'
+require_relative '../src/kata'
 
 class RackDispatcherStub
 
@@ -18,8 +18,8 @@ class RackDispatcherStub
     define_stubs(Group, *names)
   end
 
-  def self.define_katas_stubs(*names)
-    define_stubs(Katas, *names)
+  def self.define_kata_stubs(*names)
+    define_stubs(Kata, *names)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -39,10 +39,10 @@ class RackDispatcherStub
                      :group_joined,
                      :group_events
 
-  define_katas_stubs :kata_exists?,
-                     :kata_create,
-                     :kata_manifest,
-                     :kata_ran_tests,
-                     :kata_events,
-                     :kata_event
+  define_kata_stubs :kata_exists?,
+                    :kata_create,
+                    :kata_manifest,
+                    :kata_ran_tests,
+                    :kata_events,
+                    :kata_event
 end

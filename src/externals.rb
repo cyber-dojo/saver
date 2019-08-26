@@ -1,7 +1,7 @@
 require_relative 'env'
 require_relative 'group'
 require_relative 'group_id_generator'
-require_relative 'katas'
+require_relative 'kata'
 require_relative 'kata_id_generator'
 require_relative 'saver'
 require 'net/http'
@@ -20,8 +20,8 @@ class Externals
     @group_id_generator ||= GroupIdGenerator.new(self)
   end
 
-  def katas
-    @katas ||= Katas.new(self)
+  def kata
+    @kata ||= Kata.new(self)
   end
 
   def kata_id_generator

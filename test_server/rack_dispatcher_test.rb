@@ -156,7 +156,7 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # katas
+  # kata
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A5B',
@@ -380,7 +380,7 @@ class RackDispatcherTest < TestBase
     def group
       @stub
     end
-    def katas
+    def kata
       @stub
     end
   end

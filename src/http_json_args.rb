@@ -24,7 +24,7 @@ class HttpJsonArgs
   def get(path, externals)
     env = externals.env
     group = externals.group
-    katas = externals.katas
+    kata = externals.kata
     args = case path
     when '/ready'          then [group, 'ready?']
     when '/sha'            then [env, 'sha']
@@ -36,12 +36,12 @@ class HttpJsonArgs
     when '/group_joined'   then [group, 'group_joined', id]
     when '/group_events'   then [group, 'group_events', id]
 
-    when '/kata_exists'    then [katas, 'kata_exists?', id]
-    when '/kata_create'    then [katas, 'kata_create', manifest]
-    when '/kata_manifest'  then [katas, 'kata_manifest', id]
-    when '/kata_ran_tests' then [katas, 'kata_ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
-    when '/kata_events'    then [katas, 'kata_events', id]
-    when '/kata_event'     then [katas, 'kata_event', id, index]
+    when '/kata_exists'    then [kata, 'kata_exists?', id]
+    when '/kata_create'    then [kata, 'kata_create', manifest]
+    when '/kata_manifest'  then [kata, 'kata_manifest', id]
+    when '/kata_ran_tests' then [kata, 'kata_ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
+    when '/kata_events'    then [kata, 'kata_events', id]
+    when '/kata_event'     then [kata, 'kata_event', id, index]
     else
       fail HttpJson::RequestError, 'unknown path'
     end

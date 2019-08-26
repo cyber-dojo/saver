@@ -9,7 +9,7 @@ class KataIdGenerator
   def id
     loop do
       id = Base58.string(6)
-      unless katas.kata_exists?(id)
+      unless kata.kata_exists?(id)
         return id
       end
     end
@@ -17,8 +17,8 @@ class KataIdGenerator
 
   private
 
-  def katas
-    @externals.katas
+  def kata
+    @externals.kata
   end
 
 end
