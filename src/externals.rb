@@ -1,9 +1,9 @@
 require_relative 'env'
 require_relative 'grouper'
 require_relative 'group_id_generator'
+require_relative 'katas'
 require_relative 'kata_id_generator'
 require_relative 'saver'
-require_relative 'singler'
 require 'net/http'
 
 class Externals
@@ -16,8 +16,8 @@ class Externals
     @grouper ||= Grouper.new(self)
   end
 
-  def singler
-    @singler ||= Singler.new(self)
+  def katas
+    @katas ||= Katas.new(self)
   end
 
   def http

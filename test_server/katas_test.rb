@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class SinglerTest < TestBase
+class KatasTest < TestBase
 
   def self.hex_prefix
     '975'
@@ -170,7 +170,7 @@ class SinglerTest < TestBase
   test '827', %w(
   kata_ran_tests does NOT raise when index-1 does not exist
   and the reason for this is partly speed
-  and partly robustness against temporary singler failure ) do
+  and partly robustness against temporary katas failure ) do
     id = stub_kata_create('710145')
     kata_ran_tests(*make_ran_test_args(id, 1, edited_files))
     # ran_tests(*make_ran_test_args(id, 2, ...)) assume failed

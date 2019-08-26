@@ -1,5 +1,5 @@
 require_relative '../src/grouper'
-require_relative '../src/singler'
+require_relative '../src/katas'
 
 class RackDispatcherStub
 
@@ -18,8 +18,8 @@ class RackDispatcherStub
     define_stubs(Grouper, *names)
   end
 
-  def self.define_singler_stubs(*names)
-    define_stubs(Singler, *names)
+  def self.define_katas_stubs(*names)
+    define_stubs(Katas, *names)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -39,10 +39,10 @@ class RackDispatcherStub
                        :group_joined,
                        :group_events
 
-  define_singler_stubs :kata_exists?,
-                       :kata_create,
-                       :kata_manifest,
-                       :kata_ran_tests,
-                       :kata_events,
-                       :kata_event
+  define_katas_stubs :kata_exists?,
+                     :kata_create,
+                     :kata_manifest,
+                     :kata_ran_tests,
+                     :kata_events,
+                     :kata_event
 end

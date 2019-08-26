@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'katas'
 require_relative 'liner'
 require 'json'
 
@@ -66,7 +67,7 @@ class Grouper
       manifest.delete('id')
       manifest['group_id'] = id
       manifest['group_index'] = index
-      kata_id = singler.kata_create(manifest)
+      kata_id = katas.kata_create(manifest)
       saver.write(id_path(id, index, 'kata.id'), kata_id)
       kata_id
     end
@@ -188,8 +189,8 @@ class Grouper
     @externals.group_id_generator
   end
 
-  def singler
-    @externals.singler
+  def katas
+    @externals.katas
   end
 
 end

@@ -41,29 +41,29 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - -
 
   def kata_exists?(id)
-    singler.kata_exists?(id)
+    katas.kata_exists?(id)
   end
 
   def kata_create(manifest)
-    singler.kata_create(manifest)
+    katas.kata_create(manifest)
   end
 
   def kata_manifest(id)
-    singler.kata_manifest(id)
+    katas.kata_manifest(id)
   end
 
   # - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
-    singler.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
+    katas.kata_ran_tests(id, n, files, now, duration, stdout, stderr, status, colour)
   end
 
   def kata_events(id)
-    singler.kata_events(id)
+    katas.kata_events(id)
   end
 
   def kata_event(id, n)
-    singler.kata_event(id, n)
+    katas.kata_event(id, n)
   end
 
   #- - - - - - - - - - - - - - -
@@ -156,8 +156,8 @@ class TestBase < HexMiniTest
     externals.grouper
   end
 
-  def singler
-    externals.singler
+  def katas
+    externals.katas
   end
 
   def externals
@@ -165,7 +165,7 @@ class TestBase < HexMiniTest
   end
 
   def starter
-    Starter.new(externals) # only needed in tests
+    Starter.new(externals)
   end
 
 end

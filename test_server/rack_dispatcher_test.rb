@@ -156,7 +156,7 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # singler
+  # katas
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A5B',
@@ -380,7 +380,7 @@ class RackDispatcherTest < TestBase
     def grouper
       @stub
     end
-    def singler
+    def katas
       @stub
     end
   end
