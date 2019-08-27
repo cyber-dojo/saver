@@ -68,7 +68,7 @@ class SaverTest < TestBase
   # append()
 
   test '841',
-  'append() does nothing and returns false when its file does not already exists' do
+  'append() does nothing and returns false when its dir does not already exists' do
     filename = 'groups/96/18/59/readme.md'
     content = 'greetings'
     refute saver.append(filename, content)

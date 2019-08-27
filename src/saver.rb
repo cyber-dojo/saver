@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'open3'
+require 'fileutils'
 
 class Saver
 
@@ -21,34 +21,30 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
-    path = path_name(key)
-    if make_dir?(dir_name(key)) || !File.exist?(path)
-      File.open(path, 'w') { |fd| fd.write(value) }
-      true
-    else
-      false
-    end
+    dirname = File.dirname(path_name(key))
+    FileUtils.mkdir_p(dirname)
+    mode = File::WRONLY | File::CREAT | File::EXCL
+    File.open(path_name(key), mode) { |fd| fd.write(value) }
+    true
+  rescue Errno::EEXIST
+    false
   end
 
   def append(key, value)
-    path = path_name(key)
-    if File.exist?(path)
-      File.open(path, 'a') { |fd| fd.write(value) }
-      true
-    else
-      false
-    end
+    mode = File::WRONLY | File::APPEND
+    File.open(path_name(key), mode) { |fd| fd.write(value) }
+    true
+  rescue Errno::ENOENT
+    false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
-    path = path_name(key)
-    if File.file?(path)
-      File.open(path, 'r') { |fd| fd.read }
-    else
-      nil
-    end
+    mode = File::RDONLY
+    File.open(path_name(key), mode) { |fd| fd.read }
+  rescue Errno::ENOENT
+    nil
   end
 
   def batch_read(keys)
@@ -90,23 +86,6 @@ class Saver
 
   def path_name(key)
     File.join('', 'cyber-dojo', key)
-  end
-
-  def dir_name(key)
-    File.dirname(path_name(key))
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def make_dir?(path)
-    # Returns true iff path does not already exist
-    # and is made. Can't find a Ruby library method
-    # that does this, so using shell.
-    #   -p creates intermediate dirs as required.
-    #   -v verbose mode, output each dir actually made
-    command = "mkdir -vp '#{path}'"
-    stdout,stderr,r = Open3.capture3(command)
-    stdout != '' && stderr === '' && r.exitstatus === 0
   end
 
 end
