@@ -56,7 +56,7 @@ class RackDispatcherTest < TestBase
   # 200
 
   test 'E40',
-  'dispatch to ready' do
+  'dispatches to ready' do
     saver_stub('ready?')
     assert_saver_dispatch('ready', {}.to_json,
       'hello from stubbed saver.ready?'
@@ -66,7 +66,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E41',
-  'dispatch to sha' do
+  'dispatches to sha' do
     saver_stub('sha')
     assert_saver_dispatch('sha', {}.to_json,
       'hello from stubbed saver.sha'
@@ -76,7 +76,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E42',
-  'dispatch to exists?' do
+  'dispatches to exists?' do
     saver_stub('exists?')
     assert_saver_dispatch('exists',
       { key: well_formed_key }.to_json,
@@ -87,7 +87,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E43',
-  'dispatch to make?' do
+  'dispatches to make?' do
     saver_stub('make?')
     assert_saver_dispatch('make',
       { key: well_formed_key }.to_json,
@@ -98,7 +98,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E44',
-  'dispatch to write' do
+  'dispatches to write' do
     saver_stub('write')
     assert_saver_dispatch('write',
       { key: well_formed_key, value: well_formed_value }.to_json,
@@ -109,7 +109,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E45',
-  'dispatch to append' do
+  'dispatches to append' do
     saver_stub('append')
     assert_saver_dispatch('append',
       { key: well_formed_key, value: well_formed_value }.to_json,
@@ -120,7 +120,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E46',
-  'dispatch to read' do
+  'dispatches to read' do
     saver_stub('read')
     assert_saver_dispatch('read',
       { key: well_formed_key }.to_json,
@@ -128,8 +128,39 @@ class RackDispatcherTest < TestBase
     )
   end
 
-  # ...
-  
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E47',
+  'dispatches to batch_read' do
+    saver_stub('batch_read')
+    assert_saver_dispatch('batch_read',
+      { keys: well_formed_keys }.to_json,
+      'hello from stubbed saver.batch_read'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E48',
+  'dispatches to batch_until_false' do
+    saver_stub('batch_until_false')
+    assert_saver_dispatch('batch_until_false',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch_until_false'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E49',
+  'dispatches to batch_until_true' do
+    saver_stub('batch_until_true')
+    assert_saver_dispatch('batch_until_true',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch_until_true'
+    )
+  end
+
   #====================================================
   # group
   #====================================================
@@ -334,11 +365,26 @@ class RackDispatcherTest < TestBase
   # - - - - - - -
 
   def well_formed_key
-    '/cyber-dojo/katas/12/34/56' # String
+    '/cyber-dojo/katas/12/34/56/event.json' # String
   end
 
   def well_formed_value
     { "a" => 23, "b" => [1,2,3] }.to_json # String
+  end
+
+  def well_formed_keys
+    [
+      '/cyber-dojo/katas/12/34/45/manifest.json',
+      '/cyber-dojo/katas/34/56/78/manifest.json'
+    ]
+  end
+
+  def well_formed_commands
+    [
+      [ 'make?',   '/cyber-dojo/katas/12/34/45'],
+      [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
+      [ 'exists?', '/cyber-dojo/katas/12/34/45/manifest.json' ]
+    ]
   end
 
   # - - - - - - -

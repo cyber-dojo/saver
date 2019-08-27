@@ -33,10 +33,9 @@ class HttpJsonArgs
     when '/write'             then [saver, 'write', key, value]
     when '/append'            then [saver, 'append', key, value]
     when '/read'              then [saver, 'read', key]
-    #when '/batch_read'        then [saver, 'batch_read', keys]
-    #when '/batch_until_false' then [saver, 'batch_until_false', commands]
-    #when '/batch_until_true'  then [saver, 'batch_until_true',  commands]
-
+    when '/batch_read'        then [saver, 'batch_read', keys]
+    when '/batch_until_false' then [saver, 'batch_until_false', commands]
+    when '/batch_until_true'  then [saver, 'batch_until_true',  commands]
 
     when '/group_exists'   then [group, 'exists?', id]
     when '/group_create'   then [group, 'create', manifest]
@@ -71,12 +70,43 @@ class HttpJsonArgs
     well_formed_str('value')
   end
 
+  def keys
+    well_formed_keys
+  end
+
+  def commands
+    well_formed_commands
+  end
+
+  # - - - - - - - - - - - - - - -
+
   def well_formed_str(name)
     arg = @args[name]
     unless arg.is_a?(String)
-      malformed(name, "!String (#{args.class.name})")
+      malformed(name, "!String (#{arg.class.name})")
     end
     arg
+  end
+
+  def well_formed_keys
+    name = 'keys'
+    args = @args[name]
+    unless args.is_a?(Array)
+      malformed(name, "!Array (#{args.class.name})")
+    end
+    args.each do |arg|
+      unless arg.is_a?(String)
+        malformed(name, "!String (#{arg.class.name})")
+      end
+    end
+    args
+  end
+
+  def well_formed_commands
+    name = 'commands'
+    args = @args[name]
+    # TODO
+    args
   end
 
   # - - - - - - - - - - - - - - -
