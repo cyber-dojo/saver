@@ -39,8 +39,6 @@ class Saver
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def append(key, value)
     if File.exist?(key)
       File.open(key, 'a') { |fd| fd.write(value) }
@@ -60,11 +58,11 @@ class Saver
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def batch_read(keys)
     keys.map{ |key| read(key) }
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch_until_false(commands)
     batch(commands) { |result| !result }
