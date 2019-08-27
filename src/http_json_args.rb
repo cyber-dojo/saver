@@ -25,7 +25,6 @@ class HttpJsonArgs
     when '/sha'               then ['sha']
     when '/ready'             then ['ready?']
     when '/exists'            then ['exists?', key]
-    when '/make'              then ['make?', key]
     when '/write'             then ['write', key, value]
     when '/append'            then ['append', key, value]
     when '/read'              then ['read', key]

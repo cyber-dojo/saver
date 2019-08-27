@@ -96,10 +96,6 @@ class Saver
     File.dirname(path_name(key))
   end
 
-  def file_name(key)
-    File.basename(path_name(key))
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def make_dir?(path)

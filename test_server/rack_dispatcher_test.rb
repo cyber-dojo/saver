@@ -86,17 +86,6 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E43',
-  'dispatches to make?' do
-    saver_stub('make?')
-    assert_saver_dispatch('make',
-      { key: well_formed_key }.to_json,
-      'hello from stubbed saver.make?'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'E44',
   'dispatches to write' do
     saver_stub('write')
