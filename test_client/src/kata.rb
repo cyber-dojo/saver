@@ -109,11 +109,8 @@ class Kata
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    kata_exists,events_src = saver.batch_until_false([
-      exists_cmd(id),
-      events_read_cmd(id)
-    ])
-    unless kata_exists
+    events_src = saver.send(*events_read_cmd(id))
+    if events_src.nil?
       fail invalid('id', id)
     end
     json_parse('[' + events_src.lines.join(',') + ']')
@@ -125,22 +122,15 @@ class Kata
 
   def event(id, index)
     if index === -1
-      kata_exists,events_src = saver.batch_until_false([
-        exists_cmd(id),
-        events_read_cmd(id)
-      ])
-      unless kata_exists
+      events_src = saver.send(*events_read_cmd(id))
+      if events_src.nil?
         fail invalid('id', id)
       end
       index = events_src.count("\n") - 1
-      cmd,*args = event_read_cmd(id, index)
-      event_src = saver.send(cmd, *args)
+      event_src = saver.send(*event_read_cmd(id, index))
     else
-      event_exists,event_src = saver.batch_until_false([
-        exists_cmd(id, index),
-        event_read_cmd(id, index)
-      ])
-      unless event_exists
+      event_src = saver.send(*event_read_cmd(id, index))
+      if event_src.nil?
         fail invalid('index', index)
       end
     end
