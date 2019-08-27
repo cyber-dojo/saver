@@ -6,8 +6,8 @@ require 'json'
 
 class RackDispatcher
 
-  def initialize(externals, request_class)
-    @externals = externals
+  def initialize(saver, request_class)
+    @saver = saver
     @request_class = request_class
   end
 
@@ -16,8 +16,7 @@ class RackDispatcher
     path = request.path_info
     body = request.body.read
     name, args = HttpJsonArgs.new(body).get(path)
-    saver = @externals.saver
-    result = saver.public_send(name, *args)
+    result = @saver.public_send(name, *args)
     json_response(200, { name => result })
   rescue HttpJson::RequestError => error
     json_response(400, diagnostic(path, body, error))
