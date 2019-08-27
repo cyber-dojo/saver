@@ -8,12 +8,44 @@ class SaverService
 
   # - - - - - - - - - - - -
 
+  def sha
+    http.get
+  end
+
   def ready?
     http.get
   end
 
-  def sha
-    http.get
+  def exists?(key)
+    http.get(key)
+  end
+
+  def make?(key)
+    http.get(key)
+  end
+
+  def write(key, value)
+    http.post(key, value)
+  end
+
+  def append(key, value)
+    http.post(key, value)
+  end
+
+  def read(key)
+    http.get(key)
+  end
+
+  def batch_read(keys)
+    http.get(keys)
+  end
+
+  def batch_until_false(commands)
+    http.post(commands)
+  end
+
+  def batch_until_true(commands)
+    http.post(commands)
   end
 
   # - - - - - - - - - - - -
