@@ -60,12 +60,11 @@ class Kata
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    kata_exists,manifest_src,event0_src = saver.batch_until_false([
-      exists_cmd(id),
-      manifest_read_cmd(id),
-      event_read_cmd(id, 0)
+    manifest_src,event0_src = saver.batch_read([
+      id_path(id, manifest_filename),
+      id_path(id, 0, event_filename)
     ])
-    unless kata_exists
+    if [manifest_src,event0_src].include?(nil)
       fail invalid('id', id)
     end
     manifest = json_parse(manifest_src)
@@ -127,12 +126,10 @@ class Kata
         fail invalid('id', id)
       end
       index = events_src.count("\n") - 1
-      event_src = saver.send(*event_read_cmd(id, index))
-    else
-      event_src = saver.send(*event_read_cmd(id, index))
-      if event_src.nil?
-        fail invalid('index', index)
-      end
+    end
+    event_src = saver.send(*event_read_cmd(id, index))
+    if event_src.nil?
+      fail invalid('index', index)
     end
     event_unpack(event_src)
   end

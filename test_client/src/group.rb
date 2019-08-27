@@ -21,9 +21,7 @@ class Group
   def create(manifest)
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    key = id_path(id, manifest_filename)
-    value = json_pretty(manifest)
-    unless saver.write(key, value)
+    unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)
     end
     id
@@ -32,8 +30,7 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    key = id_path(id, manifest_filename)
-    manifest_src = saver.read(key)
+    manifest_src = saver.send(*manifest_read_cmd(id))
     unless manifest_src
       fail invalid('id', id)
     end
@@ -104,8 +101,12 @@ class Group
 
   private
 
-  def exists_cmd(id, *parts)
-    ['exists?', id_path(id, *parts)]
+  def manifest_write_cmd(id, manifest)
+    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+  end
+
+  def manifest_read_cmd(id)
+    ['read', id_path(id, manifest_filename)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

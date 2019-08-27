@@ -159,6 +159,8 @@ class SaverServiceTest < TestBase
     assert_equal [false,false,true], results
   end
 
+end
+
 =begin
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # group
@@ -334,9 +336,6 @@ class SaverServiceTest < TestBase
     colour = 'amber'
     saver.kata_ran_tests(id, 1, files, now, duration, stdout, stderr, status, colour)
   end
-=end
-
-  private
 
   def event0
     {
@@ -351,4 +350,4 @@ class SaverServiceTest < TestBase
     }
   end
 
-end
+=end
