@@ -4,9 +4,7 @@
 # cyberdojo/saver docker image
 
 - A docker-containerized micro-service for [cyber-dojo](http://cyber-dojo.org).
-- Creates group and individual practice sessions.
-- Stores the files, [stdout, stderr, status], and traffic-light of every test event.
-- Stores data in a dir volume-mounted to /cyber-dojo
+- Stores (key,value) data in a volume-mounted dir.
 
 - - - -
 API:
@@ -17,34 +15,20 @@ API:
     * If the method raises an exception, a key equals "exception".
 
 #
-- [GET ready?()](#get-ready)
 - [GET sha()](#get-sha)
+- [GET ready?()](#get-ready)
 #
-- [GET group_exists?(id)](#get-group_existsid)
-- [POST group_create(manifest)](#post-group_createmanifest)
-- [GET group_manifest(id)](#get-group_manifestid)
-- [POST group_join(id,indexes)](#post-group_joinidindexes)
-- [GET group_joined(id)](#get-group_joinedid)
-- [GET group_events(id)](#get-group_eventsid)
+- [GET exists?(key)](#get-existskey)
+- [POST make?(key)](#post-makekey)
 #
-- [GET kata_exists?(id)](#get-kata_existsid)
-- [POST kata_create(manifest)](#post-kata_createmanifest)
-- [GET kata_manifest(id)](#get-kata_manifestid)
-- [POST kata_ran_tests(id,index,files,now,stdout,stderr,status,colour)](#post-kata_ran_testsidindexfilesnowstdoutstderrstatuscolour)
-- [GET kata_events(id)](#get-kata_eventsid)
-- [GET kata_event(id,index)](#get-kata_eventidindex)
-
-- - - -
-## GET ready?()
-- parameters, none
-```json
-  {}
-```
-- returns true if the service is ready, otherwise false, eg
-```json
-  { "ready?": true }
-  { "ready?": false }
-```
+- [POST write(key,value)](#post-writekeyvalue)
+- [POST append(key,value)](#post-appendkeyvalue)
+#
+- [GET read(key)](#get-readkey)
+- [GET read_batch(keys)](#get-read_batchkeys)
+#
+- [POST batch_until_false(commands)](#post-batch_until_falsecommands)
+- [POST batch_until_true(commands)](#post-batch_until_truecommands)
 
 - - - -
 ## GET sha()
@@ -56,6 +40,18 @@ Returns the git commit sha used to create the docker image.
 - returns the sha, eg
 ```json
   { "sha": "8210a96a964d462aa396464814d9e82cad99badd" }
+```
+
+- - - -
+## GET ready?()
+- parameters, none
+```json
+  {}
+```
+- returns true if the service is ready, otherwise false, eg
+```json
+  { "ready?": true }
+  { "ready?": false }
 ```
 
 - - - -

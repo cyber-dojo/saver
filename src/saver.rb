@@ -15,7 +15,7 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def exists?(key)
-    File.directory?(key)
+    Dir.exist?(path_name(key))
   end
 
   def make?(key)
@@ -24,15 +24,17 @@ class Saver
     # that does this, so using shell.
     #   -p creates intermediate dirs as required.
     #   -v verbose mode, output each dir actually made
-    stdout,stderr,r = Open3.capture3("mkdir -vp '#{key}'")
+    command = "mkdir -vp '#{path_name(key)}'"
+    stdout,stderr,r = Open3.capture3(command)
     stdout != '' && stderr === '' && r.exitstatus === 0
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
-    if Dir.exist?(File.dirname(key)) && !File.exist?(key)
-      File.open(key, 'w') { |fd| fd.write(value) }
+    path = path_name(key)
+    if Dir.exist?(dir_name(key)) && !File.exist?(path)
+      File.open(path, 'w') { |fd| fd.write(value) }
       true
     else
       false
@@ -40,8 +42,9 @@ class Saver
   end
 
   def append(key, value)
-    if File.exist?(key)
-      File.open(key, 'a') { |fd| fd.write(value) }
+    path = path_name(key)
+    if File.exist?(path)
+      File.open(path, 'a') { |fd| fd.write(value) }
       true
     else
       false
@@ -51,15 +54,16 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
-    if File.file?(key)
-      File.open(key, 'r') { |fd| fd.read }
+    path = path_name(key)
+    if File.file?(path)
+      File.open(path, 'r') { |fd| fd.read }
     else
       nil
     end
   end
 
   def batch_read(keys)
-    keys.map{ |key| read(key) }
+    keys.map { |key| read(key) }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,6 +96,20 @@ class Saver
       end
     end
     results
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def path_name(key)
+    File.join('', 'cyber-dojo', key)
+  end
+
+  def dir_name(key)
+    File.dirname(path_name(key))
+  end
+
+  def file_name(key)
+    File.basename(path_name(key))
   end
 
 end

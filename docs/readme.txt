@@ -4,18 +4,19 @@ is to...
 
 - split off saver so it contains just the services of external_disk,
   namely
-    def exist?(name)
+    def exists?(name)
     def make(name)
-    def append(filename, content)
     def write(filename, content)
-    def reads(filenames)
+    def append(filename, content)
     def read(filename)
+    def read_batch(filenames)
 
-- create a new service called grouper exposing grouper.rb
-- create a new service called katas exposing singler.rb
+- use fast JSON eg Oj
 
-- drop unneeded functionality
-  eg when returning json in the http body
-  check it return what was read directly.
-  Avoid reading the file, json parsing it, then
-  doing json.fast_generate() to get a string for the http body
+- think about simplifying make?(key)
+  it currently checks the dir does not exist
+  would it be better if not tied to disk storage as implementation?
+  The major make?(key) functionality is in group.join()
+  which does this...
+   commands = indexes.map { |new_index| make_cmd(id, new_index) }
+   make_results = saver.batch_until_true(commands)

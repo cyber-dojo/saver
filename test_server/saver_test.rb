@@ -33,14 +33,9 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # exists? make?
 
-  test '435',
-  'exists? can already be true' do
-    assert saver.exists?('/tmp')
-  end
-
   test '436',
   'make? succeeds once then fails' do
-    name = '/cyber-dojo/groups/FD/F4/36'
+    name = 'groups/FD/F4/36'
     assert saver.make?(name)
     refute saver.make?(name)
     refute saver.make?(name)
@@ -48,7 +43,7 @@ class SaverTest < TestBase
 
   test '437',
   'exists? is true after make? is true' do
-    name = '/cyber-dojo/groups/FD/F4/37'
+    name = 'groups/FD/F4/37'
     refute saver.exists?(name)
     assert saver.make?(name)
     assert saver.exists?(name)
@@ -59,7 +54,7 @@ class SaverTest < TestBase
 
   test '640',
   'write() does nothing and returns false when its dir does not already exist' do
-    filename = '/cyber-dojo/groups/5e/94/Aa/readme.md'
+    filename = 'groups/5e/94/Aa/readme.md'
     content = 'bonjour'
     refute saver.write(filename, content)
     assert_nil saver.read(filename)
@@ -67,7 +62,7 @@ class SaverTest < TestBase
 
   test '641',
   'write() succeeds when its dir exists but its filename does not' do
-    filename = '/cyber-dojo/groups/73/Ff/69/readme.md'
+    filename = 'groups/73/Ff/69/readme.md'
     content = 'greetings'
     assert saver.make?(File.dirname(filename))
     assert saver.write(filename, content)
@@ -76,7 +71,7 @@ class SaverTest < TestBase
 
   test '642',
   'write() does nothing and returns false when its filename already exists' do
-    filename = '/cyber-dojo/groups/1A/23/Cc/readme.md'
+    filename = 'groups/1A/23/Cc/readme.md'
     content = 'welcome'
     assert saver.make?(File.dirname(filename))
     assert saver.write(filename, content)
@@ -89,7 +84,7 @@ class SaverTest < TestBase
 
   test '840',
   'append() does nothing and returns false when its dir does not already exist' do
-    filename = '/cyber-dojo/groups/4c/12/B2/readme.md'
+    filename = 'groups/4c/12/B2/readme.md'
     content = 'bonjour'
     refute saver.append(filename, content)
     assert_nil saver.read(filename)
@@ -97,7 +92,7 @@ class SaverTest < TestBase
 
   test '841',
   'append() does nothing and returns false when its file does not already exists' do
-    filename = '/cyber-dojo/groups/96/18/59/readme.md'
+    filename = 'groups/96/18/59/readme.md'
     content = 'greetings'
     assert saver.make?(File.dirname(filename))
     refute saver.append(filename, content)
@@ -106,7 +101,7 @@ class SaverTest < TestBase
 
   test '842',
   'append() appends to the end when its file already exists' do
-    filename = '/cyber-dojo/groups/69/1b/2B/readme.md'
+    filename = 'groups/69/1b/2B/readme.md'
     content = 'helloooo'
     assert saver.make?(File.dirname(filename))
     assert saver.write(filename, content)
@@ -119,16 +114,16 @@ class SaverTest < TestBase
 
   test '438',
   'read() reads back what write() writes' do
-    filename = '/cyber-dojo/groups/FD/F4/38/limerick.txt'
+    filename = 'groups/FD/F4/38/limerick.txt'
     content = 'the boy stood on the burning deck'
-    saver.make?(File.dirname(filename))
-    saver.write(filename, content)
+    assert saver.make?(File.dirname(filename))
+    assert saver.write(filename, content)
     assert_equal content, saver.read(filename)
   end
 
   test '439',
   'read() a non-existant file is nil' do
-    filename = '/cyber-dojo/groups/12/23/34/not-there.txt'
+    filename = 'groups/12/23/34/not-there.txt'
     assert_nil saver.read(filename)
   end
 
@@ -137,11 +132,11 @@ class SaverTest < TestBase
 
   test '440',
   'batch_read() is a read() BatchMethod' do
-    dirname = '/cyber-dojo/groups/34/56/78/'
+    dirname = 'groups/34/56/78/'
     there_not = dirname + 'there-not.txt'
     there_yes = dirname + 'there-yes.txt'
-    saver.make?(dirname)
-    saver.write(there_yes, 'content is this')
+    assert saver.make?(dirname)
+    assert saver.write(there_yes, 'content is this')
     reads = saver.batch_read([there_not, there_yes])
     assert_equal [nil,'content is this'], reads
   end
@@ -150,12 +145,12 @@ class SaverTest < TestBase
 
   test '441',
   'batch_read() can read across different sub-dirs' do
-    filename1 = '/cyber-dojo/groups/C1/bc/1A/1/kata.id'
-    saver.make?(File.dirname(filename1))
-    saver.write(filename1, 'be30e5')
-    filename2 = '/cyber-dojo/groups/C1/bc/1A/14/kata.id'
-    saver.make?(File.dirname(filename2))
-    saver.write(filename2, 'De02CD')
+    filename1 = 'groups/C1/bc/1A/1/kata.id'
+    assert saver.make?(File.dirname(filename1))
+    assert saver.write(filename1, 'be30e5')
+    filename2 = 'groups/C1/bc/1A/14/kata.id'
+    assert saver.make?(File.dirname(filename2))
+    assert saver.write(filename2, 'De02CD')
     reads = saver.batch_read([filename1, filename2])
     assert_equal ['be30e5','De02CD'], reads
   end
@@ -165,7 +160,7 @@ class SaverTest < TestBase
 
   test 'F45',
   'batch_until_false() runs commands until one is false' do
-    filename = '/cyber-dojo/groups/Bc/99/48/punchline.txt'
+    filename = 'groups/Bc/99/48/punchline.txt'
     content = 'thats medeira cake'
     commands = [
       ['make?',  File.dirname(filename)],  # true
@@ -184,10 +179,10 @@ class SaverTest < TestBase
   test 'A23',
   'batch_until_true() runs commands until one is true' do
     commands = [
-      ['exists?', '/tmp/12/34/45'], # false
-      ['exists?', '/tmp/12/34/67'], # false
-      ['make?',  '/tmp/12'],        # true
-      ['make?',  '/tmp/23']         # not processed
+      ['exists?', 'groups/12/34/45'], # false
+      ['exists?', 'groups/12/34/67'], # false
+      ['make?',   'groups/12/34'],    # true
+      ['make?',   'groups/23']        # not processed
     ]
     results = saver.batch_until_true(commands)
     assert_equal [false,false,true], results
