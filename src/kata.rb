@@ -36,7 +36,7 @@ class Kata
   # - - - - - - - - - - - - - - - - - - -
 
   def exists?(id)
-    saver.exist?(id_path(id))
+    saver.exists?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -63,7 +63,7 @@ class Kata
 
   def manifest(id)
     kata_exists,manifest_src,event0_src = saver.batch_until_false([
-      exist_cmd(id),
+      exists_cmd(id),
       manifest_read_cmd(id),
       event_read_cmd(id, 0)
     ])
@@ -94,7 +94,7 @@ class Kata
       'duration' => duration
     }
     results = saver.batch_until_false([
-      exist_cmd(id),
+      exists_cmd(id),
       make_cmd(id, index),
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
@@ -113,7 +113,7 @@ class Kata
 
   def events(id)
     kata_exists,events_src = saver.batch_until_false([
-      exist_cmd(id),
+      exists_cmd(id),
       events_read_cmd(id)
     ])
     unless kata_exists
@@ -129,7 +129,7 @@ class Kata
   def event(id, index)
     if index === -1
       kata_exists,events_src = saver.batch_until_false([
-        exist_cmd(id),
+        exists_cmd(id),
         events_read_cmd(id)
       ])
       unless kata_exists
@@ -140,7 +140,7 @@ class Kata
       event_src = saver.send(cmd, *args)
     else
       event_exists,event_src = saver.batch_until_false([
-        exist_cmd(id, index),
+        exists_cmd(id, index),
         event_read_cmd(id, index)
       ])
       unless event_exists
@@ -152,8 +152,8 @@ class Kata
 
   private
 
-  def exist_cmd(id, *parts)
-    ['exist?', id_path(id, *parts)]
+  def exists_cmd(id, *parts)
+    ['exists?', id_path(id, *parts)]
   end
 
   def make_cmd(id, *parts)

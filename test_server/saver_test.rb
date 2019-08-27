@@ -14,7 +14,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # sha
 
-  test '190', %w( sha of image's git commit ) do
+  test '190', %w( sha is sha of image's git commit ) do
     sha = saver.sha
     assert_equal 40, sha.size
     sha.each_char do |ch|
@@ -26,16 +26,16 @@ class SaverTest < TestBase
   # ready
 
   test '602',
-  %w( ready? ) do
+  %w( ready? is always true ) do
     assert saver.ready?
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exist? make?
+  # exists? make?
 
   test '435',
-  'exist? can already be true' do
-    assert saver.exist?('/tmp')
+  'exists? can already be true' do
+    assert saver.exists?('/tmp')
   end
 
   test '436',
@@ -49,9 +49,9 @@ class SaverTest < TestBase
   test '437',
   'exists? is true after make? is true' do
     name = '/cyber-dojo/groups/FD/F4/37'
-    refute saver.exist?(name)
+    refute saver.exists?(name)
     assert saver.make?(name)
-    assert saver.exist?(name)
+    assert saver.exists?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -163,31 +163,15 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # batch_until_false()
 
-  test 'F44',
-  'batch_until_false() api starting example' do
-    filename = '/cyber-dojo/groups/e8/9e/23/joke.txt'
-    content = 'why is this cake 50p and all the rest are 25p'
-    commands = [
-      ['make?',File.dirname(filename)],
-      ['write',filename,content]
-    ]
-    results = saver.batch_until_false(commands)
-    assert results[0], 'make?'
-    assert results[1], 'write'
-    assert_equal content, saver.read(filename), 'read'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'F45',
   'batch_until_false() runs commands until one is false' do
     filename = '/cyber-dojo/groups/Bc/99/48/punchline.txt'
     content = 'thats medeira cake'
     commands = [
-      ['make?',  File.dirname(filename)], # true
-      ['exist?', File.dirname(filename)], # true
-      ['make?', File.dirname(filename)],  # false
-      ['write',filename,content]          # not processed
+      ['make?',  File.dirname(filename)],  # true
+      ['exists?', File.dirname(filename)], # true
+      ['make?', File.dirname(filename)],   # false
+      ['write',filename,content]           # not processed
     ]
     results = saver.batch_until_false(commands)
     assert_equal [true,true,false], results
@@ -195,20 +179,22 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch_until_true()
 
   test 'A23',
   'batch_until_true() runs commands until one is true' do
     commands = [
-      ['exist?', '/tmp/12/34/45'],
-      ['exist?', '/tmp/12/34/67'],
-      ['make?',  '/tmp/12']
+      ['exists?', '/tmp/12/34/45'], # false
+      ['exists?', '/tmp/12/34/67'], # false
+      ['make?',  '/tmp/12'],        # true
+      ['make?',  '/tmp/23']         # not processed
     ]
     results = saver.batch_until_true(commands)
     assert_equal [false,false,true], results
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: batch_until_false() exists? append()
+  # TODO: batch_until_false() append()
   # TODO: batch_until_false() raises for unknown command
   # TODO: batch_until_false() raises for incorrect number of args
   # TODO: all raise for args not being string - rack-dispatcher

@@ -31,7 +31,7 @@ class Base58Test < TestBase
   every letter of the alphabet can be used as part of a dir name
   which contains files that can be written to and read from
   ) do
-    disk = Saver.new
+    saver = Saver.new
     diagnostic = 'forward slash is the dir separator'
     refute alphabet.include?('/'), diagnostic
     diagnostic = 'dot is a dir navigator'
@@ -40,15 +40,15 @@ class Base58Test < TestBase
     refute alphabet.include?("'"), diagnostic
     alphabet.each_char do |letter|
       dir = "/tmp/base/#{letter}"
-      refute disk.exist?(dir)
-      assert disk.make?(dir)
-      assert disk.exist?(dir)
+      refute saver.exists?(dir)
+      assert saver.make?(dir)
+      assert saver.exists?(dir)
       filename = 'readme.txt'
       content = 'hello world'
-      disk.write(dir+'/'+filename, content)
-      assert_equal content, disk.read(dir+'/'+filename)
-      disk.append(dir+'/'+filename, content.reverse)
-      assert_equal content+content.reverse, disk.read(dir+'/'+filename)
+      saver.write(dir+'/'+filename, content)
+      assert_equal content, saver.read(dir+'/'+filename)
+      saver.append(dir+'/'+filename, content.reverse)
+      assert_equal content+content.reverse, saver.read(dir+'/'+filename)
     end
   end
 

@@ -77,6 +77,21 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # exist?
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+=begin
+  test 'E42',
+  'dispatch to exist' do
+    saver_stub('exists?')
+    assert_saver_dispatch('exists',
+      { id: well_formed_id }.to_json,
+      'hello from stubbed saver.exists?'
+    )
+  end
+=end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # group
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

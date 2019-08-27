@@ -14,7 +14,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def exist?(key)
+  def exists?(key)
     File.directory?(key)
   end
 
@@ -81,11 +81,11 @@ class Saver
     commands.each do |command|
       name,*args = command
       result = case name
-      when 'exist?' then exist?(*args)
-      when 'make?'  then make?(*args)
-      when 'write'  then write(*args)
-      when 'append' then append(*args)
-      when 'read'   then read(*args)
+      when 'exists?' then exists?(*args)
+      when 'make?'   then make?(*args)
+      when 'write'   then write(*args)
+      when 'append'  then append(*args)
+      when 'read'    then read(*args)
       #else raise...
       end
       results << result

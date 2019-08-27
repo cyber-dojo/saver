@@ -13,7 +13,7 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def exists?(id)
-    saver.exist?(id_path(id))
+    saver.exists?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -35,7 +35,7 @@ class Group
 
   def manifest(id)
     group_exists,manifest_src = saver.batch_until_false([
-      exist_cmd(id),
+      exists_cmd(id),
       manifest_read_cmd(id)
     ])
     unless group_exists
@@ -110,8 +110,8 @@ class Group
     ['make?', id_path(id, *parts)]
   end
 
-  def exist_cmd(id, *parts)
-    ['exist?', id_path(id, *parts)]
+  def exists_cmd(id, *parts)
+    ['exists?', id_path(id, *parts)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

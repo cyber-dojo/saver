@@ -26,8 +26,8 @@ class HttpJsonArgs
     group = externals.group
     kata = externals.kata
     args = case path
-    when '/sha'            then [saver, 'sha']
-    when '/ready'          then [saver, 'ready?']
+    when '/sha'               then [saver, 'sha']
+    when '/ready'             then [saver, 'ready?']
     #when '/exist?'            then [saver, 'exist?']
     #when '/make?'             then [saver, 'make?']
     #when '/write'             then [saver, 'write', key, value]
