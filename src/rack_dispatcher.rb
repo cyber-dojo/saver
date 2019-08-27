@@ -15,8 +15,9 @@ class RackDispatcher
     request = @request_class.new(env)
     path = request.path_info
     body = request.body.read
-    target, name, args = HttpJsonArgs.new(body).get(path, @externals)
-    result = target.public_send(name, *args)
+    name, args = HttpJsonArgs.new(body).get(path)
+    saver = @externals.saver
+    result = saver.public_send(name, *args)
     json_response(200, { name => result })
   rescue HttpJson::RequestError => error
     json_response(400, diagnostic(path, body, error))
