@@ -28,11 +28,11 @@ class HttpJsonArgs
     args = case path
     when '/sha'               then [saver, 'sha']
     when '/ready'             then [saver, 'ready?']
-    #when '/exist?'            then [saver, 'exist?']
-    #when '/make?'             then [saver, 'make?']
-    #when '/write'             then [saver, 'write', key, value]
-    #when '/append'            then [saver, 'append', key, value]
-    #when '/read'              then [saver, 'read', key]
+    when '/exists'            then [saver, 'exists?', key]
+    when '/make'              then [saver, 'make?', key]
+    when '/write'             then [saver, 'write', key, value]
+    when '/append'            then [saver, 'append', key, value]
+    when '/read'              then [saver, 'read', key]
     #when '/batch_read'        then [saver, 'batch_read', keys]
     #when '/batch_until_false' then [saver, 'batch_until_false', commands]
     #when '/batch_until_true'  then [saver, 'batch_until_true',  commands]
@@ -62,6 +62,24 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - - -
 
   attr_reader :args
+
+  def key
+    well_formed_str('key')
+  end
+
+  def value
+    well_formed_str('value')
+  end
+
+  def well_formed_str(name)
+    arg = @args[name]
+    unless arg.is_a?(String)
+      malformed(name, "!String (#{args.class.name})")
+    end
+    arg
+  end
+
+  # - - - - - - - - - - - - - - -
 
   def manifest
     arg = @args['manifest']

@@ -8,7 +8,10 @@ class RackDispatcherTest < TestBase
     'FF0'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #====================================================
+  # saver
+  #====================================================
+  # 500
 
   test 'F1A',
   'dispatch returns 500 status when implementation raises' do
@@ -29,6 +32,7 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 400
 
   test 'E2A',
   'dispatch raises 400 when method name is unknown' do
@@ -49,51 +53,86 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready?
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 200
 
   test 'E40',
   'dispatch to ready' do
-    def saver.ready?
-      'hello from stubbed saver.ready?'
-    end
+    saver_stub('ready?')
     assert_saver_dispatch('ready', {}.to_json,
       'hello from stubbed saver.ready?'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # sha
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E41',
   'dispatch to sha' do
-    def saver.sha
-      'hello from stubbed saver.sha'
-    end
+    saver_stub('sha')
     assert_saver_dispatch('sha', {}.to_json,
       'hello from stubbed saver.sha'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exist?
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   test 'E42',
-  'dispatch to exist' do
+  'dispatch to exists?' do
     saver_stub('exists?')
     assert_saver_dispatch('exists',
-      { id: well_formed_id }.to_json,
+      { key: well_formed_key }.to_json,
       'hello from stubbed saver.exists?'
     )
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group
+
+  test 'E43',
+  'dispatch to make?' do
+    saver_stub('make?')
+    assert_saver_dispatch('make',
+      { key: well_formed_key }.to_json,
+      'hello from stubbed saver.make?'
+    )
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E44',
+  'dispatch to write' do
+    saver_stub('write')
+    assert_saver_dispatch('write',
+      { key: well_formed_key, value: well_formed_value }.to_json,
+      'hello from stubbed saver.write'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E45',
+  'dispatch to append' do
+    saver_stub('append')
+    assert_saver_dispatch('append',
+      { key: well_formed_key, value: well_formed_value }.to_json,
+      'hello from stubbed saver.append'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E46',
+  'dispatch to read' do
+    saver_stub('read')
+    assert_saver_dispatch('read',
+      { key: well_formed_key }.to_json,
+      'hello from stubbed saver.read'
+    )
+  end
+
+  # ...
+  
+  #====================================================
+  # group
+  #====================================================
 
   test 'E5B',
   'dispatch raises 400 when any argument is malformed' do
@@ -110,12 +149,6 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def group_stub(name)
-    group.define_singleton_method name do |*_args|
-      "hello from stubbed group.#{name}"
-    end
-  end
 
   test 'E60',
   'dispatch to group_exists' do
@@ -181,9 +214,9 @@ class RackDispatcherTest < TestBase
     )
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #====================================================
   # kata
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #====================================================
 
   test 'A5B',
   'dispatch raises 400 when any argument is malformed' do
@@ -202,12 +235,6 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def kata_stub(name)
-    kata.define_singleton_method name do |*_args|
-      "hello from stubbed kata.#{name}"
-    end
-  end
 
   test 'A60',
   'dispatch to kata_exists' do
@@ -285,6 +312,36 @@ class RackDispatcherTest < TestBase
   end
 
   private
+
+  def saver_stub(name)
+    saver.define_singleton_method name do |*_args|
+      "hello from stubbed saver.#{name}"
+    end
+  end
+
+  def group_stub(name)
+    group.define_singleton_method name do |*_args|
+      "hello from stubbed group.#{name}"
+    end
+  end
+
+  def kata_stub(name)
+    kata.define_singleton_method name do |*_args|
+      "hello from stubbed kata.#{name}"
+    end
+  end
+
+  # - - - - - - -
+
+  def well_formed_key
+    '/cyber-dojo/katas/12/34/56' # String
+  end
+
+  def well_formed_value
+    { "a" => 23, "b" => [1,2,3] }.to_json # String
+  end
+
+  # - - - - - - -
 
   def malformed_id
     'df/de' # !Base58.string? && size != 6
@@ -374,7 +431,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def query?(name)
-    ['ready','exists'].include?(name)
+    ['ready','exists','make'].include?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
