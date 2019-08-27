@@ -49,13 +49,11 @@ class Kata
       'time' => manifest['created']
     }
     saver.batch_until_false([
-      make_cmd(id),
-      make_cmd(id, 0),
-      event_write_cmd(id, 0, { 'files' => files }),
       manifest_write_cmd(id, manifest),
-      events_write_cmd(id, event0)
+      events_write_cmd(id, event0),
+      event_write_cmd(id, 0, { 'files' => files })
     ])
-    # TODO: check saver.batch() result === [true]*5
+    # TODO: check saver.batch() result === [true]*3
     id
   end
 
@@ -95,7 +93,6 @@ class Kata
     }
     results = saver.batch_until_false([
       exists_cmd(id),
-      make_cmd(id, index),
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
@@ -154,10 +151,6 @@ class Kata
 
   def exists_cmd(id, *parts)
     ['exists?', id_path(id, *parts)]
-  end
-
-  def make_cmd(id, *parts)
-    ['make?', id_path(id, *parts)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

@@ -21,11 +21,9 @@ class Group
   def create(manifest)
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    group_exists,_write_result = saver.batch_until_false([
-      make_cmd(id),
-      manifest_write_cmd(id, manifest)
-    ])
-    unless group_exists
+    key = id_path(id, manifest_filename)
+    value = json_pretty(manifest)
+    unless saver.write(key, value)
       fail invalid('id', id)
     end
     id
@@ -34,11 +32,9 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    group_exists,manifest_src = saver.batch_until_false([
-      exists_cmd(id),
-      manifest_read_cmd(id)
-    ])
-    unless group_exists
+    key = id_path(id, manifest_filename)
+    manifest_src = saver.read(key)
+    unless manifest_src
       fail invalid('id', id)
     end
     manifest = json_parse(manifest_src)
@@ -52,9 +48,11 @@ class Group
     unless exists?(id)
       fail invalid('id', id)
     end
-    commands = indexes.map { |new_index| make_cmd(id, new_index) }
-    make_results = saver.batch_until_true(commands)
-    n = make_results.index(true)
+    commands = indexes.map { |new_index|
+      [ 'write', id_path(id, new_index, 'kata.id'), '' ]
+    }
+    results = saver.batch_until_true(commands)
+    n = results.index(true)
     if n.nil?
       nil
     else
@@ -64,7 +62,7 @@ class Group
       manifest['group_id'] = id
       manifest['group_index'] = index
       kata_id = kata.create(manifest)
-      saver.write(id_path(id, index, 'kata.id'), kata_id)
+      saver.append(id_path(id, index, 'kata.id'), kata_id)
       kata_id
     end
   end
@@ -87,7 +85,7 @@ class Group
     else
       indexes = kata_indexes(id)
       filenames = indexes.map do |kata_id,_index|
-        args = ['', 'katas'] 
+        args = ['', 'katas']
         args += [kata_id[0..1], kata_id[2..3], kata_id[4..5]]
         args += ['events.json']
         File.join(*args)
@@ -106,23 +104,8 @@ class Group
 
   private
 
-  def make_cmd(id, *parts)
-    ['make?', id_path(id, *parts)]
-  end
-
   def exists_cmd(id, *parts)
     ['exists?', id_path(id, *parts)]
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-  # manifest
-
-  def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
-  end
-
-  def manifest_read_cmd(id)
-    ['read', id_path(id, manifest_filename)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

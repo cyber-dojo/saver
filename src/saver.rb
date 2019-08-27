@@ -18,22 +18,11 @@ class Saver
     Dir.exist?(path_name(key))
   end
 
-  def make?(key)
-    # Returns true iff the dir does not already exist
-    # and is made. Can't find a Ruby library method
-    # that does this, so using shell.
-    #   -p creates intermediate dirs as required.
-    #   -v verbose mode, output each dir actually made
-    command = "mkdir -vp '#{path_name(key)}'"
-    stdout,stderr,r = Open3.capture3(command)
-    stdout != '' && stderr === '' && r.exitstatus === 0
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
     path = path_name(key)
-    if Dir.exist?(dir_name(key)) && !File.exist?(path)
+    if make_dir?(dir_name(key)) || !File.exist?(path)
       File.open(path, 'w') { |fd| fd.write(value) }
       true
     else
@@ -84,7 +73,6 @@ class Saver
       name,*args = command
       result = case name
       when 'exists?' then exists?(*args)
-      when 'make?'   then make?(*args)
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
@@ -110,6 +98,19 @@ class Saver
 
   def file_name(key)
     File.basename(path_name(key))
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def make_dir?(path)
+    # Returns true iff path does not already exist
+    # and is made. Can't find a Ruby library method
+    # that does this, so using shell.
+    #   -p creates intermediate dirs as required.
+    #   -v verbose mode, output each dir actually made
+    command = "mkdir -vp '#{path}'"
+    stdout,stderr,r = Open3.capture3(command)
+    stdout != '' && stderr === '' && r.exitstatus === 0
   end
 
 end

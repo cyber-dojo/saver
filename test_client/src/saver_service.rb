@@ -18,10 +18,6 @@ class SaverService
     @http.get(key)
   end
 
-  def make?(key)
-    @http.get(key)
-  end
-
   def write(key, value)
     @http.post(key, value)
   end
