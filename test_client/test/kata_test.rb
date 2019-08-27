@@ -23,12 +23,11 @@ class KataTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'kata_create() generates an id' do
-    manifest = starter.manifest
-    refute manifest.key?('id')
-    id = kata.create(manifest)
-    assert manifest.key?('id')
-    assert_equal id, manifest['id']
+  'kata_create() generates an id which can retrieve the manifest' do
+    id = kata.create(starter.manifest)
+    manifest = kata.manifest(id)
+    assert_equal id, manifest.delete('id')
+    assert_equal manifest, starter.manifest
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -54,16 +53,6 @@ class KataTest < TestBase
       kata.manifest(id)
     }
     assert_equal "id:invalid:#{id}", error.message
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '42E',
-  'create/manifest round-trip' do
-    id = kata.create(starter.manifest)
-    expected = starter.manifest
-    expected['id'] = id
-    assert_equal expected, kata.manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

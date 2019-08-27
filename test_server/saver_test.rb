@@ -7,10 +7,6 @@ class SaverTest < TestBase
     'FDF'
   end
 
-  def saver
-    Saver.new
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # sha
 
