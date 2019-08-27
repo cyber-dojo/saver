@@ -25,6 +25,7 @@ class HttpJsonArgsTest < TestBase
     assert_equal expected, error.message
   end
 
+=begin
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # manifest
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -463,5 +464,6 @@ class HttpJsonArgsTest < TestBase
       'RED' => "!['red'|'amber'|'green'|'timed_out','faulty']"
     }
   end
+=end
 
 end

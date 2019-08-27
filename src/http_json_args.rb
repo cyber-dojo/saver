@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'base58'
 require_relative 'http_json/request_error'
 require 'json'
 
@@ -23,8 +22,6 @@ class HttpJsonArgs
 
   def get(path, externals)
     saver = externals.saver
-    group = externals.group
-    kata = externals.kata
     args = case path
     when '/sha'               then [saver, 'sha']
     when '/ready'             then [saver, 'ready?']
@@ -36,20 +33,6 @@ class HttpJsonArgs
     when '/batch_read'        then [saver, 'batch_read', keys]
     when '/batch_until_false' then [saver, 'batch_until_false', commands]
     when '/batch_until_true'  then [saver, 'batch_until_true',  commands]
-
-    when '/group_exists'   then [group, 'exists?', id]
-    when '/group_create'   then [group, 'create', manifest]
-    when '/group_manifest' then [group, 'manifest', id]
-    when '/group_join'     then [group, 'join', id, indexes]
-    when '/group_joined'   then [group, 'joined', id]
-    when '/group_events'   then [group, 'events', id]
-
-    when '/kata_exists'    then [kata, 'exists?', id]
-    when '/kata_create'    then [kata, 'create', manifest]
-    when '/kata_manifest'  then [kata, 'manifest', id]
-    when '/kata_ran_tests' then [kata, 'ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
-    when '/kata_events'    then [kata, 'events', id]
-    when '/kata_event'     then [kata, 'event', id, index]
     else
       fail HttpJson::RequestError, 'unknown path'
     end
@@ -63,11 +46,11 @@ class HttpJsonArgs
   attr_reader :args
 
   def key
-    well_formed_str('key')
+    well_formed_string('key')
   end
 
   def value
-    well_formed_str('value')
+    well_formed_string('value')
   end
 
   def keys
@@ -80,7 +63,7 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - -
 
-  def well_formed_str(name)
+  def well_formed_string(name)
     arg = @args[name]
     unless arg.is_a?(String)
       malformed(name, "!String (#{arg.class.name})")
@@ -111,6 +94,7 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - -
 
+=begin
   def manifest
     arg = @args['manifest']
     unless arg.is_a?(Hash)
@@ -426,6 +410,7 @@ class HttpJsonArgs
     end
     arg
   end
+=end
 
   # - - - - - - - - - - - - - - - -
 

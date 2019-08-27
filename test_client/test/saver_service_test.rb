@@ -188,6 +188,7 @@ class SaverServiceTest < TestBase
     assert_equal [false,false,true], results
   end
 
+=begin
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # group
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -362,6 +363,7 @@ class SaverServiceTest < TestBase
     colour = 'amber'
     saver.kata_ran_tests(id, 1, files, now, duration, stdout, stderr, status, colour)
   end
+=end
 
   private
 

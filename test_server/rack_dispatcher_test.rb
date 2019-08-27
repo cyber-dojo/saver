@@ -161,6 +161,7 @@ class RackDispatcherTest < TestBase
     )
   end
 
+=begin
   #====================================================
   # group
   #====================================================
@@ -341,6 +342,7 @@ class RackDispatcherTest < TestBase
       'hello from stubbed kata.event'
     )
   end
+=end
 
   private
 
@@ -350,6 +352,7 @@ class RackDispatcherTest < TestBase
     end
   end
 
+=begin
   def group_stub(name)
     group.define_singleton_method name do |*_args|
       "hello from stubbed group.#{name}"
@@ -361,6 +364,7 @@ class RackDispatcherTest < TestBase
       "hello from stubbed kata.#{name}"
     end
   end
+=end
 
   # - - - - - - -
 
@@ -389,6 +393,7 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - -
 
+=begin
   def malformed_id
     'df/de' # !Base58.string? && size != 6
   end
@@ -462,6 +467,7 @@ class RackDispatcherTest < TestBase
     end
     assert_rack_call('kata_'+name, args, { qname => stubbed })
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

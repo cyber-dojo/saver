@@ -2,14 +2,12 @@ require_relative 'http'
 
 class ExternalLanguages
 
-  def manifest(name)
-    http.get(name)
+  def initialize
+    @http = Http.new(self, 'languages', 4524)
   end
 
-  private
-
-  def http
-    Http.new(self, 'languages', 4524)
+  def manifest(name)
+    @http.get(name)
   end
 
 end

@@ -2,14 +2,12 @@ require_relative 'http'
 
 class ExternalExercises
 
-  def manifest(name)
-    http.get(name)
+  def initialize
+    @http = Http.new(self, 'exercises', 4525)
   end
 
-  private
-
-  def http
-    Http.new(self, 'exercises', 4525)
+  def manifest(name)
+    @http.get(name)
   end
 
 end

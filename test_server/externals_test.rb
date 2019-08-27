@@ -11,11 +11,7 @@ class ExternalsTest < TestBase
   test '543',
   'default externals are set' do
     externals = Externals.new
-    assert_equal 'Group',           externals.group.class.name
-    assert_equal 'GroupIdGenerator',externals.group_id_generator.class.name
-    assert_equal 'Kata',            externals.kata.class.name
-    assert_equal 'KataIdGenerator', externals.kata_id_generator.class.name
-    assert_equal 'Saver',           externals.saver.class.name
+    assert_equal 'Saver', externals.saver.class.name
   end
 
 end
