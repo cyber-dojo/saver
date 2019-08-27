@@ -10,20 +10,11 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
-  class ThrowingRackDispatcherStub
-    def initialize(klass, message)
-      @klass = klass
-      @message = message
-    end
-    def sha
-      fail @klass, @message
-    end
-  end
-
   test 'F1A',
   'dispatch returns 500 status when implementation raises' do
-    @stub = ThrowingRackDispatcherStub.new(ArgumentError, 'wibble')
+    def saver.sha
+      raise ArgumentError, 'wibble'
+    end
     assert_dispatch_raises('sha', {}.to_json, 500, 'wibble')
   end
 
@@ -31,10 +22,11 @@ class RackDispatcherTest < TestBase
 
   test 'F1B',
   'dispatch returns 500 status when implementation has syntax error' do
-    @stub = ThrowingRackDispatcherStub.new(SyntaxError, 'fubar')
+    def saver.sha
+      raise SyntaxError, 'fubar'
+    end
     assert_dispatch_raises('sha', {}.to_json, 500, 'fubar')
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -62,8 +54,11 @@ class RackDispatcherTest < TestBase
 
   test 'E40',
   'dispatch to ready' do
-    assert_dispatch('ready', {}.to_json,
-      "hello from #{stub_name}.saver.ready?"
+    def saver.ready?
+      'hello from stubbed saver.ready?'
+    end
+    assert_saver_dispatch('ready', {}.to_json,
+      'hello from stubbed saver.ready?'
     )
   end
 
@@ -73,8 +68,11 @@ class RackDispatcherTest < TestBase
 
   test 'E41',
   'dispatch to sha' do
-    assert_dispatch('sha', {}.to_json,
-      "hello from #{stub_name}.saver.sha"
+    def saver.sha
+      'hello from stubbed saver.sha'
+    end
+    assert_saver_dispatch('sha', {}.to_json,
+      'hello from stubbed saver.sha'
     )
   end
 
@@ -98,11 +96,18 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def group_stub(name)
+    group.define_singleton_method name do |*_args|
+      "hello from stubbed group.#{name}"
+    end
+  end
+
   test 'E60',
   'dispatch to group_exists' do
+    group_stub('exists?')
     assert_group_dispatch('exists',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.group.exists?"
+      'hello from stubbed group.exists?'
     )
   end
 
@@ -110,9 +115,10 @@ class RackDispatcherTest < TestBase
 
   test 'E5C',
   'dispatch to group_create' do
+    group_stub('create')
     assert_group_dispatch('create',
       { manifest: starter.manifest }.to_json,
-      "hello from #{stub_name}.group.create"
+      'hello from stubbed group.create'
     )
   end
 
@@ -120,9 +126,10 @@ class RackDispatcherTest < TestBase
 
   test 'E5E',
   'dispatch to group_manifest' do
+    group_stub('manifest')
     assert_group_dispatch('manifest',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.group.manifest"
+      'hello from stubbed group.manifest'
     )
   end
 
@@ -130,9 +137,10 @@ class RackDispatcherTest < TestBase
 
   test 'E63',
   'dispatch to group_join' do
+    group_stub('join')
     assert_group_dispatch('join',
       { id: well_formed_id, indexes: well_formed_indexes }.to_json,
-      "hello from #{stub_name}.group.join"
+      'hello from stubbed group.join'
     )
   end
 
@@ -140,9 +148,10 @@ class RackDispatcherTest < TestBase
 
   test 'E64',
   'dispatch to group_joined' do
+    group_stub('joined')
     assert_group_dispatch('joined',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.group.joined"
+      'hello from stubbed group.joined'
     )
   end
 
@@ -150,9 +159,10 @@ class RackDispatcherTest < TestBase
 
   test 'E65',
   'dispatch to group_events' do
+    group_stub('events')
     assert_group_dispatch('events',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.group.events"
+      'hello from stubbed group.events'
     )
   end
 
@@ -178,11 +188,18 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def kata_stub(name)
+    kata.define_singleton_method name do |*_args|
+      "hello from stubbed kata.#{name}"
+    end
+  end
+
   test 'A60',
   'dispatch to kata_exists' do
+    kata_stub('exists?')
     assert_kata_dispatch('exists',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.kata.exists?"
+      'hello from stubbed kata.exists?'
     )
   end
 
@@ -190,21 +207,10 @@ class RackDispatcherTest < TestBase
 
   test 'A5C',
   'dispatch to kata_create' do
+    kata_stub('create')
     args = { manifest: starter.manifest }.to_json
     assert_kata_dispatch('create', args,
-      "hello from #{stub_name}.kata.create"
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'A5D',
-  'kata_create(manifest) can include group which holds group-id' do
-    manifest = starter.manifest
-    manifest['group'] = '18Q67A'
-    args = { manifest: manifest }.to_json
-    assert_kata_dispatch('create', args,
-      "hello from #{stub_name}.kata.create"
+      'hello from stubbed kata.create'
     )
   end
 
@@ -212,9 +218,10 @@ class RackDispatcherTest < TestBase
 
   test 'A5E',
   'dispatch to kata_manifest' do
+    kata_stub('manifest')
     assert_kata_dispatch('manifest',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.kata.manifest"
+      'hello from stubbed kata.manifest'
     )
   end
 
@@ -222,6 +229,7 @@ class RackDispatcherTest < TestBase
 
   test 'A70',
   'dispatch to kata_ran_tests' do
+    kata_stub('ran_tests')
     assert_kata_dispatch('ran_tests',
       {     id: well_formed_id,
          index: well_formed_index,
@@ -233,7 +241,7 @@ class RackDispatcherTest < TestBase
         status: well_formed_status,
         colour: well_formed_colour
       }.to_json,
-      "hello from #{stub_name}.kata.ran_tests"
+      'hello from stubbed kata.ran_tests'
     )
   end
 
@@ -241,9 +249,10 @@ class RackDispatcherTest < TestBase
 
   test 'A71',
   'dispatch to kata_events' do
+    kata_stub('events')
     assert_kata_dispatch('events',
       { id: well_formed_id }.to_json,
-      "hello from #{stub_name}.kata.events"
+      'hello from stubbed kata.events'
     )
   end
 
@@ -251,19 +260,16 @@ class RackDispatcherTest < TestBase
 
   test 'A72',
   'dispatch to kata_event' do
+    kata_stub('event')
     assert_kata_dispatch('event',
       { id: well_formed_id,
         index: well_formed_index
       }.to_json,
-      "hello from #{stub_name}.kata.event"
+      'hello from stubbed kata.event'
     )
   end
 
   private
-
-  def stub_name
-    'RackDispatcherStub'
-  end
 
   def malformed_id
     'df/de' # !Base58.string? && size != 6
@@ -341,7 +347,7 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_dispatch(name, args, stubbed)
+  def assert_saver_dispatch(name, args, stubbed)
     if query?(name)
       qname = name + '?'
     else
@@ -391,68 +397,8 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  class SaverStub
-    def sha
-      "hello from RackDispatcherStub.saver.sha"
-    end
-    def ready?
-      "hello from RackDispatcherStub.saver.ready?"
-    end
-  end
-
-  # - - - - - - - -
-
-  class GroupStub
-    def self.define_stubs(*names)
-      names.each do |name|
-        define_method name do |*_args|
-          "hello from RackDispatcherStub.group.#{name}"
-        end
-      end
-    end
-    define_stubs :exists?,
-                 :create,
-                 :manifest,
-                 :join,
-                 :joined,
-                 :events
-  end
-
-  # - - - - - - - -
-
-  class KataStub
-    def self.define_stubs(*names)
-      names.each do |name|
-        define_method name do |*_args|
-          "hello from RackDispatcherStub.kata.#{name}"
-        end
-      end
-    end
-    define_stubs :exists?,
-                 :create,
-                 :manifest,
-                 :ran_tests,
-                 :events,
-                 :event
-  end
-
-  # - - - - - - - -
-
-  class RackDispatcherExternalsStub
-    def group
-      @group ||= GroupStub.new
-    end
-    def kata
-      @kata ||= KataStub.new
-    end
-    def saver
-      @saver ||= SaverStub.new
-    end
-  end
-
   def rack_call(name, args)
-    externals_stub = RackDispatcherExternalsStub.new
-    rack = RackDispatcher.new(externals_stub, RackRequestStub)
+    rack = RackDispatcher.new(externals, RackRequestStub)
     env = { path_info:name, body:args }
     rack.call(env)
   end

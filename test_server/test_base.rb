@@ -102,6 +102,10 @@ class TestBase < HexMiniTest
     externals.kata
   end
 
+  def saver
+    externals.saver
+  end
+
   def externals
     @externals ||= Externals.new
   end
