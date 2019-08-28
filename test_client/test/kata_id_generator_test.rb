@@ -10,7 +10,7 @@ class KataIdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test '1D4',
-  'generated ids are Base58 ids that do not exist as katas' do
+  '[new] generated ids are Base58 ids that do not exist as katas' do
     42.times do
       id = kata_id_generator.id
       assert id.is_a?(String)

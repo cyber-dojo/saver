@@ -10,7 +10,7 @@ class GroupIdGeneratorTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test '1D4',
-  'generated ids are Base58 ids that do not exist as groups' do
+  '[new] generated ids are Base58 ids that do not exist as groups' do
     42.times do
       id = group_id_generator.id
       assert id.is_a?(String)
