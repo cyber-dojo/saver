@@ -115,6 +115,10 @@ class Group
     ['read', id_path(id, manifest_filename)]
   end
 
+  def manifest_filename
+    'manifest.json'
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def id_path(id, *parts)
@@ -134,11 +138,22 @@ class Group
       id_path(id, index, 'kata.id')
     end
     reads = saver.batch_read(filenames)
+    # reads is an array of 64 entries, eg
+    # [
+    #    nil,      # 0
+    #    nil,      # 1
+    #    'w34rd5', # 2
+    #    nil,      # 3
+    #    'G2ws77', # 4
+    #    nil
+    #    ...
+    # ]
+    # indicating there are joined animals at indexes
+    # 2 (bat) id == w34rd5
+    # 4 (bee) id == G2ws77
     reads.each.with_index(0).select{ |kata_id,_| kata_id }
-  end
-
-  def manifest_filename
-    'manifest.json'
+    # Select the non-nil entries whilst retaining the index
+    # [ ['w34rd5',2], ['G2ws77',4], ... ]
   end
 
   # - - - - - - - - - - - - - -

@@ -7,7 +7,7 @@ class KataTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # kata_exists?(id)
+  # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
@@ -19,7 +19,7 @@ class KataTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # kata_create(), kata_manifest()
+  # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
@@ -56,7 +56,7 @@ class KataTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # kata_ran_tests(id,...), kata_events(id), kata_event(id,n)
+  # ran_tests(), events(), event()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '821',
