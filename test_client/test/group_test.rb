@@ -7,43 +7,18 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_exists?(id)
+  # group_exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
-  'group_exists? is false before creation, true after creation' do
-    id = '40C8C6'
-    refute group.exists?(id)
-    stub_group_create(id)
+  'group_exists? is true after creation' do
+    id = group.create(starter.manifest)
     assert group.exists?(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_create(manifest) group_manifest(id)
+  # group_create(), group_manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '42F', %w(
-  group_create raises when id's dir cannot be created
-  ) do
-    id = group.create(starter.manifest)
-    error = assert_raises(ArgumentError) {
-      stub_group_create(id)
-    }
-    assert_equal "id:invalid:#{id}", error.message
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '421',
-  'group_create() generates id' do
-    manifest = starter.manifest
-    refute manifest.key?('id')
-    id = group.create(manifest)
-    assert manifest.key?('id')
-    assert_equal id, manifest['id']
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
 
   test '420',
   'group_manifest() raises when id does not exist' do
@@ -58,10 +33,10 @@ class GroupTest < TestBase
 
   test '42E',
   'group_create() group_manifest() round-trip' do
-    id = group.create(starter.manifest)
-    expected = starter.manifest
-    expected['id'] = id
-    assert_equal expected, group.manifest(id)
+    manifest = starter.manifest
+    id = group.create(manifest)
+    manifest['id'] = id
+    assert_equal manifest, group.manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +109,7 @@ class GroupTest < TestBase
 
   test '1D5',
   'group_joined information can be retrieved' do
-    gid = stub_group_create('48k563')
+    gid = group.create(starter.manifest)
     kids = group.joined(gid)
     expected = []
     assert_equal(expected, kids, 'someone has already joined!')
@@ -153,7 +128,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test 'A04', %w(
-  group_events returns null when the id does not exist ) do
+  group_events returns nil when the id does not exist ) do
       assert_nil group.events('A4aB37')
   end
 
@@ -161,7 +136,7 @@ class GroupTest < TestBase
 
   test 'A05', %w(
   group_events is a BatchMethod for web's dashboard ) do
-    gid = stub_group_create('a8ArPs')
+    gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
     index1 = kata.manifest(kid1)['group_index']
     kid2 = group.join(gid, indexes)

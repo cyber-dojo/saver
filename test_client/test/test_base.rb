@@ -37,33 +37,6 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - - -
 
-  class StubIdGenerator
-    def initialize(id)
-      @id = id
-    end
-    attr_reader :id
-  end
-
-  def stub_group_create(stub_id)
-    externals.instance_eval {
-      @group_id_generator = StubIdGenerator.new(stub_id)
-    }
-    id = group.create(starter.manifest)
-    assert_equal stub_id, id
-    id
-  end
-
-  def stub_kata_create(stub_id)
-    externals.instance_eval {
-      @kata_id_generator = StubIdGenerator.new(stub_id)
-    }
-    id = kata.create(starter.manifest)
-    assert_equal stub_id, id
-    id
-  end
-
-  # - - - - - - - - - - - - - - - - - -
-
   def creation_time
     starter.creation_time
   end
@@ -73,7 +46,7 @@ class TestBase < HexMiniTest
   end
 
   def time_now
-    [2016,12,2, 6,14,57]
+    [2016,12,2, 6,14,57,4587]
   end
 
   def duration

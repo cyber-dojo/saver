@@ -18,6 +18,14 @@ class RackDispatcher
     body = request.body.read
     target, name, args = HttpJsonArgs.new(body).get(path, @externals)
     result = target.public_send(name, *args)
+
+    if target.is_a?(Group)
+      name = 'group_' + name
+    end
+    if target.is_a?(Kata)
+      name = 'kata_' + name
+    end
+
     json_response(200, { name => result })
   rescue HttpJson::RequestError => error
     json_response(400, diagnostic(path, body, error))

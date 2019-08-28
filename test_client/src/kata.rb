@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'liner'
-require 'json'
-
 class Kata
 
   def initialize(externals)
@@ -12,12 +9,15 @@ class Kata
   # - - - - - - - - - - - - - - - - - - -
 
   def exists?(id)
-    saver.exists?(id_path(id))
+    saver.kata_exists?(id)
+    #saver.exists?(id_path(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
+    saver.kata_create(manifest)
+=begin
     files = manifest.delete('visible_files')
     id = manifest['id'] = kata_id_generator.id
     event0 = {
@@ -31,11 +31,14 @@ class Kata
     ])
     # TODO: result === [true]*3
     id
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
+    saver.kata_manifest(id)
+=begin
     manifest_src,event0_src = saver.batch_read([
       manifest_read_cmd(id)[1],
       event_read_cmd(id, 0)[1]
@@ -47,11 +50,14 @@ class Kata
     event0 = unlined(event0_src)
     manifest['visible_files'] = event0['files']
     manifest
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
+    saver.kata_ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
+=begin
     unless index >= 1
       fail invalid('index', index)
     end
@@ -79,11 +85,14 @@ class Kata
       fail invalid('index', index)
     end
     nil
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
+    saver.kata_events(id)
+=begin
     events_src = saver.send(*events_read_cmd(id))
     if events_src.nil?
       fail invalid('id', id)
@@ -91,11 +100,14 @@ class Kata
     json_parse('[' + events_src.lines.join(',') + ']')
     # Alternative implementation, which profiling shows is slower.
     # events_src.lines.map { |line| json_parse(line) }
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
+    saver.kata_event(id, index)
+=begin
     if index === -1
       events_src = saver.send(*events_read_cmd(id))
       if events_src.nil?
@@ -108,8 +120,10 @@ class Kata
       fail invalid('index', index)
     end
     unlined(event_src)
+=end
   end
 
+=begin
   private
 
   def exists_cmd(id, *parts)
@@ -230,12 +244,13 @@ class Kata
     ArgumentError.new("#{name}:invalid:#{value}")
   end
 
-  def saver
-    @externals.saver
-  end
-
   def kata_id_generator
     @externals.kata_id_generator
+  end
+=end
+
+  def saver
+    @externals.saver
   end
 
 end

@@ -1,5 +1,5 @@
-require_relative '../src/http_json/request_packer'
-require_relative '../src/http_json/response_unpacker'
+require_relative '../src/bridge/request_packer'
+require_relative '../src/bridge/response_unpacker'
 require 'net/http'
 
 class ExternalExercises

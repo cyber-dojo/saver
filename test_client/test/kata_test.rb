@@ -11,10 +11,8 @@ class KataTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
-  'kata_exists? is false before creation, true after creation' do
-    id = '40C8C6'
-    refute kata.exists?(id)
-    stub_kata_create(id)
+  'kata_exists? is true after creation' do
+    id = kata.create(starter.manifest)
     assert kata.exists?(id)
   end
 
@@ -22,12 +20,23 @@ class KataTest < TestBase
   # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '42D',
+  'kata_manifest raises when id does not exist' do
+    id = 'A4AB37'
+    error = assert_raises(ArgumentError) {
+      kata.manifest(id)
+    }
+    assert_equal "id:invalid:#{id}", error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+
   test '421',
-  'kata_create() generates an id which can retrieve the manifest' do
-    id = kata.create(starter.manifest)
-    manifest = kata.manifest(id)
-    assert_equal id, manifest.delete('id')
-    assert_equal manifest, starter.manifest
+  'kata_create() kata_manifest() round-trip' do
+    manifest = starter.manifest
+    id = kata.create(manifest)
+    manifest['id'] = id
+    assert_equal manifest, kata.manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -37,22 +46,10 @@ class KataTest < TestBase
   results in a manifest that does not contain entries
   for group or index
   ) do
-    manifest = starter.manifest
-    id = kata.create(manifest)
+    id = kata.create(starter.manifest)
     manifest = kata.manifest(id)
     assert_nil manifest['group']
     assert_nil manifest['index']
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
-
-  test '42D',
-  'kata_manifest raises when id does not exist' do
-    id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
-      kata.manifest(id)
-    }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,7 +69,7 @@ class KataTest < TestBase
 
   test '822',
   'kata_event raises when n does not exist' do
-    id = stub_kata_create('aB5AEE')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.event(id, 1)
     }
@@ -107,7 +104,7 @@ class KataTest < TestBase
   kata_ran_tests raises when index is -1
   because -1 can only be used on kata_event()
   ) do
-    id = stub_kata_create('fCF211')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.ran_tests(*make_ran_test_args(id, -1, edited_files))
     }
@@ -120,7 +117,7 @@ class KataTest < TestBase
   kata_ran_tests raises when index is 0
   because 0 is used for kata_create()
   ) do
-    id = stub_kata_create('a8739D')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.ran_tests(*make_ran_test_args(id, 0, edited_files))
     }
@@ -133,7 +130,7 @@ class KataTest < TestBase
   kata_ran_tests raises when index already exists
   and does not add a new event,
   in other words it fails atomically ) do
-    id = stub_kata_create('c7112B')
+    id = kata.create(starter.manifest)
     expected_events = []
     expected_events << event0
     assert_equal expected_events, kata.events(id)
@@ -160,7 +157,7 @@ class KataTest < TestBase
   kata_ran_tests does NOT raise when index-1 does not exist
   and the reason for this is partly speed
   and partly robustness against temporary katas failure ) do
-    id = stub_kata_create('610145')
+    id = kata.create(starter.manifest)
     kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     # ran.tests(*make_ran_test_args(id, 2, ...)) assume failed
     kata.ran_tests(*make_ran_test_args(id, 3, edited_files)) # <====
@@ -170,7 +167,7 @@ class KataTest < TestBase
 
   test '829',
   'after kata_ran_tests() there is one more event' do
-    id = stub_kata_create('8DD618')
+    id = kata.create(starter.manifest)
 
     expected_events = [event0]
     diagnostic = '#0 kata_events(id)'

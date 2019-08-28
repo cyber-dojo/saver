@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'kata'
-require_relative 'liner'
-require 'json'
-
 class Group
 
   def initialize(externals)
@@ -13,23 +9,29 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def exists?(id)
-    saver.send(*exists_cmd(id))
+    saver.group_exists?(id)
+    #saver.send(*exists_cmd(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
+    saver.group_create(manifest)
+=begin
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)
     end
     id
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
+    saver.group_manifest(id)
+=begin
     manifest_src = saver.send(*manifest_read_cmd(id))
     unless manifest_src
       fail invalid('id', id)
@@ -37,11 +39,14 @@ class Group
     manifest = json_parse(manifest_src)
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
+    saver.group_join(id, indexes)
+=begin
     unless exists?(id)
       fail invalid('id', id)
     end
@@ -62,21 +67,27 @@ class Group
       saver.append(id_path(id, index, 'kata.id'), kata_id)
       kata_id
     end
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def joined(id)
+    saver.group_joined(id)
+=begin
     if !exists?(id)
       nil
     else
       kata_indexes(id).map{ |kata_id,_| kata_id }
     end
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
+    saver.group_events(id)
+=begin
     if !exists?(id)
       events = nil
     else
@@ -97,10 +108,16 @@ class Group
       end
     end
     events
+=end
   end
 
   private
 
+  def saver
+    @externals.saver
+  end
+
+=begin
   def exists_cmd(id)
     ['exists?', id_path(id)]
   end
@@ -182,10 +199,6 @@ class Group
 
   # - - - - - - - - - - - - - -
 
-  def saver
-    @externals.saver
-  end
-
   def group_id_generator
     @externals.group_id_generator
   end
@@ -193,5 +206,7 @@ class Group
   def kata
     @externals.kata
   end
+
+=end
 
 end
