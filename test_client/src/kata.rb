@@ -89,7 +89,7 @@ class Kata
       fail invalid('id', id)
     end
     json_parse('[' + events_src.lines.join(',') + ']')
-    # Alternative implementation, which tests show is slower.
+    # Alternative implementation, which profiling shows is slower.
     # events_src.lines.map { |line| json_parse(line) }
   end
 

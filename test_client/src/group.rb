@@ -13,7 +13,7 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def exists?(id)
-    saver.exists?(id_path(id))
+    saver.send(*exists_cmd(id))
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -100,6 +100,12 @@ class Group
   end
 
   private
+
+  def exists_cmd(id)
+    ['exists?', id_path(id)]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
     ['write', id_path(id, manifest_filename), json_pretty(manifest)]
