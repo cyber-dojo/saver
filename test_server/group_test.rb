@@ -12,7 +12,7 @@ class GroupTest < TestBase
 
   test '392',
   'group_exists? is false before creation, true after creation' do
-    id = '40C8C6'
+    id = '50C8C6'
     refute group.exists?(id)
     stub_group_create(id)
     assert group.exists?(id)
@@ -47,7 +47,7 @@ class GroupTest < TestBase
 
   test '420',
   'group_manifest() raises when id does not exist' do
-    id = 'A4AB37'
+    id = 'B4AB37'
     error = assert_raises(ArgumentError) {
       group.manifest(id)
     }
@@ -70,7 +70,7 @@ class GroupTest < TestBase
 
   test '1D0',
   'group_join raises when id does not exist' do
-    id = 'A4AB37'
+    id = 'B4AB37'
     error = assert_raises(ArgumentError) {
       group.join(id, indexes)
     }
@@ -127,14 +127,14 @@ class GroupTest < TestBase
 
   test '1D2',
   'group_joined returns nil when the id does not exist' do
-    assert_nil group.joined('A4aB37')
+    assert_nil group.joined('B4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D5',
   'group_joined information can be retrieved' do
-    gid = stub_group_create('48k563')
+    gid = stub_group_create('58k563')
     kids = group.joined(gid)
     expected = []
     assert_equal(expected, kids, 'someone has already joined!')
@@ -154,14 +154,14 @@ class GroupTest < TestBase
 
   test 'A04', %w(
   group_events returns null when the id does not exist ) do
-      assert_nil group.events('A4aB37')
+      assert_nil group.events('B4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test 'A05', %w(
   group_events is a BatchMethod for web's dashboard ) do
-    gid = stub_group_create('a8ArPs')
+    gid = stub_group_create('e8ArPs')
     kid1 = group.join(gid, indexes)
     index1 = kata.manifest(kid1)['group_index']
     kid2 = group.join(gid, indexes)
