@@ -135,12 +135,13 @@ class SaverTest < TestBase
     content = 'thats medeira cake'
     commands = [
       ['write',filename,content],          # true
+      ['read',filename],                   # true
       ['append',filename,content],         # true
       ['append',filename,content],         # true
       ['write',filename,content]           # false
     ]
     results = saver.batch_until_false(commands)
-    assert_equal [true,true,true,false], results
+    assert_equal [true,content,true,true,false], results
     expected = content * 3
     assert_equal expected, saver.read(filename)
   end

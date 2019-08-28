@@ -27,10 +27,6 @@ class Base58
       s.chars.all?{ |char| letter?(char) }
   end
 
-  def self.alphabet
-    ALPHABET
-  end
-
   private
 
   def self.letter
