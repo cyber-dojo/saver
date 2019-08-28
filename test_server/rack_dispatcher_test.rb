@@ -236,7 +236,7 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def rack_call(name, args)
-    rack = RackDispatcher.new(saver, RackRequestStub)
+    rack = RackDispatcher.new(externals, RackRequestStub)
     env = { path_info:name, body:args }
     rack.call(env)
   end

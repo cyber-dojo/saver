@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
+require_relative 'externals'
 require_relative 'http_json/request_error'
 require_relative 'http_json_args'
 require 'json'
 
 class RackDispatcher
 
-  def initialize(saver, request_class)
-    @saver = saver
+  def initialize(externals, request_class)
+    @externals = externals
     @request_class = request_class
   end
 
@@ -15,8 +16,8 @@ class RackDispatcher
     request = @request_class.new(env)
     path = request.path_info
     body = request.body.read
-    name, args = HttpJsonArgs.new(body).get(path)
-    result = @saver.public_send(name, *args)
+    target, name, args = HttpJsonArgs.new(body).get(path, @externals)
+    result = target.public_send(name, *args)
     json_response(200, { name => result })
   rescue HttpJson::RequestError => error
     json_response(400, diagnostic(path, body, error))

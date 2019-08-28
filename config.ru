@@ -11,7 +11,7 @@ unless ENV['NO_PROMETHEUS']
   use Prometheus::Middleware::Exporter
 end
 
-require_relative 'src/saver'
+require_relative 'src/externals'
 require_relative 'src/rack_dispatcher'
-saver = Saver.new
-run RackDispatcher.new(saver, Rack::Request)
+externals = Externals.new
+run RackDispatcher.new(externals, Rack::Request)

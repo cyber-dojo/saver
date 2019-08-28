@@ -20,22 +20,26 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - - -
 
-  def get(path)
+  def get(path, externals)
+    saver = externals.saver
+    #group = externals.group
+    #kata = externals.kata
     args = case path
-    when '/sha'               then ['sha']
-    when '/ready'             then ['ready?']
-    when '/exists'            then ['exists?', key]
-    when '/write'             then ['write', key, value]
-    when '/append'            then ['append', key, value]
-    when '/read'              then ['read', key]
-    when '/batch_read'        then ['batch_read', keys]
-    when '/batch_until_false' then ['batch_until_false', commands]
-    when '/batch_until_true'  then ['batch_until_true',  commands]
+    when '/sha'               then [saver,'sha']
+    when '/ready'             then [saver,'ready?']
+    when '/exists'            then [saver,'exists?', key]
+    when '/write'             then [saver,'write', key, value]
+    when '/append'            then [saver,'append', key, value]
+    when '/read'              then [saver,'read', key]
+    when '/batch_read'        then [saver,'batch_read', keys]
+    when '/batch_until_false' then [saver,'batch_until_false', commands]
+    when '/batch_until_true'  then [saver,'batch_until_true',  commands]
     else
       fail HttpJson::RequestError, 'unknown path'
     end
+    target = args.shift
     name = args.shift
-    [name, args]
+    [target, name, args]
   end
 
   # - - - - - - - - - - - - - - - -
