@@ -10,7 +10,14 @@ class KataTest < TestBase
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '392',
+  def self.old_new_test(hex_suffix, *lines, &block)
+    old_lines = ['[old]'] + lines
+    test(hex_suffix+'0', *old_lines, &block)
+    new_lines = ['[new]'] + lines
+    test(hex_suffix+'1', *new_lines, &block)
+  end
+
+  old_new_test '392',
   'kata_exists? is true after creation' do
     id = kata.create(starter.manifest)
     assert kata.exists?(id)
@@ -30,17 +37,17 @@ class KataTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '421',
+  old_new_test '421',
   'kata_create() kata_manifest() round-trip' do
+    id = kata.create(starter.manifest)
     manifest = starter.manifest
-    id = kata.create(manifest)
     manifest['id'] = id
     assert_equal manifest, kata.manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42B', %w(
+  old_new_test '42B', %w(
   kata_create() an individual practice-session
   results in a manifest that does not contain entries
   for group or index
@@ -157,7 +164,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '829',
+  old_new_test '829',
   'after kata_ran_tests() there is one more event' do
     id = kata.create(starter.manifest)
 

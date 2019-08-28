@@ -1,5 +1,6 @@
 require_relative 'hex_mini_test'
 require_relative '../src/externals'
+require_relative '../src/externals_new'
 
 class TestBase < HexMiniTest
 
@@ -9,6 +10,12 @@ class TestBase < HexMiniTest
 
   def externals
     @externals ||= Externals.new
+    @externals_new ||= ExternalsNew.new
+    if test_name.start_with?('[new]')
+      @externals_new
+    else
+      @externals
+    end
   end
 
   def saver
