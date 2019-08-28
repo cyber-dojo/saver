@@ -39,6 +39,25 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
+
+  test '42F',
+  '[new] extremely unlikely race-condition in group_create()' do
+    # 1) get an unused group-id, use it in a manifest
+    # 2) attempt to create group using manifest
+    # 3) between 1 and 2 unused group-id is used 
+    gid = group.create(starter.manifest)
+    externals.instance_exec {
+      @group_id_generator = Class.new do
+        def initialize(id); @id = id; end
+        def id; @id; end
+      end.new(gid)
+    }
+    assert_service_error("id:invalid:#{gid}") {
+      group.create(starter.manifest)
+    }
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
   # group_join() / group_joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 

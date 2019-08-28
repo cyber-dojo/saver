@@ -1,22 +1,17 @@
 
-The branch split-off-singler-and-grouper
-is to...
+split-off-singler-and-grouper branch
 
-- split off saver so it contains just the services of external_disk,
-  namely
-    def exists?(name)
-    def make(name)
-    def write(filename, content)
-    def append(filename, content)
-    def read(filename)
-    def read_batch(filenames)
-
+- fix coverage gaps
+- kata.create(starter.manifest) has same race-condition
+- fix todos
+- client uses SaverException (like web)
 - use fast JSON eg Oj
+- add parallel branch in web repo
+- create SaverFake class in web repo for use in tests
+- fix messages for partial web degradation (saver,ragger)
+- try out images on local server and under versioner
 
-- think about simplifying make?(key)
-  it currently checks the dir does not exist
-  would it be better if not tied to disk storage as implementation?
-  The major make?(key) functionality is in group.join()
-  which does this...
-   commands = indexes.map { |new_index| make_cmd(id, new_index) }
-   make_results = saver.batch_until_true(commands)
+- for k8s
+- release new saver with old+new api - ensure Sami is around...
+- release new web that uses new api
+- drop old api from saver
