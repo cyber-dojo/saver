@@ -37,6 +37,14 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - - -
 
+  def assert_service_error(message, &block)
+    error = assert_raises(ServiceError) { block.call }
+    json = JSON.parse(error.message)
+    assert_equal message, json['message']
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
   def creation_time
     starter.creation_time
   end

@@ -23,10 +23,9 @@ class GroupTest < TestBase
   test '420',
   'group_manifest() raises when id does not exist' do
     id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       group.manifest(id)
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -46,10 +45,9 @@ class GroupTest < TestBase
   test '1D0',
   'group_join raises when id does not exist' do
     id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       group.join(id, indexes)
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

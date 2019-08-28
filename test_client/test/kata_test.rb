@@ -23,10 +23,9 @@ class KataTest < TestBase
   test '42D',
   'kata_manifest raises when id does not exist' do
     id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       kata.manifest(id)
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -59,10 +58,9 @@ class KataTest < TestBase
   test '821',
   'kata_events raises when id does not exist' do
     id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       kata.events(id)
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -70,10 +68,9 @@ class KataTest < TestBase
   test '822',
   'kata_event raises when n does not exist' do
     id = kata.create(starter.manifest)
-    error = assert_raises(ArgumentError) {
+    assert_service_error('index:invalid:1') {
       kata.event(id, 1)
     }
-    assert_equal 'index:invalid:1', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -81,10 +78,9 @@ class KataTest < TestBase
   test '722',
   'kata_event raises when id does exist' do
     id = '653c8C'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       kata.event(id, -1)
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -92,10 +88,9 @@ class KataTest < TestBase
   test '823',
   'ran_tests raises when id does not exist' do
     id = 'A4AB37'
-    error = assert_raises(ArgumentError) {
+    assert_service_error("id:invalid:#{id}") {
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
-    assert_equal "id:invalid:#{id}", error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -105,10 +100,9 @@ class KataTest < TestBase
   because -1 can only be used on kata_event()
   ) do
     id = kata.create(starter.manifest)
-    error = assert_raises(ArgumentError) {
+    assert_service_error('index:invalid:-1') {
       kata.ran_tests(*make_ran_test_args(id, -1, edited_files))
     }
-    assert_equal 'index:invalid:-1', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -118,10 +112,9 @@ class KataTest < TestBase
   because 0 is used for kata_create()
   ) do
     id = kata.create(starter.manifest)
-    error = assert_raises(ArgumentError) {
+    assert_service_error('index:invalid:0') {
       kata.ran_tests(*make_ran_test_args(id, 0, edited_files))
     }
-    assert_equal 'index:invalid:0', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -143,10 +136,9 @@ class KataTest < TestBase
     }
     assert_equal expected_events, kata.events(id)
 
-    error = assert_raises(ArgumentError) {
+    assert_service_error('index:invalid:1') {
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
-    assert_equal 'index:invalid:1', error.message
 
     assert_equal expected_events, kata.events(id)
   end
