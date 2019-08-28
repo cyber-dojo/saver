@@ -40,43 +40,68 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # write()
 
-  test '640',
-  'write() succeeds when its dir does not already exist' do
+  test '640', %w(
+    write() succeeds
+    when its dir-name does not already exist
+  ) do
     filename = 'groups/5e/94/Aa/readme.md'
     content = 'bonjour'
     assert saver.write(filename, content)
     assert_equal content, saver.read(filename)
   end
 
-  test '641',
-  'write() succeeds when its dir exists but its filename does not' do
+  test '641', %w(
+    write() succeeds
+    when its file-name does not already exist
+  ) do
     filename = 'groups/73/Ff/69/readme.md'
     content = 'greetings'
     assert saver.write(filename, content)
     assert_equal content, saver.read(filename)
   end
 
-  test '642',
-  'write() does nothing and returns false when its filename already exists' do
+  test '642', %w(
+    write() does nothing and returns false
+    when its file-name already exists
+  ) do
     filename = 'groups/1A/23/Cc/readme.md'
     content = 'welcome'
     assert saver.write(filename, content)
-    refute saver.write(filename, content)
+    refute saver.write(filename, 'different')
+    assert_equal content, saver.read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # append()
 
-  test '841',
-  'append() does nothing and returns false when its dir does not already exists' do
+  test '841', %w(
+    append() does nothing and returns false
+    when its dir-name does not already exists
+  ) do
     filename = 'groups/96/18/59/readme.md'
     content = 'greetings'
     refute saver.append(filename, content)
     assert_nil saver.read(filename)
   end
 
-  test '842',
-  'append() appends to the end when its file already exists' do
+  test '842', %w(
+    append() does nothing and returns false
+    when its file-name does not already exist
+  ) do
+    dirname = 'groups/96/18/59'
+    dot_h = "#{dirname}/hiker.h"
+    content = 'greetings'
+    assert saver.write(dot_h, content)
+    assert_equal content, saver.read(dot_h)
+    dot_c = "#{dirname}/hiker.c"
+    refute saver.append(dot_c, content)
+    assert_nil saver.read(dot_c)
+  end
+
+  test '843', %w(
+    append() appends to the end
+    when its file-name already exists
+  ) do
     filename = 'groups/69/1b/2B/readme.md'
     content = 'helloooo'
     assert saver.write(filename, content)

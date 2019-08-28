@@ -67,7 +67,7 @@ class KataNew
       'duration' => duration
     }
     results = saver.batch_until_false([
-      exists_cmd(id),
+      exists_cmd(id), # TODO: try to lose this...
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
