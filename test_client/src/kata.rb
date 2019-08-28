@@ -9,7 +9,7 @@ require 'json'
 # manifest.json
 #   The visible_files are extracted and stored as event-zero files.
 #   This allows a diff of the first traffic-light but means
-#   kata_manifest() has to recombine two files. In theory the
+#   manifest() has to recombine two files. In theory the
 #   manifest could store only the display_name and exercise_name and
 #   be recreated, on-demand, from the relevant start-point services.
 #   In practice, it doesn't work because the start-point services can
@@ -23,7 +23,7 @@ require 'json'
 #   A cache of colours/time-stamps for all [test] events.
 #   Helps optimize dashboard traffic-lights views.
 #   Each event is stored as a single "\n" terminated line.
-#   This is an optimization for kata_ran_tests() which need only
+#   This is an optimization for ran_tests() which need only
 #   append to the end of the file.
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -53,7 +53,7 @@ class Kata
       events_write_cmd(id, event0),
       event_write_cmd(id, 0, { 'files' => files })
     ])
-    # TODO: check saver.batch() result === [true]*3
+    # TODO: result === [true]*3
     id
   end
 
@@ -61,8 +61,8 @@ class Kata
 
   def manifest(id)
     manifest_src,event0_src = saver.batch_read([
-      id_path(id, manifest_filename),
-      id_path(id, 0, event_filename)
+      manifest_read_cmd(id)[1],
+      event_read_cmd(id, 0)[1]
     ])
     if [manifest_src,event0_src].include?(nil)
       fail invalid('id', id)
@@ -95,7 +95,7 @@ class Kata
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    # TODO: check results === [true]*4
+    # TODO: check results === [true]*3
     unless results[0]
       fail invalid('id', id)
     end
