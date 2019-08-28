@@ -3,30 +3,6 @@
 require_relative 'liner'
 require 'json'
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Representation
-#
-# manifest.json
-#   The visible_files are extracted and stored as event-zero files.
-#   This allows a diff of the first traffic-light but means
-#   manifest() has to recombine two files. In theory the
-#   manifest could store only the display_name and exercise_name and
-#   be recreated, on-demand, from the relevant start-point services.
-#   In practice, it doesn't work because the start-point services can
-#   change over time.
-#
-# event.json (Individual event)
-#   The visible-files are stored in a lined-format so they be easily
-#   inspected on disk. Have to be unlined when read back.
-#
-# events.json (All events)
-#   A cache of colours/time-stamps for all [test] events.
-#   Helps optimize dashboard traffic-lights views.
-#   Each event is stored as a single "\n" terminated line.
-#   This is an optimization for ran_tests() which need only
-#   append to the end of the file.
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 class Kata
 
   def initialize(externals)
@@ -68,7 +44,7 @@ class Kata
       fail invalid('id', id)
     end
     manifest = json_parse(manifest_src)
-    event0 = event_unpack(event0_src)
+    event0 = unlined(event0_src)
     manifest['visible_files'] = event0['files']
     manifest
   end
@@ -131,7 +107,7 @@ class Kata
     if event_src.nil?
       fail invalid('index', index)
     end
-    event_unpack(event_src)
+    unlined(event_src)
   end
 
   private
@@ -142,6 +118,14 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
+  #
+  # create() extracts the visible_files from the manifest and
+  # stores them as event-zero files. This allows a diff of the
+  # first traffic-light but means manifest() has to recombine two
+  # files. In theory the manifest could store only the display_name
+  # and exercise_name and be recreated, on-demand, from the relevant
+  # start-point services. In practice, it doesn't work because the
+  # start-point services can change over time.
 
   def manifest_write_cmd(id, manifest)
     ['write', id_path(id, manifest_filename), json_pretty(manifest)]
@@ -151,23 +135,38 @@ class Kata
     ['read', id_path(id, manifest_filename)]
   end
 
+  def manifest_filename
+    'manifest.json'
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
-
-  include Liner
+  #
+  # The visible-files are stored in a lined-format so they be easily
+  # inspected on disk. Have to be unlined when read back.
 
   def event_write_cmd(id, index, event)
-    event['files'] = lined_files(event['files'])
-    lined_file(event['stdout'])
-    lined_file(event['stderr'])
-    ['write', id_path(id, index, event_filename), json_pretty(event)]
+    ['write', id_path(id, index, event_filename), json_pretty(lined(event))]
   end
 
   def event_read_cmd(id, index)
     ['read', id_path(id, index, event_filename)]
   end
 
-  def event_unpack(event_src)
+  def event_filename
+    'event.json'
+  end
+
+  include Liner
+
+  def lined(event)
+    event['files'] = lined_files(event['files'])
+    lined_file(event['stdout'])
+    lined_file(event['stderr'])
+    event
+  end
+
+  def unlined(event_src)
     event = json_parse(event_src)
     event['files'] = unlined_files(event['files'])
     unlined_file(event['stdout'])
@@ -177,6 +176,12 @@ class Kata
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # events
+  #
+  # A cache of colours/time-stamps for all [test] events.
+  # Helps optimize dashboard traffic-lights views.
+  # Each event is stored as a single "\n" terminated line.
+  # This is an optimization for ran_tests() which need only
+  # append to the end of the file.
 
   def events_write_cmd(id, event0)
     ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
@@ -190,6 +195,10 @@ class Kata
     ['read', id_path(id, events_filename)]
   end
 
+  def events_filename
+    'events.json'
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def id_path(id, *parts)
@@ -198,21 +207,6 @@ class Kata
     args = ['', 'katas', id[0..1], id[2..3], id[4..5]]
     args += parts.map(&:to_s)
     File.join(*args)
-  end
-
-  # - - - - - - - - - - - - - -
-  # filenames
-
-  def manifest_filename
-    'manifest.json'
-  end
-
-  def events_filename
-    'events.json'
-  end
-
-  def event_filename
-    'event.json'
   end
 
   # - - - - - - - - - - - - - -
