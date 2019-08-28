@@ -8,6 +8,13 @@ class TestBase < HexMiniTest
     super(arg)
   end
 
+  def self.old_new_test(hex_suffix, *lines, &block)
+    old_lines = ['[old]'] + lines
+    test(hex_suffix+'0', *old_lines, &block)
+    new_lines = ['[new]'] + lines
+    test(hex_suffix+'1', *new_lines, &block)
+  end
+
   def externals
     @externals ||= Externals.new
     @externals_new ||= ExternalsNew.new
@@ -17,6 +24,27 @@ class TestBase < HexMiniTest
       @externals
     end
   end
+
+  def assert_service_error(message, &block)
+    if test_name.start_with?('[new]')
+      assert_service_error_new(message, &block)
+    else
+      assert_service_error_old(message, &block)
+    end
+  end
+
+  def assert_service_error_new(message, &block)
+    error = assert_raises(ArgumentError) { block.call }
+    assert_equal message, error.message
+  end
+
+  def assert_service_error_old(message, &block)
+    error = assert_raises(ServiceError) { block.call }
+    json = JSON.parse(error.message)
+    assert_equal message, json['message']
+  end
+
+  # - - - - - - - - - - - - - - - - - -
 
   def saver
     externals.saver
@@ -40,14 +68,6 @@ class TestBase < HexMiniTest
 
   def starter
     externals.starter
-  end
-
-  # - - - - - - - - - - - - - - - - - -
-
-  def assert_service_error(message, &block)
-    error = assert_raises(ServiceError) { block.call }
-    json = JSON.parse(error.message)
-    assert_equal message, json['message']
   end
 
   # - - - - - - - - - - - - - - - - - -

@@ -10,13 +10,6 @@ class KataTest < TestBase
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.old_new_test(hex_suffix, *lines, &block)
-    old_lines = ['[old]'] + lines
-    test(hex_suffix+'0', *old_lines, &block)
-    new_lines = ['[new]'] + lines
-    test(hex_suffix+'1', *new_lines, &block)
-  end
-
   old_new_test '392',
   'kata_exists? is true after creation' do
     id = kata.create(starter.manifest)
@@ -27,7 +20,7 @@ class KataTest < TestBase
   # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '42D',
+  old_new_test '42D',
   'kata_manifest raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -62,7 +55,7 @@ class KataTest < TestBase
   # ran_tests(), events(), event()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '821',
+  old_new_test '821',
   'kata_events raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -72,7 +65,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '822',
+  old_new_test '822',
   'kata_event raises when n does not exist' do
     id = kata.create(starter.manifest)
     assert_service_error('index:invalid:1') {
@@ -82,7 +75,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '722',
+  old_new_test '722',
   'kata_event raises when id does exist' do
     id = '653c8C'
     assert_service_error("id:invalid:#{id}") {
@@ -92,7 +85,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '823',
+  old_new_test '823',
   'ran_tests raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -102,7 +95,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '824', %w(
+  old_new_test '824', %w(
   kata_ran_tests raises when index is -1
   because -1 can only be used on kata_event()
   ) do
@@ -114,7 +107,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '825', %w(
+  old_new_test '825', %w(
   kata_ran_tests raises when index is 0
   because 0 is used for kata_create()
   ) do
@@ -126,7 +119,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '826', %w(
+  old_new_test '826', %w(
   kata_ran_tests raises when index already exists
   and does not add a new event,
   in other words it fails atomically ) do
@@ -152,7 +145,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '827', %w(
+  old_new_test '827', %w(
   kata_ran_tests does NOT raise when index-1 does not exist
   and the reason for this is partly speed
   and partly robustness against temporary katas failure ) do

@@ -10,7 +10,7 @@ class GroupTest < TestBase
   # group_exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '392',
+  old_new_test '392',
   'group_exists? is true after creation' do
     id = group.create(starter.manifest)
     assert group.exists?(id)
@@ -20,7 +20,7 @@ class GroupTest < TestBase
   # group_create(), group_manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '420',
+  old_new_test '420',
   'group_manifest() raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -30,10 +30,10 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42E',
+  old_new_test '42E',
   'group_create() group_manifest() round-trip' do
+    id = group.create(starter.manifest)
     manifest = starter.manifest
-    id = group.create(manifest)
     manifest['id'] = id
     assert_equal manifest, group.manifest(id)
   end
@@ -42,7 +42,7 @@ class GroupTest < TestBase
   # group_join() / group_joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D0',
+  old_new_test '1D0',
   'group_join raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -52,7 +52,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D3', %w(
+  old_new_test '1D3', %w(
   group_join a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
@@ -68,7 +68,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D4', %w(
+  old_new_test '1D4', %w(
   group_join with a valid id succeeds 64 times
   then its full and it fails with nil
   ) do
@@ -98,14 +98,14 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D2',
+  old_new_test '1D2',
   'group_joined returns nil when the id does not exist' do
     assert_nil group.joined('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '1D5',
+  old_new_test '1D5',
   'group_joined information can be retrieved' do
     gid = group.create(starter.manifest)
     kids = group.joined(gid)
@@ -125,14 +125,14 @@ class GroupTest < TestBase
   # group_events
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test 'A04', %w(
+  old_new_test 'A04', %w(
   group_events returns nil when the id does not exist ) do
       assert_nil group.events('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test 'A05', %w(
+  old_new_test 'A05', %w(
   group_events is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)

@@ -115,5 +115,5 @@ class TestBase < HexMiniTest
   def red
     'red'
   end
-  
+
 end
