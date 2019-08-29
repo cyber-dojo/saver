@@ -15,6 +15,7 @@ split-off-singler-and-grouper branch
   will do events.lines.size - 1 == 3-1 == 2 but there is no
     .../ID/2/event.json
   Fix this.
+  Inspect json files on default VM.
   Keep manifest's version number as data submitted in kata/edit's form.
   Use that to choose group/kata implementations.
   local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
@@ -30,7 +31,6 @@ split-off-singler-and-grouper branch
 - fix coverage gaps
 - fix todos
 - client uses SaverException (like web)
-- use fast JSON eg Oj
 - add parallel branch in web repo
 - fix web footer messages for partial degradation (saver,ragger)
 - try out images on local server and under versioner

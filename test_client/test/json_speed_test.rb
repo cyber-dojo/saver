@@ -1,5 +1,5 @@
 require_relative 'test_base'
-require 'json'
+require 'oj'
 
 class JsonSpeedTest < TestBase
 
@@ -8,21 +8,22 @@ class JsonSpeedTest < TestBase
   end
 
   test 'A06', %w( test speed of alternative implementations ) do
-    one = '{"s":23,"t":[1,2,3,4],"u":"blah"}'
-    all = ([one] * 142).join("\n")
+    one = '{"s":23,"t":[1,2,3,4,5,6,7],"u":"blah"}'
+    all = ([one] * 1242).join("\n")
+    _,faster = timed {
+      line = '[' + all.lines.join(',') + ']'
+      Oj.strict_load(line)
+    }
     _,slower = timed {
       all.lines.map { |line|
-        JSON.parse!(line)
+        Oj.strict_load(line)
       }
-    }
-    _,faster = timed {
-      JSON.parse!('[' + all.lines.join(',') + ']')
     }
     assert faster <= slower, "faster:#{faster}, slower:#{slower}"
   end
 
   private
-  
+
   def timed
     started = Time.now
     result = yield

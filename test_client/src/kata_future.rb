@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require 'oj'
 
 class KataFuture
 
@@ -30,7 +30,7 @@ class KataFuture
       events_write_cmd(id, event0),
       event_write_cmd(id, 0, { 'files' => files })
     ])
-    # TODO: result === [true]*3
+    # TODO: if result.include?(false)
     id
   end
 
@@ -98,8 +98,8 @@ class KataFuture
       if events_src.nil?
         fail invalid('id', id)
       end
-      # TODO: don't count. get index from last line
-      index = events_src.count("\n") - 1
+      last_line = events_src.lines.last
+      index = json_parse(last_line)['index']
     end
     event_src = saver.send(*event_read_cmd(id, index))
     if event_src.nil?
@@ -197,11 +197,11 @@ class KataFuture
   # json
 
   def json_plain(o)
-    JSON.fast_generate(o)
+    Oj.dump(o)
   end
 
   def json_parse(s)
-    JSON.parse!(s)
+    Oj.strict_load(s)
   end
 
   # - - - - - - - - - - - - - -
