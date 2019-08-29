@@ -9,9 +9,20 @@ class TestBase < HexMiniTest
     super(arg)
   end
 
+     OLD_TEST_MARK = '<old>'
+     NEW_TEST_MARK = '<new>'
+  FUTURE_TEST_MARK = '<future>'
+
+  def future_test?
+    test_name.start_with?(FUTURE_TEST_MARK)
+  end
+
+  def new_test?
+    test_name.start_with?(NEW_TEST_MARK)
+  end
+
   def self.old_new_future_test(hex_suffix, *lines, &block)
-    self.old_test(hex_suffix, *lines, &block)
-    self.new_test(hex_suffix, *lines, &block)
+    self.old_new_test(hex_suffix, *lines, &block)
     self.future_test(hex_suffix, *lines, &block)
   end
 
@@ -21,26 +32,26 @@ class TestBase < HexMiniTest
   end
 
   def self.old_test(hex_suffix, *lines, &block)
-    old_lines = ['<old>'] + lines
+    old_lines = [OLD_TEST_MARK] + lines
     test(hex_suffix+'0', *old_lines, &block)
   end
 
   def self.new_test(hex_suffix, *lines, &block)
-    new_lines = ['<new>'] + lines
+    new_lines = [NEW_TEST_MARK] + lines
     test(hex_suffix+'1', *new_lines, &block)
   end
 
   def self.future_test(hex_suffix, *lines, &block)
-    future_lines = ['<future>'] + lines
+    future_lines = [FUTURE_TEST_MARK] + lines
     test(hex_suffix+'2', *future_lines, &block)
   end
 
   # - - - - - - - - - - - - - - - - - -
 
   def externals
-    if test_name.start_with?('<future>')
+    if future_test?
       @externals ||= ExternalsFuture.new
-    elsif test_name.start_with?('<new>')
+    elsif new_test?
       @externals ||= ExternalsNew.new
     else
       @externals ||= Externals.new
@@ -50,7 +61,7 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - - -
 
   def assert_service_error(message, &block)
-    if test_name.start_with?('<new>') || test_name.start_with?('<future>')
+    if new_test? || future_test?
       error = assert_raises(ArgumentError) { block.call }
       assert_equal message, error.message
     else
@@ -131,7 +142,7 @@ class TestBase < HexMiniTest
       'event'  => 'created',
       'time'   => creation_time
     }
-    if test_name.start_with?('<future>')
+    if future_test?
       zero['index'] = 0
     end
     zero

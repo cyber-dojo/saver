@@ -11,17 +11,24 @@ class SaverTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  REAL_TEST_MARK = '<real>'
+  FAKE_TEST_MARK = '<fake>'
+
+  def fake_test?
+    test_name.start_with?(FAKE_TEST_MARK)
+  end
+
   def self.multi_test(hex_suffix, *lines, &block)
-    real_lines = ['<real>'] + lines
+    real_lines = [REAL_TEST_MARK] + lines
     test(hex_suffix+'0', *real_lines, &block)
-    fake_lines = ['<fake>'] + lines
+    fake_lines = [FAKE_TEST_MARK] + lines
     test(hex_suffix+'1', *fake_lines, &block)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def saver
-    if test_name.start_with?('<fake>')
+    if fake_test?
       @saver ||= SaverFake.new
     else
       @saver ||= SaverService.new

@@ -128,16 +128,6 @@ class KataFuture
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-
-  def create_cmd(id, *parts)
-    ['create', id_path(id, *parts)]
-  end
-
-  def exists_cmd(id, *parts)
-    ['exists?', id_path(id, *parts)]
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
   #
   # create() extracts the visible_files from the manifest and

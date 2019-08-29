@@ -91,7 +91,7 @@ class KataTest < TestBase
   old_new_future_test '823',
   'ran_tests(id,index,...) raises when id or index does not exist' do
     id = 'A4AB37'
-    if test_name.start_with?('<future>')
+    if future_test?
       message = 'index:invalid:1'
     else
       message = "id:invalid:#{id}"
@@ -141,7 +141,7 @@ class KataTest < TestBase
       'time' => time_now,
       'duration' => duration
     }
-    if test_name.start_with?('<future>')
+    if future_test?
       event['index'] = 1
     end
     expected_events << event
@@ -189,7 +189,7 @@ class KataTest < TestBase
       'time' => time_now,
       'duration' => duration
     }
-    if test_name.start_with?('<future>')
+    if future_test?
       event['index'] = 1
     end
     expected_events << event
