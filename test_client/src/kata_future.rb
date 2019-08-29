@@ -17,7 +17,6 @@ class KataFuture
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-    files = manifest.delete('visible_files')
     id = manifest['id'] = generate_id
     manifest['version'] = 2
     event0 = {
@@ -28,7 +27,7 @@ class KataFuture
     saver.batch_until_false([
       manifest_write_cmd(id, manifest),
       events_write_cmd(id, event0),
-      event_write_cmd(id, 0, { 'files' => files })
+      event_write_cmd(id, 0, { 'files' => manifest['visible_files'] })
     ])
     # TODO: if result.include?(false)
     id
@@ -37,17 +36,11 @@ class KataFuture
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    manifest_src,event0_src = saver.batch_read([
-      manifest_read_cmd(id)[1],
-      event_read_cmd(id, 0)[1]
-    ])
-    if [manifest_src,event0_src].include?(nil)
+    manifest_src = saver.send(*manifest_read_cmd(id))
+    if manifest_src.nil?
       fail invalid('id', id)
     end
-    manifest = json_parse(manifest_src)
-    event0 = json_parse(event0_src)
-    manifest['visible_files'] = event0['files']
-    manifest
+    json_parse(manifest_src)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -110,6 +103,10 @@ class KataFuture
 
   private
 
+  def id_generator
+    @externals.id_generator
+  end
+
   def generate_id
     loop do
       id = id_generator.id
@@ -152,9 +149,6 @@ class KataFuture
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
-  #
-  # The visible-files are stored in a lined-format so they be easily
-  # inspected on disk. Have to be unlined when read back.
 
   def event_write_cmd(id, index, event)
     ['write', id_path(id, event_filename(index)), json_plain(event)]
@@ -212,10 +206,6 @@ class KataFuture
 
   def saver
     @externals.saver
-  end
-
-  def id_generator
-    @externals.id_generator
   end
 
 end

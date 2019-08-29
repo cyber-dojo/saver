@@ -26,7 +26,6 @@ split-off-singler-and-grouper branch
   but .../ID/INDEX.event.json
   have code and tests for versioning in the manifest.json file.
 
-- with versioning I could also drop the lining/unlining for extra speed?
 
 - fix coverage gaps
 - fix todos
