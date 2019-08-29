@@ -27,6 +27,7 @@ class HttpJsonArgs
     args = case path
     when '/sha'               then [saver,'sha']
     when '/ready'             then [saver,'ready?']
+    when '/create'            then [saver,'create', key]
     when '/exists'            then [saver,'exists?', key]
     when '/write'             then [saver,'write', key, value]
     when '/append'            then [saver,'append', key, value]

@@ -37,10 +37,8 @@ class Base58Test < TestBase
     diagnostic = 'single quote to protect all other letters'
     refute alphabet.include?("'"), diagnostic
     alphabet.each_char do |letter|
-      path = "/12/23/base/#{letter}/readme.txt"
-      content = 'hello world'
-      assert saver.write(path, content)
-      assert_equal content, saver.read(path)
+      path = "/12/23/base/#{letter}"
+      assert saver.create(path)
     end
   end
 

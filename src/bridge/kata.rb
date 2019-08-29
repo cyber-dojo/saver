@@ -115,12 +115,12 @@ class Kata
 
   private
 
-  def exists_cmd(id, *parts)
-    ['exists?', id_path(id, *parts)]
-  end
-
   def create_cmd(id, *parts)
     ['create', id_path(id, *parts)]
+  end
+
+  def exists_cmd(id, *parts)
+    ['exists?', id_path(id, *parts)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

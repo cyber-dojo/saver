@@ -20,7 +20,11 @@ class GroupNew
   def create(manifest)
     id = manifest['id'] = group_id_generator.id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    unless saver.send(*manifest_write_cmd(id, manifest))
+    results = saver.batch_until_false([
+      create_cmd(id),
+      manifest_write_cmd(id, manifest)
+    ])
+    unless results === [true,true]
       fail invalid('id', id)
     end
     id
@@ -44,23 +48,18 @@ class GroupNew
     unless exists?(id)
       fail invalid('id', id)
     end
-    commands = indexes.map { |new_index|
-      [ 'write', id_path(id, new_index, 'kata.id'), '' ]
-    }
-    results = saver.batch_until_true(commands)
-    n = results.index(true)
-    if n.nil?
-      nil
-    else
-      index = indexes[n]
-      manifest = self.manifest(id)
-      manifest.delete('id')
-      manifest['group_id'] = id
-      manifest['group_index'] = index
-      kata_id = kata.create(manifest)
-      saver.append(id_path(id, index, 'kata.id'), kata_id)
-      kata_id
+    manifest = self.manifest(id)
+    manifest.delete('id')
+    manifest['group_id'] = id
+    indexes.each do |index|
+      if saver.send(*create_cmd(id, index))
+        manifest['group_index'] = index
+        kata_id = kata.create(manifest)
+        saver.write(id_path(id, index, 'kata.id'), kata_id)
+        return kata_id
+      end
     end
+    nil
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -99,6 +98,10 @@ class GroupNew
   end
 
   private
+
+  def create_cmd(id, *parts)
+    ['create', id_path(id, *parts)]
+  end
 
   def exists_cmd(id)
     ['exists?', id_path(id)]

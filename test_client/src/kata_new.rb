@@ -25,11 +25,13 @@ class KataNew
       'time' => manifest['created']
     }
     saver.batch_until_false([
+      create_cmd(id),
+      create_cmd(id, 0),
       manifest_write_cmd(id, manifest),
       events_write_cmd(id, event0),
       event_write_cmd(id, 0, { 'files' => files })
     ])
-    # TODO: result === [true]*3
+    # TODO: result === [true]*5
     id
   end
 
@@ -67,11 +69,12 @@ class KataNew
       'duration' => duration
     }
     results = saver.batch_until_false([
-      exists_cmd(id), # TODO: try to lose this...
+      exists_cmd(id),
+      create_cmd(id, index),
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    # TODO: check results === [true]*3
+    # TODO: check results === [true]*4
     unless results[0]
       fail invalid('id', id)
     end
@@ -111,6 +114,10 @@ class KataNew
   end
 
   private
+
+  def create_cmd(id, *parts)
+    ['create', id_path(id, *parts)]
+  end
 
   def exists_cmd(id, *parts)
     ['exists?', id_path(id, *parts)]

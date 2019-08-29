@@ -100,12 +100,12 @@ class Group
 
   private
 
-  def exists_cmd(id)
-    ['exists?', id_path(id)]
-  end
-
   def create_cmd(id, *parts)
     ['create', id_path(id, *parts)]
+  end
+
+  def exists_cmd(id)
+    ['exists?', id_path(id)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

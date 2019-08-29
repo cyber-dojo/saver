@@ -14,6 +14,10 @@ class SaverService
     @http.get
   end
 
+  def create(key)
+    @http.post(key)
+  end
+
   def exists?(key)
     @http.get(key)
   end

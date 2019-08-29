@@ -44,7 +44,7 @@ class GroupTest < TestBase
   '[new] extremely unlikely race-condition in group_create()' do
     # 1) get an unused group-id, use it in a manifest
     # 2) attempt to create group using manifest
-    # 3) between 1 and 2 unused group-id is used 
+    # 3) between 1 and 2 unused group-id is used
     gid = group.create(starter.manifest)
     externals.instance_exec {
       @group_id_generator = Class.new do
