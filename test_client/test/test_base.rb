@@ -52,16 +52,12 @@ class TestBase < HexMiniTest
     externals.group
   end
 
-  def group_id_generator
-    externals.group_id_generator
-  end
-
   def kata
     externals.kata
   end
 
-  def kata_id_generator
-    externals.kata_id_generator
+  def id_generator
+    externals.id_generator
   end
 
   def starter

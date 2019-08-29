@@ -19,19 +19,18 @@ class KataNew
 
   def create(manifest)
     files = manifest.delete('visible_files')
-    id = manifest['id'] = kata_id_generator.id
+    id = manifest['id'] = generate_id
     event0 = {
       'event' => 'created',
       'time' => manifest['created']
     }
     saver.batch_until_false([
-      create_cmd(id),
       create_cmd(id, 0),
       manifest_write_cmd(id, manifest),
       event_write_cmd(id, 0, { 'files' => files }),
       events_write_cmd(id, event0)
     ])
-    # TODO: result === [true]*5
+    # TODO: result === [true]*4
     id
   end
 
@@ -114,6 +113,25 @@ class KataNew
   end
 
   private
+
+  def generate_id
+    loop do
+      id = id_generator.id
+      if saver.create(id_path(id))
+        return id
+      end
+    end
+  end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def create_cmd(id, *parts)
     ['create', id_path(id, *parts)]
@@ -206,16 +224,6 @@ class KataNew
     'events.json'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'katas', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
-  end
-
   # - - - - - - - - - - - - - -
   # json
 
@@ -237,14 +245,12 @@ class KataNew
     ArgumentError.new("#{name}:invalid:#{value}")
   end
 
-  # - - - - - - - - - - - - - -
-
-  def kata_id_generator
-    @externals.kata_id_generator
-  end
-
   def saver
     @externals.saver
+  end
+
+  def id_generator
+    @externals.id_generator
   end
 
 end

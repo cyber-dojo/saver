@@ -15,6 +15,7 @@ split-off-singler-and-grouper branch
   will do events.lines.size - 1 == 3-1 == 2 but there is no
     .../ID/2/event.json
   Fix this.
+  local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
 
 - Also prepare new schema that flattens dir structure.
   not .../ID/INDEX/event.json

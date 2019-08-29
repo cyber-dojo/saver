@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'bridge/id_generator'
 require_relative 'http_json/request_error'
 require 'json'
 
@@ -284,7 +285,7 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - - -
 
   def well_formed_id(arg_name, arg)
-    unless Base58.string?(arg)
+    unless IdGenerator::id?(arg)
       malformed(arg_name, '!Base58')
     end
     unless arg.size == 6
