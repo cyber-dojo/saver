@@ -30,7 +30,6 @@ split-off-singler-and-grouper branch
 - client uses SaverException (like web)
 - use fast JSON eg Oj
 - add parallel branch in web repo
-- create SaverFake class in web repo for use in tests
 - fix messages for partial web degradation (saver,ragger)
 - try out images on local server and under versioner
 

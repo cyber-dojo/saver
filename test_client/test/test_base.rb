@@ -17,7 +17,7 @@ class TestBase < HexMiniTest
 
   def externals
     if test_name.start_with?('[new]')
-      @externals_new ||= ExternalsNew.new
+      @externals ||= ExternalsNew.new
     else
       @externals ||= Externals.new
     end

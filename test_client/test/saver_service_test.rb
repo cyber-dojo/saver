@@ -1,6 +1,7 @@
 
 require_relative 'test_base'
 require_relative '../src/saver_service'
+require_relative 'saver_fake'
 
 class SaverTest < TestBase
 
@@ -8,14 +9,29 @@ class SaverTest < TestBase
     '6AA'
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def self.multi_test(hex_suffix, *lines, &block)
+    real_lines = ['<real>'] + lines
+    test(hex_suffix+'0', *real_lines, &block)
+    fake_lines = ['<fake>'] + lines
+    test(hex_suffix+'1', *fake_lines, &block)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
   def saver
-    @saver ||= SaverService.new
+    if test_name.start_with?('<fake>')
+      @saver ||= SaverFake.new
+    else
+      @saver ||= SaverService.new
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # sha
 
-  test '190', %w( sha is sha of image's git commit ) do
+  multi_test '190', %w( sha is sha of image's git commit ) do
     sha = saver.sha
     assert_equal 40, sha.size
     sha.each_char do |ch|
@@ -26,7 +42,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # ready
 
-  test '602',
+  multi_test '602',
   %w( ready? is always true ) do
     assert saver.ready?
   end
@@ -34,7 +50,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # exists?(), create()
 
-  test '431',
+  multi_test '431',
   'exists?(k) is false before create(k) and true after' do
     dirname = 'client/34/f7/a8'
     refute saver.exists?(dirname)
@@ -42,7 +58,7 @@ class SaverTest < TestBase
     assert saver.exists?(dirname)
   end
 
-  test '432',
+  multi_test '432',
   'create succeeds once and then fails' do
     dirname = 'client/r5/s7/03'
     assert saver.create(dirname)
@@ -52,7 +68,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # write()
 
-  test '640', %w(
+  multi_test '640', %w(
     write() succeeds
     when its dir-name exists and its file-name does not exist
   ) do
@@ -64,7 +80,7 @@ class SaverTest < TestBase
     assert_equal content, saver.read(filename)
   end
 
-  test '641', %w(
+  multi_test '641', %w(
     write() fails
     when its dir-name does not already exist
   ) do
@@ -75,7 +91,7 @@ class SaverTest < TestBase
     assert_nil saver.read(filename)
   end
 
-  test '642', %w(
+  multi_test '642', %w(
     write() fails
     when its file-name already exists
   ) do
@@ -91,7 +107,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # append()
 
-  test '840', %w(
+  multi_test '840', %w(
     append() returns true and appends to the end of file-name
     when file-name already exists
   ) do
@@ -105,7 +121,7 @@ class SaverTest < TestBase
     assert_equal content+more, saver.read(filename)
   end
 
-  test '841', %w(
+  multi_test '841', %w(
     append() returns false and does nothing
     when its dir-name does not already exist
   ) do
@@ -116,7 +132,7 @@ class SaverTest < TestBase
     assert_nil saver.read(filename)
   end
 
-  test '842', %w(
+  multi_test '842', %w(
     append() does nothing and returns false
     when its file-name does not already exist
   ) do
@@ -131,7 +147,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # read()
 
-  test '437',
+  multi_test '437',
   'read() gives back what a successful write() accepts' do
     dirname = 'client/FD/F4/38'
     assert saver.create(dirname)
@@ -141,13 +157,13 @@ class SaverTest < TestBase
     assert_equal content, saver.read(filename)
   end
 
-  test '438',
+  multi_test '438',
   'read() returns nil given a non-existent file-name' do
     filename = 'client/1z/23/e4/not-there.txt'
     assert_nil saver.read(filename)
   end
 
-  test '439',
+  multi_test '439',
   'read() returns nil given an existing dir-name' do
     dirname = 'client/2f/7k/3P'
     saver.create(dirname)
@@ -157,7 +173,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # batch_read()
 
-  test '440',
+  multi_test '440',
   'batch_read() is a read() BatchMethod' do
     dirname = 'client/34/56/78'
     assert saver.create(dirname)
@@ -171,7 +187,7 @@ class SaverTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '441',
+  multi_test '441',
   'batch_read() can read across different sub-dirs' do
     dirname1 = 'client/C1/bc/1A/1'
     filename1 = dirname1 + '/kata.id'
@@ -191,7 +207,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # batch_until_false()
 
-  test 'F45',
+  multi_test 'F45',
   'batch_until_false() runs commands until one is false' do
     dirname = 'client/Bc/99/48'
     filename = dirname + '/punchline.txt'
@@ -215,7 +231,7 @@ class SaverTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # batch_until_true()
 
-  test 'A23',
+  multi_test 'A23',
   'batch_until_true() runs commands until one is true' do
     commands = [
       ['exists?', 'client/12/34/45'], # false
