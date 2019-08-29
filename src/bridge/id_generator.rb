@@ -11,34 +11,29 @@ require 'securerandom'
 # Within a single server it is easy to guarantee
 # there are no ID clashes. However, the larger
 # the alphabet the less you have to worry about
-# ID clashes when copying sessions from one
-# server to another.
+# ID clashes when merging server sessions.
 #
 # 58^6 == 38,068,692,544 == 38 billion
 
-class Base58
+class IdGenerator
 
-  def self.string(size)
-    size.times.map{ letter }.join
+  def self.alphabet
+    ALPHABET
   end
 
-  def self.string?(s)
+  def id
+    6.times.map{ ALPHABET[random_index] }.join
+  end
+
+  def self.id?(s)
     s.is_a?(String) &&
-      s.chars.all?{ |char| letter?(char) }
+      s.chars.all?{ |ch| ALPHABET.include?(ch) }
   end
 
   private
 
-  def self.letter
-    ALPHABET[index]
-  end
-
-  def self.index
+  def random_index
     SecureRandom.random_number(ALPHABET.size)
-  end
-
-  def self.letter?(char)
-    ALPHABET.include?(char)
   end
 
   ALPHABET = %w{

@@ -22,41 +22,25 @@ class TestBase < HexMiniTest
     externals.group
   end
 
-  def group_id_generator
-    externals.group_id_generator
-  end
-
   def kata
     externals.kata
   end
 
-  def kata_id_generator
-    externals.kata_id_generator
+  def id_generator
+    externals.id_generator
   end
 
-  class StubIdGenerator
+  class IdGeneratorStub
     def initialize(id)
       @id = id
     end
     attr_reader :id
   end
 
-  def stub_group_create(stub_id)
+  def id_generator_stub(id)
     externals.instance_eval {
-      @group_id_generator = StubIdGenerator.new(stub_id)
+      @id_generator = IdGeneratorStub.new(id)
     }
-    id = group.create(starter.manifest)
-    assert_equal stub_id, id
-    id
-  end
-
-  def stub_kata_create(stub_id)
-    externals.instance_eval {
-      @kata_id_generator = StubIdGenerator.new(stub_id)
-    }
-    id = kata.create(starter.manifest)
-    assert_equal stub_id, id
-    id
   end
 
   def starter

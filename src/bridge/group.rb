@@ -19,13 +19,18 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-    id = manifest['id'] = group_id_generator.id
+
+    id = nil
+    loop do
+      id = id_generator.id
+      if saver.create(id_path(id))
+        break
+      end
+    end
+
+    manifest['id'] = id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    results = saver.batch_until_false([
-      create_cmd(id),
-      manifest_write_cmd(id, manifest)
-    ])
-    unless results === [true,true]
+    unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)
     end
     id
@@ -122,7 +127,7 @@ class Group
     'manifest.json'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - -
 
   def id_path(id, *parts)
     # Using 2/2/2 split.
@@ -189,8 +194,8 @@ class Group
     @externals.saver
   end
 
-  def group_id_generator
-    @externals.group_id_generator
+  def id_generator
+    @externals.id_generator
   end
 
   def kata

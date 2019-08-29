@@ -18,20 +18,28 @@ class Kata
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
+
+    id = nil
+    loop do
+      id = id_generator.id
+      if saver.create(id_path(id))
+        break
+      end
+    end
+
     files = manifest.delete('visible_files')
-    id = manifest['id'] = kata_id_generator.id
+    manifest['id'] = id
     event0 = {
       'event' => 'created',
       'time' => manifest['created']
     }
     saver.batch_until_false([
-      create_cmd(id),
       create_cmd(id, 0),
       manifest_write_cmd(id, manifest),
       event_write_cmd(id, 0, { 'files' => files }),
       events_write_cmd(id, event0)
     ])
-    # TODO: result === [true]*5
+    # TODO: result === [true]*4
     id
   end
 
@@ -206,7 +214,7 @@ class Kata
     'events.json'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - -
 
   def id_path(id, *parts)
     # Using 2/2/2 split.
@@ -241,8 +249,8 @@ class Kata
     @externals.saver
   end
 
-  def kata_id_generator
-    @externals.kata_id_generator
+  def id_generator
+    @externals.id_generator
   end
 
 end

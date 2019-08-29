@@ -14,25 +14,15 @@ class GroupTest < TestBase
   'group_exists? is false before creation, true after creation' do
     id = '50C8C6'
     refute group.exists?(id)
-    stub_group_create(id)
+    id_generator_stub(id)
+    gid = group.create(starter.manifest)
+    assert_equal id, gid
     assert group.exists?(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # group_create(manifest) group_manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '42F', %w(
-  group_create raises when id's dir cannot be created
-  ) do
-    id = group.create(starter.manifest)
-    error = assert_raises(ArgumentError) {
-      stub_group_create(id)
-    }
-    assert_equal "id:invalid:#{id}", error.message
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
   'group_create() generates id' do
@@ -134,7 +124,7 @@ class GroupTest < TestBase
 
   test '1D5',
   'group_joined information can be retrieved' do
-    gid = stub_group_create('58k563')
+    gid = group.create(starter.manifest)
     kids = group.joined(gid)
     expected = []
     assert_equal(expected, kids, 'someone has already joined!')
@@ -161,7 +151,7 @@ class GroupTest < TestBase
 
   test 'A05', %w(
   group_events is a BatchMethod for web's dashboard ) do
-    gid = stub_group_create('e8ArPs')
+    gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
     index1 = kata.manifest(kid1)['group_index']
     kid2 = group.join(gid, indexes)

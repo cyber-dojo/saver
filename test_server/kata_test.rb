@@ -14,7 +14,9 @@ class KataTest < TestBase
   'kata_exists? is false before creation, true after creation' do
     id = '50C8C6'
     refute kata.exists?(id)
-    stub_kata_create(id)
+    id_generator_stub(id)
+    kid = kata.create(starter.manifest)
+    assert_equal id, kid
     assert kata.exists?(id)
   end
 
@@ -72,7 +74,7 @@ class KataTest < TestBase
 
   test '822',
   'kata_event raises when n does not exist' do
-    id = stub_kata_create('AB5AEE')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.event(id, 1)
     }
@@ -104,10 +106,10 @@ class KataTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '824', %w(
-  kata_ran_tests raises when index is -1
-  because -1 can only be used on kata_event()
+    kata_ran_tests raises when index is -1
+    because -1 can only be used on kata_event()
   ) do
-    id = stub_kata_create('FCF211')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.ran_tests(*make_ran_test_args(id, -1, edited_files))
     }
@@ -117,10 +119,10 @@ class KataTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '825', %w(
-  kata_ran_tests raises when index is 0
-  because 0 is used for kata_create()
+    kata_ran_tests raises when index is 0
+    because 0 is used for kata_create()
   ) do
-    id = stub_kata_create('08739D')
+    id = kata.create(starter.manifest)
     error = assert_raises(ArgumentError) {
       kata.ran_tests(*make_ran_test_args(id, 0, edited_files))
     }
@@ -130,10 +132,11 @@ class KataTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '826', %w(
-  kata_ran_tests raises when index already exists
-  and does not add a new event,
-  in other words it fails atomically ) do
-    id = stub_kata_create('C7112B')
+    kata_ran_tests raises when index already exists
+    and does not add a new event,
+    in other words it fails atomically
+  ) do
+    id = kata.create(starter.manifest)
     expected_events = []
     expected_events << event0
     assert_equal expected_events, kata.events(id)
@@ -157,10 +160,11 @@ class KataTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   test '827', %w(
-  kata_ran_tests does NOT raise when index-1 does not exist
-  and the reason for this is partly speed
-  and partly robustness against temporary katas failure ) do
-    id = stub_kata_create('710145')
+    kata_ran_tests does NOT raise when index-1 does not exist
+    and the reason for this is partly speed
+    and partly robustness against temporary katas failure
+  ) do
+    id = kata.create(starter.manifest)
     kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     # ran.tests(*make_ran_test_args(id, 2, ...)) assume failed
     kata.ran_tests(*make_ran_test_args(id, 3, edited_files)) # <====
@@ -170,7 +174,7 @@ class KataTest < TestBase
 
   test '829',
   'after kata_ran_tests() there is one more event' do
-    id = stub_kata_create('9DD618')
+    id = kata.create(starter.manifest)
 
     expected_events = [event0]
     diagnostic = '#0 kata_events(id)'
