@@ -7,21 +7,21 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_exists?()
+  # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '392',
-  'group_exists? is true after creation' do
+  'exists?(id) is true with id returned from successful create() ' do
     id = group.create(starter.manifest)
     assert group.exists?(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_create(), group_manifest()
+  # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '420',
-  'group_manifest() raises when id does not exist' do
+  'manifest() raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
       group.manifest(id)
@@ -31,7 +31,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '42E',
-  'group_create() group_manifest() round-trip' do
+  'create() manifest() round-trip' do
     id = group.create(starter.manifest)
     manifest = starter.manifest
     manifest['id'] = id
@@ -39,11 +39,33 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # group_join() / group_joined()
+
+  test '42F',
+  '[new] create() fails if saver.write() fails, eg disk is full' do
+    gid = '467uDe'
+    externals.instance_exec {
+      @id_generator =
+        Class.new do
+          def initialize(id); @id = id; end
+          def id; @id; end
+        end.new(gid)
+      @saver =
+        Class.new do
+          def create(_key); true; end
+          def write(_key,_value); false; end
+        end.new
+    }
+    assert_service_error("id:invalid:#{gid}") {
+      group.create(starter.manifest)
+    }
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
+  # join(), joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '1D0',
-  'group_join raises when id does not exist' do
+  'join() raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
       group.join(id, indexes)
@@ -53,7 +75,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '1D3', %w(
-  group_join a non-full group with valid id succeeds
+  join() a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
   the group id and the avatar index ) do
@@ -69,8 +91,8 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '1D4', %w(
-  group_join with a valid id succeeds 64 times
-  then its full and it fails with nil
+  join() returns a valid id 64 times
+  then its full and it returns nil
   ) do
     gid = group.create(starter.manifest)
     kids = []
@@ -99,14 +121,14 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '1D2',
-  'group_joined returns nil when the id does not exist' do
+  'joined() returns nil when the id does not exist' do
     assert_nil group.joined('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '1D5',
-  'group_joined information can be retrieved' do
+  'joined() information can be retrieved' do
     gid = group.create(starter.manifest)
     kids = group.joined(gid)
     expected = []
@@ -122,18 +144,18 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # group_events
+  # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test 'A04', %w(
-  group_events returns nil when the id does not exist ) do
+  events() returns nil when the id does not exist ) do
       assert_nil group.events('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test 'A05', %w(
-  group_events is a BatchMethod for web's dashboard ) do
+  events() is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
     index1 = kata.manifest(kid1)['group_index']
