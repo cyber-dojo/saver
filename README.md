@@ -18,6 +18,7 @@ API:
 - [GET sha()](#get-sha)
 - [GET ready?()](#get-ready)
 - [GET exists?(key)](#get-existskey)
+- [POST create(key)](#post-createkey)
 - [POST write(key,value)](#post-writekeyvalue)
 - [POST append(key,value)](#post-appendkeyvalue)
 - [GET read(key)](#get-readkey)
