@@ -7,11 +7,11 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_exists?(id)
+  # exists?(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '392',
-  'group_exists? is false before creation, true after creation' do
+  'exists?(id) is false before creation, true after creation' do
     id = '50C8C6'
     refute group.exists?(id)
     id_generator_stub(id)
@@ -21,11 +21,11 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # group_create(manifest) group_manifest(id)
+  # id=create(), manifest(id)
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '421',
-  'group_create() generates id' do
+  'create() generates id' do
     manifest = starter.manifest
     refute manifest.key?('id')
     id = group.create(manifest)
@@ -36,7 +36,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '420',
-  'group_manifest() raises when id does not exist' do
+  'manifest(id) raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
       group.manifest(id)
@@ -47,7 +47,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '42E',
-  'group_create() group_manifest() round-trip' do
+  'create() manifest() round-trip' do
     id = group.create(starter.manifest)
     expected = starter.manifest
     expected['id'] = id
@@ -55,11 +55,11 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # group_join() / group_joined()
+  # join(), joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D0',
-  'group_join raises when id does not exist' do
+  'join(id) raises when id does not exist' do
     id = 'B4AB37'
     error = assert_raises(ArgumentError) {
       group.join(id, indexes)
@@ -70,7 +70,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D3', %w(
-  group_join a non-full group with valid id succeeds
+  join(id) a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
   the group id and the avatar index ) do
@@ -86,7 +86,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D4', %w(
-  group_join with a valid id succeeds 64 times
+  join() with a valid id succeeds 64 times
   then its full and it fails with nil
   ) do
     gid = group.create(starter.manifest)
@@ -97,7 +97,7 @@ class GroupTest < TestBase
       refute_nil kid
       assert kid.is_a?(String), "kid is a #{kid.class.name}!"
       assert_equal 6, kid.size
-      assert kata.exists?(kid), "!kata_exists?(#{kid})"
+      assert kata.exists?(kid), "!kata.exists?(#{kid})"
       kids << kid
       assert_equal kids.sort, group.joined(gid).sort
 
@@ -116,14 +116,14 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D2',
-  'group_joined returns nil when the id does not exist' do
+  'joined(id) returns nil when the id does not exist' do
     assert_nil group.joined('B4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test '1D5',
-  'group_joined information can be retrieved' do
+  'joined() information can be retrieved' do
     gid = group.create(starter.manifest)
     kids = group.joined(gid)
     expected = []
@@ -139,18 +139,18 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
-  # group_events
+  # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test 'A04', %w(
-  group_events returns null when the id does not exist ) do
+  events(id) returns null when the id does not exist ) do
       assert_nil group.events('B4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
   test 'A05', %w(
-  group_events is a BatchMethod for web's dashboard ) do
+  events() is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
     index1 = kata.manifest(kid1)['group_index']

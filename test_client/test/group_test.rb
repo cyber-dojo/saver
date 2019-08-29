@@ -11,7 +11,7 @@ class GroupTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   old_new_test '392',
-  'exists?(id) is true with id returned from successful create() ' do
+  'exists?(id) is true with id returned from successful create()' do
     id = group.create(starter.manifest)
     assert group.exists?(id)
   end
@@ -102,7 +102,7 @@ class GroupTest < TestBase
       refute_nil kid
       assert kid.is_a?(String), "kid is a #{kid.class.name}!"
       assert_equal 6, kid.size
-      assert kata.exists?(kid), "!kata_exists?(#{kid})"
+      assert kata.exists?(kid), "!kata.exists?(#{kid})"
       kids << kid
       assert_equal kids.sort, group.joined(gid).sort
 
@@ -166,7 +166,11 @@ class GroupTest < TestBase
     expected = {
       kid1 => {
         'index' => index1,
-        'events' => [event0, { 'colour' => 'red', 'time' => time_now, 'duration' => duration }]
+        'events' => [event0, {
+          'colour' => 'red',
+          'time' => time_now,
+          'duration' => duration
+        }]
       },
       kid2 => {
         'index' => index2,
