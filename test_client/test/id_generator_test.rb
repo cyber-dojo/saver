@@ -14,8 +14,8 @@ class IdGeneratorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '064', %w(
-  [new] alphabet has 58 characters all of which get used ) do
+  test '064', %w( <new>
+  alphabet has 58 characters all of which get used ) do
     assert_equal 58, alphabet.size
     counts = {}
     until counts.size === 58 do
@@ -45,9 +45,9 @@ class IdGeneratorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '066', %w(
-  [new] id generation is sufficiently random that there is
-  no duplicate in 25,000 repeats ) do
+  test '066', %w( <new>
+  id generation is sufficiently random that there are
+  no duplicates in 25,000 repeats ) do
     ids = {}
     repeats = 25000
     repeats.times do
@@ -74,10 +74,10 @@ class IdGeneratorTest < TestBase
     refute id?(nil)
     refute id?([])
     refute id?(25)
-    refute id?('I') # (India)
-    refute id?('i') # (india)
-    refute id?('O') # (Oscar)
-    refute id?('o') # (oscar)
+    refute id?('I'), :India
+    refute id?('i'), :india
+    refute id?('O'), :Oscar
+    refute id?('o'), :oscar
   end
 
   private

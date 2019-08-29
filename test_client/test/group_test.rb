@@ -40,8 +40,9 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42F',
-  '[new] create() fails if saver.write() fails, eg disk is full' do
+  test '42F', %w( <new>
+    create() fails if saver.write() fails, eg disk is full
+  ) do
     gid = '467uDe'
     externals.instance_exec {
       @id_generator =

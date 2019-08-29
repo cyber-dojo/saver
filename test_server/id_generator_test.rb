@@ -74,10 +74,10 @@ class IdGeneratorTest < TestBase
     refute id?(nil)
     refute id?([])
     refute id?(25)
-    refute id?('I') # (India)
-    refute id?('i') # (india)
-    refute id?('O') # (Oscar)
-    refute id?('o') # (oscar)
+    refute id?('I'), :India
+    refute id?('i'), :india
+    refute id?('O'), :Oscar
+    refute id?('o'), :oscar
   end
 
   private

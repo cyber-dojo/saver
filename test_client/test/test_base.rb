@@ -9,37 +9,33 @@ class TestBase < HexMiniTest
   end
 
   def self.old_new_test(hex_suffix, *lines, &block)
-    old_lines = ['[old]'] + lines
+    old_lines = ['<old>'] + lines
     test(hex_suffix+'0', *old_lines, &block)
-    new_lines = ['[new]'] + lines
+    new_lines = ['<new>'] + lines
     test(hex_suffix+'1', *new_lines, &block)
   end
 
+  # - - - - - - - - - - - - - - - - - -
+
   def externals
-    if test_name.start_with?('[new]')
+    if test_name.start_with?('<new>')
       @externals ||= ExternalsNew.new
     else
       @externals ||= Externals.new
     end
   end
 
+  # - - - - - - - - - - - - - - - - - -
+
   def assert_service_error(message, &block)
-    if test_name.start_with?('[new]')
-      assert_service_error_new(message, &block)
+    if test_name.start_with?('<new>')
+      error = assert_raises(ArgumentError) { block.call }
+      assert_equal message, error.message
     else
-      assert_service_error_old(message, &block)
+      error = assert_raises(ServiceError) { block.call }
+      json = JSON.parse(error.message)
+      assert_equal message, json['message']
     end
-  end
-
-  def assert_service_error_new(message, &block)
-    error = assert_raises(ArgumentError) { block.call }
-    assert_equal message, error.message
-  end
-
-  def assert_service_error_old(message, &block)
-    error = assert_raises(ServiceError) { block.call }
-    json = JSON.parse(error.message)
-    assert_equal message, json['message']
   end
 
   # - - - - - - - - - - - - - - - - - -
@@ -65,10 +61,6 @@ class TestBase < HexMiniTest
   end
 
   # - - - - - - - - - - - - - - - - - -
-
-  def creation_time
-    starter.creation_time
-  end
 
   def make_ran_test_args(id, n, files)
     [ id, n, files, time_now, duration, stdout, stderr, status, red ]
@@ -106,9 +98,9 @@ class TestBase < HexMiniTest
     }
   end
 
-  def file(content, truncated = false)
+  def file(content)
     { 'content' => content,
-      'truncated' => truncated
+      'truncated' => false
     }
   end
 
@@ -117,6 +109,10 @@ class TestBase < HexMiniTest
       'event'  => 'created',
       'time'   => creation_time
     }
+  end
+
+  def creation_time
+    starter.creation_time
   end
 
 end
