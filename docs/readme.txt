@@ -1,6 +1,26 @@
 
 split-off-singler-and-grouper branch
 
+- currently if there is saver failure you can end up with
+  an events.json file like this... Saver failed to save the
+  traffic-light test runs 2,3
+    { .... } # 0
+    { .... } # 1
+    { .... } # 4
+  The dir structure will be...
+    .../ID/0/event.json
+    .../ID/1/event.json
+    .../ID/4/event.json
+  But reading back will fail. Eg index == -1
+  will do events.lines.size - 1 == 3-1 == 2 but there is no
+    .../ID/2/event.json
+  Fix this.
+
+- Also prepare new schema that flattens dir structure.
+  not .../ID/INDEX/event.json
+  but .../ID/INDEX.event.json
+  have code and tests for versioning in the manifest.json file.
+
 - fix coverage gaps
 - kata.create(starter.manifest) has same race-condition
 - fix todos
