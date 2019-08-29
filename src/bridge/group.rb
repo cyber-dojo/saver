@@ -19,16 +19,7 @@ class Group
   # - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-
-    id = nil
-    loop do
-      id = id_generator.id
-      if saver.create(id_path(id))
-        break
-      end
-    end
-
-    manifest['id'] = id
+    id = manifest['id'] = generate_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)
@@ -105,6 +96,25 @@ class Group
 
   private
 
+  def generate_id
+    loop do
+      id = id_generator.id
+      if saver.create(id_path(id))
+        return id
+      end
+    end
+  end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def create_cmd(id, *parts)
     ['create', id_path(id, *parts)]
   end
@@ -128,16 +138,6 @@ class Group
   end
 
   # - - - - - - - - - - - - - - - - - - -
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   include Liner
 
