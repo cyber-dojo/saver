@@ -19,15 +19,19 @@ class KataFuture
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    event0 = {
+    event_summary = {
       'event' => 'created',
       'time' => manifest['created'],
       'index' => 0
     }
+    # So you can diff against the first traffic-light.
+    to_diff = {
+      'files' => manifest['visible_files']
+    }
     saver.batch_until_false([
       manifest_write_cmd(id, manifest),
-      events_write_cmd(id, event0),
-      event_write_cmd(id, 0, { 'files' => manifest['visible_files'] })
+      events_write_cmd(id, event_summary),
+      event_write_cmd(id, 0, to_diff)
     ])
     # TODO: if result.include?(false)
     id
@@ -127,10 +131,7 @@ class KataFuture
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
   #
-  # create() extracts the visible_files from the manifest and
-  # stores them as event-zero files. This allows a diff of the
-  # first traffic-light but means manifest() has to recombine two
-  # files. In theory the manifest could store only the display_name
+  # In theory the manifest could store only the display_name
   # and exercise_name and be recreated, on-demand, from the relevant
   # start-point services. In practice, it doesn't work because the
   # start-point services can change over time.
