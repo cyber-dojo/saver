@@ -28,8 +28,8 @@ class KataNew
       create_cmd(id),
       create_cmd(id, 0),
       manifest_write_cmd(id, manifest),
-      events_write_cmd(id, event0),
-      event_write_cmd(id, 0, { 'files' => files })
+      event_write_cmd(id, 0, { 'files' => files }),
+      events_write_cmd(id, event0)
     ])
     # TODO: result === [true]*5
     id
