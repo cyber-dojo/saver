@@ -1,6 +1,7 @@
 require_relative 'hex_mini_test'
 require_relative '../src/externals'
 require_relative '../src/externals_new'
+require_relative '../src/externals_future'
 
 class TestBase < HexMiniTest
 
@@ -8,17 +9,38 @@ class TestBase < HexMiniTest
     super(arg)
   end
 
+  def self.old_new_future_test(hex_suffix, *lines, &block)
+    self.old_test(hex_suffix, *lines, &block)
+    self.new_test(hex_suffix, *lines, &block)
+    self.future_test(hex_suffix, *lines, &block)
+  end
+
   def self.old_new_test(hex_suffix, *lines, &block)
+    self.old_test(hex_suffix, *lines, &block)
+    self.new_test(hex_suffix, *lines, &block)
+  end
+
+  def self.old_test(hex_suffix, *lines, &block)
     old_lines = ['<old>'] + lines
     test(hex_suffix+'0', *old_lines, &block)
+  end
+
+  def self.new_test(hex_suffix, *lines, &block)
     new_lines = ['<new>'] + lines
     test(hex_suffix+'1', *new_lines, &block)
+  end
+
+  def self.future_test(hex_suffix, *lines, &block)
+    future_lines = ['<future>'] + lines
+    test(hex_suffix+'2', *future_lines, &block)
   end
 
   # - - - - - - - - - - - - - - - - - -
 
   def externals
-    if test_name.start_with?('<new>')
+    if test_name.start_with?('<future>')
+      @externals ||= ExternalsFuture.new
+    elsif test_name.start_with?('<new>')
       @externals ||= ExternalsNew.new
     else
       @externals ||= Externals.new
@@ -28,7 +50,7 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - - -
 
   def assert_service_error(message, &block)
-    if test_name.start_with?('<new>')
+    if test_name.start_with?('<new>') || test_name.start_with?('<future>')
       error = assert_raises(ArgumentError) { block.call }
       assert_equal message, error.message
     else
@@ -105,10 +127,14 @@ class TestBase < HexMiniTest
   end
 
   def event0
-    {
+    zero = {
       'event'  => 'created',
       'time'   => creation_time
     }
+    if test_name.start_with?('<future>')
+      zero['index'] = 0
+    end
+    zero
   end
 
   def creation_time

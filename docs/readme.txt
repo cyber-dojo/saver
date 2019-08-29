@@ -15,7 +15,10 @@ split-off-singler-and-grouper branch
   will do events.lines.size - 1 == 3-1 == 2 but there is no
     .../ID/2/event.json
   Fix this.
+  Keep manifest's version number as data submitted in kata/edit's form.
+  Use that to choose group/kata implementations.
   local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
+  Check diff works when there are these saver-offline gaps.
 
 - Also prepare new schema that flattens dir structure.
   not .../ID/INDEX/event.json
@@ -25,12 +28,11 @@ split-off-singler-and-grouper branch
 - with versioning I could also drop the lining/unlining for extra speed?
 
 - fix coverage gaps
-- kata.create(starter.manifest) has same race-condition
 - fix todos
 - client uses SaverException (like web)
 - use fast JSON eg Oj
 - add parallel branch in web repo
-- fix messages for partial web degradation (saver,ragger)
+- fix web footer messages for partial degradation (saver,ragger)
 - try out images on local server and under versioner
 
 - for k8s
