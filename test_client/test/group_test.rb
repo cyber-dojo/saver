@@ -164,7 +164,7 @@ class GroupTest < TestBase
       assert_equal 2, k_manifest['version']
     else
       refute g_manifest.has_key?('version')
-      refute k_manifest.has_key?('version') 
+      refute k_manifest.has_key?('version')
     end
   end
 

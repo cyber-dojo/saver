@@ -242,6 +242,7 @@ class Kata_v1
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
+    # TODO: SaverException 
     ArgumentError.new("#{name}:invalid:#{value}")
   end
 

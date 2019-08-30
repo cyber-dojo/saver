@@ -75,16 +75,13 @@ class Group_v2
     if !exists?(id)
       events = nil
     else
-      indexes = kata_indexes(id)
-      filenames = indexes.map do |kata_id,_index|
-        args = ['', 'katas']
-        args += [kata_id[0..1], kata_id[2..3], kata_id[4..5]]
-        args += ['events.json']
-        File.join(*args)
+      kindexes = kata_indexes(id)
+      filenames = kindexes.map do |kata_id,_index|
+        kata.send(:events_read_cmd, kata_id)[1]
       end
       katas_events = saver.batch_read(filenames)
       events = {}
-      indexes.each.with_index(0) do |(kata_id,index),offset|
+      kindexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
           'index' => index,
           'events' => group_events_parse(katas_events[offset])
@@ -146,12 +143,12 @@ class Group_v2
     reads = saver.batch_read(filenames)
     # reads is an array of 64 entries, eg
     # [
-    #    nil,      # 0
-    #    nil,      # 1
-    #    'w34rd5', # 2
-    #    nil,      # 3
-    #    'G2ws77', # 4
-    #    nil
+    #    nil,      # 0 (alligator)
+    #    nil,      # 1 (antelope)
+    #    'w34rd5', # 2 (bat)
+    #    nil,      # 3 (bear)
+    #    'G2ws77', # 4 (bee)
+    #    nil,      # 5 (beetle)
     #    ...
     # ]
     # indicating there are joined animals at indexes
@@ -159,7 +156,11 @@ class Group_v2
     # 4 (bee) id == G2ws77
     reads.each.with_index(0).select{ |kata_id,_| kata_id }
     # Select the non-nil entries whilst retaining the index
-    # [ ['w34rd5',2], ['G2ws77',4], ... ]
+    # [
+    #   ['w34rd5',2], # bat
+    #   ['G2ws77',4], # bee
+    #   ...
+    # ]
   end
 
   # - - - - - - - - - - - - - -
