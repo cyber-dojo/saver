@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'saver_exception'
-require 'oj'
+require_relative 'oj_adapter'
 
 # 1. Manifest now has explicit version.
-# 2. No longer stores file contents in lined format.
-# 3. Uses Oj as its JSON gem.
+# 2. No longer stores JSON in pretty format.
+# 3. No longer stores file contents in lined format.
+# 4. Uses Oj as its JSON gem.
 
 class Group_v2
 
@@ -94,6 +95,8 @@ class Group_v2
 
   private
 
+  include OjAdapter
+
   def generate_id
     loop do
       id = id_generator.id
@@ -124,7 +127,7 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_dump(manifest)]
+    ['write', id_path(id, manifest_filename), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -173,20 +176,9 @@ class Group_v2
   end
 
   # - - - - - - - - - - - - - -
-  # json
-
-  def json_dump(o)
-    Oj.dump(o)
-  end
-
-  def json_parse(s)
-    Oj.strict_load(s)
-  end
-
-  # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    SaverException.new(json_dump({
+    SaverException.new(json_pretty({
       "message" => "#{name}:invalid:#{value}"
     }))
   end

@@ -3,7 +3,7 @@
 require_relative 'externals'
 require_relative 'http_json/request_error'
 require_relative 'http_json_args'
-require 'oj'
+require_relative 'oj_adapter'
 
 class RackDispatcher
 
@@ -35,24 +35,19 @@ class RackDispatcher
 
   private
 
-  def json_response_pass(status, json)
-    body = Oj.dump(json, { :mode => :strict })
+  include OjAdapter
+  
+  def json_response_pass(status, obj)
+    body = json_plain(obj)
     json_response(status, body)
   end
 
-  def json_response_fail(status, json)
-    body = Oj.generate(json, OJ_PRETTY_OPTIONS)
+  def json_response_fail(status, obj)
+    body = json_pretty(obj)
     $stderr.puts(body)
     $stderr.flush
     json_response(status, body)
   end
-
-  OJ_PRETTY_OPTIONS = {
-    :space => ' ',
-    :indent => '  ',
-    :object_nl => "\n",
-    :array_nl => "\n"
-  }
 
   def json_response(status, body)
     [ status,

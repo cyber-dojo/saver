@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'saver_exception'
-require 'oj'
+require_relative 'oj_adapter'
 
 # 1. Manifest now has explicit version.
-# 2. No longer stores file contents in lined format.
-# 3. Uses Oj as its JSON gem.
-# 4. Stores explicit index in events.json summary file.
+# 2. No longer stores JSON in pretty format.
+# 3. No longer stores file contents in lined format.
+# 4. Uses Oj as its JSON gem.
+# 5. Stores explicit index in events.json summary file.
 #    This makes using index==-1 robust when traff-clights
 #    are lost due to Saver outages.
 #    was    { ... } # 0
@@ -15,7 +16,7 @@ require 'oj'
 #    now    { ... "index" => 0 }
 #           { ... "index" => 1 }
 #           { ... "index" => 4 }
-# 5. No longer uses separate dir for each event file.
+# 6. No longer uses separate dir for each event file.
 #    This makes ran_tests() faster as it no longer needs
 #    a create_cmd() in its saver.batch call.
 #    was     /cyber-dojo/katas/e3/T6/K2/0/event.json
@@ -126,6 +127,8 @@ class Kata_v2
 
   private
 
+  include OjAdapter
+
   def id_generator
     @externals.id_generator
   end
@@ -156,7 +159,7 @@ class Kata_v2
   # doesn't work because start-point services change over time.
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_dump(manifest)]
+    ['write', id_path(id, manifest_filename), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -171,7 +174,7 @@ class Kata_v2
   # event
 
   def event_write_cmd(id, index, event)
-    ['write', id_path(id, event_filename(index)), json_dump(event)]
+    ['write', id_path(id, event_filename(index)), json_plain(event)]
   end
 
   def event_read_cmd(id, index)
@@ -192,11 +195,11 @@ class Kata_v2
   # append to the end of the file.
 
   def events_write_cmd(id, event0)
-    ['write', id_path(id, events_filename), json_dump(event0) + "\n"]
+    ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
   end
 
   def events_append_cmd(id, event)
-    ['append', id_path(id, events_filename), json_dump(event) + "\n"]
+    ['append', id_path(id, events_filename), json_plain(event) + "\n"]
   end
 
   def events_read_cmd(id)
@@ -208,20 +211,9 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - -
-  # json
-
-  def json_dump(o)
-    Oj.dump(o)
-  end
-
-  def json_parse(s)
-    Oj.strict_load(s)
-  end
-
-  # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    SaverException.new(json_dump({
+    SaverException.new(json_pretty({
       "message" => "#{name}:invalid:#{value}"
     }))
   end

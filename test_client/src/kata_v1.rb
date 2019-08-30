@@ -2,7 +2,7 @@
 
 require_relative 'liner'
 require_relative 'saver_exception'
-require 'json'
+require_relative 'oj_adapter'
 
 class Kata_v1
 
@@ -115,6 +115,9 @@ class Kata_v1
 
   private
 
+  include OjAdapter
+  include Liner
+
   def generate_id
     loop do
       id = id_generator.id
@@ -154,7 +157,7 @@ class Kata_v1
   # start-point services can change over time.
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+    ['write', id_path(id, manifest_filename), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -172,7 +175,7 @@ class Kata_v1
   # inspected on disk. Have to be unlined when read back.
 
   def event_write_cmd(id, index, event)
-    ['write', id_path(id, index, event_filename), json_pretty(lined(event))]
+    ['write', id_path(id, index, event_filename), json_plain(lined(event))]
   end
 
   def event_read_cmd(id, index)
@@ -182,8 +185,6 @@ class Kata_v1
   def event_filename
     'event.json'
   end
-
-  include Liner
 
   def lined(event)
     event['files'] = lined_files(event['files'])
@@ -226,24 +227,9 @@ class Kata_v1
   end
 
   # - - - - - - - - - - - - - -
-  # json
-
-  def json_plain(o)
-    JSON.fast_generate(o)
-  end
-
-  def json_pretty(o)
-    JSON.pretty_generate(o)
-  end
-
-  def json_parse(s)
-    JSON.parse!(s)
-  end
-
-  # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    SaverException.new(JSON.fast_generate({
+    SaverException.new(json_pretty({
       "message" => "#{name}:invalid:#{value}"
     }))
   end

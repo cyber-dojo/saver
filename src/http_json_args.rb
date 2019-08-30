@@ -64,12 +64,10 @@ class HttpJsonArgs
   attr_reader :args
 
   def key
-    #well_formed_string('key')
     well_formed_string('key', @args['key'])
   end
 
   def value
-    #well_formed_string('value')
     well_formed_string('value', @args['value'])
   end
 

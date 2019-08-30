@@ -2,7 +2,7 @@
 
 require_relative 'liner'
 require_relative 'saver_exception'
-require 'json'
+require_relative 'oj_adapter'
 
 class Group_v1
 
@@ -96,6 +96,9 @@ class Group_v1
 
   private
 
+  include OjAdapter
+  include Liner
+
   def generate_id
     loop do
       id = id_generator.id
@@ -126,7 +129,7 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+    ['write', id_path(id, manifest_filename), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -138,8 +141,6 @@ class Group_v1
   end
 
   # - - - - - - - - - - - - - - - - - - -
-
-  include Liner
 
   def kata_indexes(id)
     filenames = (0..63).map do |index|
@@ -174,18 +175,8 @@ class Group_v1
 
   # - - - - - - - - - - - - - -
 
-  def json_pretty(o)
-    JSON.pretty_generate(o)
-  end
-
-  def json_parse(s)
-    JSON.parse!(s)
-  end
-
-  # - - - - - - - - - - - - - -
-
   def invalid(name, value)
-    SaverException.new(JSON.fast_generate({
+    SaverException.new(json_pretty({
       "message" => "#{name}:invalid:#{value}"
     }))
   end
