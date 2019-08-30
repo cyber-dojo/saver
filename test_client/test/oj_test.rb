@@ -13,16 +13,16 @@ class OjTest < TestBase
   test 'CB1',
   %w( oj is faster than standard json fast generation ) do
     o = any_hash
-    slower,_ = timed {
-      1000.times { JSON.fast_generate(o) }
-    }
-    faster,_ = timed {
-      1000.times { Oj.dump(o) }
-    }
-    diagnostic = "generating JSON:#{slower}: Oj:#{faster}:"
+    oj_gem = -> { Oj.dump(o) }
+    json_gem = -> { JSON.fast_generate(o) }
+    t0,t1 = two_timed(100,[oj_gem,json_gem])
+    diagnostic = ''
+    diagnostic += "\n#{'%.5f' % t0}:oj_gem"
+    diagnostic += "\n#{'%.5f' % t1}:json_gem"
     # puts diagnostic
-    # generating JSON:0.0068: Oj:0.0013:
-    assert faster < slower, diagnostic
+    # 0.00024:oj_gem
+    # 0.00068:json_gem
+    assert t0 < t1, diagnostic
   end
 
   # - - - - - - - - - - - - - - - - -
