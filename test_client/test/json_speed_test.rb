@@ -10,26 +10,34 @@ class JsonSpeedTest < TestBase
   test 'A06', %w( test speed of alternative implementations ) do
     one = '{"s":23,"t":[1,2,3,4,5,6,7],"u":"blah"}'
     all = ([one] * 1242).join("\n")
-    _,faster = timed {
-      line = '[' + all.lines.join(',') + ']'
-      Oj.strict_load(line)
-    }
-    _,slower = timed {
-      all.lines.map { |line|
-        Oj.strict_load(line)
-      }
-    }
+    slower = many_joins_one_json_load(all)
+    faster = one_map_many_json_loads(all)
     assert faster <= slower, "faster:#{faster}, slower:#{slower}"
   end
 
   private
 
+  def many_joins_one_json_load(all)
+    timed {
+      line = '[' + all.lines.join(',') + ']'
+      Oj.strict_load(line)
+    }
+  end
+
+  def one_map_many_json_loads(all)
+    timed {
+      all.lines.map { |line|
+        Oj.strict_load(line)
+      }
+    }
+  end
+
   def timed
+    yield # run once to prime caches
     started = Time.now
-    result = yield
+    yield
     finished = Time.now
-    duration = '%.4f' % (finished - started)
-    [result,duration]
+    '%.4f' % (finished - started)
   end
 
 end
