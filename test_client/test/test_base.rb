@@ -1,7 +1,7 @@
 require_relative 'hex_mini_test'
-require_relative '../src/externals'
-require_relative '../src/externals_new'
-require_relative '../src/externals_future'
+require_relative '../src/externals_v0'
+require_relative '../src/externals_v1'
+require_relative '../src/externals_v2'
 
 class TestBase < HexMiniTest
 
@@ -9,65 +9,40 @@ class TestBase < HexMiniTest
     super(arg)
   end
 
-     OLD_TEST_MARK = '<old>'
-     NEW_TEST_MARK = '<new>'
-  FUTURE_TEST_MARK = '<future>'
-
-  def future_test?
-    test_name.start_with?(FUTURE_TEST_MARK)
-  end
-
-  def new_test?
-    test_name.start_with?(NEW_TEST_MARK)
-  end
-
-  def self.old_new_future_test(hex_suffix, *lines, &block)
-    self.old_new_test(hex_suffix, *lines, &block)
-    self.future_test(hex_suffix, *lines, &block)
-  end
-
-  def self.old_new_test(hex_suffix, *lines, &block)
-    self.old_test(hex_suffix, *lines, &block)
-    self.new_test(hex_suffix, *lines, &block)
-  end
-
-  def self.old_test(hex_suffix, *lines, &block)
-    old_lines = [OLD_TEST_MARK] + lines
-    test(hex_suffix+'0', *old_lines, &block)
-  end
-
-  def self.new_test(hex_suffix, *lines, &block)
-    new_lines = [NEW_TEST_MARK] + lines
-    test(hex_suffix+'1', *new_lines, &block)
-  end
-
-  def self.future_test(hex_suffix, *lines, &block)
-    future_lines = [FUTURE_TEST_MARK] + lines
-    test(hex_suffix+'2', *future_lines, &block)
-  end
-
   # - - - - - - - - - - - - - - - - - -
 
+  def self.v_test(versions, hex_suffix, *lines, &block)
+    versions.each do |version|
+      v = version.to_s
+      v_lines = ["<version=#{v}>"] + lines
+      test(hex_suffix + v, *v_lines, &block)
+    end
+  end
+
+  def v_test?(n)
+    test_name.start_with?("<version=#{n.to_s}>")
+  end
+
   def externals
-    if future_test?
-      @externals ||= ExternalsFuture.new
-    elsif new_test?
-      @externals ||= ExternalsNew.new
+    if v_test?(2)
+      @externals ||= Externals_v2.new
+    elsif v_test?(1)
+      @externals ||= Externals_v1.new
     else
-      @externals ||= Externals.new
+      @externals ||= Externals_v0.new
     end
   end
 
   # - - - - - - - - - - - - - - - - - -
 
   def assert_service_error(message, &block)
-    if new_test? || future_test?
-      error = assert_raises(ArgumentError) { block.call }
-      assert_equal message, error.message
-    else
+    if v_test?(0)
       error = assert_raises(ServiceError) { block.call }
       json = JSON.parse(error.message)
       assert_equal message, json['message']
+    else
+      error = assert_raises(ArgumentError) { block.call }
+      assert_equal message, error.message
     end
   end
 
@@ -142,7 +117,7 @@ class TestBase < HexMiniTest
       'event'  => 'created',
       'time'   => creation_time
     }
-    if future_test?
+    if v_test?(2)
       zero['index'] = 0
     end
     zero

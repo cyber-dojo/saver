@@ -14,7 +14,7 @@ class IdGeneratorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '064', %w( <new>
+  v_test [1,2], '064', %w(
   alphabet has 58 characters all of which get used ) do
     assert_equal 58, alphabet.size
     counts = {}
@@ -45,7 +45,7 @@ class IdGeneratorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '066', %w( <new>
+  v_test [1,2], '066', %w( <new>
   id generation is sufficiently random that there are
   no duplicates in 25,000 repeats ) do
     ids = {}

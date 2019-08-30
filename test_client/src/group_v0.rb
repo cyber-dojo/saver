@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Group
+class Group_v0
 
   def initialize(externals)
     @externals = externals

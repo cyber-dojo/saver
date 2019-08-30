@@ -10,7 +10,7 @@ class GroupTest < TestBase
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '392',
+  v_test [0,1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
     id = group.create(starter.manifest)
     assert group.exists?(id)
@@ -20,7 +20,7 @@ class GroupTest < TestBase
   # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '420',
+  v_test [0,1,2], '420',
   'manifest() raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -30,17 +30,20 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '42E',
+  v_test [0,1,2], '42E',
   'create() manifest() round-trip' do
     id = group.create(starter.manifest)
     manifest = starter.manifest
     manifest['id'] = id
+    if v_test?(2)
+      manifest['version'] = 2
+    end
     assert_equal manifest, group.manifest(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  test '42F', %w( <new>
+  v_test [1,2], '42F', %w( <new>
     create() fails if saver.write() fails, eg disk is full
   ) do
     gid = '467uDe'
@@ -65,7 +68,7 @@ class GroupTest < TestBase
   # join(), joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '1D0',
+  v_test [0,1,2], '1D0',
   'join() raises when id does not exist' do
     id = 'A4AB37'
     assert_service_error("id:invalid:#{id}") {
@@ -75,7 +78,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '1D3', %w(
+  v_test [0,1,2], '1D3', %w(
   join() a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
@@ -87,11 +90,16 @@ class GroupTest < TestBase
     manifest = kata.manifest(kid)
     assert_equal gid, manifest['group_id']
     assert_equal shuffled[0], manifest['group_index']
+    if v_test?(2)
+      assert_equal 2, manifest['version']
+    else
+      assert_nil manifest['version']
+    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '1D4', %w(
+  v_test [0,1,2], '1D4', %w(
   join() returns a valid id 64 times
   then its full and it returns nil
   ) do
@@ -121,14 +129,14 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '1D2',
+  v_test [0,1,2], '1D2',
   'joined() returns nil when the id does not exist' do
     assert_nil group.joined('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test '1D5',
+  v_test [0,1,2], '1D5',
   'joined() information can be retrieved' do
     gid = group.create(starter.manifest)
     kids = group.joined(gid)
@@ -148,14 +156,18 @@ class GroupTest < TestBase
   # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test 'A04', %w(
+  v_test [0,1,2], 'A04', %w(
   events() returns nil when the id does not exist ) do
       assert_nil group.events('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  old_new_test 'A05', %w(
+  # TODO:
+  # I think there is a clash using 'index' as a field name.
+  # group->kata link , tag-number on events.json ?
+
+  v_test [0,1], 'A05', %w(
   events() is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)

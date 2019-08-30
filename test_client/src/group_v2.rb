@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'kata'
-require_relative 'liner'
+require_relative 'liner' # TODO: Drop
 require 'json'
 
-class GroupNew
+class Group_v2
 
   def initialize(externals)
     @externals = externals
@@ -20,6 +19,7 @@ class GroupNew
 
   def create(manifest)
     id = manifest['id'] = generate_id
+    manifest['version'] = 2
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)

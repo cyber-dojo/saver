@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Kata
+class Kata_v0
 
   def initialize(externals)
     @externals = externals
