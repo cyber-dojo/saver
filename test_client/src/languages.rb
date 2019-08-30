@@ -1,9 +1,9 @@
 require_relative 'http'
 
-class ExternalExercises
+class Languages
 
   def initialize
-    @http = Http.new(self, 'exercises', 4525)
+    @http = Http.new(self, 'languages', 4524)
   end
 
   def manifest(name)

@@ -83,7 +83,7 @@ class SaverFake
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
-      #else raise...
+      #TODO: else raise...
       end
       results << result
       if block.call(result)

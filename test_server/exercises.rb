@@ -2,7 +2,7 @@ require_relative '../src/bridge/request_packer'
 require_relative '../src/bridge/response_unpacker'
 require 'net/http'
 
-class ExternalExercises
+class Exercises
 
   def initialize
     requester = HttpJson::RequestPacker.new(Net::HTTP, 'exercises', 4525)

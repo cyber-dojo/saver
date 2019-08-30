@@ -1,5 +1,5 @@
-require_relative 'external_exercises'
-require_relative 'external_languages'
+require_relative 'exercises'
+require_relative 'languages'
 
 class Starter
 
@@ -12,7 +12,7 @@ class Starter
   end
 
   def creation_time
-    [2016,12,2, 6,13,23,6546]
+    [2019,8,30, 10,9,34,1528]
   end
 
   private
@@ -28,11 +28,11 @@ class Starter
   # - - - - - - - - - - - - - - -
 
   def exercises
-    ExternalExercises.new
+    Exercises.new
   end
 
   def languages
-    ExternalLanguages.new
+    Languages.new
   end
 
 end

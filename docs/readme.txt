@@ -2,10 +2,10 @@
 split-off-singler-and-grouper branch
 
 - currently if there is saver failure you can end up with
-  an events.json file like this... Saver failed to save 2,3
+  an events.json file like this... (Saver failed to save 2,3,4,5,6)
     { .... } # 0
     { .... } # 1
-    { .... } # 4
+    { .... } # 7
   local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
 
 - Check diff works when there are these saver-offline gaps.

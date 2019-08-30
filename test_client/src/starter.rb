@@ -1,11 +1,11 @@
-require_relative 'external_exercises'
-require_relative 'external_languages'
+require_relative 'exercises'
+require_relative 'languages'
 
 class Starter
 
   def initialize
-    @exercises = ExternalExercises.new
-    @languages = ExternalLanguages.new
+    @exercises = Exercises.new
+    @languages = Languages.new
   end
 
   def manifest
@@ -17,7 +17,7 @@ class Starter
   end
 
   def creation_time
-    [ 2016,12,2, 6,13,23,6546 ]
+    [ 2019,12,2, 6,13,23,6546 ]
   end
 
   private

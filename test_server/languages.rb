@@ -2,7 +2,7 @@ require_relative '../src/bridge/request_packer'
 require_relative '../src/bridge/response_unpacker'
 require 'net/http'
 
-class ExternalLanguages
+class Languages
 
   def initialize
     requester = HttpJson::RequestPacker.new(Net::HTTP, 'languages', 4524)
