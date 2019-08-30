@@ -84,7 +84,7 @@ class GroupTest < TestBase
   join() a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
-  the group id and the avatar index ) do
+  the group's id and the avatar's index ) do
     gid = group.create(starter.manifest)
     shuffled = indexes
     kid = group.join(gid, shuffled)
@@ -92,11 +92,6 @@ class GroupTest < TestBase
     manifest = kata.manifest(kid)
     assert_equal gid, manifest['group_id']
     assert_equal shuffled[0], manifest['group_index']
-    if v_test?(2)
-      assert_equal 2, manifest['version']
-    else
-      assert_nil manifest['version']
-    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -155,12 +150,31 @@ class GroupTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
+
+  v_test [0,1,2], '1D6', %w(
+  v0,v1 propogate no manifest version from group to kata, but
+  v2 propogates a manifest version of 2
+  ) do
+    gid = group.create(starter.manifest)
+    g_manifest = group.manifest(gid)
+    kid = group.join(gid, indexes)
+    k_manifest = kata.manifest(kid)
+    if v_test?(2)
+      assert_equal 2, g_manifest['version']
+      assert_equal 2, k_manifest['version']
+    else
+      refute g_manifest.has_key?('version')
+      refute k_manifest.has_key?('version') 
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - -
   # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
   v_test [0,1,2], 'A04', %w(
   events() returns nil when the id does not exist ) do
-      assert_nil group.events('A4aB37')
+    assert_nil group.events('A4aB37')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

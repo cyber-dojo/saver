@@ -12,15 +12,15 @@ split-off-singler-and-grouper branch
 
 - Inspect json files on default VM for above updates.
   Keep manifest's version number as data submitted in kata/edit's html form.
-  Use that to choose group/kata implementations.
-  Don't switch version mid session.
+  Use that in web to choose group/kata implementations.
+  Don't switch version (representation) mid session.
 
 - zipper downloads will be in a certain format...
   How does that affect coupling?
 
+- client uses SaverException (like web)
 - fix coverage gaps
 - fix todos
-- client uses SaverException (like web)
 - add parallel branch in web repo
 - fix web footer messages for partial degradation (saver,ragger)
 - try out images on local server and under versioner
