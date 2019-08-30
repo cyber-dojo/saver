@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'liner' # TODO: Drop
 require 'json'
 
 class Group_v2
@@ -20,7 +19,6 @@ class Group_v2
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    manifest['visible_files'] = lined_files(manifest['visible_files'])
     unless saver.send(*manifest_write_cmd(id, manifest))
       fail invalid('id', id)
     end
@@ -34,9 +32,7 @@ class Group_v2
     unless manifest_src
       fail invalid('id', id)
     end
-    manifest = json_parse(manifest_src)
-    manifest['visible_files'] = unlined_files(manifest['visible_files'])
-    manifest
+    json_parse(manifest_src)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -138,8 +134,6 @@ class Group_v2
   end
 
   # - - - - - - - - - - - - - - - - - - -
-
-  include Liner
 
   def kata_indexes(id)
     filenames = (0..63).map do |index|
