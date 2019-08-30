@@ -11,7 +11,7 @@ class OjTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB1',
-  %w( oj is faster than standard json fast generation ) do
+  %w[ Oj.dump() is faster than JSON.fast_generate() ] do
     o = any_hash
     oj_gem = -> { Oj.dump(o) }
     json_gem = -> { JSON.fast_generate(o) }
@@ -28,7 +28,7 @@ class OjTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB2',
-  %w( oj is faster than the standard json gem at parsing ) do
+  %w[ Oj.strict_load() is faster than JSON.parse() ] do
     s = any_hash.to_json
     assert s.is_a?(String)
     oj_gem = -> { Oj.strict_load(s) }
@@ -46,7 +46,7 @@ class OjTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB3',
-  %w( Oj parsing is compatible with standard gem parsing ) do
+  %w[ Oj.strict_load() is compatible with JSON.parse() ] do
     s = any_hash.to_json
     assert_equal JSON.parse(s), Oj.strict_load(s)
   end
@@ -54,7 +54,7 @@ class OjTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB4',
-  %w( Oj generation is compatible with standard gem generation ) do
+  %w[ Oj.dump() is compatible with JSON.generate() ] do
     o = any_hash
     assert_equal JSON.generate(o), Oj.dump(o)
     assert_equal JSON.fast_generate(o), Oj.dump(o)
@@ -63,7 +63,7 @@ class OjTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB5',
-  %w( Oj generation requires strict mode for symbols ) do
+  %w( Oj.dump() requires strict mode for full JSON.generate() compatibility ) do
     symbol = :image_name
     o = { symbol => 'cyberdojofoundation/python_pytest' }
     Oj.default_options = { mode: :object }
@@ -80,6 +80,20 @@ class OjTest < TestBase
     refute_equal JSON.generate(o), Oj.dump(o)
     Oj.default_options = { mode: :strict }
     assert_equal JSON.generate(o), Oj.dump(o)
+  end
+
+  # - - - - - - - - - - - - - - - - -
+
+  test 'CB7',
+  %w[ Oj.generate() requires options to mimic JSON.pretty_generate() ] do
+    oj_pretty = Oj.generate(any_hash, {
+      :space => ' ',
+      :indent => '  ',
+      :object_nl => "\n",
+      :array_nl => "\n"
+    })
+    json_pretty = JSON.pretty_generate(any_hash)
+    assert_equal oj_pretty, json_pretty
   end
 
   private
