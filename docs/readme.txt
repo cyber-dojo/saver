@@ -18,7 +18,6 @@ split-off-singler-and-grouper branch
 - zipper downloads will be in a certain format...
   How does that affect coupling?
 
-- client uses SaverException (like web)
 - fix coverage gaps
 - fix todos
 - add parallel branch in web repo

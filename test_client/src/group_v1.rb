@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'liner'
+require_relative 'saver_exception'
 require 'json'
 
 class Group_v1
@@ -184,7 +185,9 @@ class Group_v1
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    ArgumentError.new("#{name}:invalid:#{value}")
+    SaverException.new(JSON.fast_generate({
+      "message" => "#{name}:invalid:#{value}"
+    }))
   end
 
   # - - - - - - - - - - - - - -

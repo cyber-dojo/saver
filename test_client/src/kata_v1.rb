@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'liner'
+require_relative 'saver_exception'
 require 'json'
 
 class Kata_v1
@@ -242,8 +243,9 @@ class Kata_v1
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    # TODO: SaverException 
-    ArgumentError.new("#{name}:invalid:#{value}")
+    SaverException.new(JSON.fast_generate({
+      "message" => "#{name}:invalid:#{value}"
+    }))
   end
 
   def saver

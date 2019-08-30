@@ -2,6 +2,7 @@ require_relative 'hex_mini_test'
 require_relative '../src/externals_v0'
 require_relative '../src/externals_v1'
 require_relative '../src/externals_v2'
+require_relative '../src/saver_exception'
 
 class TestBase < HexMiniTest
 
@@ -36,14 +37,9 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - - -
 
   def assert_service_error(message, &block)
-    if v_test?(0)
-      error = assert_raises(ServiceError) { block.call }
-      json = JSON.parse(error.message)
-      assert_equal message, json['message']
-    else
-      error = assert_raises(ArgumentError) { block.call }
-      assert_equal message, error.message
-    end
+    error = assert_raises(SaverException) { block.call }
+    json = JSON.parse(error.message)
+    assert_equal message, json['message']
   end
 
   # - - - - - - - - - - - - - - - - - -

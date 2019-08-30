@@ -1,14 +1,15 @@
-require_relative 'exercises'
-require_relative 'languages'
+require_relative 'exercises_service'
+require_relative 'languages_service'
 
 class Starter
 
   def initialize
-    @exercises = Exercises.new
-    @languages = Languages.new
+    @exercises = ExercisesService.new
+    @languages = LanguagesService.new
   end
 
   def manifest
+    # (mimics what web does)
     lm = @languages.manifest(default_display_name)
     em = @exercises.manifest(default_exercise_name)
     lm['visible_files'].merge!(em['visible_files'])

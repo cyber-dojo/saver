@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'saver_exception'
 require 'oj'
 
 # 1. Manifest now has explicit version.
@@ -220,7 +221,9 @@ class Kata_v2
   # - - - - - - - - - - - - - -
 
   def invalid(name, value)
-    ArgumentError.new("#{name}:invalid:#{value}")
+    SaverException.new(json_dump({
+      "message" => "#{name}:invalid:#{value}"
+    }))
   end
 
   def saver
