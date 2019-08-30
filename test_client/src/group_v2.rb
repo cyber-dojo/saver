@@ -105,7 +105,7 @@ class Group_v2
   def id_path(id, *parts)
     # Using 2/2/2 split.
     # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    args = ['groups', id[0..1], id[2..3], id[4..5]]
     args += parts.map(&:to_s)
     File.join(*args)
   end
