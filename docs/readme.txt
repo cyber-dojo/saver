@@ -14,12 +14,17 @@ split-off-singler-and-grouper branch
   But reading back will fail. Eg index == -1
   will do events.lines.size - 1 == 3-1 == 2 but there is no
     .../ID/2/event.json
-  Fix this.
-  Inspect json files on default VM.
-  Keep manifest's version number as data submitted in kata/edit's form.
-  Use that to choose group/kata implementations.
+  Add test for this. Fix this.
   local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
   Check diff works when there are these saver-offline gaps.
+
+- Inspect json files on default VM for above updates.
+  Keep manifest's version number as data submitted in kata/edit's html form.
+  Use that to choose group/kata implementations.
+  Don't switch version mid session.
+
+- zipper downloads will be in a certain format...
+  How does that affect coupling?
 
 - Also prepare new schema that flattens dir structure.
   not .../ID/INDEX/event.json

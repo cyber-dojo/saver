@@ -2,6 +2,10 @@
 
 require 'oj'
 
+# 1. Manifest now has explicit version.
+# 2. No longer stores file contents in lined format.
+# 3. Uses Oj as its JSON gem.
+
 class Group_v2
 
   def initialize(externals)

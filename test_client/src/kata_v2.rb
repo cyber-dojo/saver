@@ -2,6 +2,24 @@
 
 require 'oj'
 
+# 1. Manifest now has explicit version.
+# 2. No longer stores file contents in lined format.
+# 3. Uses Oj as its JSON gem.
+# 4. Stores explicit index in events.json summary file.
+#    This makes using index==-1 robust when traff-clights
+#    are lost due to Saver outages.
+#    was    { ... } # 0
+#           { ... } # 1
+#           { ... } # 4
+#    now    { ... "index" => 0 }
+#           { ... "index" => 1 }
+#           { ... "index" => 4 }
+# 5. No longer uses separate dir for each event file.
+#    This makes ran_tests() faster as it no longer needs
+#    a create_cmd() in its saver.batch call.
+#    was     /cyber-dojo/katas/e3/T6/K2/0/event.json
+#    now     /cyber-dojo/katas/e3/T6/K2/0.event.json
+
 class Kata_v2
 
   def initialize(externals)
@@ -133,8 +151,8 @@ class Kata_v2
   #
   # In theory the manifest could store only the display_name
   # and exercise_name and be recreated, on-demand, from the relevant
-  # start-point services. In practice, it doesn't work because the
-  # start-point services can change over time.
+  # start-point services. In practice it creates coupling, and it
+  # doesn't work because start-point services change over time.
 
   def manifest_write_cmd(id, manifest)
     ['write', id_path(id, manifest_filename), json_dump(manifest)]

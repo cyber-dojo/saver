@@ -5,7 +5,6 @@ require_relative 'saver_service'
 require_relative 'starter'
 
 # Group/Kata manifests now have an explicit version.
-# Several updates to Kata.
 
 class Externals_v2
 
