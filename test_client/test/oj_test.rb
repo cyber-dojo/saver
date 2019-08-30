@@ -96,6 +96,15 @@ class OjTest < TestBase
     assert_equal oj_pretty, json_pretty
   end
 
+  # - - - - - - - - - - - - - - - - -
+
+  test 'CB8',
+  %w[ Oj.strict_load() throws different exception to JSON.parse() ] do
+    not_json = "xxxx{[}]"
+    assert_raises(JSON::ParserError) { JSON.parse(not_json) }
+    assert_raises(Oj::ParseError) { Oj.strict_load(not_json) }
+  end
+
   private
 
   def any_hash

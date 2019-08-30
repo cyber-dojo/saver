@@ -10,8 +10,6 @@ split-off-singler-and-grouper branch
 
 - Check diff works when there are these saver-offline gaps.
 
-- switch to Oj on server (in dispatcher)
-
 - Inspect json files on default VM for above updates.
   Keep manifest's version number as data submitted in kata/edit's html form.
   Use that in web to choose group/kata implementations.

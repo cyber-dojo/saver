@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'bridge/id_generator'
 require_relative 'http_json/request_error'
-require 'json'
+require_relative 'oj_adapter'
 
 class HttpJsonArgs
 
@@ -11,11 +10,11 @@ class HttpJsonArgs
   # to match RackDispatcher's exception keys.
 
   def initialize(body)
-    @args = JSON.parse!(body)
+    @args = json_parse(body)
     unless @args.is_a?(Hash)
       fail HttpJson::RequestError, 'body is not JSON Hash'
     end
-  rescue JSON::ParserError
+  rescue Oj::ParseError
     fail HttpJson::RequestError, 'body is not JSON'
   end
 
@@ -59,7 +58,9 @@ class HttpJsonArgs
     [target, name, args]
   end
 
-  # - - - - - - - - - - - - - - - -
+  private
+
+  include OjAdapter
 
   attr_reader :args
 

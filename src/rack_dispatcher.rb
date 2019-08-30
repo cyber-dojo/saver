@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'externals'
 require_relative 'http_json/request_error'
 require_relative 'http_json_args'
-require_relative 'oj_adapter'
+require_relative 'oj_adapter' # fast JSON gem
 
 class RackDispatcher
 
@@ -36,7 +35,7 @@ class RackDispatcher
   private
 
   include OjAdapter
-  
+
   def json_response_pass(status, obj)
     body = json_plain(obj)
     json_response(status, body)
