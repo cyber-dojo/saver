@@ -71,7 +71,7 @@ class TestBase < HexMiniTest
   end
 
   def time_now
-    [2016,12,2, 6,14,57,4587]
+    [2019,12,2, 6,14,57,4587]
   end
 
   def duration
@@ -121,6 +121,34 @@ class TestBase < HexMiniTest
 
   def creation_time
     starter.creation_time
+  end
+
+  # - - - - - - - - - - - - - - - - - - - -
+
+  def two_timed(n, algos)
+    t0,t1 = 0,0
+    n.times do
+      # which one to do first?
+      if rand(42) % 2 == 0
+        t0 += timed { algos[0].call }
+        t1 += timed { algos[1].call }
+      else
+        t1 += timed { algos[1].call }
+        t0 += timed { algos[0].call }
+      end
+    end
+    [t0,t1]
+  end
+
+  def timed
+    started_at = clock_time
+    yield
+    finished_at = clock_time
+    (finished_at - started_at)
+  end
+
+  def clock_time
+    Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end
 
 end

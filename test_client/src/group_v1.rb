@@ -167,9 +167,9 @@ class Group_v1
   # - - - - - - - - - - - - - -
 
   def group_events_parse(s)
-    JSON.parse!('[' + s.lines.join(',') + ']')
+    json_parse('[' + s.lines.join(',') + ']')
     # Alternative implementation, which tests show is slower.
-    # s.lines.map { |line| JSON.parse!(line) }
+    # s.lines.map { |line| json_parse(line) }
   end
 
   # - - - - - - - - - - - - - -

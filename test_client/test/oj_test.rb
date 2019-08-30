@@ -20,7 +20,8 @@ class OjTest < TestBase
       1000.times { Oj.dump(o) }
     }
     diagnostic = "generating JSON:#{slower}: Oj:#{faster}:"
-    # generating JSON:0.0081: Oj:0.0015:
+    # puts diagnostic
+    # generating JSON:0.0068: Oj:0.0013:
     assert faster < slower, diagnostic
   end
 
@@ -30,15 +31,16 @@ class OjTest < TestBase
   %w( oj is faster than the standard json gem at parsing ) do
     s = any_hash.to_json
     assert s.is_a?(String)
-    slower,_ = timed {
-      1000.times { JSON.parse(s) }
-    }
-    faster,_ = timed {
-      1000.times { Oj.strict_load(s) }
-    }
-    diagnostic = "parsing JSON:#{slower}: Oj:#{faster}:"
-    # parsing JSON:0.0102: Oj:0.0052:
-    assert faster < slower, diagnostic
+    oj_gem = -> { Oj.strict_load(s) }
+    json_gem = -> { JSON.parse(s) }
+    t0,t1 = two_timed(100,[oj_gem,json_gem])
+    diagnostic = ''
+    diagnostic += "\n#{'%.5f' % t0}:oj_gem"
+    diagnostic += "\n#{'%.5f' % t1}:json_gem"
+    # puts diagnostic
+    # 0.00046:oj_gem
+    # 0.00171:json_gem
+    assert t0 < t1, diagnostic
   end
 
   # - - - - - - - - - - - - - - - - -
@@ -92,16 +94,6 @@ class OjTest < TestBase
       ],
       'tab_size' => 4
     }
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  def timed
-    started = Time.now
-    result = yield
-    finished = Time.now
-    duration = '%.4f' % (finished - started)
-    [duration,result]
   end
 
 end
