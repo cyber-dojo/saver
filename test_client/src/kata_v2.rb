@@ -137,7 +137,7 @@ class Kata_v2
   # start-point services can change over time.
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_plain(manifest)]
+    ['write', id_path(id, manifest_filename), json_dump(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -152,7 +152,7 @@ class Kata_v2
   # event
 
   def event_write_cmd(id, index, event)
-    ['write', id_path(id, event_filename(index)), json_plain(event)]
+    ['write', id_path(id, event_filename(index)), json_dump(event)]
   end
 
   def event_read_cmd(id, index)
@@ -173,11 +173,11 @@ class Kata_v2
   # append to the end of the file.
 
   def events_write_cmd(id, event0)
-    ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
+    ['write', id_path(id, events_filename), json_dump(event0) + "\n"]
   end
 
   def events_append_cmd(id, event)
-    ['append', id_path(id, events_filename), json_plain(event) + "\n"]
+    ['append', id_path(id, events_filename), json_dump(event) + "\n"]
   end
 
   def events_read_cmd(id)
@@ -191,7 +191,7 @@ class Kata_v2
   # - - - - - - - - - - - - - -
   # json
 
-  def json_plain(o)
+  def json_dump(o)
     Oj.dump(o)
   end
 

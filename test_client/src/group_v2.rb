@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require 'oj'
 
 class Group_v2
 
@@ -122,7 +122,7 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+    ['write', id_path(id, manifest_filename), json_dump(manifest)]
   end
 
   def manifest_read_cmd(id)
@@ -161,19 +161,20 @@ class Group_v2
   # - - - - - - - - - - - - - -
 
   def group_events_parse(s)
-    JSON.parse!('[' + s.lines.join(',') + ']')
+    json_parse('[' + s.lines.join(',') + ']')
     # Alternative implementation, which tests show is slower.
-    # s.lines.map { |line| JSON.parse!(line) }
+    # s.lines.map { |line| json_parse(line) }
   end
 
   # - - - - - - - - - - - - - -
+  # json
 
-  def json_pretty(o)
-    JSON.pretty_generate(o)
+  def json_dump(o)
+    Oj.dump(o)
   end
 
   def json_parse(s)
-    JSON.parse!(s)
+    Oj.strict_load(s)
   end
 
   # - - - - - - - - - - - - - -
