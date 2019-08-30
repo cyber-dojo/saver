@@ -19,7 +19,7 @@ split-off-singler-and-grouper branch
   How does that affect coupling?
 
 - fix coverage gaps
-- fix todos
+- do todos
 - add parallel branch in web repo
 - fix web footer messages for partial degradation (saver,ragger)
 - try out images on local server and under versioner
