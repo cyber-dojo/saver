@@ -163,11 +163,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  # TODO:
-  # I think there is a clash using 'index' as a field name.
-  # group->kata link , tag-number on events.json ?
-
-  v_test [0,1], 'A05', %w(
+  v_test [0,1,2], 'A05', %w(
   events() is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
@@ -176,14 +172,18 @@ class GroupTest < TestBase
     index2 = kata.manifest(kid2)['group_index']
     kata.ran_tests(*make_ran_test_args(kid1, 1, edited_files))
 
+    event1 = {
+      'colour' => 'red',
+      'time' => time_now,
+      'duration' => duration
+    }
+    if v_test?(2)
+      event1['index'] = 1
+    end
     expected = {
       kid1 => {
         'index' => index1,
-        'events' => [event0, {
-          'colour' => 'red',
-          'time' => time_now,
-          'duration' => duration
-        }]
+        'events' => [event0,event1]
       },
       kid2 => {
         'index' => index2,
