@@ -37,6 +37,8 @@ class GroupTest < TestBase
     manifest['id'] = id
     if v_test?(2)
       manifest['version'] = 2
+    else
+      refute manifest.has_key?('version')
     end
     assert_equal manifest, group.manifest(id)
   end

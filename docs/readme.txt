@@ -2,21 +2,13 @@
 split-off-singler-and-grouper branch
 
 - currently if there is saver failure you can end up with
-  an events.json file like this... Saver failed to save the
-  traffic-light test runs 2,3
+  an events.json file like this... Saver failed to save 2,3
     { .... } # 0
     { .... } # 1
     { .... } # 4
-  The dir structure will be...
-    .../ID/0/event.json
-    .../ID/1/event.json
-    .../ID/4/event.json
-  But reading back will fail. Eg index == -1
-  will do events.lines.size - 1 == 3-1 == 2 but there is no
-    .../ID/2/event.json
-  Add test for this. Fix this.
   local id with this structure == http://192.168.99.100/kata/edit/NK6ZVS
-  Check diff works when there are these saver-offline gaps.
+
+- Check diff works when there are these saver-offline gaps.
 
 - Inspect json files on default VM for above updates.
   Keep manifest's version number as data submitted in kata/edit's html form.
@@ -25,12 +17,6 @@ split-off-singler-and-grouper branch
 
 - zipper downloads will be in a certain format...
   How does that affect coupling?
-
-- Also prepare new schema that flattens dir structure.
-  not .../ID/INDEX/event.json
-  but .../ID/INDEX.event.json
-  have code and tests for versioning in the manifest.json file.
-
 
 - fix coverage gaps
 - fix todos

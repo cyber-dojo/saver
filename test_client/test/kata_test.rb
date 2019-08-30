@@ -37,6 +37,8 @@ class KataTest < TestBase
     manifest['id'] = id
     if v_test?(2)
       manifest['version'] = 2
+    else
+      refute manifest.has_key?('version') 
     end
     assert_equal manifest, kata.manifest(id)
   end
@@ -55,7 +57,7 @@ class KataTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ran_tests(), events(), event()
+  # events(), event()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   v_test [0,1,2], '821',
@@ -78,7 +80,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '722',
+  v_test [0,1,2], '823',
   'event(id) raises when id does exist' do
     id = '653c8C'
     assert_service_error("id:invalid:#{id}") {
@@ -88,7 +90,32 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '823',
+  v_test [0,1,2], '824', %w(
+  given a partial saver outage
+  when event(id,-1) is called
+  then v0,v1 raises
+  but v2 handles it correctly
+  ) do
+    id = kata.create(starter.manifest)
+    kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
+    # ran.tests(*make_ran_test_args(id, 2, ...)) saver outage
+    # ...
+    # ran.tests(*make_ran_test_args(id, 85, ...)) saver outage
+    further_edited_files = { 'cyber-dojo.sh' => file('this-has-changed') }
+    kata.ran_tests(*make_ran_test_args(id, 86, further_edited_files)) # <====
+
+    if v_test?(2)
+      assert_equal 'this-has-changed', kata.event(id, -1)['files']['cyber-dojo.sh']['content']
+    else
+      assert_raises { kata.event(id, -1) }
+    end
+
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+  # ran_tests()
+
+  v_test [0,1,2], '923',
   'ran_tests(id,index,...) raises when id or index does not exist' do
     id = 'A4AB37'
     if v_test?(2)
@@ -103,7 +130,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '824', %w(
+  v_test [0,1,2], '924', %w(
   ran_tests(id,index,...) raises when index is -1
   because -1 can only be used on event()
   ) do
@@ -115,7 +142,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '825', %w(
+  v_test [0,1,2], '925', %w(
   ran_tests(id,index,...) raises when index is 0
   because 0 is used for create()
   ) do
@@ -127,7 +154,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '826', %w(
+  v_test [0,1,2], '926', %w(
   ran_tests(id,index,...) raises when index already exists
   and does not add a new event,
   in other words it fails atomically ) do
@@ -136,15 +163,15 @@ class KataTest < TestBase
     assert_equal expected_events, kata.events(id)
 
     kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
-    event = {
+    event1 = {
       'colour' => red,
       'time' => time_now,
       'duration' => duration
     }
     if v_test?(2)
-      event['index'] = 1
+      event1['index'] = 1
     end
-    expected_events << event
+    expected_events << event1
     assert_equal expected_events, kata.events(id)
 
     assert_service_error('index:invalid:1') {
@@ -156,7 +183,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '827', %w(
+  v_test [0,1,2], '927', %w(
   ran_tests() does NOT raise when index-1 does not exist
   and the reason for this is partly speed
   and partly robustness against temporary saver outage ) do
@@ -168,7 +195,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '829',
+  v_test [0,1,2], '929',
   'after ran_tests() there is one more event' do
     id = kata.create(starter.manifest)
 
