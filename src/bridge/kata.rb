@@ -30,7 +30,7 @@ class Kata
       event_write_cmd(id, 0, { 'files' => files }),
       events_write_cmd(id, event0)
     ])
-    # TODO: result === [true]*4
+    # TODO: unless result === [true]*4
     id
   end
 
@@ -67,17 +67,17 @@ class Kata
       'time' => now,
       'duration' => duration
     }
-    results = saver.batch_until_false([
+    result = saver.batch_until_false([
       exists_cmd(id),
       create_cmd(id, index),
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    # TODO: check results === [true]*4
-    unless results[0]
+    # TODO: unless result === [true]*4
+    unless result[0]
       fail invalid('id', id)
     end
-    unless results[1]
+    unless result[1]
       fail invalid('index', index)
     end
     nil
