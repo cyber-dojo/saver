@@ -187,19 +187,29 @@ class SaverTest < TestBase
     dirname = 'client/e3/t6/A8'
     commands << ['create',dirname]
     expected << true
-    there_not = dirname + '/there-not.txt'
+    commands << ['exists?',dirname]
+    expected << true
+
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
     commands << ['write',there_yes,content]
     expected << true
+    commands << ['append',there_yes,content]
+    expected << true
+
+    there_not = dirname + '/there-not.txt'
+    commands << ['append',there_not,'nope']
+    expected << false
+
+    commands << ['read',there_yes]
+    expected << content*2
+
     commands << ['read',there_not]
     expected << nil
-    commands << ['read',there_yes]
-    expected << content
+
     result = saver.batch(commands)
     assert_equal expected, result
   end
-
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: batch() raises for unknown command
