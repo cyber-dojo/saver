@@ -77,7 +77,6 @@ class Saver
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
-      #TODO: else raise HttpJson::RequestError
       end
     end
   end

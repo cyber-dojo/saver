@@ -25,6 +25,13 @@ class HttpJsonArgsTest < TestBase
     assert_equal expected, error.message
   end
 
+  # TODO: body is not JSON Hash
+  # TODO: malformed key
+  # TODO: malformed keys
+  # TODO: malformed value
+  # TODO: malformed commands
+
+
 =begin
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # manifest

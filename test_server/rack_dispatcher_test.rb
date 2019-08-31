@@ -8,9 +8,7 @@ class RackDispatcherTest < TestBase
     'FF0'
   end
 
-  #====================================================
-  # saver
-  #====================================================
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 500
 
   test 'F1A',
@@ -51,6 +49,13 @@ class RackDispatcherTest < TestBase
       400,
       'body is not JSON Hash')
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+  # TODO: malformed key
+  # TODO: malformed keys
+  # TODO: malformed value
+  # TODO: malformed commands
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200

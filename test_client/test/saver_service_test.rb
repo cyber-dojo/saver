@@ -211,8 +211,4 @@ class SaverTest < TestBase
     assert_equal expected, result
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: batch() raises for unknown command
-  # TODO: all raise for args not being string - rack-dispatcher
-
 end
