@@ -66,7 +66,7 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def joined(id)
-    kindexes = kata_indexes(id)
+    kindexes = katas_indexes(id)
     if kindexes.nil?
       nil
     else
@@ -77,7 +77,7 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    kindexes = kata_indexes(id)
+    kindexes = katas_indexes(id)
     if kindexes.nil?
       events = nil
     else
@@ -149,9 +149,7 @@ class Group_v2
     id_path(id, 'katas.txt')
   end
 
-  # - - - - - - - - - - - - - - - - - - -
-
-  def kata_indexes(id)
+  def katas_indexes(id)
     katas_src = saver.send(*katas_read_cmd(id))
     if katas_src.nil?
       nil
