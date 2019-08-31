@@ -57,8 +57,9 @@ class GroupTest < TestBase
         end.new(gid)
       @saver =
         Class.new do
-          def create(_key); true; end
-          def write(_key,_value); false; end
+          def create(_key); true; end # v1
+          def write(_key,_value); false; end # v1
+          def batch_until_false(_commands); [false]; end # v2
         end.new
     }
     assert_service_error("id:invalid:#{gid}") {

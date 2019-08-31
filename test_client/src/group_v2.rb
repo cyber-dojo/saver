@@ -6,7 +6,8 @@ require_relative 'oj_adapter'
 # 1. Manifest now has explicit version.
 # 2. No longer stores JSON in pretty format.
 # 3. No longer stores file contents in lined format.
-# 4. Uses Oj as its JSON gem.
+# 4. joined() now does a single read rather than 64.
+# 5. Uses Oj as its JSON gem.
 
 class Group_v2
 
@@ -25,7 +26,11 @@ class Group_v2
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    unless saver.send(*manifest_write_cmd(id, manifest))
+    results = saver.batch_until_false([
+      manifest_write_cmd(id, manifest),
+      katas_write_cmd(id)
+    ])
+    unless results === [true,true]
       fail invalid('id', id)
     end
     id
@@ -51,7 +56,7 @@ class Group_v2
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
-        saver.write(id_path(id, index, 'kata.id'), kata_id)
+        saver.send(*katas_append_cmd(id, kata_id, index))
         return kata_id
       end
     end
@@ -82,7 +87,7 @@ class Group_v2
       events = {}
       kindexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
-          'index' => index,
+          'index' => index.to_i,
           'events' => group_events_parse(katas_events[offset])
         }
       end
@@ -135,37 +140,32 @@ class Group_v2
     'manifest.json'
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def katas_write_cmd(id)
+    ['write', id_path(id, katas_filename), '']
+  end
+
+  def katas_append_cmd(id, kata_id, index)
+    ['append', id_path(id, katas_filename), "#{kata_id} #{index}\n"]
+  end
+
+  def katas_read_cmd(id)
+    ['read', id_path(id, katas_filename)]
+  end
+
+  def katas_filename
+    'katas.txt'
+  end
+
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_indexes(id)
-    # This is 64 read operations and I'd like it to be just 1.
-    # Suppose instead, join appended to a katas.json file
-    # Problem with this is there would be contention on this append.
-    # So may I need saver.append(key,value,option-to-lock)
-    # Maybe append could always just lock. See what effect it has on speed.
-
-    filenames = (0..63).map do |index|
-      id_path(id, index, 'kata.id')
-    end
-    reads = saver.batch_read(filenames)
-    # reads is an array of 64 entries, eg
+    katas_src = saver.send(*katas_read_cmd(id))
+    katas_src.split.each_slice(2).to_a
     # [
-    #    nil,      # 0 (alligator)
-    #    nil,      # 1 (antelope)
-    #    'w34rd5', # 2 (bat)
-    #    nil,      # 3 (bear)
-    #    'G2ws77', # 4 (bee)
-    #    nil,      # 5 (beetle)
-    #    ...
-    # ]
-    # indicating there are joined animals at indexes
-    # 2 (bat) id == w34rd5
-    # 4 (bee) id == G2ws77
-    reads.each.with_index(0).select{ |kata_id,_| kata_id }
-    # Select the non-nil entries whilst retaining the index
-    # [
-    #   ['w34rd5',2], # bat
-    #   ['G2ws77',4], # bee
+    #   ['w34rd5','2'],  # 2==bat
+    #   ['G2ws77','15'], # 15=fox
     #   ...
     # ]
   end
