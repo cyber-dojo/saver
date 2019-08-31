@@ -22,7 +22,7 @@ class KataTest < TestBase
 
   v_test [0,1,2], '42D',
   'manifest() raises when id does not exist' do
-    id = 'A4AB37'
+    id = id_generator.id
     assert_service_error("id:invalid:#{id}") {
       kata.manifest(id)
     }
@@ -62,7 +62,7 @@ class KataTest < TestBase
 
   v_test [0,1,2], '821',
   'events(id) raises when id does not exist' do
-    id = 'A4AB37'
+    id = id_generator.id
     assert_service_error("id:invalid:#{id}") {
       kata.events(id)
     }
@@ -82,7 +82,7 @@ class KataTest < TestBase
 
   v_test [0,1,2], '823',
   'event(id) raises when id does exist' do
-    id = '653c8C'
+    id = id_generator.id
     assert_service_error("id:invalid:#{id}") {
       kata.event(id, -1)
     }
@@ -116,18 +116,9 @@ class KataTest < TestBase
   # ran_tests()
 
   v_test [0,1,2], '923',
-  'ran_tests(id,index,...) raises when id or index does not exist' do
-    id = 'A4AB37'
-    if v_test?(0)
-      message = "id:invalid:#{id}"
-    end
-    if v_test?(1)  # TODO: This is not right...
-      message = 'index:invalid:1'
-    end
-    if v_test?(2)
-      message = 'index:invalid:1'
-    end
-    assert_service_error(message) {
+  'ran_tests(id,index,...) raises when id does not exist' do
+    id = id_generator.id
+    assert_service_error("id:invalid:#{id}") {
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
   end

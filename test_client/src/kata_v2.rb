@@ -86,10 +86,13 @@ class Kata_v2
       'index' => index
     }
     result = saver.batch([
-      event_write_cmd(id, index, event_n),
-      events_append_cmd(id, event_summary)
+      events_append_cmd(id, event_summary),
+      event_write_cmd(id, index, event_n)
     ])
-    unless result === [true]*2
+    unless result[0]
+      fail invalid('id', id)
+    end
+    unless result[1]
       fail invalid('index', index)
     end
     nil

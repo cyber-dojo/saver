@@ -22,7 +22,7 @@ class GroupTest < TestBase
 
   v_test [0,1,2], '420',
   'manifest() raises when id does not exist' do
-    id = 'A4AB37'
+    id = id_generator.id
     assert_service_error("id:invalid:#{id}") {
       group.manifest(id)
     }
@@ -48,7 +48,7 @@ class GroupTest < TestBase
   v_test [1,2], '42F', %w( <new>
     create() fails if saver.write() fails, eg disk is full
   ) do
-    gid = '467uDe'
+    gid = id_generator.id
     externals.instance_exec {
       @id_generator =
         Class.new do
@@ -73,7 +73,7 @@ class GroupTest < TestBase
 
   v_test [0,1,2], '1D0',
   'join() raises when id does not exist' do
-    id = 'A4AB37'
+    id = id_generator.id
     assert_service_error("id:invalid:#{id}") {
       group.join(id, indexes)
     }
@@ -129,7 +129,8 @@ class GroupTest < TestBase
 
   v_test [0,1,2], '1D2',
   'joined() returns nil when the id does not exist' do
-    assert_nil group.joined('A4aB37')
+    id = id_generator.id
+    assert_nil group.joined(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -175,7 +176,8 @@ class GroupTest < TestBase
 
   v_test [0,1,2], 'A04', %w(
   events() returns nil when the id does not exist ) do
-    assert_nil group.events('A4aB37')
+    id = id_generator.id
+    assert_nil group.events(id)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

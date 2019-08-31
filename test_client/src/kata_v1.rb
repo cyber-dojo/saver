@@ -74,7 +74,6 @@ class Kata_v1
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    # TODO: unless results === [true]*4
     unless result[0]
       fail invalid('id', id)
     end

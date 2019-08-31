@@ -1,5 +1,6 @@
 require_relative 'group_v0'
 require_relative 'kata_v0'
+require_relative 'id_generator'
 require_relative 'saver_service'
 require_relative 'starter'
 
@@ -19,6 +20,10 @@ class Externals_v0
 
   def kata
     @kata ||= Kata_v0.new(self)
+  end
+
+  def id_generator
+    @id_generator ||= IdGenerator.new
   end
 
   def starter
