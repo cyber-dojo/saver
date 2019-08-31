@@ -66,20 +66,21 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def joined(id)
-    if !exists?(id)
+    kindexes = kata_indexes(id)
+    if kindexes.nil?
       nil
     else
-      kata_indexes(id).map{ |kata_id,_| kata_id }
+      kindexes.map{ |kata_id,_| kata_id }
     end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    if !exists?(id)
+    kindexes = kata_indexes(id)
+    if kindexes.nil?
       events = nil
     else
-      kindexes = kata_indexes(id)
       filenames = kindexes.map do |kata_id,_index|
         kata.send(:events_read_cmd, kata_id)[1]
       end
@@ -162,7 +163,11 @@ class Group_v2
 
   def kata_indexes(id)
     katas_src = saver.send(*katas_read_cmd(id))
-    katas_src.split.each_slice(2).to_a
+    if katas_src.nil?
+      nil
+    else
+      katas_src.split.each_slice(2).to_a
+    end
     # [
     #   ['w34rd5','2'],  # 2==bat
     #   ['G2ws77','15'], # 15=fox
