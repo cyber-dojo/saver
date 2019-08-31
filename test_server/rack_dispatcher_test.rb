@@ -43,7 +43,17 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2B',
-  'dispatch returns 400 status when JSON is malformed' do
+  'dispatch returns 400 status when body is not JSON' do
+    assert_dispatch_raises('xyz',
+      'xxx',
+      400,
+      'body is not JSON')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E2C',
+  'dispatch returns 400 status when body is not JSON Hash' do
     assert_dispatch_raises('xyz',
       [].to_json,
       400,
@@ -51,9 +61,8 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  
+
   # TODO: malformed key
-  # TODO: malformed keys
   # TODO: malformed value
   # TODO: malformed commands
 

@@ -32,7 +32,7 @@ class HttpJsonArgs
     when '/write'   then [saver,'write', key, value]
     when '/append'  then [saver,'append', key, value]
     when '/read'    then [saver,'read', key]
-    when '/batch'   then [saver,'batch',commands]
+    when '/batch'   then [saver,'batch', commands]
 
     when '/group_exists'   then [group,'exists?', id]
     when '/group_create'   then [group,'create', manifest]
@@ -70,10 +70,6 @@ class HttpJsonArgs
     well_formed_string('value', @args['value'])
   end
 
-  def keys
-    well_formed_keys
-  end
-
   def commands
     well_formed_commands
   end
@@ -87,20 +83,6 @@ class HttpJsonArgs
   #  end
   #  arg
   #end
-
-  def well_formed_keys
-    name = 'keys'
-    args = @args[name]
-    unless args.is_a?(Array)
-      malformed(name, "!Array (#{args.class.name})")
-    end
-    args.each do |arg|
-      unless arg.is_a?(String)
-        malformed(name, "!String (#{arg.class.name})")
-      end
-    end
-    args
-  end
 
   def well_formed_commands
     name = 'commands'
