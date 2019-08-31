@@ -138,6 +138,12 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_indexes(id)
+    # This is 64 read operations and I'd like it to be just 1.
+    # Suppose instead, join appended to a katas.json file
+    # Problem with this is there would be contention on this append.
+    # So may I need saver.append(key,value,option-to-lock)
+    # Maybe append could always just lock. See what effect it has on speed.
+
     filenames = (0..63).map do |index|
       id_path(id, index, 'kata.id')
     end

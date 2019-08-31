@@ -33,7 +33,9 @@ class Saver
 
   def write(key, value)
     mode = File::WRONLY | File::CREAT | File::EXCL
-    File.open(path_name(key), mode) { |fd| fd.write(value) }
+    File.open(path_name(key), mode) { |fd|
+      fd.write(value)
+    }
     true
   rescue Errno::ENOENT, # dir does not exist
          Errno::EEXIST  # file already exists
@@ -42,7 +44,10 @@ class Saver
 
   def append(key, value)
     mode = File::WRONLY | File::APPEND
-    File.open(path_name(key), mode) { |fd| fd.write(value) }
+    File.open(path_name(key), mode) { |fd|
+      fd.flock(File::LOCK_EX)
+      fd.write(value)
+    }
     true
   rescue Errno::ENOENT # file does not exist
     false
@@ -52,7 +57,10 @@ class Saver
 
   def read(key)
     mode = File::RDONLY
-    File.open(path_name(key), mode) { |fd| fd.read }
+    File.open(path_name(key), mode) { |fd|
+      fd.flock(File::LOCK_EX)
+      fd.read
+    }
   rescue Errno::ENOENT, # file does not exist
          Errno::EISDIR  # file is a dir!
     nil
