@@ -120,15 +120,15 @@ class Group
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_pretty(manifest)]
+    ['write', manifest_filename(id), json_pretty(manifest)]
   end
 
   def manifest_read_cmd(id)
-    ['read', id_path(id, manifest_filename)]
+    ['read', manifest_filename(id)]
   end
 
-  def manifest_filename
-    'manifest.json'
+  def manifest_filename(id)
+    id_path(id, 'manifest.json')
   end
 
   # - - - - - - - - - - - - - - - - - - -

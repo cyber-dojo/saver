@@ -156,15 +156,15 @@ class Kata_v1
   # start-point services can change over time.
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_plain(manifest)]
+    ['write', manifest_filename(id), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
-    ['read', id_path(id, manifest_filename)]
+    ['read', manifest_filename(id)]
   end
 
-  def manifest_filename
-    'manifest.json'
+  def manifest_filename(id)
+    id_path(id, 'manifest.json')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -174,15 +174,15 @@ class Kata_v1
   # inspected on disk. Have to be unlined when read back.
 
   def event_write_cmd(id, index, event)
-    ['write', id_path(id, index, event_filename), json_plain(lined(event))]
+    ['write', event_filename(id, index), json_plain(lined(event))]
   end
 
   def event_read_cmd(id, index)
-    ['read', id_path(id, index, event_filename)]
+    ['read', event_filename(id, index)]
   end
 
-  def event_filename
-    'event.json'
+  def event_filename(id, index)
+    id_path(id, index, 'event.json')
   end
 
   def lined(event)
@@ -210,19 +210,19 @@ class Kata_v1
   # append to the end of the file.
 
   def events_write_cmd(id, event0)
-    ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
+    ['write', events_filename(id), json_plain(event0) + "\n"]
   end
 
   def events_append_cmd(id, event)
-    ['append', id_path(id, events_filename), json_plain(event) + "\n"]
+    ['append', events_filename(id), json_plain(event) + "\n"]
   end
 
   def events_read_cmd(id)
-    ['read', id_path(id, events_filename)]
+    ['read', events_filename(id)]
   end
 
-  def events_filename
-    'events.json'
+  def events_filename(id)
+    id_path(id, 'events.json')
   end
 
   # - - - - - - - - - - - - - -
