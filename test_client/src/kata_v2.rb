@@ -11,11 +11,11 @@ require_relative 'oj_adapter'
 #    This makes using index==-1 robust when traffic-lights
 #    are lost due to Saver outages.
 #    was    { ... } # 0
-#           { ... } # 1
-#           { ... } # 4
+#           { ... } # 1      then 2-23 outage
+#           { ... } # 24
 #    now    { ... "index" => 0 }
 #           { ... "index" => 1 }
-#           { ... "index" => 4 }
+#           { ... "index" => 24 }
 # 6. No longer uses separate dir for each event file.
 #    This makes ran_tests() faster as it no longer needs
 #    a create_cmd() in its saver.batch call.
@@ -53,7 +53,7 @@ class Kata_v2
       events_write_cmd(id, event_summary),
       event_write_cmd(id, 0, to_diff)
     ])
-    # TODO: if result.include?(false)
+    # TODO: if results === [true,true,true]
     id
   end
 
@@ -89,7 +89,7 @@ class Kata_v2
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    if results.include?(false)
+    unless results === [true,true]
       fail invalid('index', index)
     end
     nil
