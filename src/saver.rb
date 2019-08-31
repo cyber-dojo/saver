@@ -69,20 +69,17 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch(commands)
-    results = []
-    commands.each do |command|
+    commands.map do |command|
       name,*args = command
-      result = case name
+      case name
       when 'create'  then create(*args)
       when 'exists?' then exists?(*args)
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
-      #TODO: else raise...
+      #TODO: else raise HttpJson::RequestError
       end
-      results << result
     end
-    results
   end
 
   private

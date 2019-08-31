@@ -1,12 +1,9 @@
 
 split-off-singler-and-grouper branch
 
-- Don't think I still need batch_until_true() or batch_until_false()
-  And batch_read() can just become batch() and it always does all the commands.
+- join should return :full not nil
 
 - web can then do batch(read,read) to ready both was_files and now_files in one call.
-
-- join should return :full not nil
 
 - currently if there is saver failure you can end up with
   an events.json file like this... (Saver failed to save 2,3,4,5,6)
@@ -20,6 +17,7 @@ split-off-singler-and-grouper branch
 - Keep manifest's version number as data submitted in kata/edit's html form.
   Use that in web to choose group/kata implementations.
   Don't switch version (representation) mid session.
+  What about forking? Always fork to latest version?
 
 - zipper downloads will be in a certain format...
   How does that affect coupling?
@@ -30,8 +28,8 @@ split-off-singler-and-grouper branch
      $cyber-dojo start-point create command.
 
 
-- fix coverage gaps
 - do todos
+- fix coverage gaps
 - add parallel branch in web repo
 - fix web footer messages for partial degradation (saver,ragger)
 - try out images on local server and under versioner
