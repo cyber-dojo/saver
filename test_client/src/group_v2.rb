@@ -30,7 +30,7 @@ class Group_v2
       manifest_write_cmd(id, manifest),
       katas_write_cmd(id)
     ])
-    unless results === [true,true]
+    unless results === [true]*2
       fail invalid('id', id)
     end
     id

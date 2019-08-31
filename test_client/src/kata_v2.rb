@@ -53,7 +53,7 @@ class Kata_v2
       events_write_cmd(id, event_summary),
       event_write_cmd(id, 0, to_diff)
     ])
-    # TODO: if results === [true,true,true]
+    # TODO: unless result === [true]*3
     id
   end
 
@@ -85,11 +85,11 @@ class Kata_v2
       'duration' => duration,
       'index' => index
     }
-    results = saver.batch_until_false([
+    result = saver.batch_until_false([
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])
-    unless results === [true,true]
+    unless result === [true]*2
       fail invalid('index', index)
     end
     nil

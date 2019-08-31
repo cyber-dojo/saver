@@ -1,6 +1,13 @@
 
 split-off-singler-and-grouper branch
 
+- Don't think I still need batch_until_true() or batch_until_false()
+  And batch_read() can just become batch() and it always does all the commands.
+
+- web can then do batch(read,read) to ready both was_files and now_files in one call.
+
+- join should return :full not nil
+
 - currently if there is saver failure you can end up with
   an events.json file like this... (Saver failed to save 2,3,4,5,6)
     { .... } # 0
