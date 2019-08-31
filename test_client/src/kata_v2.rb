@@ -8,7 +8,7 @@ require_relative 'oj_adapter'
 # 3. No longer stores file contents in lined format.
 # 4. Uses Oj as its JSON gem.
 # 5. Stores explicit index in events.json summary file.
-#    This makes using index==-1 robust when traff-clights
+#    This makes using index==-1 robust when traffic-lights
 #    are lost due to Saver outages.
 #    was    { ... } # 0
 #           { ... } # 1
@@ -127,12 +127,6 @@ class Kata_v2
 
   private
 
-  include OjAdapter
-
-  def id_generator
-    @externals.id_generator
-  end
-
   def generate_id
     loop do
       id = id_generator.id
@@ -140,14 +134,6 @@ class Kata_v2
         return id
       end
     end
-  end
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['katas', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -159,30 +145,30 @@ class Kata_v2
   # doesn't work because start-point services change over time.
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_plain(manifest)]
+    ['write', manifest_filename(id), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
-    ['read', id_path(id, manifest_filename)]
+    ['read', manifest_filename(id)]
   end
 
-  def manifest_filename
-    'manifest.json'
+  def manifest_filename(id)
+    id_path(id, 'manifest.json')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
 
   def event_write_cmd(id, index, event)
-    ['write', id_path(id, event_filename(index)), json_plain(event)]
+    ['write', event_filename(id,index), json_plain(event)]
   end
 
   def event_read_cmd(id, index)
-    ['read', id_path(id, event_filename(index))]
+    ['read', event_filename(id,index)]
   end
 
-  def event_filename(index)
-    "#{index}.event.json"
+  def event_filename(id, index)
+    id_path(id, "#{index}.event.json")
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -195,19 +181,29 @@ class Kata_v2
   # append to the end of the file.
 
   def events_write_cmd(id, event0)
-    ['write', id_path(id, events_filename), json_plain(event0) + "\n"]
+    ['write', events_filename(id), json_plain(event0) + "\n"]
   end
 
   def events_append_cmd(id, event)
-    ['append', id_path(id, events_filename), json_plain(event) + "\n"]
+    ['append', events_filename(id), json_plain(event) + "\n"]
   end
 
   def events_read_cmd(id)
-    ['read', id_path(id, events_filename)]
+    ['read', events_filename(id)]
   end
 
-  def events_filename
-    'events.json'
+  def events_filename(id)
+    id_path(id, 'events.json')
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -
@@ -221,5 +217,11 @@ class Kata_v2
   def saver
     @externals.saver
   end
+
+  def id_generator
+    @externals.id_generator
+  end
+
+  include OjAdapter
 
 end

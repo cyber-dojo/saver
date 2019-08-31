@@ -40,7 +40,7 @@ class Group_v2
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src
+    if manifest_src.nil?
       fail invalid('id', id)
     end
     json_parse(manifest_src)
@@ -98,8 +98,6 @@ class Group_v2
 
   private
 
-  include OjAdapter
-
   def generate_id
     loop do
       id = id_generator.id
@@ -107,14 +105,6 @@ class Group_v2
         return id
       end
     end
-  end
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['groups', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -130,33 +120,33 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_write_cmd(id, manifest)
-    ['write', id_path(id, manifest_filename), json_plain(manifest)]
+    ['write', manifest_filename(id), json_plain(manifest)]
   end
 
   def manifest_read_cmd(id)
-    ['read', id_path(id, manifest_filename)]
+    ['read', manifest_filename(id)]
   end
 
-  def manifest_filename
-    'manifest.json'
+  def manifest_filename(id)
+    id_path(id, 'manifest.json')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def katas_write_cmd(id)
-    ['write', id_path(id, katas_filename), '']
+    ['write', katas_filename(id), '']
   end
 
   def katas_append_cmd(id, kata_id, index)
-    ['append', id_path(id, katas_filename), "#{kata_id} #{index}\n"]
+    ['append', katas_filename(id), "#{kata_id} #{index}\n"]
   end
 
   def katas_read_cmd(id)
-    ['read', id_path(id, katas_filename)]
+    ['read', katas_filename(id)]
   end
 
-  def katas_filename
-    'katas.txt'
+  def katas_filename(id)
+    id_path(id, 'katas.txt')
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -185,6 +175,16 @@ class Group_v2
 
   # - - - - - - - - - - - - - -
 
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
+  end
+
+  # - - - - - - - - - - - - - -
+
   def invalid(name, value)
     SaverException.new(json_pretty({
       "message" => "#{name}:invalid:#{value}"
@@ -204,5 +204,7 @@ class Group_v2
   def kata
     @externals.kata
   end
+
+  include OjAdapter
 
 end
