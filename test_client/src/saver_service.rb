@@ -40,15 +40,7 @@ class SaverService
     @http.get(__method__, { key:key })
   end
 
-  def batch_read(keys)
-    @http.get(__method__, { keys:keys })
-  end
-
-  def batch_until_false(commands)
-    @http.post(__method__, { commands:commands })
-  end
-
-  def batch_until_true(commands)
+  def batch(commands)
     @http.post(__method__, { commands:commands })
   end
 

@@ -17,14 +17,12 @@ API:
 #
 - [GET sha()](#get-sha)
 - [GET ready?()](#get-ready)
-- [GET exists?(key)](#get-existskey)
 - [POST create(key)](#post-createkey)
+- [GET exists?(key)](#get-existskey)
 - [POST write(key,value)](#post-writekeyvalue)
 - [POST append(key,value)](#post-appendkeyvalue)
 - [GET read(key)](#get-readkey)
-- [GET read_batch(keys)](#get-read_batchkeys)
-- [POST batch_until_false(commands)](#post-batch_until_falsecommands)
-- [POST batch_until_true(commands)](#post-batch_until_truecommands)
+- [POST batch(commands)](#get-batchcommands)
 
 - - - -
 ## GET sha()

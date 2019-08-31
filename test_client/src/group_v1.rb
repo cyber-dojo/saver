@@ -75,16 +75,13 @@ class Group_v1
     if !exists?(id)
       events = nil
     else
-      indexes = kata_indexes(id)
-      filenames = indexes.map do |kata_id,_index|
-        args = ['', 'katas']
-        args += [kata_id[0..1], kata_id[2..3], kata_id[4..5]]
-        args += ['events.json']
-        File.join(*args)
+      kindexes = kata_indexes(id)
+      read_events_files_commands = kindexes.map do |kata_id,_index|
+        kata.send(:events_read_cmd, kata_id)
       end
-      katas_events = saver.batch_read(filenames)
+      katas_events = saver.batch(read_events_files_commands)
       events = {}
-      indexes.each.with_index(0) do |(kata_id,index),offset|
+      kindexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {
           'index' => index,
           'events' => group_events_parse(katas_events[offset])
@@ -143,10 +140,10 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - -
 
   def kata_indexes(id)
-    filenames = (0..63).map do |index|
-      id_path(id, index, 'kata.id')
+    read_commands = (0..63).map do |index|
+      ['read', id_path(id, index, 'kata.id')]
     end
-    reads = saver.batch_read(filenames)
+    reads = saver.batch(read_commands)
     # reads is an array of 64 entries, eg
     # [
     #    nil,      # 0

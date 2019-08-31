@@ -59,7 +59,7 @@ class GroupTest < TestBase
         Class.new do
           def create(_key); true; end # v1
           def write(_key,_value); false; end # v1
-          def batch_until_false(_commands); [false]; end # v2
+          def batch(commands); [false]*commands.size; end # v2
         end.new
     }
     assert_service_error("id:invalid:#{gid}") {

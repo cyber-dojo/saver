@@ -25,7 +25,7 @@ class Kata_v1
       'event' => 'created',
       'time' => manifest['created']
     }
-    saver.batch_until_false([
+    saver.batch([
       create_cmd(id, 0),
       manifest_write_cmd(id, manifest),
       event_write_cmd(id, 0, { 'files' => files }),
@@ -38,9 +38,9 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    manifest_src,event0_src = saver.batch_read([
-      manifest_read_cmd(id)[1],
-      event_read_cmd(id, 0)[1]
+    manifest_src,event0_src = saver.batch([
+      manifest_read_cmd(id),
+      event_read_cmd(id, 0)
     ])
     if [manifest_src,event0_src].include?(nil)
       fail invalid('id', id)
@@ -68,7 +68,7 @@ class Kata_v1
       'time' => now,
       'duration' => duration
     }
-    result = saver.batch_until_false([
+    result = saver.batch([
       exists_cmd(id),
       create_cmd(id, index),
       event_write_cmd(id, index, event_n),

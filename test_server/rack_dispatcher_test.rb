@@ -120,33 +120,11 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E47',
-  'dispatches to batch_read' do
-    saver_stub('batch_read')
-    assert_saver_dispatch('batch_read',
-      { keys: well_formed_keys }.to_json,
-      'hello from stubbed saver.batch_read'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E48',
-  'dispatches to batch_until_false' do
-    saver_stub('batch_until_false')
-    assert_saver_dispatch('batch_until_false',
+  'dispatches to batch' do
+    saver_stub('batch')
+    assert_saver_dispatch('batch',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_until_false'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E49',
-  'dispatches to batch_until_true' do
-    saver_stub('batch_until_true')
-    assert_saver_dispatch('batch_until_true',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_until_true'
+      'hello from stubbed saver.batch'
     )
   end
 
@@ -166,13 +144,6 @@ class RackDispatcherTest < TestBase
 
   def well_formed_value
     { "a" => 23, "b" => [1,2,3] }.to_json # String
-  end
-
-  def well_formed_keys
-    [
-      '/cyber-dojo/katas/12/34/45/manifest.json',
-      '/cyber-dojo/katas/34/56/78/manifest.json'
-    ]
   end
 
   def well_formed_commands
@@ -259,79 +230,3 @@ class RackDispatcherTest < TestBase
   end
 
 end
-
-=begin
-  def malformed_id
-    'df/de' # !Base58.string? && size != 6
-  end
-
-  def well_formed_id
-    '123456'
-  end
-
-  def well_formed_indexes
-    (0..63).to_a.shuffle
-  end
-
-  # - - - - - - -
-
-  def well_formed_index
-    2
-  end
-
-  def malformed_index
-    '23' # !Integer
-  end
-
-  # - - - - - - -
-
-  def well_formed_files
-    { 'cyber-dojo.sh' => file('make') }
-  end
-
-  def well_formed_now
-    [2018,3,28, 21,11,39,6543]
-  end
-
-  def well_formed_duration
-    0.456
-  end
-
-  def well_formed_stdout
-    file('tweedle-dee')
-  end
-
-  def well_formed_stderr
-    file('tweedle-dum')
-  end
-
-  def well_formed_status
-    23
-  end
-
-  def well_formed_colour
-    'red'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def assert_group_dispatch(name, args, stubbed)
-    if query?(name)
-      qname = name + '?'
-    else
-      qname = name
-    end
-    assert_rack_call('group_'+name, args, { qname => stubbed })
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def assert_kata_dispatch(name, args, stubbed)
-    if query?(name)
-      qname = name + '?'
-    else
-      qname = name
-    end
-    assert_rack_call('kata_'+name, args, { qname => stubbed })
-  end
-=end

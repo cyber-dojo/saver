@@ -57,23 +57,9 @@ class SaverFake
     @files[path_name(key)]
   end
 
-  def batch_read(keys)
-    keys.map { |key| read(key) }
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch_until_false(commands)
-    batch(commands) { |result| !result }
-  end
-
-  def batch_until_true(commands)
-    batch(commands) { |result| result }
-  end
-
-  private
-
-  def batch(commands, &block)
+  def batch(commands)
     results = []
     commands.each do |command|
       name,*args = command
@@ -86,9 +72,6 @@ class SaverFake
       #TODO: else raise...
       end
       results << result
-      if block.call(result)
-        break
-      end
     end
     results
   end

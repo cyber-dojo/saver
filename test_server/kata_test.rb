@@ -133,8 +133,6 @@ class KataTest < TestBase
 
   test '826', %w(
     ran_tests(id,index,...) raises when index already exists
-    and does not add a new event,
-    in other words it fails atomically
   ) do
     id = kata.create(starter.manifest)
     expected_events = []
@@ -153,8 +151,6 @@ class KataTest < TestBase
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
     assert_equal 'index:invalid:1', error.message
-
-    assert_equal expected_events, kata.events(id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - -

@@ -25,16 +25,14 @@ class HttpJsonArgs
     group = externals.group
     kata = externals.kata
     args = case path
-    when '/sha'               then [saver,'sha']
-    when '/ready'             then [saver,'ready?']
-    when '/create'            then [saver,'create', key]
-    when '/exists'            then [saver,'exists?', key]
-    when '/write'             then [saver,'write', key, value]
-    when '/append'            then [saver,'append', key, value]
-    when '/read'              then [saver,'read', key]
-    when '/batch_read'        then [saver,'batch_read', keys]
-    when '/batch_until_false' then [saver,'batch_until_false', commands]
-    when '/batch_until_true'  then [saver,'batch_until_true',  commands]
+    when '/sha'     then [saver,'sha']
+    when '/ready'   then [saver,'ready?']
+    when '/create'  then [saver,'create', key]
+    when '/exists'  then [saver,'exists?', key]
+    when '/write'   then [saver,'write', key, value]
+    when '/append'  then [saver,'append', key, value]
+    when '/read'    then [saver,'read', key]
+    when '/batch'   then [saver,'batch',commands]
 
     when '/group_exists'   then [group,'exists?', id]
     when '/group_create'   then [group,'create', manifest]

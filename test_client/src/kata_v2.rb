@@ -48,7 +48,7 @@ class Kata_v2
     to_diff = {
       'files' => manifest['visible_files']
     }
-    saver.batch_until_false([
+    saver.batch([
       manifest_write_cmd(id, manifest),
       events_write_cmd(id, event_summary),
       event_write_cmd(id, 0, to_diff)
@@ -85,7 +85,7 @@ class Kata_v2
       'duration' => duration,
       'index' => index
     }
-    result = saver.batch_until_false([
+    result = saver.batch([
       event_write_cmd(id, index, event_n),
       events_append_cmd(id, event_summary)
     ])

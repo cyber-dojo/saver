@@ -26,11 +26,11 @@ class Group_v2
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    results = saver.batch_until_false([
+    result = saver.batch([
       manifest_write_cmd(id, manifest),
       katas_write_cmd(id)
     ])
-    unless results === [true]*2
+    unless result === [true]*2
       fail invalid('id', id)
     end
     id
@@ -81,10 +81,10 @@ class Group_v2
     if kindexes.nil?
       events = nil
     else
-      filenames = kindexes.map do |kata_id,_index|
-        kata.send(:events_read_cmd, kata_id)[1]
+      read_events_files_commands = kindexes.map do |kata_id,_index|
+        kata.send(:events_read_cmd, kata_id)
       end
-      katas_events = saver.batch_read(filenames)
+      katas_events = saver.batch(read_events_files_commands)
       events = {}
       kindexes.each.with_index(0) do |(kata_id,index),offset|
         events[kata_id] = {

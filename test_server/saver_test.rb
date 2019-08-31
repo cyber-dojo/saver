@@ -150,81 +150,30 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_read()
+  # batch()
 
-  test '440',
-  'batch_read() is a read() BatchMethod' do
-    dirname = 'groups/34/56/78'
-    assert saver.create(dirname)
+  test '514',
+  'batch() batches all other commands' do
+    expected = []
+    commands = []
+    dirname = 'batch/e3/t6/A8'
+    commands << ['create',dirname]
+    expected << true
     there_not = dirname + '/there-not.txt'
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
-    assert saver.write(there_yes, content)
-    reads = saver.batch_read([there_not, there_yes])
-    assert_equal [nil,content], reads
+    commands << ['write',there_yes,content]
+    expected << true
+    commands << ['read',there_not]
+    expected << nil
+    commands << ['read',there_yes]
+    expected << content
+    result = saver.batch(commands)
+    assert_equal expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '441',
-  'batch_read() can read across different sub-dirs' do
-    dirname1 = 'groups/C1/bc/1A/1'
-    filename1 = dirname1 + '/kata.id'
-    content1 = 'be30e5'
-    assert saver.create(dirname1)
-    assert saver.write(filename1, content1)
-    dirname2 = 'groups/C1/bc/1A/14'
-    filename2 = dirname2 + '/kata.id'
-    content2 = 'De02CD'
-    assert saver.create(dirname2)
-    assert saver.write(filename2, content2)
-
-    reads = saver.batch_read([filename1, filename2])
-    assert_equal [content1,content2], reads
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_until_false()
-
-  test 'F45',
-  'batch_until_false() runs commands until one is false' do
-    dirname = 'groups/Bc/99/48'
-    filename = dirname + '/punchline.txt'
-    content = 'thats medeira cake'
-    commands = [
-      ['create',dirname],                  # true
-      ['write',filename,content],          # true
-      ['read',filename],                   # content
-      ['append',filename,content],         # true
-      ['append',filename,content],         # true
-      ['write',filename,content],          # false
-      ['append',filename,content],         # not-processed
-    ]
-    results = saver.batch_until_false(commands)
-    assert_equal [true,true,content,true,true,false], results
-    expected = content * 3
-    assert_equal expected, saver.read(filename)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_until_true()
-
-  test 'A23',
-  'batch_until_true() runs commands until one is true' do
-    commands = [
-      ['exists?', 'groups/12/34/45'], # false
-      ['exists?', 'groups/12/34/67'], # false
-      ['create',  'groups/12/34'],    # true
-      ['read',    'groups/abc.json']  # not processed
-    ]
-    results = saver.batch_until_true(commands)
-    assert_equal [false,false,true], results
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: batch_until_false() append()
-  # TODO: batch_until_false() raises for unknown command
-  # TODO: batch_until_false() raises for incorrect number of args
+  # TODO: batch() raises for unknown command
   # TODO: all raise for args not being string - rack-dispatcher
 
 end

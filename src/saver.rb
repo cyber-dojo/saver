@@ -66,23 +66,9 @@ class Saver
     nil
   end
 
-  def batch_read(keys)
-    keys.map { |key| read(key) }
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch_until_false(commands)
-    batch(commands) { |result| !result }
-  end
-
-  def batch_until_true(commands)
-    batch(commands) { |result| result }
-  end
-
-  private
-
-  def batch(commands, &block)
+  def batch(commands)
     results = []
     commands.each do |command|
       name,*args = command
@@ -92,17 +78,14 @@ class Saver
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
-      #else raise...
+      #TODO: else raise...
       end
       results << result
-      if block.call(result)
-        break
-      end
     end
     results
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
+  private
 
   def path_name(key)
     File.join('', 'cyber-dojo', key)
