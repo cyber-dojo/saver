@@ -10,13 +10,18 @@ split-off-singler-and-grouper branch
 
 - Check diff works when there are these saver-offline gaps.
 
-- Inspect json files on default VM for above updates.
-  Keep manifest's version number as data submitted in kata/edit's html form.
+- Keep manifest's version number as data submitted in kata/edit's html form.
   Use that in web to choose group/kata implementations.
   Don't switch version (representation) mid session.
 
 - zipper downloads will be in a certain format...
   How does that affect coupling?
+  Download format(s)?
+  0) raw format suitable to xfering to other server
+  1) git repo
+  2) tgz containing files suitable for use in
+     $cyber-dojo start-point create command.
+
 
 - fix coverage gaps
 - do todos

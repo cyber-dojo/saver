@@ -44,9 +44,6 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
-    unless exists?(id)
-      fail invalid('id', id)
-    end
     manifest = self.manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
