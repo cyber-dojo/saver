@@ -3,11 +3,12 @@
 require_relative 'group_v0'
 require_relative 'group_v1'
 require_relative 'group_v2'
+require_relative 'version'
 
 class Group
 
   def initialize(externals)
-    @target = target(externals)
+    @target = VERSIONS[version].new(externals)
   end
 
   def method_missing(name, *arguments, &block)
@@ -16,19 +17,8 @@ class Group
 
   private
 
-  def target(externals)
-    name = ENV['CYBER_DOJO_TEST_NAME']
-    if v_test?(name,0)
-      Group_v0.new(externals)
-    elsif v_test?(name,1)
-      Group_v1.new(externals)
-    else
-      Group_v2.new(externals)
-    end
-  end
+  VERSIONS = [ Group_v0, Group_v1, Group_v2 ]
 
-  def v_test?(name,n)
-    name.start_with?("<version=#{n.to_s}>")
-  end
+  include Version
 
 end
