@@ -1,7 +1,5 @@
 require_relative 'hex_mini_test'
-require_relative '../src/externals_v0'
-require_relative '../src/externals_v1'
-require_relative '../src/externals_v2'
+require_relative '../src/externals'
 require_relative '../src/saver_exception'
 
 class TestBase < HexMiniTest
@@ -25,13 +23,7 @@ class TestBase < HexMiniTest
   end
 
   def externals
-    if v_test?(2)
-      @externals ||= Externals_v2.new
-    elsif v_test?(1)
-      @externals ||= Externals_v1.new
-    else
-      @externals ||= Externals_v0.new
-    end
+    @externals ||= Externals.new
   end
 
   # - - - - - - - - - - - - - - - - - -

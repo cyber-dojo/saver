@@ -1,23 +1,21 @@
-require_relative 'group_v2'
-require_relative 'kata_v2'
+require_relative 'group'
+require_relative 'kata'
 require_relative 'id_generator'
 require_relative 'saver_service'
 require_relative 'starter'
 
-# Group/Kata manifests now have an explicit version.
-
-class Externals_v2
+class Externals
 
   def saver
     @saver ||= SaverService.new
   end
 
   def group
-    @groups ||= Group_v2.new(self)
+    @groups ||= Group.new(self)
   end
 
   def kata
-    @kata ||= Kata_v2.new(self)
+    @kata ||= Kata.new(self)
   end
 
   def id_generator
