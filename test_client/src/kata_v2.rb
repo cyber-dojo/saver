@@ -160,21 +160,6 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-  # event
-
-  def event_write_cmd(id, index, event)
-    ['write', event_filename(id,index), json_plain(event)]
-  end
-
-  def event_read_cmd(id, index)
-    ['read', event_filename(id,index)]
-  end
-
-  def event_filename(id, index)
-    id_path(id, "#{index}.event.json")
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
   # events
   #
   # A cache of colours/time-stamps for all [test] events.
@@ -197,6 +182,21 @@ class Kata_v2
 
   def events_filename(id)
     id_path(id, 'events.json')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+  # event
+
+  def event_write_cmd(id, index, event)
+    ['write', event_filename(id,index), json_plain(event)]
+  end
+
+  def event_read_cmd(id, index)
+    ['read', event_filename(id,index)]
+  end
+
+  def event_filename(id, index)
+    id_path(id, "#{index}.event.json")
   end
 
   # - - - - - - - - - - - - - -

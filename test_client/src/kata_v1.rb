@@ -168,6 +168,31 @@ class Kata_v1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+  # events
+  #
+  # A cache of colours/time-stamps for all [test] events.
+  # Helps optimize dashboard traffic-lights views.
+  # Each event is stored as a single "\n" terminated line.
+  # This is an optimization for ran_tests() which need only
+  # append to the end of the file.
+
+  def events_write_cmd(id, event0)
+    ['write', events_filename(id), json_plain(event0) + "\n"]
+  end
+
+  def events_append_cmd(id, event)
+    ['append', events_filename(id), json_plain(event) + "\n"]
+  end
+
+  def events_read_cmd(id)
+    ['read', events_filename(id)]
+  end
+
+  def events_filename(id)
+    id_path(id, 'events.json')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
   # event
   #
   # The visible-files are stored in a lined-format so they be easily
@@ -198,31 +223,6 @@ class Kata_v1
     unlined_file(event['stdout'])
     unlined_file(event['stderr'])
     event
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-  # events
-  #
-  # A cache of colours/time-stamps for all [test] events.
-  # Helps optimize dashboard traffic-lights views.
-  # Each event is stored as a single "\n" terminated line.
-  # This is an optimization for ran_tests() which need only
-  # append to the end of the file.
-
-  def events_write_cmd(id, event0)
-    ['write', events_filename(id), json_plain(event0) + "\n"]
-  end
-
-  def events_append_cmd(id, event)
-    ['append', events_filename(id), json_plain(event) + "\n"]
-  end
-
-  def events_read_cmd(id)
-    ['read', events_filename(id)]
-  end
-
-  def events_filename(id)
-    id_path(id, 'events.json')
   end
 
   # - - - - - - - - - - - - - -

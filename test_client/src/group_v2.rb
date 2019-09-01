@@ -70,7 +70,7 @@ class Group_v2
     if kindexes.nil?
       nil
     else
-      kindexes.map{ |kata_id,_| kata_id }
+      kindexes.map{ |kid,_| kid }
     end
   end
 
@@ -81,15 +81,15 @@ class Group_v2
     if kindexes.nil?
       events = nil
     else
-      read_events_files_commands = kindexes.map do |kata_id,_index|
-        kata.send(:events_read_cmd, kata_id)
+      read_events_files_commands = kindexes.map do |kid,_|
+        kata.send(:events_read_cmd, kid)
       end
       katas_events = saver.batch(read_events_files_commands)
       events = {}
-      kindexes.each.with_index(0) do |(kata_id,index),offset|
-        events[kata_id] = {
-          'index' => index.to_i,
-          'events' => group_events_parse(katas_events[offset])
+      kindexes.each.with_index(0) do |(kid,kindex),index|
+        events[kid] = {
+          'index' => kindex.to_i,
+          'events' => events_parse(katas_events[index])
         }
       end
     end
@@ -157,15 +157,15 @@ class Group_v2
       katas_src.split.each_slice(2).to_a
     end
     # [
-    #   ['w34rd5','2'],  # 2==bat
-    #   ['G2ws77','15'], # 15=fox
+    #   ['w34rd5', '2'], #  2 == bat
+    #   ['G2ws77','15'], # 15 == fox
     #   ...
     # ]
   end
 
   # - - - - - - - - - - - - - -
 
-  def group_events_parse(s)
+  def events_parse(s)
     json_parse('[' + s.lines.join(',') + ']')
     # Alternative implementation, which tests show is slower.
     # s.lines.map { |line| json_parse(line) }

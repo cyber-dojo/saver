@@ -65,7 +65,7 @@ class Group_v1
     if !exists?(id)
       nil
     else
-      kata_indexes(id).map{ |kata_id,_| kata_id }
+      kata_indexes(id).map{ |kid,_| kid }
     end
   end
 
@@ -76,15 +76,15 @@ class Group_v1
       events = nil
     else
       kindexes = kata_indexes(id)
-      read_events_files_commands = kindexes.map do |kata_id,_index|
-        kata.send(:events_read_cmd, kata_id)
+      read_events_files_commands = kindexes.map do |kid,_|
+        kata.send(:events_read_cmd, kid)
       end
       katas_events = saver.batch(read_events_files_commands)
       events = {}
-      kindexes.each.with_index(0) do |(kata_id,index),offset|
-        events[kata_id] = {
-          'index' => index,
-          'events' => group_events_parse(katas_events[offset])
+      kindexes.each.with_index(0) do |(kid,kindex),index|
+        events[kid] = {
+          'index' => kindex,
+          'events' => events_parse(katas_events[index])
         }
       end
     end
@@ -103,14 +103,6 @@ class Group_v1
         return id
       end
     end
-  end
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -157,17 +149,27 @@ class Group_v1
     # indicating there are joined animals at indexes
     # 2 (bat) id == w34rd5
     # 4 (bee) id == G2ws77
-    reads.each.with_index(0).select{ |kata_id,_| kata_id }
+    reads.each.with_index(0).select{ |kid,_| kid }
     # Select the non-nil entries whilst retaining the index
     # [ ['w34rd5',2], ['G2ws77',4], ... ]
   end
 
   # - - - - - - - - - - - - - -
 
-  def group_events_parse(s)
+  def events_parse(s)
     json_parse('[' + s.lines.join(',') + ']')
     # Alternative implementation, which tests show is slower.
     # s.lines.map { |line| json_parse(line) }
+  end
+
+  # - - - - - - - - - - - - - -
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -
