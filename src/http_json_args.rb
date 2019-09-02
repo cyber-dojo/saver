@@ -77,25 +77,34 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - -
 
   def well_formed_string(arg_name)
+    unless args.has_key?(arg_name)
+      fail missing(arg_name)
+    end
     arg = args[arg_name]
     unless arg.is_a?(String)
-      malformed(arg_name, '!String')
-      # malformed(arg_name, "!String (#{arg.class.name})")
+      fail malformed(arg_name, "!String (#{arg.class.name})")
     end
     arg
   end
 
   def well_formed_commands
-    name = 'commands'
-    arg = args[name]
+    arg_name = 'commands'
+    unless args.has_key?(arg_name)
+      fail missing(arg_name)
+    end
+    arg = args[arg_name]
     # TODO
     arg
   end
 
   # - - - - - - - - - - - - - - - -
 
+  def missing(arg_name)
+    HttpJson::RequestError.new("missing:#{arg_name}:")
+  end
+
   def malformed(arg_name, msg)
-    raise HttpJson::RequestError.new("malformed:#{arg_name}:#{msg}:")
+    HttpJson::RequestError.new("malformed:#{arg_name}:#{msg}:")
   end
 
   # = = = = = = = = = = = = = = = =

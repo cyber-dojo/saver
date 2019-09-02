@@ -38,31 +38,47 @@ class HttpJsonArgsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # key
 
-  # TODO: key is missing
+  test 'B41',
+  'get() raises when key is missing' do
+    args = HttpJsonArgs.new('{}')
+    error = assert_raises { args.get('/create', externals) }
+    assert_equal 'missing:key:', error.message
+  end
 
   test 'B42',
   'get() raises when key is not String' do
     args = HttpJsonArgs.new('{"key":42}')
     error = assert_raises { args.get('/create', externals) }
-    assert_equal 'malformed:key:!String:', error.message
+    assert_equal 'malformed:key:!String (Integer):', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # value
 
-  # TODO: value is missing
-
   test 'B43',
+  'get() raises when value is not missing' do
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    error = assert_raises { args.get('/write', externals) }
+    assert_equal 'missing:value:', error.message
+  end
+
+  test 'B44',
   'get() raises when value is not String' do
     args = HttpJsonArgs.new('{"key":"a/b/c","value":42}')
     error = assert_raises { args.get('/write', externals) }
-    assert_equal 'malformed:value:!String:', error.message
+    assert_equal 'malformed:value:!String (Integer):', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # commands
 
-  # TODO: commands is missing
+  test 'B51',
+  'get() raises when commands is not missing' do
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    error = assert_raises { args.get('/batch', externals) }
+    assert_equal 'missing:commands:', error.message
+  end
+
   # TODO: commands is malformed
 
 end
