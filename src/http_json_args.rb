@@ -93,7 +93,7 @@ class HttpJsonArgs
       fail missing(arg_name)
     end
     arg = args[arg_name]
-    # TODO
+    # TODO: check commands are well-formed
     arg
   end
 

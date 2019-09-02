@@ -62,10 +62,57 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # TODO: malformed key
-  # TODO: malformed value
-  # TODO: malformed commands
+  test 'AC2',
+  'dispatch returns 400 status when key is missing' do
+    assert_dispatch_raises('read',
+      '{}',
+      400,
+      'missing:key:'
+    )
+  end
 
+  test 'AC3',
+  'dispatch returns 400 status when key is malformed' do
+    assert_dispatch_raises('read',
+      '{"key":42}',
+      400,
+      'malformed:key:!String (Integer):'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'AC4',
+  'dispatch returns 400 status when value is missing' do
+    assert_dispatch_raises('write',
+      '{"key":"/a/b/c"}',
+      400,
+      'missing:value:'
+    )
+  end
+
+  test 'AC5',
+  'dispatch returns 400 status when value is malformed' do
+    assert_dispatch_raises('write',
+      '{"key":"a/b/c","value":42}',
+      400,
+      'malformed:value:!String (Integer):'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'AC6',
+  'dispatch returns 400 status when commands is missing' do
+    assert_dispatch_raises('batch',
+      '{}',
+      400,
+      'missing:commands:'
+    )
+  end
+
+  # TODO: commands malformed
+  
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200
 
