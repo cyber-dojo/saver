@@ -3,7 +3,7 @@
 require_relative 'saver_exception'
 require_relative 'oj_adapter'
 
-# 1. Manifest now has explicit version.
+# 1. Manifest now has explicit version (2)
 # 2. No longer stores JSON in pretty format.
 # 3. No longer stores file contents in lined format.
 # 4. joined() now does a single read rather than 64.
@@ -53,10 +53,12 @@ class Group_v2
     manifest.delete('id')
     manifest['group_id'] = id
     indexes.each do |index|
+      # TODO: use write_cmd() here...?
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
         saver.send(*katas_append_cmd(id, kata_id, index))
+        #saver.write(id_path(id, index, 'kata.id'), kata_id) ???
         return kata_id
       end
     end

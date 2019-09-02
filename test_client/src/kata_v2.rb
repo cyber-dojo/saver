@@ -13,9 +13,9 @@ require_relative 'oj_adapter'
 #    was    { ... } # 0
 #           { ... } # 1      then 2-23 outage
 #           { ... } # 24
-#    now    { ... "index" => 0 }
-#           { ... "index" => 1 }
-#           { ... "index" => 24 }
+#    now    { ..., "index" => 0 }
+#           { ..., "index" => 1 }
+#           { ..., "index" => 24 }
 # 6. No longer uses separate dir for each event file.
 #    This makes ran_tests() faster as it no longer needs
 #    a create_cmd() in its saver.batch call.
