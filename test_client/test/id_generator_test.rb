@@ -1,6 +1,7 @@
 require_relative 'test_base'
 require_relative '../src/id_generator'
-require 'open3'
+require 'fileutils'
+require 'tmpdir'
 
 class IdGeneratorTest < TestBase
 
@@ -14,7 +15,7 @@ class IdGeneratorTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  v_test [1,2], '064', %w(
+  test '064', %w(
   alphabet has 58 characters all of which get used ) do
     assert_equal 58, alphabet.size
     counts = {}
@@ -38,14 +39,15 @@ class IdGeneratorTest < TestBase
     diagnostic = 'single quote to protect all other letters'
     refute alphabet.include?("'"), diagnostic
     alphabet.each_char do |letter|
-      path = "/tmp/client/12/23/base/#{letter}"
-      assert saver.create(path), path
+      path = Dir.mktmpdir("/tmp/#{letter}")
+      FileUtils.mkdir_p(path)
+      at_exit { FileUtils.remove_entry(path) }
     end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  v_test [1,2], '066', %w( <new>
+  test '066', %w( <new>
   id generation is sufficiently random that there are
   no duplicates in 25,000 repeats ) do
     ids = {}
