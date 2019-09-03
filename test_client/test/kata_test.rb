@@ -220,7 +220,132 @@ class KataTest < TestBase
     assert_equal expected, kata.event(id, -1), 'event(id,-1)'
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  v_test [0,1], '930', %w(
+    event-0
+      has files in lined format, with no truncated field
+      has no stdout/stderr/status fields
+    event-N
+      has files in lined-format, possibly with truncated field
+      has stdout/stderr in lined format, with truncated field
+      has an integer status field
+  ) do
+    id = kata.create(starter.manifest)
+    event0_src = saver.send(*v01_event_read_cmd(id, 0))
+    event0 = JSON.parse(event0_src)
+    refute event0.has_key?('stdout')
+    refute event0.has_key?('stderr')
+    refute event0.has_key?('status')
+    files = event0['files']
+    assert_equal 6, files.size
+    files.each do |filename,file|
+      assert_in_lined_format(file)
+      refute file.has_key?('truncated')
+    end
+
+    kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
+    event1_src = saver.send(*v01_event_read_cmd(id, 1))
+    event1 = JSON.parse(event1_src)
+    assert event1.has_key?('stdout')
+    assert event1.has_key?('stderr')
+    assert event1.has_key?('status')
+    assert_in_lined_format(event1['stdout'])
+    assert_in_lined_format(event1['stderr'])
+    assert event1['status'].is_a?(Integer)
+    files = event1['files']
+    assert_equal 4, files.size
+    files.each do |filename,file|
+      assert_in_lined_format(file)
+      assert file.has_key?('truncated')
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  v_test [2], '931', %w(
+    event0
+      has files in unlined format, with no truncated field
+      has no stdout/stderr/status fields
+    event-N
+      has files in unlined format, possibly with truncated field
+      has stdout/stderr in unlined format, with truncated field
+      has an Integer status field
+  ) do
+    id = kata.create(starter.manifest)
+    event0_src = saver.send(*v2_event_read_cmd(id, 0))
+    event0 = JSON.parse(event0_src)
+    refute event0.has_key?('stdout')
+    refute event0.has_key?('stderr')
+    refute event0.has_key?('status')
+    files = event0['files']
+    assert_equal 6, files.size
+    files.each do |filename,file|
+      refute_in_lined_format(file)
+      refute file.has_key?('truncated')
+    end
+
+    kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
+    event1_src = saver.send(*v2_event_read_cmd(id, 1))
+    event1 = JSON.parse(event1_src)
+    assert event1.has_key?('stdout')
+    assert event1.has_key?('stderr')
+    assert event1.has_key?('status')
+    refute_in_lined_format(event1['stdout'])
+    refute_in_lined_format(event1['stderr'])
+    assert event1['status'].is_a?(Integer)
+    files = event1['files']
+    assert_equal 4, files.size
+    files.each do |filename,file|
+      refute_in_lined_format(file)
+      assert file.has_key?('truncated')
+    end
+  end
+
   private
+
+  def v01_event_read_cmd(id, index)
+    ['read', v01_event_filename(id, index)]
+  end
+
+  def v01_event_filename(id, index)
+    id_path(id, index, 'event.json')
+  end
+
+  def v2_event_read_cmd(id, index)
+    ['read', v2_event_filename(id,index)]
+  end
+
+  def v2_event_filename(id, index)
+    id_path(id, "#{index}.event.json")
+  end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'katas', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  def assert_in_lined_format(o)
+    assert o.has_key?('content')
+    content = o['content']
+    assert content.is_a?(Array), content.class.name
+    content.each do |line|
+      assert line.is_a?(String), line.class.name
+    end
+  end
+
+  def refute_in_lined_format(o)
+    assert o.has_key?('content')
+    content = o['content']
+    assert content.is_a?(String), content.class.name
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
 
   def rag_event(files, stdout, stderr, status)
     {
