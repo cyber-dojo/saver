@@ -71,7 +71,7 @@ class TestBase < HexMiniTest
   def creation_time
     starter.creation_time
   end
-  
+
   def make_ran_test_args(id, n, files)
     [ id, n, files, time_now, duration, stdout, stderr, status, red ]
   end

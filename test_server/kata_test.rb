@@ -1,4 +1,5 @@
 require_relative 'test_base'
+require 'json'
 
 class KataTest < TestBase
 
@@ -196,7 +197,62 @@ class KataTest < TestBase
     assert_equal expected, kata.event(id, -1), 'event(id,-1)'
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  test 'FD5', %w[
+  event-zero's files:
+    o) have lined file-format
+    o) have no 'truncated' field (as they come from the starter-manifest)
+    o) don't have stdout/stderr/status fields
+  whereas
+  subsequent event's files:
+    o) have lined file-format
+    o) have a 'truncated' field (as they come from the runner)
+    o) have stdout/stderr/status fields
+  ] do
+
+    id = kata.create(starter.manifest)
+    event0_src = saver.send(*kata.send('event_read_cmd', id, 0))
+    event0 = JSON.parse(event0_src)
+    refute event0.has_key?('stdout')
+    refute event0.has_key?('stderr')
+    refute event0.has_key?('status')
+    files = event0['files']
+    assert_equal 6, files.size
+    files.each do |filename,file|
+      assert_in_lined_format(file)
+      refute file.has_key?('truncated')
+    end
+
+    kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
+    event1_src = saver.send(*kata.send('event_read_cmd', id, 1))
+    event1 = JSON.parse(event1_src)
+    assert event1.has_key?('stdout')
+    assert_in_lined_format(event1['stdout'])
+    assert event1.has_key?('stderr')
+    assert_in_lined_format(event1['stderr'])
+    assert event1.has_key?('status')
+    assert event1['status'].is_a?(Integer)
+    files = event1['files']
+    assert_equal 4, files.size
+    files.each do |filename,file|
+      assert_in_lined_format(file)
+      assert file.has_key?('truncated')
+    end
+  end
+
   private
+
+  def assert_in_lined_format(o)
+    assert o.has_key?('content')
+    content = o['content']
+    assert content.is_a?(Array), content.class.name
+    content.each do |line|
+      assert line.is_a?(String), line.class.name
+    end
+  end
+
+  # - - - - - - - - - - - - - - - -
 
   def rag_event(files, stdout, stderr, status)
     {
