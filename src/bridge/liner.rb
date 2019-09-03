@@ -52,11 +52,9 @@ module Liner # mix-in
   end
 
   def unlined_files(files)
-    unlined = {}
-    files.each{ |filename,file|
-      unlined[filename] = unlined_file(file)
-    }
-    unlined
+    Hash[files.map{ |filename,file|
+      [filename,unlined_file(file)]
+    }]
   end
 
   def unlined_file(file)
