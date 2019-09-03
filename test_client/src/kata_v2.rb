@@ -3,11 +3,12 @@
 require_relative 'saver_exception'
 require_relative 'oj_adapter'
 
-# 1. Manifest now has explicit version.
-# 2. No longer stores JSON in pretty format.
-# 3. No longer stores file contents in lined format.
-# 4. Uses Oj as its JSON gem.
-# 5. Stores explicit index in events.json summary file.
+# 1. Manifest now has explicit version (2)
+# 2. Manifest is retrieved in single read call.
+# 3. No longer stores JSON in pretty format.
+# 4. No longer stores file contents in lined format.
+# 5. Uses Oj as its JSON gem.
+# 6. Stores explicit index in events.json summary file.
 #    This makes using index==-1 robust when traffic-lights
 #    are lost due to Saver outages.
 #    was    { ... } # 0
@@ -16,7 +17,7 @@ require_relative 'oj_adapter'
 #    now    { ..., "index" => 0 }
 #           { ..., "index" => 1 }
 #           { ..., "index" => 24 }
-# 6. No longer uses separate dir for each event file.
+# 7. No longer uses separate dir for each event file.
 #    This makes ran_tests() faster as it no longer needs
 #    a create_cmd() in its saver.batch call.
 #    was     /cyber-dojo/katas/e3/T6/K2/0/event.json

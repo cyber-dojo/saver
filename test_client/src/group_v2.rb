@@ -4,9 +4,9 @@ require_relative 'saver_exception'
 require_relative 'oj_adapter'
 
 # 1. Manifest now has explicit version (2)
-# 2. No longer stores JSON in pretty format.
-# 3. No longer stores file contents in lined format.
-# 4. joined() now does a single read rather than 64.
+# 2. joined() now does a single read rather than 64.
+# 3. No longer stores JSON in pretty format.
+# 4. No longer stores file contents in lined format.
 # 5. Uses Oj as its JSON gem.
 
 class Group_v2
@@ -27,8 +27,8 @@ class Group_v2
     id = manifest['id'] = generate_id
     manifest['version'] = 2
     result = saver.batch([
-      manifest_write_cmd(id, manifest),
-      katas_write_cmd(id)
+      manifest_write_cmd(id, json_plain(manifest)),
+      katas_write_cmd(id, '')
     ])
     unless result === [true]*2
       fail invalid('id', id)
@@ -53,12 +53,12 @@ class Group_v2
     manifest.delete('id')
     manifest['group_id'] = id
     indexes.each do |index|
-      # TODO: use write_cmd() here...?
+      # TODO: use saver.write_cmd() here...?
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
-        saver.send(*katas_append_cmd(id, kata_id, index))
-        #saver.write(id_path(id, index, 'kata.id'), kata_id) ???
+        saver.send(*katas_append_cmd(id, "#{kata_id} #{index}\n"))
+        #TODO: with... saver.write(...) ?
         return kata_id
       end
     end
@@ -121,8 +121,8 @@ class Group_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def manifest_write_cmd(id, manifest)
-    ['write', manifest_filename(id), json_plain(manifest)]
+  def manifest_write_cmd(id, manifest_src)
+    ['write', manifest_filename(id), manifest_src]
   end
 
   def manifest_read_cmd(id)
@@ -135,12 +135,12 @@ class Group_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def katas_write_cmd(id)
-    ['write', katas_filename(id), '']
+  def katas_write_cmd(id, src)
+    ['write', katas_filename(id), src]
   end
 
-  def katas_append_cmd(id, kata_id, index)
-    ['append', katas_filename(id), "#{kata_id} #{index}\n"]
+  def katas_append_cmd(id, src)
+    ['append', katas_filename(id), src]
   end
 
   def katas_read_cmd(id)

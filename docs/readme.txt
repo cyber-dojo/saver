@@ -1,9 +1,17 @@
 
 split-off-singler-and-grouper branch
+====================================
+- do todos
+- fix coverage gaps
+
+Later...
+========
 
 - join should return :full not nil
 
 - web can then do batch(read,read) to ready both was_files and now_files in one call.
+
+- fix web footer messages for partial degradation (saver,ragger)
 
 - currently if there is saver failure you can end up with
   an events.json file like this... (Saver failed to save 2,3,4,5,6)
@@ -26,13 +34,6 @@ split-off-singler-and-grouper branch
   1) git repo
   2) tgz containing files suitable for use in
      $cyber-dojo start-point create command.
-
-
-- do todos
-- fix coverage gaps
-- add parallel branch in web repo
-- fix web footer messages for partial degradation (saver,ragger)
-- try out images on local server and under versioner
 
 - for k8s
 - release new saver with old+new api - ensure Sami is around...
