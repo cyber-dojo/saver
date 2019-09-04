@@ -12,6 +12,10 @@ class Saver
     true
   end
 
+  def alive?
+    true
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def exists?(key)

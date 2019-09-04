@@ -47,11 +47,19 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready
+  # ready?
 
   multi_test '602',
   %w( ready? is always true ) do
     assert saver.ready?
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # alive?
+
+  multi_test '603',
+  %w( alive? is always true ) do
+    assert saver.alive?
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -19,11 +19,19 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready
+  # ready?
 
   test '602',
   %w( ready? is always true ) do
     assert saver.ready?
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # alive?
+
+  test '603',
+  %w( alive? is always true ) do
+    assert saver.alive?
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,18 +164,29 @@ class SaverTest < TestBase
   'batch() batches all other commands' do
     expected = []
     commands = []
+
     dirname = 'batch/e3/t6/A8'
     commands << ['create',dirname]
     expected << true
-    there_not = dirname + '/there-not.txt'
+
+    commands << ['exists',dirname]
+    expected << true
+
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
     commands << ['write',there_yes,content]
     expected << true
+
+    commands << ['append',there_yes,content.reverse]
+    expected << true
+
+    commands << ['read',there_yes]
+    expected << content+content.reverse
+
+    there_not = dirname + '/there-not.txt'
     commands << ['read',there_not]
     expected << nil
-    commands << ['read',there_yes]
-    expected << content
+
     result = saver.batch(commands)
     assert_equal expected, result
   end

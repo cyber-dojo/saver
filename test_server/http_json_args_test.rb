@@ -88,37 +88,23 @@ class HttpJsonArgsTest < TestBase
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
-    commands = [['sha'],['ready'],true]
+    commands = [['exists','a/b/c'],true]
     error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[2]:!Array (TrueClass):', error.message
+    assert_equal 'malformed:commands[1]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
-    commands = [['sha'],[4.2]]
+    commands = [['exists','/d/e/f'],[4.2]]
     error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
 
   test 'B55',
   'commands[i]: get() raises when name is unknown' do
-    commands = [['sha'],['qwerty','ff']]
+    commands = [['create','/t/45/readme.md'],['qwerty','ff']]
     error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1]:Unknown (qwerty):', error.message
-  end
-
-  test 'B56',
-  'commands[i]: get() raises when sha-command does not have zero arguments' do
-    commands = [['sha','sss']]
-    error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:sha!0 (1):', error.message
-  end
-
-  test 'B57',
-  'commands[i]: get() raises when ready-command does not have zero arguments' do
-    commands = [['ready','sss','ttt']]
-    error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:ready!0 (2):', error.message
   end
 
   test 'B58',
