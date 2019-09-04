@@ -181,9 +181,10 @@ class SaverTest < TestBase
   # batch()
 
   multi_test '514',
-  'batch() batches all other commands' do
+  'batch() batches all other commands (except sha/ready/itself)' do
     expected = []
     commands = []
+
     dirname = 'client/e3/t6/A8'
     commands << ['create',dirname]
     expected << true
@@ -210,5 +211,9 @@ class SaverTest < TestBase
     result = saver.batch(commands)
     assert_equal expected, result
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # TODO: <real> and <fake> fail identically...
+
 
 end

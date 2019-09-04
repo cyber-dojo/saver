@@ -12,6 +12,7 @@ class KataTest < TestBase
 
   v_test [0,1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
+    refute kata.exists?('123456')    
     id = kata.create(starter.manifest)
     assert kata.exists?(id)
   end

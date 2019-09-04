@@ -12,6 +12,7 @@ class GroupTest < TestBase
 
   v_test [0,1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
+    refute group.exists?('123456')
     id = group.create(starter.manifest)
     assert group.exists?(id)
   end
