@@ -50,9 +50,9 @@ class Kata_v2
       'files' => manifest['visible_files']
     }
     saver.batch([
-      manifest_write_cmd(id, manifest),
-      events_write_cmd(id, event_summary),
-      event_write_cmd(id, 0, to_diff)
+      manifest_write_cmd(id, json_plain(manifest)),
+      events_write_cmd(id, json_plain(event_summary) + "\n"),
+      event_write_cmd(id, 0, json_plain(to_diff))
     ])
     # TODO: unless result === [true]*3
     id
@@ -87,8 +87,8 @@ class Kata_v2
       'index' => index
     }
     result = saver.batch([
-      events_append_cmd(id, event_summary),
-      event_write_cmd(id, index, event_n)
+      events_append_cmd(id, json_plain(event_summary) + "\n"),
+      event_write_cmd(id, index, json_plain(event_n))
     ])
     unless result[0]
       fail invalid('id', id)
@@ -148,8 +148,8 @@ class Kata_v2
   # start-point services. In practice it creates coupling, and it
   # doesn't work because start-point services change over time.
 
-  def manifest_write_cmd(id, manifest)
-    ['write', manifest_filename(id), json_plain(manifest)]
+  def manifest_write_cmd(id, manifest_src)
+    ['write', manifest_filename(id), manifest_src]
   end
 
   def manifest_read_cmd(id)
@@ -169,12 +169,12 @@ class Kata_v2
   # This is an optimization for ran_tests() which need only
   # append to the end of the file.
 
-  def events_write_cmd(id, event0)
-    ['write', events_filename(id), json_plain(event0) + "\n"]
+  def events_write_cmd(id, event0_src)
+    ['write', events_filename(id), event0_src]
   end
 
-  def events_append_cmd(id, event)
-    ['append', events_filename(id), json_plain(event) + "\n"]
+  def events_append_cmd(id, eventN_src)
+    ['append', events_filename(id), eventN_src]
   end
 
   def events_read_cmd(id)
@@ -188,8 +188,8 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
 
-  def event_write_cmd(id, index, event)
-    ['write', event_filename(id,index), json_plain(event)]
+  def event_write_cmd(id, index, event_src)
+    ['write', event_filename(id,index), event_src]
   end
 
   def event_read_cmd(id, index)
