@@ -93,8 +93,47 @@ class HttpJsonArgs
       fail missing(arg_name)
     end
     arg = args[arg_name]
-    # TODO: check commands are well-formed
+    unless arg.is_a?(Array)
+      fail malformed(arg_name, "!Array (#{arg.class.name})")
+    end
+    arg.each.with_index do |command,index|
+      unless command.is_a?(Array)
+        fail malformed("commands[#{index}]", "!Array (#{command.class.name})")
+      end
+      fail_unless_well_formed_command(command,index)
+    end
     arg
+  end
+
+  def fail_unless_well_formed_command(command,index)
+    name = command[0]
+    unless name.is_a?(String)
+      fail malformed("commands[#{index}][0]", "!String (#{name.class.name})")
+    end
+    case name
+    when 'sha'    then fail_unless_well_formed_args(command,index,0)
+    when 'ready'  then fail_unless_well_formed_args(command,index,0)
+    when 'create' then fail_unless_well_formed_args(command,index,1)
+    when 'exists' then fail_unless_well_formed_args(command,index,1)
+    when 'write'  then fail_unless_well_formed_args(command,index,2)
+    when 'append' then fail_unless_well_formed_args(command,index,2)
+    when 'read'   then fail_unless_well_formed_args(command,index,1)
+    else
+      fail malformed("commands[#{index}]", "Unknown (#{name})")
+    end
+  end
+
+  def fail_unless_well_formed_args(command,index,arity)
+    name,*args = command
+    unless args.size === arity
+      fail malformed("commands[#{index}]", "#{name}!#{arity} (#{args.size})")
+    end
+    arity.times do |n|
+      arg = args[n]
+      unless arg.is_a?(String)
+        fail malformed("commands[#{index}]", "#{name}-#{arity}!String (#{arg.class.name})")
+      end
+    end
   end
 
   # - - - - - - - - - - - - - - - -

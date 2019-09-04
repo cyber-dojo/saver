@@ -112,7 +112,7 @@ class RackDispatcherTest < TestBase
   end
 
   # TODO: commands malformed
-  
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200
 
@@ -209,9 +209,9 @@ class RackDispatcherTest < TestBase
 
   def well_formed_commands
     [
-      [ 'make?',   '/cyber-dojo/katas/12/34/45'],
-      [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
-      [ 'exists?', '/cyber-dojo/katas/12/34/45/manifest.json' ]
+      [ 'create', '/cyber-dojo/katas/12/34/45' ],
+      [ 'exists', '/cyber-dojo/katas/12/34/45' ],
+      [ 'write',  '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
     ]
   end
 
