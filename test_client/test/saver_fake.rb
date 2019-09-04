@@ -3,8 +3,8 @@
 class SaverFake
 
   def initialize
-    @dirs = {}
-    @files = {}
+    @@dirs = {}
+    @@files = {}
   end
 
   def sha
@@ -25,7 +25,7 @@ class SaverFake
     if exists?(key)
       false
     else
-      @dirs[path_name(key)] = true
+      @@dirs[path_name(key)] = true
     end
   end
 
@@ -34,7 +34,7 @@ class SaverFake
   def write(key, value)
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
-      @files[path] = value
+      @@files[path] = value
       true
     else
       false
@@ -44,7 +44,7 @@ class SaverFake
   def append(key, value)
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)
-      @files[path] += value
+      @@files[path] += value
       true
     else
       false
@@ -54,7 +54,7 @@ class SaverFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
-    @files[path_name(key)]
+    @@files[path_name(key)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -64,11 +64,11 @@ class SaverFake
     commands.each do |command|
       name,*args = command
       result = case name
-      when 'create'  then create(*args)
-      when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      when 'append'  then append(*args)
-      when 'read'    then read(*args)
+      when 'create' then create(*args)
+      when 'exists' then exists?(*args)
+      when 'write'  then write(*args)
+      when 'append' then append(*args)
+      when 'read'   then read(*args)
       #TODO: else raise...
       end
       results << result
@@ -83,11 +83,11 @@ class SaverFake
   end
 
   def dir?(key)
-    @dirs.has_key?(key)
+    @@dirs.has_key?(key)
   end
 
   def file?(key)
-    @files.has_key?(key)
+    @@files.has_key?(key)
   end
 
 end

@@ -72,11 +72,11 @@ class Saver
     commands.map do |command|
       name,*args = command
       case name
-      when 'create'  then create(*args)
-      when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      when 'append'  then append(*args)
-      when 'read'    then read(*args)
+      when 'create' then create(*args)
+      when 'exists' then exists?(*args)
+      when 'write'  then write(*args)
+      when 'append' then append(*args)
+      when 'read'   then read(*args)
       end
     end
   end

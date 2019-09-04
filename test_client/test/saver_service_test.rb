@@ -187,7 +187,7 @@ class SaverTest < TestBase
     dirname = 'client/e3/t6/A8'
     commands << ['create',dirname]
     expected << true
-    commands << ['exists?',dirname]
+    commands << ['exists',dirname]
     expected << true
 
     there_yes = dirname + '/there-yes.txt'
