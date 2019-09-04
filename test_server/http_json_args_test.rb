@@ -81,109 +81,101 @@ class HttpJsonArgsTest < TestBase
 
   test 'B52',
   'commands: get() raises when it is not an Array' do
-    args = HttpJsonArgs.new('{"commands":42}')
-    error = assert_raises { args.get('/batch', externals) }
+    commands = 42
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands:!Array (Integer):', error.message
   end
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
-    commands = { "commands":[['sha'],['ready'],true] }
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['sha'],['ready'],true]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[2]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
-    commands = { "commands": [
-      ['sha'],[4.2]
-    ]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['sha'],[4.2]]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
 
   test 'B55',
   'commands[i]: get() raises when name is unknown' do
-    commands = { "commands": [
-      ['sha'],['qwerty','ff']
-    ]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['sha'],['qwerty','ff']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1]:Unknown (qwerty):', error.message
   end
 
   test 'B56',
   'commands[i]: get() raises when sha-command does not have zero arguments' do
-    commands = { "commands": [['sha','sss']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['sha','sss']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:sha!0 (1):', error.message
   end
 
   test 'B57',
   'commands[i]: get() raises when ready-command does not have zero arguments' do
-    commands = { "commands": [['ready','sss','ttt']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['ready','sss','ttt']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:ready!0 (2):', error.message
   end
 
   test 'B58',
   'commands[i]: get() raises when create-command does not have one argument' do
-    commands = { "commands": [['create']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['create']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:create!1 (0):', error.message
   end
 
   test 'B59',
   'commands[i]: get() raises when exists-command does not have one argument' do
-    commands = { "commands": [['exists','a','b','c']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['exists','a','b','c']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:exists!1 (3):', error.message
   end
 
   test 'B60',
   'commands[i]: get() raises when write-command does not have two arguments' do
-    commands = { "commands": [['write','a','b','c','d']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['write','a','b','c','d']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:write!2 (4):', error.message
   end
 
   test 'B61',
   'commands[i]: get() raises when append-command does not have two arguments' do
-    commands = { "commands": [['append','a']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['append','a']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:append!2 (1):', error.message
   end
 
   test 'B62',
   'commands[i]: get() raises when read-command does not have one argument' do
-    commands = { "commands": [['read']]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['read']]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:read!1 (0):', error.message
   end
 
   test 'B63',
   'commands[i]: get() raises when any 1st argument is not a string' do
-    commands = { "commands": [['read',42]]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['read',42]]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:read-1!String (Integer):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
-    commands = { "commands": [['write','a/b/c',nil]]}
-    args = HttpJsonArgs.new(commands.to_json)
-    error = assert_raises { args.get('/batch', externals) }
+    commands = [['write','a/b/c',nil]]
+    error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[0]:write-2!String (NilClass):', error.message
+  end
+
+  private
+
+  def assert_batch_raises(commands)
+    json = { "commands":commands }.to_json
+    args = HttpJsonArgs.new(json)
+    assert_raises { args.get('/batch', externals) }
   end
 
 end
