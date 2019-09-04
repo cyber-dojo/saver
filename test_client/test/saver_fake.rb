@@ -58,7 +58,7 @@ class SaverFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
-    @@files[path_name(key)]
+    @@files[path_name(key)] || false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -

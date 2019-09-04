@@ -67,7 +67,7 @@ class Saver
     }
   rescue Errno::ENOENT, # file does not exist
          Errno::EISDIR  # file is a dir!
-    nil
+    false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -

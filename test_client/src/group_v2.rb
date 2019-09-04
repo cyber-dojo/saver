@@ -40,7 +40,7 @@ class Group_v2
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    if manifest_src.nil?
+    unless manifest_src.is_a?(String)
       fail invalid('id', id)
     end
     json_parse(manifest_src)
@@ -153,7 +153,7 @@ class Group_v2
 
   def katas_indexes(id)
     katas_src = saver.send(*katas_read_cmd(id))
-    if katas_src.nil?
+    unless katas_src.is_a?(String)
       nil
     else
       katas_src.split.each_slice(2).to_a

@@ -103,7 +103,7 @@ class SaverTest < TestBase
     # saver.create(dirname) # missing
     filename = dirname + '/readme.md'
     refute saver.write(filename, 'bonjour')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   multi_test '642', %w(
@@ -144,7 +144,7 @@ class SaverTest < TestBase
     # saver.create(dirname) # missing
     filename = dirname + '/readme.md'
     refute saver.append(filename, 'greetings')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   multi_test '842', %w(
@@ -156,7 +156,7 @@ class SaverTest < TestBase
     filename = dirname + '/hiker.h'
     # saver.write(filename, '...') # missing
     refute saver.append(filename, 'int main(void);')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -173,16 +173,16 @@ class SaverTest < TestBase
   end
 
   multi_test '438',
-  'read() returns nil given a non-existent file-name' do
+  'read() returns false given a non-existent file-name' do
     filename = 'client/1z/23/e4/not-there.txt'
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   multi_test '439',
-  'read() returns nil given an existing dir-name' do
+  'read() returns false given an existing dir-name' do
     dirname = 'client/2f/7k/3P'
     saver.create(dirname)
-    assert_nil saver.read(dirname)
+    assert saver.read(dirname).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,7 +203,7 @@ class SaverTest < TestBase
     content = 'inchmarlo'
     commands << ['write',there_yes,content]
     expected << true
-    commands << ['append',there_yes,content]
+    commands << ['append',there_yes,content.reverse]
     expected << true
 
     there_not = dirname + '/there-not.txt'
@@ -211,10 +211,10 @@ class SaverTest < TestBase
     expected << false
 
     commands << ['read',there_yes]
-    expected << content*2
+    expected << content+content.reverse
 
     commands << ['read',there_not]
-    expected << nil
+    expected << false
 
     result = saver.batch(commands)
     assert_equal expected, result

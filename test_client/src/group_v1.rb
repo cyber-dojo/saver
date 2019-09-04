@@ -31,7 +31,7 @@ class Group_v1
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src
+    unless manifest_src.is_a?(String)
       fail invalid('id', id)
     end
     manifest = json_parse(manifest_src)

@@ -75,7 +75,7 @@ class SaverTest < TestBase
     # saver.create(dirname) # missing
     filename = dirname + '/readme.md'
     refute saver.write(filename, 'bonjour')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   test '642', %w(
@@ -116,7 +116,7 @@ class SaverTest < TestBase
     # saver.create(dirname) # missing
     filename = dirname + '/readme.md'
     refute saver.append(filename, 'greetings')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   test '842', %w(
@@ -128,7 +128,7 @@ class SaverTest < TestBase
     filename = dirname + '/hiker.h'
     # saver.write(filename, '...') # missing
     refute saver.append(filename, 'int main(void);')
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -145,16 +145,16 @@ class SaverTest < TestBase
   end
 
   test '438',
-  'read() returns nil given a non-existent file-name' do
+  'read() returns false given a non-existent file-name' do
     filename = 'groups/1z/23/e4/not-there.txt'
-    assert_nil saver.read(filename)
+    assert saver.read(filename).is_a?(FalseClass)
   end
 
   test '439',
-  'read() returns nil given an existing dir-name' do
+  'read() returns false given an existing dir-name' do
     dirname = 'groups/2f/7k/3P'
     saver.create(dirname)
-    assert_nil saver.read(dirname)
+    assert saver.read(dirname).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -185,7 +185,7 @@ class SaverTest < TestBase
 
     there_not = dirname + '/there-not.txt'
     commands << ['read',there_not]
-    expected << nil
+    expected << false
 
     result = saver.batch(commands)
     assert_equal expected, result
