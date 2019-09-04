@@ -169,7 +169,7 @@ class SaverTest < TestBase
     commands << ['create',dirname]
     expected << true
 
-    commands << ['exists',dirname]
+    commands << ['exists?',dirname]
     expected << true
 
     there_yes = dirname + '/there-yes.txt'

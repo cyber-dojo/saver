@@ -209,9 +209,9 @@ class RackDispatcherTest < TestBase
 
   def well_formed_commands
     [
-      [ 'create', '/cyber-dojo/katas/12/34/45' ],
-      [ 'exists', '/cyber-dojo/katas/12/34/45' ],
-      [ 'write',  '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
+      [ 'create',  '/cyber-dojo/katas/12/34/45' ],
+      [ 'exists?', '/cyber-dojo/katas/12/34/45' ],
+      [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
     ]
   end
 

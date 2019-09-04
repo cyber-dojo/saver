@@ -189,14 +189,14 @@ class SaverTest < TestBase
   # batch()
 
   multi_test '514',
-  'batch() batches all other commands (except sha/ready/itself)' do
+  'batch() batches all other commands (except sha/ready/alive/itself)' do
     expected = []
     commands = []
 
     dirname = 'client/e3/t6/A8'
     commands << ['create',dirname]
     expected << true
-    commands << ['exists',dirname]
+    commands << ['exists?',dirname]
     expected << true
 
     there_yes = dirname + '/there-yes.txt'

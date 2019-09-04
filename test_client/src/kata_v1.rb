@@ -141,7 +141,7 @@ class Kata_v1
   end
 
   def exists_cmd(id, *parts)
-    ['exists', id_path(id, *parts)]
+    ['exists?', id_path(id, *parts)]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

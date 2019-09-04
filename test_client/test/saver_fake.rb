@@ -68,11 +68,11 @@ class SaverFake
     commands.each do |command|
       name,*args = command
       result = case name
-      when 'create' then create(*args)
-      when 'exists' then exists?(*args)
-      when 'write'  then write(*args)
-      when 'append' then append(*args)
-      when 'read'   then read(*args)
+      when 'create'  then create(*args)
+      when 'exists?' then exists?(*args)
+      when 'write'   then write(*args)
+      when 'append'  then append(*args)
+      when 'read'    then read(*args)
       #TODO: else raise...
       end
       results << result

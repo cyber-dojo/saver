@@ -88,14 +88,14 @@ class HttpJsonArgsTest < TestBase
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
-    commands = [['exists','a/b/c'],true]
+    commands = [['exists?','a/b/c'],true]
     error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
-    commands = [['exists','/d/e/f'],[4.2]]
+    commands = [['exists?','/d/e/f'],[4.2]]
     error = assert_batch_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
@@ -116,9 +116,9 @@ class HttpJsonArgsTest < TestBase
 
   test 'B59',
   'commands[i]: get() raises when exists-command does not have one argument' do
-    commands = [['exists','a','b','c']]
+    commands = [['exists?','a','b','c']]
     error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:exists!1 (3):', error.message
+    assert_equal 'malformed:commands[0]:exists?!1 (3):', error.message
   end
 
   test 'B60',
