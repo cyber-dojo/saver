@@ -47,7 +47,7 @@ containers:
       requests:
         memory: 256Mi
       #livenessProbe:
-      #  path: /sha
+      #  path: /alive?
       #  port: 4537
       #readinessProbe:
       #  path: /ready?

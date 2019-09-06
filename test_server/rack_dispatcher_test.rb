@@ -111,7 +111,20 @@ class RackDispatcherTest < TestBase
     )
   end
 
-  # TODO: commands malformed
+  test 'AC7',
+  'dispatch returns 400 status when commands are malformed' do
+    [
+      ['{"commands":42}', 'malformed:commands:!Array (Integer):'],
+      ['{"commands":[42]}', 'malformed:commands[0]:!Array (Integer):'],
+      ['{"commands":[[true]]}', 'malformed:commands[0][0]:!String (TrueClass):'],
+      ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
+      ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!1 (3):'],
+      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read-1!String (Float):']
+
+    ].each do |json, error_message|
+      assert_dispatch_raises('batch', json, 400, error_message)
+    end
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200
@@ -200,11 +213,11 @@ class RackDispatcherTest < TestBase
   # - - - - - - -
 
   def well_formed_key
-    '/cyber-dojo/katas/12/34/56/event.json' # String
+    '/katas/12/34/56/event.json' # String
   end
 
   def well_formed_value
-    { "a" => 23, "b" => [1,2,3] }.to_json # String
+    { "index" => 23, "time" => [2019,2,3,6,57,8,3242] }.to_json # String
   end
 
   def well_formed_commands
