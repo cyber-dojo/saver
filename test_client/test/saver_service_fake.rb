@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SaverFake
+class SaverServiceFake
 
   def initialize
     @@dirs = {}

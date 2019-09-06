@@ -1,7 +1,7 @@
 
 require_relative 'test_base'
 require_relative '../src/saver_service'
-require_relative 'saver_fake'
+require_relative 'saver_service_fake'
 
 class SaverTest < TestBase
 
@@ -29,7 +29,7 @@ class SaverTest < TestBase
 
   def saver
     if fake_test?
-      @saver ||= SaverFake.new
+      @saver ||= SaverServiceFake.new
     else
       @saver ||= SaverService.new
     end
@@ -221,7 +221,19 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: <real> and <fake> fail identically...
+  # TODO: <real> and <fake> fail "identically"...
 
+  test '514', %w(
+    <real> create with non-string argument raises SaverException
+  ) do
+    error = assert_raises(SaverException) {
+      saver.create(42)
+    }
+    json = JSON.parse(error.message)
+    #puts JSON.pretty_generate(json)
+    assert_equal '/create', json['path']
+    assert_equal 'SaverService', json['class']
+    assert_equal 'malformed:key:!String (Integer):', json['message']
+  end
 
 end
