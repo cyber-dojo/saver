@@ -49,12 +49,14 @@ class Kata_v2
     to_diff = {
       'files' => manifest['visible_files']
     }
-    saver.batch([
+    result = saver.batch([
       manifest_write_cmd(id, json_plain(manifest)),
       events_write_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, 0, json_plain(to_diff))
     ])
-    # TODO: unless result === [true]*3
+    unless result === [true]*3
+      fail invalid('id', id) # TODO: better message
+    end
     id
   end
 
