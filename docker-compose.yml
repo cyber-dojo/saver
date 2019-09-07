@@ -1,6 +1,10 @@
 
 version: '2.2'
 
+volumes:
+  one_k:
+    external: true
+
 services:
 
   saver_client:
@@ -15,8 +19,8 @@ services:
     restart: 'no'
     depends_on:
       - saver
-      - languages
-      - exercises
+      - languages # for tests
+      - exercises # for tests
     ports:
       - 4538:4538
 
@@ -35,6 +39,7 @@ services:
       - NO_PROMETHEUS
     volumes:
       - ./test_server:/app/test:ro
+      - one_k:/one_k
     ports:
       - 4537:4537
     read_only: true

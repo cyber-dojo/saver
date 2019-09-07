@@ -11,6 +11,20 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 500
 
+  test '166',
+  'dispatch returns 500 status when no space left on device' do
+    externals.instance_exec {
+      @saver = Saver.new('one_k')
+    }
+    assert saver.create('abc')
+    assert saver.write('abc/file','x'*1024)
+    message = 'No space left on device @ io_write - /one_k/abc/file'
+    body = { "key":'abc/file', "value":'x'*1024*16 }.to_json
+    assert_dispatch_raises('append', body, 500, message)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'F1A',
   'dispatch returns 500 status when implementation raises' do
     def saver.sha

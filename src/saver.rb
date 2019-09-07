@@ -4,6 +4,10 @@ require 'open3'
 
 class Saver
 
+  def initialize(root_dir = 'cyber-dojo')
+    @root_dir = root_dir
+  end
+
   def sha
     ENV['SHA']
   end
@@ -92,7 +96,7 @@ class Saver
   private
 
   def path_name(key)
-    File.join('', 'cyber-dojo', key)
+    File.join('', @root_dir, key)
   end
 
 end
