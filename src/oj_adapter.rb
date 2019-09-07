@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'oj'
+require 'oj'  # fast JSON gem
 
 module OjAdapter # mix-in
 

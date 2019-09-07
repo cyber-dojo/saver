@@ -2,7 +2,7 @@
 
 require_relative 'http_json/request_error'
 require_relative 'http_json_args'
-require_relative 'oj_adapter' # fast JSON gem
+require_relative 'oj_adapter'
 
 class RackDispatcher
 
