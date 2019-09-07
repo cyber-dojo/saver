@@ -36,6 +36,8 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
+    # Errno::ENOSPC (no space left on device) will
+    # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::CREAT | File::EXCL
     File.open(path_name(key), mode) { |fd|
       fd.write(value)
@@ -47,6 +49,8 @@ class Saver
   end
 
   def append(key, value)
+    # Errno::ENOSPC (no space left on device) will
+    # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::APPEND
     File.open(path_name(key), mode) { |fd|
       fd.flock(File::LOCK_EX)
