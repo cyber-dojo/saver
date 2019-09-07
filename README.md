@@ -74,12 +74,45 @@ Useful as a liveness probe.
 
 - - - -
 ## POST create(key)
+Creates **key** to allow subsequent calls to ```write``` and ```append```.
+Corresponds to ```mkdir -p ${key}``` in a file-system.
+- returns
+  * **true** if there has _not_ been a previous call to ```create``` with the given **key**
+  ```json
+  { "create": true }
+  ```
+  * **false** if there _has_ been a previous call to ```create``` with the given **key**
+  ```json
+  { "create": false }
+  ```
+- parameters
+  * **key** a String specifying a dir-like path, eg
+  ```json
+  { "key": "katas/N2/u8/9W" }
+  ```
 
 - - - -
 ## GET exists?(key)
+Determines if there has been a previous call to create(key).
+Corresponds to ```[ -d ${key} ]``` in a file-system.
+- returns
+  * **true** if there _has_ been a previous call to ```create``` with the given **key**
+  ```json
+  { "exists?": true }
+  ```
+  * **false** if there has _not_ been a previous call to ```create``` with the given **key**
+  ```json
+  { "exists?": false }
+  ```
+- parameters
+  * **key** a String, eg
+  ```json
+  { "key": "katas/N2/u8/9W" }
+  ```
 
 - - - -
 ## POST write(key,value)
+
 
 - - - -
 ## POST append(key,value)
