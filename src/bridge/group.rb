@@ -22,7 +22,7 @@ class Group
     id = manifest['id'] = generate_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
     unless saver.send(*manifest_write_cmd(id, json_plain(manifest)))
-      fail invalid('id', id)
+      fail invalid('id', id) # TODO: cover this
     end
     id
   end

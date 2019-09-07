@@ -55,7 +55,7 @@ class Kata_v2
       event_write_cmd(id, 0, json_plain(to_diff))
     ])
     unless result === [true]*3
-      fail invalid('id', id) # TODO: better message
+      fail invalid('id', id) # TODO: cover this
     end
     id
   end

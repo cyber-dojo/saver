@@ -32,7 +32,7 @@ class Kata_v1
       events_write_cmd(id, json_plain(event0) + "\n")
     ])
     unless result === [true]*4
-      fail invalid('id', id) # TODO: better message
+      fail invalid('id', id) # TODO: cover this
     end
     id
   end
