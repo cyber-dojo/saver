@@ -21,7 +21,7 @@ class Group
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    unless saver.send(*manifest_write_cmd(id, json_pretty(manifest)))
+    unless saver.send(*manifest_write_cmd(id, json_plain(manifest)))
       fail invalid('id', id)
     end
     id
@@ -168,8 +168,8 @@ class Group
 
   # - - - - - - - - - - - - - -
 
-  def json_pretty(o)
-    JSON.pretty_generate(o)
+  def json_plain(o)
+    JSON.fast_generate(o)
   end
 
   def json_parse(s)

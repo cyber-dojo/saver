@@ -15,11 +15,11 @@ API:
       -H 'Content-type: application/json' \
       -X PUT \
       -d '{"key":"katas/N2/u8/9W"}' \
-      http://$(ip_address):$(port)/create
+      http://${IP_ADDRESS}:${PORT}/create
     ```
   * All methods return a json hash.
     * If the method completes, a key equals the method's name, with
-      a value as documented below (usually true/false). eg
+      a value as documented below (usually ```true```/```false```). eg
       ```json
       { "create": true }
       ```

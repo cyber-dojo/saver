@@ -215,10 +215,6 @@ class Kata
     JSON.fast_generate(o)
   end
 
-  def json_pretty(o)
-    JSON.pretty_generate(o)
-  end
-
   def json_parse(s)
     JSON.parse!(s)
   end
