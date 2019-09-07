@@ -8,11 +8,26 @@
 
 - - - -
 API:
-  * All methods receive a json hash.
-    * The hash contains any method arguments as key-value pairs.
+  * All methods are named in the http request path, and pass any
+    arguments in a json hash in the http request body. eg
+    ```bash
+    curl \
+      -H 'Content-type: application/json' \
+      -X PUT \
+      -d '{"key":"katas/N2/u8/9W"}' \
+      http://$(ip_address):$(port)/create
+    ```
   * All methods return a json hash.
-    * If the method completes, a key equals the method's name.
-    * If the method raises an exception, a key equals "exception".
+    * If the method completes, a key equals the method's name, with
+      a value as documented below (usually true/false). eg
+      ```json
+      { "create": true }
+      ```
+    * If the method raises an exception, a key equals "exception", with
+      a json-string as its value. eg
+      ```json
+      { "exception": '{"path":"...","class":"...","message":"..."}' }
+      ```
 
 #
 - [GET sha()](#get-sha)
@@ -112,7 +127,6 @@ Corresponds to ```[ -d ${key} ]``` in a file-system.
 
 - - - -
 ## POST write(key,value)
-
 
 - - - -
 ## POST append(key,value)
