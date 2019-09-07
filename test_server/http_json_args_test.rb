@@ -10,7 +10,7 @@ class HttpJsonArgsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F18', 'get: path and body ok' do
+  test 'F18', 'get: [saver] path and body ok' do
     args = HttpJsonArgs.new('{}')
     assert_equal [saver,'sha',[]], args.get('/sha', externals)
     assert_equal [saver,'ready?',[]], args.get('/ready', externals)
@@ -28,6 +28,41 @@ class HttpJsonArgsTest < TestBase
     assert_equal [saver,'batch',[commands]], args.get('/batch',externals)
   end
 
+  test 'F19', 'get: [group] path and body ok' do
+    args = HttpJsonArgs.new('{"id":"N24Rt6"}')
+    assert_equal [group,'exists?',['N24Rt6']], args.get('/group_exists', externals)
+    assert_equal [group,'manifest',['N24Rt6']], args.get('/group_manifest', externals)
+    assert_equal [group,'joined',['N24Rt6']], args.get('/group_joined', externals)
+    assert_equal [group,'events',['N24Rt6']], args.get('/group_events', externals)
+    args = HttpJsonArgs.new('{"id":"N24Rt6","indexes":[3,4,5]}')
+    assert_equal [group,'join',['N24Rt6',[3,4,5]]], args.get('/group_join', externals)
+    args = HttpJsonArgs.new('{"manifest":{}}')
+    assert_equal [group,'create',[{}]], args.get('/group_create', externals)
+  end
+
+  test 'F20', 'get: [kata] path and body ok' do
+    args = HttpJsonArgs.new('{"id":"M3We9H"}')
+    assert_equal [kata,'exists?',['M3We9H']], args.get('/kata_exists',externals)
+    assert_equal [kata,'manifest',['M3We9H']], args.get('/kata_manifest', externals)
+    assert_equal [kata,'events',['M3We9H']], args.get('/kata_events', externals)
+    args = HttpJsonArgs.new('{"id":"D3A8q9","index":34}')
+    assert_equal [kata,'event',['D3A8q9',34]], args.get('/kata_event', externals)
+    args = HttpJsonArgs.new('{"manifest":{}}')
+    assert_equal [kata,'create',[{}]], args.get('/kata_create', externals)
+    args = HttpJsonArgs.new({
+      "id":(id='4rtHd2'),
+      "index":(index=21),
+      "files":(files={}),
+      "now":(now=[2019,6,7, 3,5,8,2344]),
+      "duration":(duration=1.52),
+      "stdout":(stdout='ssss'),
+      "stderr":(stderr='ffff'),
+      "status":(status=4),
+      "colour":(colour='red')
+    }.to_json)
+    expected = [kata,'ran_tests',[id,index,files,now,duration,stdout,stderr,status,colour]]
+    assert_equal expected, args.get('/kata_ran_tests', externals)
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # c'tor
@@ -57,7 +92,17 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # key
+  # get
+
+  test 'A06',
+  'get raises when path is unknown' do
+    args = HttpJsonArgs.new('{}')
+    error = assert_raises { args.get('/nope', externals) }
+    assert_equal 'unknown path', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # get:key
 
   test 'B41',
   'key: get() raises when it is missing' do
@@ -74,7 +119,7 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # value
+  # get:value
 
   test 'B43',
   'value: get() raises when it is missing' do
@@ -91,7 +136,7 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # commands
+  # get:commands
 
   test 'B51',
   'commands: get() raises when it is missing' do
