@@ -9,6 +9,27 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'F18', 'get: path and body ok' do
+    args = HttpJsonArgs.new('{}')
+    assert_equal [saver,'sha',[]], args.get('/sha', externals)
+    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
+    assert_equal [saver,'alive?',[]], args.get('/alive', externals)
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    assert_equal [saver,'create',['a/b/c']], args.get('/create', externals)
+    assert_equal [saver,'exists?',['a/b/c']], args.get('/exists', externals)
+    assert_equal [saver,'read',['a/b/c']], args.get('/read', externals)
+    args = HttpJsonArgs.new('{"key":"a/b/c","value":"qwerty"}')
+    assert_equal [saver,'write',['a/b/c','qwerty']], args.get('/write', externals)
+    assert_equal [saver,'append',['a/b/c','qwerty']], args.get('/append', externals)
+    commands = [['create','a/g/d'],['exists?','a/g/g']]
+    json = {"commands":commands}.to_json
+    args = HttpJsonArgs.new(json)
+    assert_equal [saver,'batch',[commands]], args.get('/batch',externals)
+  end
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # c'tor
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
