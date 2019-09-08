@@ -41,7 +41,7 @@ API:
 - [POST batch(commands)](#get-batchcommands)
 
 - - - -
-## GET sha
+# GET sha
 The git commit sha used to create the Docker image.
 - returns
   * The 40 character sha string.
@@ -88,7 +88,7 @@ Useful as a liveness probe.
   ```
 
 - - - -
-## POST create(key)
+# POST create(key)
 Creates **key** to allow subsequent calls to ```write``` and ```append```.
 Corresponds to ```mkdir -p ${key}``` in a file-system.
 - returns
@@ -107,7 +107,7 @@ Corresponds to ```mkdir -p ${key}``` in a file-system.
   ```
 
 - - - -
-## GET exists?(key)
+# GET exists?(key)
 Determines if there has been a previous call to create(key).
 Corresponds to ```[ -d ${key} ]``` in a file-system.
 - returns
@@ -126,15 +126,15 @@ Corresponds to ```[ -d ${key} ]``` in a file-system.
   ```
 
 - - - -
-## POST write(key,value)
+# POST write(key,value)
 
 - - - -
-## POST append(key,value)
+# POST append(key,value)
 
 - - - -
-## GET read(key)
+# GET read(key)
 
 - - - -
-## POST batch(commands)
+# POST batch(commands)
 
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
