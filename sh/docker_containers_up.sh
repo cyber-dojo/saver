@@ -112,7 +112,8 @@ create_space_limited_volume()
     --opt type=tmpfs \
     --opt device=tmpfs \
     --opt o=size=1k \
-    one_k
+    one_k \
+      > /dev/null
 }
 
 # - - - - - - - - - - - - - - - - - - - -
