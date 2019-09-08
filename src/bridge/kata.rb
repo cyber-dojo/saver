@@ -31,7 +31,7 @@ class Kata
       events_write_cmd(id, json_plain(event0) + "\n")
     ])
     unless result === [true]*4
-      fail invalid('id', id) # TODO: cover this
+      fail invalid('id', id) # TODO: cover this?
     end
     id
   end

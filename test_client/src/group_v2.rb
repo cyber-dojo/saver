@@ -53,12 +53,10 @@ class Group_v2
     manifest.delete('id')
     manifest['group_id'] = id
     indexes.each do |index|
-      # TODO: use saver.write_cmd() here...?
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
         saver.send(*katas_append_cmd(id, "#{kata_id} #{index}\n"))
-        #TODO: with... saver.write(...) ?
         return kata_id
       end
     end
