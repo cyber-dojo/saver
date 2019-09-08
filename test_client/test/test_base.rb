@@ -28,10 +28,8 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - - -
 
-  def assert_service_error(message, &block)
-    error = assert_raises(SaverException) { block.call }
-    json = JSON.parse(error.message)
-    assert_equal message, json['message']
+  def assert_service_error(&block)
+    assert_raises(SaverException) { block.call }
   end
 
   # - - - - - - - - - - - - - - - - - -

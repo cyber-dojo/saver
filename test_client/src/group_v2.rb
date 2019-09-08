@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'saver_exception'
 require_relative 'oj_adapter'
+require_relative 'saver_assert'
 
 # 1. Manifest now has explicit version (2)
 # 2. joined() now does a single read rather than 64.
@@ -30,9 +30,7 @@ class Group_v2
       manifest_write_cmd(id, json_plain(manifest)),
       katas_write_cmd(id, '')
     ])
-    unless result === [true]*2
-      fail invalid('id', id)
-    end
+    saver_assert_equal(result, [true]*2)
     id
   end
 
@@ -40,9 +38,7 @@ class Group_v2
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src.is_a?(String)
-      fail invalid('id', id)
-    end
+    saver_assert(manifest_src.is_a?(String))
     json_parse(manifest_src)
   end
 
@@ -97,6 +93,11 @@ class Group_v2
   end
 
   private
+
+  include OjAdapter
+  include SaverAssert
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def generate_id
     42.times do
@@ -183,14 +184,6 @@ class Group_v2
 
   # - - - - - - - - - - - - - -
 
-  def invalid(name, value)
-    SaverException.new(json_pretty({
-      "message" => "#{name}:invalid:#{value}"
-    }))
-  end
-
-  # - - - - - - - - - - - - - -
-
   def saver
     @externals.saver
   end
@@ -202,7 +195,5 @@ class Group_v2
   def kata
     @externals.kata
   end
-
-  include OjAdapter
 
 end

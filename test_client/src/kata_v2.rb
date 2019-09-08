@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'saver_assert'
-require_relative 'saver_exception'
 require_relative 'oj_adapter'
+require_relative 'saver_assert'
 
 # 1. Manifest now has explicit version (2)
 # 2. Manifest is retrieved in single read call.
@@ -55,7 +54,7 @@ class Kata_v2
       events_write_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, 0, json_plain(to_diff))
     ])
-    saver_assert(result, [true]*3)
+    saver_assert_equal(result, [true]*3)
     id
   end
 
@@ -63,18 +62,13 @@ class Kata_v2
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src.is_a?(String)
-      fail invalid('id', id)
-    end
+    saver_assert(manifest_src.is_a?(String))
     json_parse(manifest_src)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, now, duration, stdout, stderr, status, colour)
-    unless index >= 1
-      fail invalid('index', index)
-    end
     event_n = {
       'files' => files,
       'stdout' => stdout,
@@ -91,12 +85,7 @@ class Kata_v2
       events_append_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, index, json_plain(event_n))
     ])
-    unless result[0]
-      fail invalid('id', id)
-    end
-    unless result[1]
-      fail invalid('index', index)
-    end
+    saver_assert_equal(result, [true]*2)
     nil
   end
 
@@ -104,9 +93,7 @@ class Kata_v2
 
   def events(id)
     events_src = saver.send(*events_read_cmd(id))
-    unless events_src.is_a?(String)
-      fail invalid('id', id)
-    end
+    saver_assert(events_src.is_a?(String))
     json_parse('[' + events_src.lines.join(',') + ']')
     # Alternative implementation, which profiling shows is slower.
     # events_src.lines.map { |line| json_parse(line) }
@@ -117,16 +104,12 @@ class Kata_v2
   def event(id, index)
     if index === -1
       events_src = saver.send(*events_read_cmd(id))
-      unless events_src.is_a?(String)
-        fail invalid('id', id)
-      end
+      saver_assert(events_src.is_a?(String))
       last_line = events_src.lines.last
       index = json_parse(last_line)['index']
     end
     event_src = saver.send(*event_read_cmd(id, index))
-    unless event_src.is_a?(String)
-      fail invalid('index', index)
-    end
+    saver_assert(event_src.is_a?(String))
     json_parse(event_src)
   end
 
@@ -134,6 +117,8 @@ class Kata_v2
 
   include OjAdapter
   include SaverAssert
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def generate_id
     42.times do
@@ -215,12 +200,6 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - -
-
-  def invalid(name, value)
-    SaverException.new(json_pretty({
-      "message" => "#{name}:invalid:#{value}"
-    }))
-  end
 
   def saver
     @externals.saver

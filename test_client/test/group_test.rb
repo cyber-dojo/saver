@@ -24,9 +24,7 @@ class GroupTest < TestBase
   v_test [0,1,2], '420',
   'manifest() raises when id does not exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
-      group.manifest(id)
-    }
+    assert_service_error { group.manifest(id) }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -63,7 +61,7 @@ class GroupTest < TestBase
           def batch(commands); [false]*commands.size; end # v2
         end.new
     }
-    assert_service_error("id:invalid:#{gid}") {
+    assert_service_error {
       group.create(starter.manifest)
     }
   end
@@ -75,7 +73,7 @@ class GroupTest < TestBase
   v_test [0,1,2], '1D0',
   'join() raises when id does not exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
+    assert_service_error {
       group.join(id, indexes)
     }
   end

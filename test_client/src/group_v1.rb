@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'liner'
-require_relative 'saver_exception'
 require_relative 'oj_adapter'
+require_relative 'saver_assert'
 
 class Group_v1
 
@@ -21,9 +21,8 @@ class Group_v1
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    unless saver.send(*manifest_write_cmd(id, json_plain(manifest)))
-      fail invalid('id', id)
-    end
+    result = saver.send(*manifest_write_cmd(id, json_plain(manifest)))
+    saver_assert(result)
     id
   end
 
@@ -31,9 +30,7 @@ class Group_v1
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src.is_a?(String)
-      fail invalid('id', id)
-    end
+    saver_assert(manifest_src.is_a?(String))
     manifest = json_parse(manifest_src)
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
@@ -42,9 +39,6 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
-    unless exists?(id)
-      fail invalid('id', id)
-    end
     manifest = self.manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
@@ -93,8 +87,11 @@ class Group_v1
 
   private
 
-  include OjAdapter
   include Liner
+  include OjAdapter
+  include SaverAssert
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def generate_id
     42.times do
@@ -170,14 +167,6 @@ class Group_v1
     args = ['groups', id[0..1], id[2..3], id[4..5]]
     args += parts.map(&:to_s)
     File.join(*args)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def invalid(name, value)
-    SaverException.new(json_pretty({
-      "message" => "#{name}:invalid:#{value}"
-    }))
   end
 
   # - - - - - - - - - - - - - -

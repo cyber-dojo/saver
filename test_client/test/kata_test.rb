@@ -12,7 +12,7 @@ class KataTest < TestBase
 
   v_test [0,1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
-    refute kata.exists?('123456')    
+    refute kata.exists?('123456')
     id = kata.create(starter.manifest)
     assert kata.exists?(id)
   end
@@ -24,9 +24,7 @@ class KataTest < TestBase
   v_test [0,1,2], '42D',
   'manifest() raises when id does not exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
-      kata.manifest(id)
-    }
+    assert_service_error { kata.manifest(id) }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -64,9 +62,7 @@ class KataTest < TestBase
   v_test [0,1,2], '821',
   'events(id) raises when id does not exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
-      kata.events(id)
-    }
+    assert_service_error { kata.events(id) }
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -74,9 +70,7 @@ class KataTest < TestBase
   v_test [0,1,2], '822',
   'event(id,n) raises when n does not exist' do
     id = kata.create(starter.manifest)
-    assert_service_error('index:invalid:1') {
-      kata.event(id, 1)
-    }
+    assert_service_error { kata.event(id, 1) }
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -84,9 +78,7 @@ class KataTest < TestBase
   v_test [0,1,2], '823',
   'event(id) raises when id does exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
-      kata.event(id, -1)
-    }
+    assert_service_error { kata.event(id, -1) }
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -119,20 +111,8 @@ class KataTest < TestBase
   v_test [0,1,2], '923',
   'ran_tests(id,index,...) raises when id does not exist' do
     id = id_generator.id
-    assert_service_error("id:invalid:#{id}") {
+    assert_service_error {
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
-    }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - -
-
-  v_test [0,1,2], '924', %w(
-  ran_tests(id,index,...) raises when index is -1
-  because -1 can only be used on event()
-  ) do
-    id = kata.create(starter.manifest)
-    assert_service_error('index:invalid:-1') {
-      kata.ran_tests(*make_ran_test_args(id, -1, edited_files))
     }
   end
 
@@ -143,7 +123,7 @@ class KataTest < TestBase
   because 0 is used for create()
   ) do
     id = kata.create(starter.manifest)
-    assert_service_error('index:invalid:0') {
+    assert_service_error {
       kata.ran_tests(*make_ran_test_args(id, 0, edited_files))
     }
   end
@@ -169,7 +149,7 @@ class KataTest < TestBase
     expected_events << event1
     assert_equal expected_events, kata.events(id)
 
-    assert_service_error('index:invalid:1') {
+    assert_service_error {
       kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
     }
   end

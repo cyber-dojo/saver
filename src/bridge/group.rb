@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require_relative 'json_adapter'
 require_relative 'kata'
 require_relative 'liner'
-require 'json'
+require_relative 'saver_assert'
 
 class Group
 
@@ -21,9 +22,8 @@ class Group
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    unless saver.send(*manifest_write_cmd(id, json_plain(manifest)))
-      fail invalid('id', id) # TODO: cover this?
-    end
+    result = saver.send(*manifest_write_cmd(id, json_plain(manifest)))
+    saver_assert(result)
     id
   end
 
@@ -31,9 +31,7 @@ class Group
 
   def manifest(id)
     manifest_src = saver.send(*manifest_read_cmd(id))
-    unless manifest_src.is_a?(String)
-      fail invalid('id', id)
-    end
+    saver_assert(manifest_src.is_a?(String))
     manifest = json_parse(manifest_src)
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
@@ -90,6 +88,12 @@ class Group
 
   private
 
+  include JsonAdapter
+  include Liner
+  include SaverAssert
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def generate_id
     42.times do
       id = id_generator.id
@@ -97,14 +101,6 @@ class Group
         return id
       end
     end
-  end
-
-  def id_path(id, *parts)
-    # Using 2/2/2 split.
-    # See https://github.com/cyber-dojo/id-split-timer
-    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
-    args += parts.map(&:to_s)
-    File.join(*args)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -132,8 +128,6 @@ class Group
   end
 
   # - - - - - - - - - - - - - - - - - - -
-
-  include Liner
 
   def kata_indexes(id)
     read_commands = (0..63).map do |index|
@@ -168,18 +162,12 @@ class Group
 
   # - - - - - - - - - - - - - -
 
-  def json_plain(o)
-    JSON.fast_generate(o)
-  end
-
-  def json_parse(s)
-    JSON.parse!(s)
-  end
-
-  # - - - - - - - - - - - - - -
-
-  def invalid(name, value)
-    ArgumentError.new("#{name}:invalid:#{value}")
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['', 'groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   # - - - - - - - - - - - - - -
