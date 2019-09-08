@@ -3,7 +3,7 @@
 require_relative 'json_adapter'
 require_relative 'kata'
 require_relative 'liner'
-require_relative 'saver_assert'
+require_relative 'saver_asserter'
 
 class Group
 
@@ -90,7 +90,7 @@ class Group
 
   include JsonAdapter
   include Liner
-  include SaverAssert
+  include SaverAsserter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

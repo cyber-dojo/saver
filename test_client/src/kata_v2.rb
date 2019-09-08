@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'oj_adapter'
-require_relative 'saver_assert'
+require_relative 'saver_asserter'
 
 # 1. Manifest now has explicit version (2)
 # 2. Manifest is retrieved in single read call.
@@ -116,7 +116,7 @@ class Kata_v2
   private
 
   include OjAdapter
-  include SaverAssert
+  include SaverAsserter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

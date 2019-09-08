@@ -1,13 +1,13 @@
 require_relative 'test_base'
-require_relative '../src/saver_assert'
+require_relative '../src/saver_asserter'
 
-class SaverAssertTest < TestBase
+class SaverAsserterTest < TestBase
 
   def self.hex_prefix
     'A27'
   end
 
-  include SaverAssert
+  include SaverAsserter
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -2,7 +2,7 @@
 
 require_relative 'liner'
 require_relative 'oj_adapter'
-require_relative 'saver_assert'
+require_relative 'saver_asserter'
 
 class Kata_v1
 
@@ -99,9 +99,9 @@ class Kata_v1
 
   private
 
-  include OjAdapter
   include Liner
-  include SaverAssert
+  include OjAdapter
+  include SaverAsserter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

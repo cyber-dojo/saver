@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-module SaverAssert # mix-in
+require_relative 'saver_exception'
+
+module SaverAsserter # mix-in
 
   def saver_assert(truth)
     saver_assert_equal(true, truth)
@@ -10,7 +12,7 @@ module SaverAssert # mix-in
     unless result === expected
       message = "expected:#{expected},"
       message += "actual:#{result}"
-      fail ArgumentError.new(message)
+      fail SaverException.new(message)
     end
   end
 

@@ -2,7 +2,7 @@
 
 require_relative 'liner'
 require_relative 'oj_adapter'
-require_relative 'saver_assert'
+require_relative 'saver_asserter'
 
 class Group_v1
 
@@ -89,7 +89,7 @@ class Group_v1
 
   include Liner
   include OjAdapter
-  include SaverAssert
+  include SaverAsserter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
