@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'saver_assert'
 require_relative 'saver_exception'
 require_relative 'oj_adapter'
 
@@ -54,9 +55,7 @@ class Kata_v2
       events_write_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, 0, json_plain(to_diff))
     ])
-    unless result === [true]*3
-      fail invalid('id', id) # TODO: cover this?
-    end
+    saver_assert(result, [true]*3)
     id
   end
 
@@ -132,6 +131,9 @@ class Kata_v2
   end
 
   private
+
+  include OjAdapter
+  include SaverAssert
 
   def generate_id
     42.times do
@@ -227,7 +229,5 @@ class Kata_v2
   def id_generator
     @externals.id_generator
   end
-
-  include OjAdapter
 
 end

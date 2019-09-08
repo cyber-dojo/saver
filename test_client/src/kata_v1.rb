@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'liner'
+require_relative 'saver_assert'
 require_relative 'saver_exception'
 require_relative 'oj_adapter'
 
@@ -31,9 +32,7 @@ class Kata_v1
       event_write_cmd(id, 0, json_plain(lined({ 'files' => files }))),
       events_write_cmd(id, json_plain(event0) + "\n")
     ])
-    unless result === [true]*4
-      fail invalid('id', id) # TODO: cover this?
-    end
+    saver_assert(result, [true]*4)
     id
   end
 
@@ -118,6 +117,7 @@ class Kata_v1
 
   include OjAdapter
   include Liner
+  include SaverAssert
 
   def generate_id
     42.times do
