@@ -47,7 +47,6 @@ class Saver
       fd.write(value)
     }
     true
-  # TODO: raise instead of returning false      
   rescue Errno::ENOENT, # dir does not exist
          Errno::EEXIST  # file already exists
     false
@@ -62,7 +61,6 @@ class Saver
       fd.write(value)
     }
     true
-  # TODO: raise instead of returning false
   rescue Errno::ENOENT # file does not exist
     false
   end
@@ -75,7 +73,6 @@ class Saver
       fd.flock(File::LOCK_EX)
       fd.read
     }
-  # TODO: raise instead of returning false
   rescue Errno::ENOENT, # file does not exist
          Errno::EISDIR  # file is a dir!
     false
@@ -87,8 +84,8 @@ class Saver
     commands.map do |command|
       name,*args = command
       case name
-      when 'create'  then create(*args)  # TODO: DROP
-      when 'exists?' then exists?(*args) # TODO: DROP
+      when 'create'  then create(*args)
+      when 'exists?' then exists?(*args)
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
