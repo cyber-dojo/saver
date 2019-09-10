@@ -9,7 +9,7 @@
 - - - -
 API:
   * All methods are named in the http request path, and pass any
-    arguments in a json hash in the http request body. eg
+    arguments in the http request's json body. eg
     ```bash
     curl \
       -H 'Content-type: application/json' \
@@ -17,7 +17,7 @@ API:
       -d '{"key":"katas/N2/u8/9W"}' \
       http://${IP_ADDRESS}:${PORT}/create
     ```
-  * All methods return a json hash.
+  * All methods return a json hash in the http response's body.
     * If the method completes, a key equals the method's name, with
       a value as documented below (usually ```true```/```false```). eg
       ```json
@@ -26,7 +26,7 @@ API:
     * If the method raises an exception, a key equals "exception", with
       a json-string as its value. eg
       ```json
-      { "exception": '{"path":"...","class":"...","message":"..."}' }
+      { "exception": "{\"path\":\"...\",\"class\":\"...\",\"message\":\"...\"}" }
       ```
 
 #
