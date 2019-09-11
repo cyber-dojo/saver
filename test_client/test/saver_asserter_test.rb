@@ -30,9 +30,12 @@ class SaverAsserterTest < TestBase
 
   test '968',
   'saver_assert_batch(commands) raises SaverException when any command fails' do
-    assert_raises(SaverException) {
-      saver_assert_batch(['read','a/b/c/d/e/44/67/89'])
+    error = assert_raises(SaverException) {
+      saver_assert_batch([
+        ['read','a/b/c/d/e/44/67/89']
+      ])
     }
+    assert_equal '[false]', error.message
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
