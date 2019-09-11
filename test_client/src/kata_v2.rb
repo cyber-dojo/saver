@@ -49,12 +49,11 @@ class Kata_v2
     to_diff = {
       'files' => manifest['visible_files']
     }
-    result = saver.batch([
+    saver_assert_batch([
       manifest_write_cmd(id, json_plain(manifest)),
       events_write_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, 0, json_plain(to_diff))
     ])
-    saver_assert_equal(result, [true]*3)
     id
   end
 
@@ -81,11 +80,10 @@ class Kata_v2
       'duration' => duration,
       'index' => index
     }
-    result = saver.batch([
+    saver_assert_batch([
       events_append_cmd(id, json_plain(event_summary) + "\n"),
       event_write_cmd(id, index, json_plain(event_n))
     ])
-    saver_assert_equal(result, [true]*2)
     nil
   end
 

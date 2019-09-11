@@ -26,11 +26,10 @@ class Group_v2
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    result = saver.batch([
+    saver_assert_batch([
       manifest_write_cmd(id, json_plain(manifest)),
       katas_write_cmd(id, '')
     ])
-    saver_assert_equal(result, [true]*2)
     id
   end
 
@@ -52,7 +51,8 @@ class Group_v2
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
-        saver.send(*katas_append_cmd(id, "#{kata_id} #{index}\n"))
+        result = saver.send(*katas_append_cmd(id, "#{kata_id} #{index}\n"))
+        saver_assert(result)
         return kata_id
       end
     end

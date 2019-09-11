@@ -3,15 +3,17 @@
 module SaverAsserter # mix-in
 
   def saver_assert(truth)
-    saver_assert_equal(true, truth)
+    unless truth
+      fail ArgumentError.new('false')
+    end
   end
 
-  def saver_assert_equal(result, expected)
-    unless result === expected
-      message = "expected:#{expected},"
-      message += "actual:#{result}"
-      fail ArgumentError.new(message)
+  def saver_assert_batch(commands)
+    result = saver.batch(commands)
+    if result.any?(false)
+      fail ArgumentError.new(result.inspect)
     end
+    result
   end
 
 end

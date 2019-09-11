@@ -47,7 +47,8 @@ class Group
       if saver.send(*create_cmd(id, index))
         manifest['group_index'] = index
         kata_id = kata.create(manifest)
-        saver.write(id_path(id, index, 'kata.id'), kata_id)
+        result = saver.write(id_path(id, index, 'kata.id'), kata_id)
+        saver_assert(result)
         return kata_id
       end
     end
