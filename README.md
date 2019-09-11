@@ -12,21 +12,50 @@ API:
     arguments in the http request's json body. eg
     ```bash
     curl \
+      --silent --fail \
       -H 'Content-type: application/json' \
-      -X PUT \
+      -X POST \
       -d '{"key":"katas/N2/u8/9W"}' \
       http://${IP_ADDRESS}:${PORT}/create
     ```
   * All methods return a json hash in the http response's body.
     * If the method completes, a key equals the method's name, with
       a value as documented below (usually ```true```/```false```). eg
-      ```json
-      { "create": true }
+      ```bash
+      curl \
+        -H 'Content-type: application/json' \
+        -X POST \
+        -d '{"key":"katas/N2/u8/9W"}' \
+        http://${IP_ADDRESS}:${PORT}/create \
+          | jq      
+      {
+        "create": true
+      }
       ```
     * If the method raises an exception, a key equals "exception", with
-      a json-string as its value. eg
-      ```json
-      { "exception": "{\"path\":\"...\",\"class\":\"...\",\"message\":\"...\"}" }
+      a json-hash as its value. eg
+      ```bash
+      curl \
+        -H 'Content-type: application/json' \
+        -X POST \
+        -d '{"key":"katas/N2/u8/9W/manifest.json","value":"{...}"}' \
+        http://${IP_ADDRESS}:${PORT}/append \
+          | jq      
+      {
+        "exception": {
+          "path": "/append",
+          "body": "{\"key\":\"katas/N2/u8/8a/manifestjson\",\"value\":\"{...}\"}",
+          "class": "SaverService",
+          "message": "No space left on device @ fptr_finalize_flush - /cyber-dojo/katas/N2/u8/8a/manifestjson",
+          "backtrace": [
+            "/app/src/saver.rb:60:in close'",
+            "/app/src/saver.rb:60:in open'",
+            "/app/src/saver.rb:60:in append'",
+            "...",
+            "/usr/bin/rackup:23:in <main>'"
+          ]
+        }
+      }
       ```
 
 #
