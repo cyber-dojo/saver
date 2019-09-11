@@ -20,7 +20,7 @@ API:
     ```
   * All methods return a json hash in the http response's body.
     * If the method completes, a key equals the method's name, with
-      a value as documented below (usually ```true```/```false```). eg
+      a value as documented below. eg
       ```bash
       curl \
         -H 'Content-type: application/json' \
