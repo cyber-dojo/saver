@@ -72,21 +72,26 @@ API:
 - - - -
 # GET sha
 The git commit sha used to create the Docker image.
-- returns
-  * The 40 character sha string.
-  * eg
-  ```json
-  { "sha": "b28b3e13c0778fe409a50d23628f631f87920ce5" }
-  ```
 - parameters
   * none
   ```json
   {}
   ```
+- returns
+  * The 40 character sha **String**.
+  * eg
+  ```json
+  { "sha": "b28b3e13c0778fe409a50d23628f631f87920ce5" }
+  ```
 
 - - - -
 # GET ready?
-Useful as a readiness probe.
+Used as a service readiness probe.
+- parameters
+  * none
+  ```json
+  {}
+  ```
 - returns
   * **true** if the service is ready
   ```json
@@ -96,30 +101,29 @@ Useful as a readiness probe.
   ```json
   { "ready?": false }
   ```
+
+- - - -
+# GET alive?
+Used as a service liveness probe.
 - parameters
   * none
   ```json
   {}
   ```
-
-- - - -
-# GET alive?
-Useful as a liveness probe.
 - returns
   * **true**
   ```json
   { "alive?": true }
-  ```
-- parameters
-  * none
-  ```json
-  {}
   ```
 
 - - - -
 # POST create(key)
 Creates **key** to allow subsequent calls to ```write``` and ```append```.
 Corresponds to ```mkdir -p ${key}``` in a file-system.
+- parameter
+  * **key** a dir-like **String**, eg
+  ```json
+  { "key": "katas/N2/u8/9W" }
 - returns
   * **true** if there has _not_ been a previous call to ```create``` with the given **key**
   ```json
@@ -129,15 +133,10 @@ Corresponds to ```mkdir -p ${key}``` in a file-system.
   ```json
   { "create": false }
   ```
-- parameters
-  * **key** a String specifying a dir-like path, eg
-  ```json
-  { "key": "katas/N2/u8/9W" }
-  ```
 
 - - - -
 # GET exists?(key)
-Determines if there has been a previous call to create(key).
+Determines if there has been a previous call to ```create``` with the given **key**.
 Corresponds to ```[ -d ${key} ]``` in a file-system.
 - returns
   * **true** if there _has_ been a previous call to ```create``` with the given **key**
@@ -148,20 +147,72 @@ Corresponds to ```[ -d ${key} ]``` in a file-system.
   ```json
   { "exists?": false }
   ```
-- parameters
-  * **key** a String, eg
+- parameter
+  * **key** a dir-like **String**, eg
   ```json
   { "key": "katas/N2/u8/9W" }
   ```
 
 - - - -
 # POST write(key,value)
+Saves **value** against a new **key**.
+Corresponds to saving **value** in a _new_ file called **key** in an _existing_ dir.
+- returns
+  * **true** if the ```write``` succeeds.
+  ```json
+  { "write": true }
+  ```
+  * **false** if the ```write``` fails because **key** already exists, or a call
+  to ```create()``` with the base-dir of **key** has _not_ previously occurred.
+  ```json
+  { "write": false }
+  ```
+- parameters
+  * **key** a full-filename-like **String**
+  * **value** a **String**
+  ```json
+  { "key": "katas/N2/u8/9W/manifest.json",
+    "value": "{\"image_name\":...}"
+  }
+  ```
 
 - - - -
 # POST append(key,value)
+Appends **value** to the existing **key**.
+Corresponds to appending **value** to an _existing_ file called **key**.
+- returns
+  * **true** if the ```append``` succeeds
+  ```json
+  { "append": true }
+  ```
+  * **false** if the ```append``` fails because a successful call to ```write(key,...)```
+  has _not_ previously occurred.
+  ```json
+  { "append": false }
+  ```
+- parameters
+  * **key** a full-filename-like **String**
+  * **value** a **String**
+  ```json
+  { "key": "katas/N2/u8/9W/events.json",
+    "value": "{...}"
+  }
+  ```
 
 - - - -
 # GET read(key)
+Reads the value saved against **key**.
+Corresponds to reading the contents of an _existing_ file called **key**.
+- returns
+  * **String** stored against **key** if the ```read``` succeeds.
+  ```json
+  { "read": "{...}" }
+  ```
+  * **false** if the ```read``` fails because there was no previous successful call
+  to ```write``` with the given **key**.
+  ```json
+  { "read": false }
+  ```
 
 - - - -
 # POST batch(commands)
