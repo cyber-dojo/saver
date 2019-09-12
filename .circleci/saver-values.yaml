@@ -16,17 +16,17 @@ volumes:
     persistentVolumeClaim:
       claimName: saver-data
 
-initContainers:
-- name: volume-mount-hack
-  image: busybox
-  tag: latest
-  command: [ "/bin/sh" ]
-  args:
-    - "-c"
-    - "chown -R 19663:65533 /cyber-dojo"
-  volumeMounts:
-  - name: saver-data
-    mountPath: /cyber-dojo
+#initContainers:
+#- name: volume-mount-hack
+#  image: busybox
+#  tag: latest
+#  command: [ "/bin/sh" ]
+#  args:
+#    - "-c"
+#    - "chown -R 19663:65533 /cyber-dojo"
+#  volumeMounts:
+#  - name: saver-data
+#    mountPath: /cyber-dojo
 
 containers:
   - name: saver
