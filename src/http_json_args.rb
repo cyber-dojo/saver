@@ -10,6 +10,9 @@ class HttpJsonArgs
   # to match RackDispatcher's exception keys.
 
   def initialize(body)
+    if body === ''
+      body = '{}'
+    end 
     @args = json_parse(body)
     unless @args.is_a?(Hash)
       fail HttpJson::RequestError, 'body is not JSON Hash'
@@ -35,6 +38,7 @@ class HttpJsonArgs
     when '/read'    then [saver,'read', key]
     when '/batch'   then [saver,'batch', commands]
 
+    # deprecated from here...
     when '/group_exists'   then [group,'exists?', id]
     when '/group_create'   then [group,'create', manifest]
     when '/group_manifest' then [group,'manifest', id]

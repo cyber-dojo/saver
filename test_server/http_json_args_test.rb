@@ -10,11 +10,23 @@ class HttpJsonArgsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '9AD', %w(
+    allow empty body in parameterless http requests;
+    this is important for curl based requests,
+    especially kubernetes liveness/readyness probes
+  ) do
+    args = HttpJsonArgs.new('')
+    assert_equal [saver,'alive?',[]], args.get('/alive', externals)
+    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'F18', 'get: [saver] path and body ok' do
     args = HttpJsonArgs.new('{}')
     assert_equal [saver,'sha',[]], args.get('/sha', externals)
-    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
     assert_equal [saver,'alive?',[]], args.get('/alive', externals)
+    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
     args = HttpJsonArgs.new('{"key":"a/b/c"}')
     assert_equal [saver,'create',['a/b/c']], args.get('/create', externals)
     assert_equal [saver,'exists?',['a/b/c']], args.get('/exists', externals)
