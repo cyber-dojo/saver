@@ -1,6 +1,4 @@
 
-updateStrategy: "Recreate"
-
 pvc:
   name: saver-data
   storage: 500Gi

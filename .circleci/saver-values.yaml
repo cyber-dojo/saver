@@ -4,6 +4,8 @@
 
 fullnameOverride: "saver"
 
+updateStrategy: "Recreate"
+
 replicaCount: 1
 
 service:
