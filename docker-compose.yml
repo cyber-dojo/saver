@@ -1,9 +1,5 @@
 
-version: '2.2'
-
-volumes:
-  one_k:
-    external: true
+version: '2.4'
 
 services:
 
@@ -39,7 +35,10 @@ services:
       - NO_PROMETHEUS
     volumes:
       - ./test_server:/app/test:ro
-      - one_k:/one_k
+      - type: tmpfs
+        target: /one_k
+        tmpfs:
+          size: 1k
     ports:
       - 4537:4537
     read_only: true

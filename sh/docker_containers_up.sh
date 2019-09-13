@@ -106,21 +106,7 @@ echo_docker_log()
 
 # - - - - - - - - - - - - - - - - - - - -
 
-create_space_limited_volume()
-{
-  docker volume create --driver local \
-    --opt type=tmpfs \
-    --opt device=tmpfs \
-    --opt o=size=1k \
-    one_k \
-      > /dev/null
-}
-
-# - - - - - - - - - - - - - - - - - - - -
-
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
-
-create_space_limited_volume
 
 docker-compose \
   --file "${ROOT_DIR}/docker-compose.yml" \
