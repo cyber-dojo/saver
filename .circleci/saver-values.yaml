@@ -16,18 +16,6 @@ volumes:
     persistentVolumeClaim:
       claimName: saver-data
 
-#initContainers:
-#- name: volume-mount-hack
-#  image: busybox
-#  tag: latest
-#  command: [ "/bin/sh" ]
-#  args:
-#    - "-c"
-#    - "chown -R 19663:65533 /cyber-dojo"
-#  volumeMounts:
-#  - name: saver-data
-#    mountPath: /cyber-dojo
-
 containers:
   - name: saver
     image: cyberdojo/saver
@@ -46,12 +34,12 @@ containers:
         memory: 256Mi
       requests:
         memory: 256Mi
-    livenessProbe:
-      path: /alive?
-      port: 4537
-    readinessProbe:
-      path: /ready?
-      port: 4537
+    #livenessProbe:
+    #  path: /alive?
+    #  port: 4537
+    #readinessProbe:
+    #  path: /ready?
+    #  port: 4537
 
 envFromSecret: {}
 
