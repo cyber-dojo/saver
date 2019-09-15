@@ -105,10 +105,10 @@ echo_docker_log()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
-# I would like to specify this size-limited volume in
+# I would like to specify this size-limited tmpfs volume in
 # the docker-compose.yml file:
 #
-# version: '2.4'
+# version: '3.7'
 # saver:
 #   volumes:
 #     - type: tmpfs
@@ -116,12 +116,8 @@ echo_docker_log()
 #       tmpfs:
 #         size: 1k
 #
-# but CircleCI does not support 2.4
+# but CircleCI does not support this yet.
 # It currently supports up to 3.2
-# Alas 3.2 does not support the init: true settings
-# (That needs 3.7)
-# Keeping init:true makes taking the container down
-# a _lot_ faster.
 
 create_space_limited_volume()
 {
