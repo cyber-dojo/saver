@@ -105,8 +105,39 @@ echo_docker_log()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
+# I would like to specify this size-limited volume in
+# the docker-compose.yml file:
+#
+# version: '2.4'
+# saver:
+#   volumes:
+#     - type: tmpfs
+#       target: /one_k
+#       tmpfs:
+#         size: 1k
+#
+# but CircleCI does not support 2.4
+# It currently supports up to 3.2
+# Alas 3.2 does not support the init: true settings
+# (That needs 3.7)
+# Keeping init:true makes taking the container down
+# a _lot_ faster.
+
+create_space_limited_volume()
+{
+  docker volume create --driver local \
+    --opt type=tmpfs \
+    --opt device=tmpfs \
+    --opt o=size=1k \
+    one_k \
+      > /dev/null
+}
+
+# - - - - - - - - - - - - - - - - - - - -
 
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
+
+create_space_limited_volume
 
 docker-compose \
   --file "${ROOT_DIR}/docker-compose.yml" \
