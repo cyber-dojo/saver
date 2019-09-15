@@ -12,7 +12,8 @@ On the client-side there are multiple versions of client-code.
 Again this is intended to help a smooth migration. Specifically,
 
   v0 - this is code that delegates directly to the model API on the
-       server. Viz, this is how clients currently run.
+       server. Viz, this is how clients currently run. This is
+       deprecated - clients should use v1.
 
   v1 - this is code that duplicates the server's src/bridge code
        (but on the client side) and thus only relies on the
@@ -31,7 +32,7 @@ Again this is intended to help a smooth migration. Specifically,
        at the top of test_client/src/[kata|group]_v2.rb ).
        Such a migration will require each session's manifest to store an
        explicit version number. Client-side code will then need
-       to handle old and new manifest versions.
+       to handle old _and_ new manifest versions.
 
 
 --------------------------------------------------------------------------------
