@@ -126,10 +126,15 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D2',
+  v_test [0,1], '1D2',
   'joined() returns nil when the id does not exist' do
     id = id_generator.id
     assert_nil group.joined(id)
+  end
+  v_test [2], '2F2',
+  'joined() raises SaverException when the id does not exist' do
+    id = id_generator.id
+    assert_raises(SaverException) { group.joined(id) }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -
@@ -173,10 +178,15 @@ class GroupTest < TestBase
   # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], 'A04', %w(
+  v_test [0,1], 'A04', %w(
   events() returns nil when the id does not exist ) do
     id = id_generator.id
     assert_nil group.events(id)
+  end
+  v_test [2], '3A0', %w(
+  events() raises SaverException when the id does not exist ) do
+    id = id_generator.id
+    assert_raises(SaverException) { group.events(id) }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - -

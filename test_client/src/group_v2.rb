@@ -62,34 +62,25 @@ class Group_v2
   # - - - - - - - - - - - - - - - - - - -
 
   def joined(id)
-    kindexes = katas_indexes(id)
-    if kindexes.nil?
-      nil
-    else
-      kindexes.map{ |kid,_| kid }
-    end
+    katas_indexes(id).map{ |kid,_| kid }
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def events(id)
+    result = {}
     kindexes = katas_indexes(id)
-    if kindexes.nil?
-      events = nil
-    else
-      read_events_files_commands = kindexes.map do |kid,_|
-        kata.send(:events_read_cmd, kid)
-      end
-      katas_events = saver_assert_batch(read_events_files_commands)
-      events = {}
-      kindexes.each.with_index(0) do |(kid,kindex),index|
-        events[kid] = {
-          'index' => kindex.to_i,
-          'events' => events_parse(katas_events[index])
-        }
-      end
+    read_events_files_commands = kindexes.map do |kid,_|
+      kata.send(:events_read_cmd, kid)
     end
-    events
+    katas_events = saver_assert_batch(read_events_files_commands)
+    kindexes.each.with_index(0) do |(kid,kindex),index|
+      result[kid] = {
+        'index' => kindex.to_i,
+        'events' => events_parse(katas_events[index])
+      }
+    end
+    result
   end
 
   private
@@ -152,11 +143,8 @@ class Group_v2
 
   def katas_indexes(id)
     katas_src = saver.send(*katas_read_cmd(id))
-    unless katas_src.is_a?(String)
-      nil
-    else
-      katas_src.split.each_slice(2).to_a
-    end
+    saver_assert(katas_src)
+    katas_src.split.each_slice(2).to_a
     # [
     #   ['w34rd5', '2'], #  2 == bat
     #   ['G2ws77','15'], # 15 == fox
