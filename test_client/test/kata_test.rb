@@ -7,6 +7,26 @@ class KataTest < TestBase
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # version
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  v_test [0,1,2], 'EEB',
+  'version can be retreived with the same read' do
+    id = kata.create(starter.manifest)
+    manifest_src = saver.read(id_path(id, 'manifest.json'))
+    manifest = JSON.parse(manifest_src)
+    if v_test?(0)
+      refute manifest.has_key?('version')
+    end
+    if v_test?(1)
+      refute manifest.has_key?('version')
+    end
+    if v_test?(2)
+      assert_equal 2, manifest['version']
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

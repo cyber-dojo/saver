@@ -1,9 +1,38 @@
 require_relative 'test_base'
+require 'json'
 
 class GroupTest < TestBase
 
   def self.hex_prefix
     '974'
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # version
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  v_test [0,1,2], 'EEB',
+  'version can be retreived with the same read' do
+    id = group.create(starter.manifest)
+    manifest_src = saver.read(id_path(id, 'manifest.json'))
+    manifest = JSON.parse(manifest_src)
+    if v_test?(0)
+      refute manifest.has_key?('version')
+    end
+    if v_test?(1)
+      refute manifest.has_key?('version')
+    end
+    if v_test?(2)
+      assert_equal 2, manifest['version']
+    end
+  end
+
+  def id_path(id, *parts)
+    # Using 2/2/2 split.
+    # See https://github.com/cyber-dojo/id-split-timer
+    args = ['groups', id[0..1], id[2..3], id[4..5]]
+    args += parts.map(&:to_s)
+    File.join(*args)
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
