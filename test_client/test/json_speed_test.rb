@@ -7,25 +7,28 @@ class JsonSpeedTest < TestBase
     '60E'
   end
 
+  # - - - - - - - - - - - - - - - - - - -
+
   test 'A06', %w( test speed of alternative implementations ) do
     one = '{"s":23,"t":[1,2,3,4,5,6,7],"u":"blah"}'
-    all = ([one] * 1242).join("\n")
-    many_joins_one_json_load = -> {
-      line = '[' + all.lines.join(',') + ']'
-      Oj.strict_load(line)
+    all = [one] * 1242
+    unlined = all.join(',')
+    one_large_load = -> {
+      Oj.strict_load('[' + unlined + ']')
     }
-    one_map_many_json_loads = -> {
-      all.lines.map { |line|
-        Oj.strict_load(line)
+    lined = all.join(",\n")
+    many_small_loads = -> {
+      (lined + ",\n").lines.map { |line|
+        Oj.strict_load(line.chop.chop)
       }
     }
-    t0,t1 = two_timed(100,[many_joins_one_json_load,one_map_many_json_loads])
+    t0,t1 = two_timed(100,[one_large_load,many_small_loads])
     diagnostic = ''
-    diagnostic += "\n#{'%.5f' % t0}:many_joins_one_json_load"
-    diagnostic += "\n#{'%.5f' % t1}:one_map_many_json_loads"
+    diagnostic += "\n#{'%.5f' % t0}:one_large_load"
+    diagnostic += "\n#{'%.5f' % t1}:many_small_loads"
     #puts diagnostic
-    # 0.43576:many_joins_one_json_load
-    # 0.54228:one_map_many_json_loads
+    #0.43737:one_large_load
+    #0.67263:many_small_loads
     assert t0 < t1, diagnostic
   end
 

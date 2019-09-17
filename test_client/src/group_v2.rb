@@ -155,9 +155,7 @@ class Group_v2
   # - - - - - - - - - - - - - -
 
   def events_parse(s)
-    json_parse('[' + s.lines.join(',') + ']')
-    # Alternative implementation, which tests show is slower.
-    # s.lines.map { |line| json_parse(line) }
+    json_parse('[' + s + ']') # See json_speed_test.rb
   end
 
   # - - - - - - - - - - - - - -
