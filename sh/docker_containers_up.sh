@@ -133,6 +133,8 @@ create_space_limited_volume()
 
 readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
 
+export NO_PROMETHEUS=true
+
 create_space_limited_volume
 
 docker-compose \
@@ -141,13 +143,13 @@ docker-compose \
   -d \
   --force-recreate
 
-wait_until_ready   test-saver-server 4537
-exit_unless_clean  test-saver-server
-
 wait_until_ready   test-saver-languages 4524
 exit_unless_clean  test-saver-languages
 
 wait_until_ready   test-saver-exercises 4525
 exit_unless_clean  test-saver-exercises
+
+wait_until_ready   test-saver-server 4537
+exit_unless_clean  test-saver-server
 
 wait_till_up       test-saver-client

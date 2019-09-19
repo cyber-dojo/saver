@@ -35,18 +35,16 @@ services:
     image: cyberdojo/saver
     container_name: test-saver-server
     init: true
-    environment:
-      - NO_PROMETHEUS
+    environment: [NO_PROMETHEUS]
+    ports: [4537:4537]
+    read_only: true
+    restart: 'no'
     volumes:
       - ./test_server:/app/test:ro
       - one_k:/one_k
-    ports:
-      - 4537:4537
-    read_only: true
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
       - /tmp:uid=19663,gid=65533
-    restart: 'no'
     depends_on:
       - languages # for tests
       - exercises # for tests
@@ -58,8 +56,8 @@ services:
     image: cyberdojo/languages-small
     container_name: test-saver-languages
     init: true
-    ports:
-      - 4524:4524
+    environment: [NO_PROMETHEUS]
+    ports: [4524:4524]
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -70,9 +68,9 @@ services:
     user: nobody
     image: cyberdojo/exercises
     container_name: test-saver-exercises
-    init: true    
-    ports:
-      - 4525:4525
+    init: true
+    environment: [NO_PROMETHEUS]    
+    ports: [4525:4525]
     read_only: true
     tmpfs: /tmp
     restart: 'no'
