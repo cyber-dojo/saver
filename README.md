@@ -9,15 +9,7 @@
 - - - -
 API:
   * All methods are named in the http request path, and pass any
-    arguments in the http request's json body. eg
-    ```bash
-    curl \
-      --silent --fail \
-      -H 'Content-type: application/json' \
-      -X POST \
-      -d '{"key":"katas/N2/u8/9W"}' \
-      http://${IP_ADDRESS}:${PORT}/create
-    ```
+    arguments in the http request's json body.
   * All methods return a json hash in the http response's body.
     * If the method completes, a key equals the method's name, with
       a value as documented below. eg
@@ -46,7 +38,7 @@ API:
           "path": "/append",
           "body": "{\"key\":\"katas/N2/u8/8a/manifestjson\",\"value\":\"{...}\"}",
           "class": "SaverService",
-          "message": "No space left on device @ fptr_finalize_flush - /cyber-dojo/katas/N2/u8/8a/manifestjson",
+          "message": "No space left on device @ fptr_finalize_flush - ......",
           "backtrace": [
             "/app/src/saver.rb:60:in close'",
             "/app/src/saver.rb:60:in open'",
@@ -213,8 +205,14 @@ Corresponds to reading the contents of an _existing_ file called **key**.
   ```json
   { "read": false }
   ```
+- parameter
+  * **key** a full-filename-like **String**
+  ```json
+  { "key": "katas/N2/u8/9W/events.json" }
+  ```
 
 - - - -
 # POST batch(commands)
+...
 
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
