@@ -49,7 +49,7 @@ if [ ! -d /${dir}/katas ]; then
   mkdir /${dir}/katas
 fi
 
-export RUBYOPT=-w
+export RUBYOPT='-W2'
 
 rackup             \
   --warn           \
