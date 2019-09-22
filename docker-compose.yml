@@ -36,7 +36,8 @@ services:
     container_name: test-saver-server
     init: true
     environment: [NO_PROMETHEUS]
-    ports: [4537:4537]
+    ports:
+      - 4537:4537
     read_only: true
     restart: 'no'
     volumes:
@@ -57,7 +58,8 @@ services:
     container_name: test-saver-languages
     init: true
     environment: [NO_PROMETHEUS]
-    ports: [4524:4524]
+    ports:
+      - 4524:4524
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -69,8 +71,9 @@ services:
     image: cyberdojo/exercises
     container_name: test-saver-exercises
     init: true
-    environment: [NO_PROMETHEUS]    
-    ports: [4525:4525]
+    environment: [NO_PROMETHEUS]
+    ports:
+      - 4525:4525
     read_only: true
     tmpfs: /tmp
     restart: 'no'
