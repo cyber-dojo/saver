@@ -10,14 +10,11 @@ class KataTest < TestBase
   # version
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], 'EEB',
+  v_test [1,2], 'EEB',
   'version can be retreived with the same read' do
     id = kata.create(starter.manifest)
     manifest_src = saver.read(id_path(id, 'manifest.json'))
     manifest = JSON.parse(manifest_src)
-    if v_test?(0)
-      refute manifest.has_key?('version')
-    end
     if v_test?(1)
       refute manifest.has_key?('version')
     end
@@ -30,7 +27,7 @@ class KataTest < TestBase
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '392',
+  v_test [1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
     refute kata.exists?('123456')
     id = kata.create(starter.manifest)
@@ -41,7 +38,7 @@ class KataTest < TestBase
   # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '42D',
+  v_test [1,2], '42D',
   'manifest() raises when id does not exist' do
     id = id_generator.id
     assert_service_error { kata.manifest(id) }
@@ -49,7 +46,7 @@ class KataTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '421',
+  v_test [1,2], '421',
   'create() manifest() round-trip' do
     id = kata.create(starter.manifest)
     manifest = starter.manifest
@@ -64,7 +61,7 @@ class KataTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '42B', %w(
+  v_test [1,2], '42B', %w(
   create() an individual practice-session
   results in a manifest that does not contain entries
   for group or index
@@ -79,7 +76,7 @@ class KataTest < TestBase
   # events(), event()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '821',
+  v_test [1,2], '821',
   'events(id) raises when id does not exist' do
     id = id_generator.id
     assert_service_error { kata.events(id) }
@@ -87,7 +84,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '822',
+  v_test [1,2], '822',
   'event(id,n) raises when n does not exist' do
     id = kata.create(starter.manifest)
     assert_service_error { kata.event(id, 1) }
@@ -95,7 +92,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '823',
+  v_test [1,2], '823',
   'event(id) raises when id does exist' do
     id = id_generator.id
     assert_service_error { kata.event(id, -1) }
@@ -103,7 +100,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '824', %w(
+  v_test [1,2], '824', %w(
   given a partial saver outage
   when event(id,-1) is called
   then v0,v1 raises
@@ -128,7 +125,7 @@ class KataTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
   # ran_tests()
 
-  v_test [0,1,2], '923',
+  v_test [1,2], '923',
   'ran_tests(id,index,...) raises when id does not exist' do
     id = id_generator.id
     assert_service_error {
@@ -138,7 +135,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '925', %w(
+  v_test [1,2], '925', %w(
   ran_tests(id,index,...) raises when index is 0
   because 0 is used for create()
   ) do
@@ -150,7 +147,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '926', %w(
+  v_test [1,2], '926', %w(
     ran_tests(id,index,...) raises when index already exists
   ) do
     id = kata.create(starter.manifest)
@@ -176,7 +173,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '927', %w(
+  v_test [1,2], '927', %w(
   ran_tests() does NOT raise when index-1 does not exist
   and the reason for this is partly speed
   and partly robustness against temporary saver outage ) do
@@ -188,7 +185,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '929',
+  v_test [1,2], '929',
   'after ran_tests() there is one more event' do
     id = kata.create(starter.manifest)
 
@@ -223,7 +220,7 @@ class KataTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1], '930', %w(
+  v_test [1], '930', %w(
     event-0
       has files in lined format, with no truncated field
       has no stdout/stderr/status fields
@@ -233,7 +230,7 @@ class KataTest < TestBase
       has an integer status field
   ) do
     id = kata.create(starter.manifest)
-    event0_src = saver.send(*v01_event_read_cmd(id, 0))
+    event0_src = saver.send(*v1_event_read_cmd(id, 0))
     event0 = JSON.parse(event0_src)
     refute event0.has_key?('stdout')
     refute event0.has_key?('stderr')
@@ -246,7 +243,7 @@ class KataTest < TestBase
     end
 
     kata.ran_tests(*make_ran_test_args(id, 1, edited_files))
-    event1_src = saver.send(*v01_event_read_cmd(id, 1))
+    event1_src = saver.send(*v1_event_read_cmd(id, 1))
     event1 = JSON.parse(event1_src)
     assert event1.has_key?('stdout')
     assert event1.has_key?('stderr')
@@ -305,11 +302,11 @@ class KataTest < TestBase
 
   private
 
-  def v01_event_read_cmd(id, index)
-    ['read', v01_event_filename(id, index)]
+  def v1_event_read_cmd(id, index)
+    ['read', v1_event_filename(id, index)]
   end
 
-  def v01_event_filename(id, index)
+  def v1_event_filename(id, index)
     id_path(id, index, 'event.json')
   end
 

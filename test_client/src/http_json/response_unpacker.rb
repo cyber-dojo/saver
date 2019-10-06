@@ -14,8 +14,8 @@ module HttpJson
     def get(path, args)
       response = @requester.get(path, args)
       unpacked(response.body, path.to_s)
-    rescue => error
-      fail @exception_class, error.message
+    #rescue => error
+    #  fail @exception_class, error.message
     end
 
     # - - - - - - - - - - - - - - - - - - - - -

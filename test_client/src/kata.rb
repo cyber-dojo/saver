@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'kata_v0'
 require_relative 'kata_v1'
 require_relative 'kata_v2'
 require_relative 'version'
@@ -17,7 +16,7 @@ class Kata
 
   private
 
-  VERSIONS = [ Kata_v0, Kata_v1, Kata_v2 ]
+  VERSIONS = [ nil, Kata_v1, Kata_v2 ]
 
   include Version
 

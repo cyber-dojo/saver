@@ -11,14 +11,11 @@ class GroupTest < TestBase
   # version
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], 'EEB',
+  v_test [1,2], 'EEB',
   'version can be retreived with the same read' do
     id = group.create(starter.manifest)
     manifest_src = saver.read(id_path(id, 'manifest.json'))
     manifest = JSON.parse(manifest_src)
-    if v_test?(0)
-      refute manifest.has_key?('version')
-    end
     if v_test?(1)
       refute manifest.has_key?('version')
     end
@@ -39,7 +36,7 @@ class GroupTest < TestBase
   # exists?()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '392',
+  v_test [1,2], '392',
   'exists?(id) is true with id returned from successful create()' do
     refute group.exists?('123456')
     id = group.create(starter.manifest)
@@ -50,7 +47,7 @@ class GroupTest < TestBase
   # create(), manifest()
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '420',
+  v_test [1,2], '420',
   'manifest() raises when id does not exist' do
     id = id_generator.id
     assert_service_error { group.manifest(id) }
@@ -58,7 +55,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '42E',
+  v_test [1,2], '42E',
   'create() manifest() round-trip' do
     id = group.create(starter.manifest)
     manifest = starter.manifest
@@ -99,7 +96,7 @@ class GroupTest < TestBase
   # join(), joined()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D0',
+  v_test [1,2], '1D0',
   'join() raises when id does not exist' do
     id = id_generator.id
     assert_service_error {
@@ -109,7 +106,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D3', %w(
+  v_test [1,2], '1D3', %w(
   join() a non-full group with valid id succeeds
   and returns the kata's id
   and the manifest of the joined participant contains
@@ -125,7 +122,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D4', %w(
+  v_test [1,2], '1D4', %w(
   join() returns a valid id 64 times
   then its full and it returns nil
   ) do
@@ -155,7 +152,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1], '1D2',
+  v_test [1], '1D2',
   'joined() returns nil when the id does not exist' do
     id = id_generator.id
     assert_nil group.joined(id)
@@ -168,7 +165,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D5',
+  v_test [1,2], '1D5',
   'joined() information can be retrieved' do
     gid = group.create(starter.manifest)
     kids = group.joined(gid)
@@ -186,7 +183,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], '1D6', %w(
+  v_test [1,2], '1D6', %w(
   v0,v1 propogate no manifest version from group to kata, but
   v2 propogates a manifest version of 2
   ) do
@@ -207,7 +204,7 @@ class GroupTest < TestBase
   # events()
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1], 'A04', %w(
+  v_test [1], 'A04', %w(
   events() returns nil when the id does not exist ) do
     id = id_generator.id
     assert_nil group.events(id)
@@ -220,7 +217,7 @@ class GroupTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - -
 
-  v_test [0,1,2], 'A05', %w(
+  v_test [1,2], 'A05', %w(
   events() is a BatchMethod for web's dashboard ) do
     gid = group.create(starter.manifest)
     kid1 = group.join(gid, indexes)
