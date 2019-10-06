@@ -15,9 +15,9 @@ API:
       a value as documented below. eg
       ```bash
       curl \
-        -H 'Content-type: application/json' \
+        --data '{"key":"katas/N2/u8/9W"}' \
+        --header 'Content-type: application/json' \
         -X POST \
-        -d '{"key":"katas/N2/u8/9W"}' \
         http://${IP_ADDRESS}:${PORT}/create \
           | jq      
       {
@@ -28,15 +28,15 @@ API:
       a json-hash as its value. eg
       ```bash
       curl \
-        -H 'Content-type: application/json' \
+        --data '{"key":"katas/N2/u8/9W/manifest.json","value":"{...}"}' \
+        --header 'Content-type: application/json' \
         -X POST \
-        -d '{"key":"katas/N2/u8/9W/manifest.json","value":"{...}"}' \
         http://${IP_ADDRESS}:${PORT}/append \
           | jq      
       {
         "exception": {
           "path": "/append",
-          "body": "{\"key\":\"katas/N2/u8/8a/manifestjson\",\"value\":\"{...}\"}",
+          "body": "{\"key\":\"katas/N2/u8/9W/manifest.json\",\"value\":\"{...}\"}",
           "class": "SaverService",
           "message": "No space left on device @ fptr_finalize_flush - ......",
           "backtrace": [
