@@ -1,13 +1,13 @@
-require_relative 'http_json/request_packer'
-require_relative 'http_json/response_unpacker'
+require_relative 'http_json/requester'
+require_relative 'http_json/responder'
 require_relative 'saver_exception'
 require 'net/http'
 
 class SaverService
 
   def initialize
-    requester = HttpJson::RequestPacker.new(Net::HTTP, 'saver', 4537)
-    @http = HttpJson::ResponseUnpacker.new(requester, SaverException)
+    requester = HttpJson::Requester.new(Net::HTTP, 'saver', 4537)
+    @http = HttpJson::Responder.new(requester, SaverException)
   end
 
   # - - - - - - - - - - - -

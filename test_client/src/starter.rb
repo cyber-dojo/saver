@@ -10,8 +10,8 @@ class Starter
 
   def manifest
     # (mimics what web does)
-    lm = @languages.manifest(default_display_name)
-    em = @exercises.manifest(default_exercise_name)
+    lm = @languages.manifest(display_name)
+    em = @exercises.manifest(exercise_name)
     lm['visible_files'].merge!(em['visible_files'])
     lm['created'] = creation_time
     lm
@@ -23,11 +23,11 @@ class Starter
 
   private
 
-  def default_display_name
+  def display_name
     'C (gcc), assert'
   end
 
-  def default_exercise_name
+  def exercise_name
     'Fizz Buzz'
   end
 
