@@ -12,7 +12,7 @@ class HttpJsonArgs
   def initialize(body)
     if body === ''
       body = '{}'
-    end 
+    end
     @args = json_parse(body)
     unless @args.is_a?(Hash)
       fail HttpJson::RequestError, 'body is not JSON Hash'
@@ -25,8 +25,6 @@ class HttpJsonArgs
 
   def get(path, externals)
     saver = externals.saver
-    group = externals.group
-    kata = externals.kata
     args = case path
     when '/sha'     then [saver,'sha']
     when '/ready'   then [saver,'ready?']
@@ -37,22 +35,6 @@ class HttpJsonArgs
     when '/append'  then [saver,'append', key, value]
     when '/read'    then [saver,'read', key]
     when '/batch'   then [saver,'batch', commands]
-
-    # deprecated from here...
-    when '/group_exists'   then [group,'exists?', id]
-    when '/group_create'   then [group,'create', manifest]
-    when '/group_manifest' then [group,'manifest', id]
-    when '/group_join'     then [group,'join', id, indexes]
-    when '/group_joined'   then [group,'joined', id]
-    when '/group_events'   then [group,'events', id]
-
-    when '/kata_exists'    then [kata,'exists?', id]
-    when '/kata_create'    then [kata,'create', manifest]
-    when '/kata_manifest'  then [kata,'manifest', id]
-    when '/kata_ran_tests' then [kata,'ran_tests', id, index, files, now, duration, stdout, stderr, status, colour]
-    when '/kata_events'    then [kata,'events', id]
-    when '/kata_event'     then [kata,'event', id, index]
-
     else
       fail HttpJson::RequestError, 'unknown path'
     end
@@ -147,54 +129,6 @@ class HttpJsonArgs
 
   def malformed(arg_name, msg)
     HttpJson::RequestError.new("malformed:#{arg_name}:#{msg}:")
-  end
-
-  # = = = = = = = = = = = = = = = =
-
-  def manifest
-    args['manifest']
-  end
-
-  # - - - - - - - - - - - - - - - -
-
-  def id
-    args['id']
-  end
-
-  def indexes
-    args['indexes']
-  end
-
-  def index
-    args['index']
-  end
-
-  def files
-    args['files']
-  end
-
-  def now
-    args['now']
-  end
-
-  def duration
-    args['duration']
-  end
-
-  def stdout
-    args['stdout']
-  end
-
-  def stderr
-    args['stderr']
-  end
-
-  def status
-    args['status']
-  end
-
-  def colour
-    args['colour']
   end
 
 end

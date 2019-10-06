@@ -141,25 +141,6 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200
-
-  test 'F23', 'dispatches to group_methods' do
-    group_stub('exists?')
-    assert_saver_dispatch('group_exists',
-      { key: well_formed_key }.to_json,
-      'hello from stubbed group.exists?'
-    )
-  end
-
-  test 'F24', 'dispatches to kata_methods' do
-    kata_stub('exists?')
-    assert_saver_dispatch('kata_exists',
-      { key: well_formed_key }.to_json,
-      'hello from stubbed kata.exists?'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E39',
   'dispatches to alive' do
@@ -247,18 +228,6 @@ class RackDispatcherTest < TestBase
   def saver_stub(name)
     saver.define_singleton_method name do |*_args|
       "hello from stubbed saver.#{name}"
-    end
-  end
-
-  def group_stub(name)
-    group.define_singleton_method name do |*_args|
-      "hello from stubbed group.#{name}"
-    end
-  end
-
-  def kata_stub(name)
-    kata.define_singleton_method name do |*_args|
-      "hello from stubbed kata.#{name}"
     end
   end
 
