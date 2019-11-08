@@ -51,9 +51,9 @@ API:
       ```
 
 #
-- [GET sha()](#get-sha)
-- [GET ready?()](#get-ready)
-- [GET alive?()](#get-alive)
+- [GET sha](#get-sha)
+- [GET ready?](#get-ready)
+- [GET alive?](#get-alive)
 - [POST create(key)](#post-createkey)
 - [GET exists?(key)](#get-existskey)
 - [POST write(key,value)](#post-writekeyvalue)
