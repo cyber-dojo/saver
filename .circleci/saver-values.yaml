@@ -32,9 +32,11 @@ containers:
       - name: saver-data
         mountPath: /cyber-dojo
     resources:
-      limits:
-        memory: 256Mi
       requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 100m        
         memory: 256Mi
     #livenessProbe:
     #  path: /alive?
