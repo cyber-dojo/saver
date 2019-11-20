@@ -21,7 +21,6 @@ volumes:
 containers:
   - name: saver
     image: cyberdojo/saver
-    tag: ""
     securityContext:
       runAsUser: 19663
       fsGroup: 65533
@@ -36,7 +35,7 @@ containers:
         cpu: 50m
         memory: 128Mi
       limits:
-        cpu: 100m        
+        cpu: 100m
         memory: 256Mi
     #livenessProbe:
     #  path: /alive?
