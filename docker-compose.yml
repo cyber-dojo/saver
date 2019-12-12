@@ -52,7 +52,7 @@ services:
 
   languages:
     user: nobody
-    image: cyberdojo/languages-small
+    image: cyberdojo/languages-start-points-small
     container_name: test-saver-languages
     init: true
     environment: [ NO_PROMETHEUS ]
@@ -65,7 +65,7 @@ services:
 
   exercises:
     user: nobody
-    image: cyberdojo/exercises
+    image: cyberdojo/exercises-start-points
     container_name: test-saver-exercises
     init: true
     environment: [ NO_PROMETHEUS ]
