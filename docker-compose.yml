@@ -28,8 +28,7 @@ services:
   saver:
     build:
       context: .
-      args:
-        - SHA
+      args: [ COMMIT_SHA ]
     user: saver
     image: cyberdojo/saver
     container_name: test-saver-server

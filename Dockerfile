@@ -13,8 +13,8 @@ WORKDIR /app
 COPY . .
 RUN chown -R saver .
 
-ARG SHA
-ENV SHA=${SHA}
+ARG COMMIT_SHA
+ENV SHA=${COMMIT_SHA}
 
 EXPOSE 4537
 USER saver
