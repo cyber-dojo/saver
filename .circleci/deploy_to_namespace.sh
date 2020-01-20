@@ -21,7 +21,7 @@ helm upgrade \
   --namespace=${NAMESPACE} \
   --set-string containers[0].tag=${CIRCLE_SHA1:0:7} \
   --values .circleci/saver-values.yml \
-  --values .circleci/saver-pvc-${NAMESPACE}.yaml \
+  --values .circleci/saver-pvc-${NAMESPACE}.yml \
   ${NAMESPACE}-saver \
   praqma/cyber-dojo-service \
   --version 0.2.4
