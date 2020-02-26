@@ -1,7 +1,6 @@
-#!/bin/bash
-set -e
+#!/bin/bash -Eeu
 
-readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
+readonly ROOT_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
 readonly IMAGE=cyberdojo/saver
 export COMMIT_SHA=$(cd "${ROOT_DIR}" && git rev-parse HEAD)
 
@@ -15,12 +14,12 @@ build_service_images()
 
 images_sha_env_var()
 {
-  docker run --rm ${IMAGE}:latest sh -c 'env | grep SHA'
+  docker run --rm ${IMAGE}:latest sh -c 'env | grep ^SHA'
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - -
 build_service_images
-if [ "SHA=${COMMIT_SHA}" != $(images_sha_env_var) ]; then
+if [ "SHA=${COMMIT_SHA}" != "$(images_sha_env_var)" ]; then
   echo "unexpected env-var inside image ${IMAGE}:latest"
   echo "expected: 'SHA=${COMMIT_SHA}'"
   echo "  actual: '$(images_sha_env_var)'"
