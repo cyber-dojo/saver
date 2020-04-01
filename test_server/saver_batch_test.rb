@@ -59,7 +59,7 @@ class SaverBatchTest < TestBase
 
     there_no = dirname + '/there-not.txt'
     commands << ['read',there_no]
-    expected << false <------
+    expected << false # <------
 
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'

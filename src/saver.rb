@@ -96,7 +96,20 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch_until_false(commands)
-    batch(commands)
+    results = []
+    commands.each do |command|
+      name,*args = command
+      result = case name
+      when 'create'  then create(*args)
+      when 'exists?' then exists?(*args)
+      when 'write'   then write(*args)
+      when 'append'  then append(*args)
+      when 'read'    then read(*args)
+      end
+      results << result
+      break unless result
+    end
+    results
   end
 
   private
