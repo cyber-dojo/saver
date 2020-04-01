@@ -83,57 +83,37 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch(commands)
-    commands.map do |command|
+    batch_until(commands) {|r| r === :never}
+  end
+
+  def batch_until_false(commands)
+    batch_until(commands) {|r| !r}
+  end
+
+  def batch_until_true(commands)
+    batch_until(commands) {|r| r}
+  end
+
+  private
+
+  def batch_until(commands, &block)
+    results = []
+    commands.each do |command|
       name,*args = command
-      case name
+      result = case name
       when 'create'  then create(*args)
       when 'exists?' then exists?(*args)
       when 'write'   then write(*args)
       when 'append'  then append(*args)
       when 'read'    then read(*args)
       end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def batch_until_false(commands)
-    results = []
-    commands.each do |command|
-      name,*args = command
-      result = case name
-      when 'create'  then create(*args)
-      #when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      #when 'append'  then append(*args)
-      when 'read'    then read(*args)
-      end
       results << result
-      break unless result
+      break if block.call(result)
     end
     results
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def batch_until_true(commands)
-    results = []
-    commands.each do |command|
-      name,*args = command
-      result = case name
-      #when 'create'  then create(*args)
-      #when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      #when 'append'  then append(*args)
-      when 'read'    then read(*args)
-      end
-      results << result
-      break if result
-    end
-    results
-  end
-
-  private
 
   def path_name(key)
     File.join('', @root_dir, key)
