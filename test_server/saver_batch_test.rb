@@ -43,4 +43,33 @@ class SaverBatchTest < TestBase
     assert_equal expected, result
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '515',
+  'batch_until_false() runs its commands, stopping at the first one that returns false' do
+    expected = []
+    commands = []
+
+    dirname = 'batch/x3/t5/A7'
+    commands << ['create',dirname]
+    expected << true
+
+    commands << ['exists?',dirname]
+    expected << true
+
+    there_no = dirname + '/there-not.txt'
+    commands << ['read',there_no]
+    expected << false <------
+
+    there_yes = dirname + '/there-yes.txt'
+    content = 'inchmarlo'
+    commands << ['write',there_yes,content] # true
+    commands << ['append',there_yes,content.reverse] # true
+    commands << ['read',there_yes] # true
+    commands << ['read',there_no] # false
+
+    result = saver.batch_until_false(commands)
+    assert_equal expected, result
+  end
+
 end

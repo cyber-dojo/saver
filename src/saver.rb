@@ -93,6 +93,12 @@ class Saver
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def batch_until_false(commands)
+    batch(commands)
+  end
+
   private
 
   def path_name(key)
