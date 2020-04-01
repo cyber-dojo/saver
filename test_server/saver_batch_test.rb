@@ -26,7 +26,7 @@ class SaverBatchTest < TestBase
     expected << false
 
     there_yes = dirname + '/there-yes.txt'
-    content = 'inchmarlo'
+    content = 'tulchan spey beat'
     commands << ['write',there_yes,content]
     expected << true
 
@@ -45,32 +45,32 @@ class SaverBatchTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '515',
-  'batch_until_false() runs its commands, stopping at the first one that returns false' do
+  test '515', %w(
+  batch_until_false() runs its commands
+  stopping at the first one that returns false
+  and does not execute subsequent commands
+  ) do
     expected = []
     commands = []
 
-    dirname = 'batch/x3/t5/A7'
+    dirname = 'batch-until-false/x3/t5/15'
     commands << ['create',dirname]
     expected << true
 
-    commands << ['exists?',dirname]
+    there_yes = dirname + '/there-yes.txt'
+    content = 'inchmarlo tay beat'
+    commands << ['write',there_yes,content]
     expected << true
 
     there_no = dirname + '/there-not.txt'
     commands << ['read',there_no]
     expected << false # <------
 
-    there_yes = dirname + '/there-yes.txt'
-    content = 'inchmarlo'
-    commands << ['write',there_yes,content] # true
-    commands << ['append',there_yes,content.reverse] # true
-    commands << ['read',there_yes] # true
-    commands << ['read',there_no] # false
+    commands << ['append',there_yes,'extra'] # would be true
 
     result = saver.batch_until_false(commands)
-    assert_equal expected, result
-    # TODO: verify append did not happen
+    assert_equal expected, result, :stopped_at_false
+    assert_equal content, saver.read(there_yes), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,27 +80,18 @@ class SaverBatchTest < TestBase
   when write command raises an exception (writing existing file)
   and does not execute subsequent commands
   ) do
-    expected = []
     commands = []
 
-    dirname = 'batch/q3/t0/M2'
-    commands << ['create',dirname]
-    expected << true
-
-    commands << ['exists?',dirname]
-    expected << true
+    dirname = 'batch-until-false/x3/t5/16'
+    commands << ['create',dirname] # true
 
     there_yes = dirname + '/there-yes.txt'
-    content = 'newtyle'
+    content = 'newtyle tay beat'
     commands << ['write',there_yes,content] # true
-    expected << true
-
-    commands << ['read',there_yes] # true
-    expected << content
 
     commands << ['write',there_yes,content] # raises <------------
 
-    commands << ['append',there_yes,content.reverse] # not-run
+    commands << ['append',there_yes,'extra'] # not-run
 
     _error = assert_raises(Errno::EEXIST) {
       saver.batch_until_false(commands)

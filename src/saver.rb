@@ -39,7 +39,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def write(key, value)
+  def write(key, value, raise_exception=false)
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::CREAT | File::EXCL
@@ -49,8 +49,8 @@ class Saver
     true
   rescue Errno::ENOENT,         # dir does not exist
          Errno::EEXIST => error # file already exists
-    if block_given?
-      yield error
+    if raise_exception
+      raise error
     else
       false
     end
@@ -107,8 +107,8 @@ class Saver
       name,*args = command
       result = case name
       when 'create'  then create(*args)
-      when 'exists?' then exists?(*args)
-      when 'write'   then write(*args) { raise }
+      #when 'exists?' then exists?(*args)
+      when 'write'   then write(*args, :raise)
       #when 'append'  then append(*args)
       when 'read'    then read(*args)
       end
