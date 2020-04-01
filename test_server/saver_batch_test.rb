@@ -10,7 +10,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '514',
-  'batch() batches all other commands' do
+  'batch() runs all its commands, not stopping if any return false' do
     expected = []
     commands = []
 
@@ -20,6 +20,10 @@ class SaverBatchTest < TestBase
 
     commands << ['exists?',dirname]
     expected << true
+
+    there_no = dirname + '/there-not.txt'
+    commands << ['read',there_no]
+    expected << false
 
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
@@ -32,8 +36,7 @@ class SaverBatchTest < TestBase
     commands << ['read',there_yes]
     expected << content+content.reverse
 
-    there_not = dirname + '/there-not.txt'
-    commands << ['read',there_not]
+    commands << ['read',there_no]
     expected << false
 
     result = saver.batch(commands)
