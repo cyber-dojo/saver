@@ -1,37 +1,10 @@
 require_relative 'test_base'
 require_relative '../src/saver'
 
-class SaverTest < TestBase
+class SaverPrimitivesTest < TestBase
 
   def self.hex_prefix
-    'FDF'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # sha
-
-  test '190', %w( sha is sha of image's git commit ) do
-    sha = saver.sha
-    assert_equal 40, sha.size
-    sha.each_char do |ch|
-      assert '0123456789abcdef'.include?(ch)
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready?
-
-  test '602',
-  %w( ready? is always true ) do
-    assert saver.ready?
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # alive?
-
-  test '603',
-  %w( alive? is always true ) do
-    assert saver.alive?
+    'FA4'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -113,7 +86,7 @@ class SaverTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'groups/96/18/59'
-    # saver.create(dirname) # missing
+    # saver.create(dirname) # say this was missed
     filename = dirname + '/readme.md'
     refute saver.append(filename, 'greetings')
     assert saver.read(filename).is_a?(FalseClass)
@@ -126,7 +99,7 @@ class SaverTest < TestBase
     dirname = 'groups/96/18/59'
     assert saver.create(dirname)
     filename = dirname + '/hiker.h'
-    # saver.write(filename, '...') # missing
+    # saver.write(filename, '...') # say this was missed
     refute saver.append(filename, 'int main(void);')
     assert saver.read(filename).is_a?(FalseClass)
   end
@@ -155,40 +128,6 @@ class SaverTest < TestBase
     dirname = 'groups/2f/7k/3P'
     saver.create(dirname)
     assert saver.read(dirname).is_a?(FalseClass)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch()
-
-  test '514',
-  'batch() batches all other commands' do
-    expected = []
-    commands = []
-
-    dirname = 'batch/e3/t6/A8'
-    commands << ['create',dirname]
-    expected << true
-
-    commands << ['exists?',dirname]
-    expected << true
-
-    there_yes = dirname + '/there-yes.txt'
-    content = 'inchmarlo'
-    commands << ['write',there_yes,content]
-    expected << true
-
-    commands << ['append',there_yes,content.reverse]
-    expected << true
-
-    commands << ['read',there_yes]
-    expected << content+content.reverse
-
-    there_not = dirname + '/there-not.txt'
-    commands << ['read',there_not]
-    expected << false
-
-    result = saver.batch(commands)
-    assert_equal expected, result
   end
 
 end
