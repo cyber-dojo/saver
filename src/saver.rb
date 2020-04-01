@@ -39,7 +39,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def write(key, value, raise_exception=false)
+  def write(key, value)
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::CREAT | File::EXCL
@@ -47,13 +47,9 @@ class Saver
       fd.write(value)
     }
     true
-  rescue Errno::ENOENT,         # dir does not exist
-         Errno::EEXIST => error # file already exists
-    if raise_exception
-      raise error
-    else
-      false
-    end
+  rescue Errno::ENOENT, # dir does not exist
+         Errno::EEXIST  # file already exists
+    false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,12 +104,31 @@ class Saver
       result = case name
       when 'create'  then create(*args)
       #when 'exists?' then exists?(*args)
-      when 'write'   then write(*args, :raise)
+      when 'write'   then write(*args)
       #when 'append'  then append(*args)
       when 'read'    then read(*args)
       end
       results << result
       break unless result
+    end
+    results
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def batch_until_true(commands)
+    results = []
+    commands.each do |command|
+      name,*args = command
+      result = case name
+      #when 'create'  then create(*args)
+      #when 'exists?' then exists?(*args)
+      when 'write'   then write(*args)
+      #when 'append'  then append(*args)
+      when 'read'    then read(*args)
+      end
+      results << result
+      break if result
     end
     results
   end
