@@ -15,7 +15,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '414',
-  'batch() runs all its commands, not stopping if any return false' do
+  'batch() runs all its commands, not stopping when any return false' do
     dirname = 'batch/e3/t4/14'
     command(true, 'create', dirname)
     command(true, 'exists?', dirname)
@@ -35,6 +35,24 @@ class SaverBatchTest < TestBase
   # batch_until_false
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test '512', %w(
+  batch_until_false()
+  completes all its commands
+  when nothing returns false
+  ) do
+    dirname = 'batch-until-false/x3/t5/12'
+    command(true, 'create', dirname)
+    command(true, 'exists?', dirname)
+    filename = dirname + '/stops-at-exists-false.txt'
+    content = 'newtyle tay beat'
+    command(true, 'write', filename, content)
+    command(true, 'append', filename, '1')
+    command(content+'1', 'read', filename)
+    assert_batch_until_false
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test '513', %w(
   batch_until_false()
   stops at exists?() returning false
@@ -49,8 +67,8 @@ class SaverBatchTest < TestBase
     not_run('write', filename, content)
     assert_batch_until_false
     assert saver.exists?(dirname)
-    refute saver.exists?(dirname+'X')
-    refute saver.read(filename)
+    refute saver.exists?(dirname+'X'), :does_not_execute_subsequent_commands
+    refute saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -68,7 +86,7 @@ class SaverBatchTest < TestBase
     not_run('write', filename, content)
     assert_batch_until_false
     assert saver.exists?(dirname)
-    refute saver.read(filename)
+    refute saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -87,7 +105,7 @@ class SaverBatchTest < TestBase
     not_run('append', filename, 'extra')
     assert_batch_until_false
     assert saver.exists?(dirname)
-    assert_equal content, saver.read(filename)
+    assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,7 +126,7 @@ class SaverBatchTest < TestBase
     not_run('append', filename, '4')
     assert_batch_until_false
     assert saver.exists?(dirname)
-    assert_equal content+'12', saver.read(filename)
+    assert_equal content+'12', saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -133,17 +151,108 @@ class SaverBatchTest < TestBase
   # batch_until_true
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # create 713
-  # exists 714
-  # write  715
-  # append 716
-
-  test '717', %w(
+  test '712', %w(
   batch_until_true()
-  stops at reading a file that exists
+  completes all its commands
+  when nothing returns true
+  ) do
+    dirname = 'batch-until-true/x3/t7/12'
+    filename = dirname + '/read-false.txt'
+    command(false, 'read', filename+'1')
+    command(false, 'read', filename+'2')
+    command(false, 'read', filename+'3')
+    command(false, 'read', filename+'4')
+    command(false, 'read', filename+'5')
+    assert_batch_until_true
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '713', %w(
+  batch_until_true()
+  stops at exists?() returning true
+  and does not execute subsequent commands
+  ) do
+    dirname = 'batch-until-true/x3/t7/13'
+    assert saver.create(dirname)
+    command(false, 'exists?', dirname+'1')
+    command(false, 'exists?', dirname+'2')
+    command(false, 'exists?', dirname+'3')
+    command(true,  'exists?', dirname)
+    filename = dirname + '/stops-at-exists-true'
+    not_run('write', filename, 'xxx')
+    assert_batch_until_true
+    refute saver.read(filename), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '714', %w(
+  batch_until_true()
+  stops at create() returning true
+  and does not execute subsequent commands
+  ) do
+    dirname = 'batch-until-true/x3/t7/14'
+    assert saver.create(dirname)
+    command(false, 'create', dirname)
+    command(false, 'create', dirname)
+    command(false, 'create', dirname)
+    command(true,  'create', dirname+'1')
+    filename = dirname + '1/stops-at-create-true'
+    not_run('write', filename, 'xxx')
+    assert_batch_until_true
+    assert saver.exists?(dirname+'1'), :does_not_execute_subsequent_commands
+    refute saver.read(filename), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '715', %w(
+  batch_until_true()
+  stops at write() returning true
   and does not execute subsequent commands
   ) do
     dirname = 'batch-until-true/x3/t7/15'
+    filename = dirname + '/stop-at-write-true'
+    content = 'xxxxxx'
+    assert saver.create(dirname)
+    assert saver.write(filename, content)
+
+    command(false, 'write', filename, content)
+    command(true, 'write', filename+'1', content)
+    not_run('append', filename, 'to-the-end')
+    assert_batch_until_true
+    assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '716', %w(
+  batch_until_true()
+  stops at append() returning true
+  and does not execute subsequent commands
+  ) do
+    dirname = 'batch-until-true/x3/t7/16'
+    filename = dirname + '/stop-at-append-true'
+    content = 'X'
+    assert saver.create(dirname)
+    assert saver.write(filename, content)
+
+    command(false, 'append', filename+'1', content)
+    command(true, 'append', filename, content)
+    not_run('append', filename, 'to-the-end')
+    assert_batch_until_true
+    assert_equal 'XX', saver.read(filename), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '717', %w(
+  batch_until_true()
+  stops at read() a file that exists
+  and does not execute subsequent commands
+  ) do
+    dirname = 'batch-until-true/x3/t7/17'
     event_3 = dirname + '/3.event.json'
     content = '{"colour":"red"}'
 
