@@ -70,6 +70,43 @@ class SaverBatchTest < TestBase
 
     result = saver.batch_until_false(commands)
     assert_equal expected, result
+    # TODO: verify append did not happen
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '516', %w(
+  batch_until_false() propagates an exception
+  when write command raises an exception (writing existing file)
+  and does not execute subsequent commands
+  ) do
+    expected = []
+    commands = []
+
+    dirname = 'batch/q3/t0/M2'
+    commands << ['create',dirname]
+    expected << true
+
+    commands << ['exists?',dirname]
+    expected << true
+
+    there_yes = dirname + '/there-yes.txt'
+    content = 'newtyle'
+    commands << ['write',there_yes,content] # true
+    expected << true
+
+    commands << ['read',there_yes] # true
+    expected << content
+
+    commands << ['write',there_yes,content] # raises <------------
+
+    commands << ['append',there_yes,content.reverse] # not-run
+
+    _error = assert_raises(Errno::EEXIST) {
+      saver.batch_until_false(commands)
+    }
+    assert saver.exists?(dirname)
+    assert_equal content, saver.read(there_yes)
   end
 
 end

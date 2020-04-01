@@ -47,10 +47,16 @@ class Saver
       fd.write(value)
     }
     true
-  rescue Errno::ENOENT, # dir does not exist
-         Errno::EEXIST  # file already exists
-    false
+  rescue Errno::ENOENT,         # dir does not exist
+         Errno::EEXIST => error # file already exists
+    if block_given?
+      yield error
+    else
+      false
+    end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(key, value)
     # Errno::ENOSPC (no space left on device) will
@@ -102,8 +108,8 @@ class Saver
       result = case name
       when 'create'  then create(*args)
       when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      when 'append'  then append(*args)
+      when 'write'   then write(*args) { raise }
+      #when 'append'  then append(*args)
       when 'read'    then read(*args)
       end
       results << result
