@@ -223,6 +223,10 @@ class RackDispatcherTest < TestBase
     )
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # dispatches to batch_until_false
+  # dispatches to batch_until_true
+
   private
 
   def saver_stub(name)
