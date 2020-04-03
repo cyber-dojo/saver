@@ -10,6 +10,7 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 500
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '166',
   'dispatch returns 500 status when no space left on device' do
@@ -58,6 +59,7 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 400
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2A',
   'dispatch raises 400 when method name is unknown' do
@@ -153,6 +155,8 @@ class RackDispatcherTest < TestBase
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 200
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E39',
