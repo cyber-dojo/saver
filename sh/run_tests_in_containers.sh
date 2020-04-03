@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly root_dir="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
+readonly root_dir="$(cd "$(dirname "${0}")/.." && pwd)"
 readonly my_name=saver
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
