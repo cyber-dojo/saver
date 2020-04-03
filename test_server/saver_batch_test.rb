@@ -14,9 +14,9 @@ class SaverBatchTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '414',
+  test '314',
   'batch() runs all its commands, not stopping when any return false' do
-    dirname = 'batch/e3/t4/14'
+    dirname = 'batch/e3/t3/14'
     command(true, 'create', dirname)
     command(true, 'exists?', dirname)
     there_no = dirname + '/there-not.txt'
@@ -29,6 +29,47 @@ class SaverBatchTest < TestBase
     command(false, 'read', there_no)
     result = saver.batch(@commands)
     assert_equal @expected, result
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch_assert
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '416',
+  'batch_assert() returns array of results when all commands are true' do
+    dirname = 'batch/e3/t4/16'
+    command(true, 'create', dirname)
+    command(true, 'exists?', dirname)
+    there_yes = dirname + '/there-yes.txt'
+    content = 'dunkeld tay beat'
+    command(true, 'write', there_yes, content)
+    command(true, 'append', there_yes, content.reverse)
+    command(content+content.reverse, 'read', there_yes)
+    result = saver.batch_assert(@commands)
+    assert_equal @expected, result
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '417', %w(
+  batch_assert() raises
+  when any command is not true
+  and subsequent commands are not executed
+  ) do
+    dirname = 'batch/e3/t4/17'
+    command(true, 'create', dirname)
+    command(true, 'exists?', dirname)
+    there_yes = dirname + '/there-yes.txt'
+    content = 'monaltrie dee beat'
+    command(true, 'write', there_yes, content)
+    there_no = dirname + '/there-not.txt'
+    command(false, 'read', there_no)
+    command(true, 'append', there_yes, content.reverse)
+    error = assert_raises(RuntimeError) {
+      saver.batch_assert(@commands)
+    }
+    assert_equal "commands[3] != true", error.message
+    assert_equal content, saver.read(there_yes), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -63,7 +104,7 @@ class SaverBatchTest < TestBase
     command(true, 'exists?', dirname)
     command(false, 'exists?', dirname+'X')
     filename = dirname + '/stops-at-exists-false.txt'
-    content = 'newtyle tay beat'
+    content = 'dalmarnock tay beat'
     not_run('write', filename, content)
     assert_batch_until_false
     assert saver.exists?(dirname)
@@ -82,7 +123,7 @@ class SaverBatchTest < TestBase
     command(true, 'create', dirname)
     command(false, 'create', dirname)
     filename = dirname + '/stops-at-exists.txt'
-    content = 'newtyle tay beat'
+    content = 'stenton tay beat'
     not_run('write', filename, content)
     assert_batch_until_false
     assert saver.exists?(dirname)
@@ -99,7 +140,7 @@ class SaverBatchTest < TestBase
     dirname = 'batch-until-false/x3/t5/15'
     command(true, 'create', dirname)
     filename = dirname + '/stops-at-write-false.txt'
-    content = 'newtyle tay beat'
+    content = 'murthly tay beat'
     command(true, 'write', filename, content)
     command(false, 'write', filename, content)
     not_run('append', filename, 'extra')
@@ -118,7 +159,7 @@ class SaverBatchTest < TestBase
     dirname = 'batch-until-false/x3/t5/16'
     command(true, 'create', dirname)
     filename = dirname + '/stops-at-append-false.txt'
-    content = 'newtyle tay beat'
+    content = 'park dee beat'
     command(true, 'write', filename, content)
     command(true, 'append', filename, '1')
     command(true, 'append', filename, '2')

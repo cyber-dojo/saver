@@ -86,19 +86,29 @@ class Saver
     batch_until(commands) {|r| r === :never}
   end
 
-  def batch_until_false(commands)
-    batch_until(commands) {|r| !r}
+  def batch_assert(commands)
+    batch_until(commands) {|r,index|
+      if r
+        false
+      else
+        raise "commands[#{index}] != true"
+      end
+    }
   end
 
   def batch_until_true(commands)
     batch_until(commands) {|r| r}
   end
 
+  def batch_until_false(commands)
+    batch_until(commands) {|r| !r}
+  end
+
   private
 
   def batch_until(commands, &block)
     results = []
-    commands.each do |command|
+    commands.each.with_index(0) do |command,index|
       name,*args = command
       result = case name
       when 'create'  then create(*args)
@@ -108,7 +118,7 @@ class Saver
       when 'read'    then read(*args)
       end
       results << result
-      break if block.call(result)
+      break if block.call(result,index)
     end
     results
   end
