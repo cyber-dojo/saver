@@ -29,12 +29,17 @@ class HttpJsonArgs
     when '/sha'     then [saver,'sha']
     when '/ready'   then [saver,'ready?']
     when '/alive'   then [saver,'alive?']
-    when '/create'  then [saver,'create', key]
+
+    when '/create'  then [saver,'create' , key]
     when '/exists'  then [saver,'exists?', key]
-    when '/write'   then [saver,'write', key, value]
-    when '/append'  then [saver,'append', key, value]
-    when '/read'    then [saver,'read', key]
-    when '/batch'   then [saver,'batch', commands]
+    when '/write'   then [saver,'write'  , key, value]
+    when '/append'  then [saver,'append' , key, value]
+    when '/read'    then [saver,'read'   , key]
+
+    when '/batch'             then [saver,'batch'            ,commands]
+    when '/batch_assert'      then [saver,'batch_assert'     ,commands]
+    when '/batch_until_true'  then [saver,'batch_until_true' ,commands]
+    when '/batch_until_false' then [saver,'batch_until_false',commands]
     else
       fail HttpJson::RequestError, 'unknown path'
     end

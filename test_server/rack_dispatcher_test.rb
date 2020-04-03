@@ -14,13 +14,26 @@ class RackDispatcherTest < TestBase
   test '166',
   'dispatch returns 500 status when no space left on device' do
     externals.instance_exec {
+      # See docker-compose.yml
+      # See sh/docker_containers_up.sh create_space_limited_volume()
       @saver = Saver.new('one_k')
     }
-    assert saver.create('abc')
-    assert saver.write('abc/file','x'*1024)
-    message = 'No space left on device @ io_write - /one_k/abc/file'
-    body = { "key":'abc/file', "value":'x'*1024*16 }.to_json
+    assert saver.create('166')
+    assert saver.write('166/file','x'*1024)
+    message = 'No space left on device @ io_write - /one_k/166/file'
+    body = { "key":'166/file', "value":'x'*1024*16 }.to_json
     assert_dispatch_raises('append', body, 500, message)
+    assert saver.exists?('166')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '167',
+  'dispatch returns 500 status when batch_assert raises' do
+    message = 'commands[1] != true'
+    body = { "commands":[['create','167'],['create','167']] }.to_json
+    assert_dispatch_raises('batch_assert', body, 500, message)
+    assert saver.exists?('167')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -224,8 +237,37 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # dispatches to batch_until_false
-  # dispatches to batch_until_true
+
+  test 'E48',
+  'dispatches to batch_assert' do
+    saver_stub('batch_assert')
+    assert_saver_dispatch('batch_assert',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch_assert'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E49',
+  'dispatches to batch_until_true' do
+    saver_stub('batch_until_true')
+    assert_saver_dispatch('batch_until_true',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch_until_true'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E50',
+  'dispatches to batch_until_false' do
+    saver_stub('batch_until_false')
+    assert_saver_dispatch('batch_until_false',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch_until_false'
+    )
+  end
 
   private
 
