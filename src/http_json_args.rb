@@ -35,11 +35,12 @@ class HttpJsonArgs
     when '/write'   then [saver,'write'  , key, value]
     when '/append'  then [saver,'append' , key, value]
     when '/read'    then [saver,'read'   , key]
+    when '/assert'  then [saver,'assert' , command]
 
-    when '/batch'             then [saver,'batch'            ,commands]
     when '/batch_assert'      then [saver,'batch_assert'     ,commands]
     when '/batch_until_true'  then [saver,'batch_until_true' ,commands]
     when '/batch_until_false' then [saver,'batch_until_false',commands]
+    when '/batch'             then [saver,'batch'            ,commands]
     else
       fail HttpJson::RequestError, 'unknown path'
     end
@@ -62,6 +63,10 @@ class HttpJsonArgs
     well_formed_string('value')
   end
 
+  def command
+    well_formed_command
+  end
+
   def commands
     well_formed_commands
   end
@@ -79,28 +84,47 @@ class HttpJsonArgs
     arg
   end
 
+  # - - - - - - - - - - - - - - -
+
+  def well_formed_command
+    arg_name = 'commands'
+    unless args.has_key?(arg_name)
+      fail missing(arg_name)
+    end
+    command = args[arg_name]
+    unless command.is_a?(Array)
+      fail malformed(arg_name, "!Array (#{command.class.name})")
+    end
+    fail_unless_well_formed_command(command,'')
+    command
+  end
+
+  # - - - - - - - - - - - - - - -
+
   def well_formed_commands
     arg_name = 'commands'
     unless args.has_key?(arg_name)
       fail missing(arg_name)
     end
-    arg = args[arg_name]
-    unless arg.is_a?(Array)
-      fail malformed(arg_name, "!Array (#{arg.class.name})")
+    commands = args[arg_name]
+    unless commands.is_a?(Array)
+      fail malformed(arg_name, "!Array (#{commands.class.name})")
     end
-    arg.each.with_index do |command,index|
+    commands.each.with_index do |command,index|
       unless command.is_a?(Array)
         fail malformed("commands[#{index}]", "!Array (#{command.class.name})")
       end
-      fail_unless_well_formed_command(command,index)
+      fail_unless_well_formed_command(command,"s[#{index}]")
     end
-    arg
+    commands
   end
+
+  # - - - - - - - - - - - - - - -
 
   def fail_unless_well_formed_command(command,index)
     name = command[0]
     unless name.is_a?(String)
-      fail malformed("commands[#{index}][0]", "!String (#{name.class.name})")
+      fail malformed("command#{index}[0]", "!String (#{name.class.name})")
     end
     case name
     when 'create'  then fail_unless_well_formed_args(command,index,1)
@@ -109,19 +133,21 @@ class HttpJsonArgs
     when 'append'  then fail_unless_well_formed_args(command,index,2)
     when 'read'    then fail_unless_well_formed_args(command,index,1)
     else
-      fail malformed("commands[#{index}]", "Unknown (#{name})")
+      fail malformed("command#{index}", "Unknown (#{name})")
     end
   end
+
+  # - - - - - - - - - - - - - - -
 
   def fail_unless_well_formed_args(command,index,arity)
     name,*args = command
     unless args.size === arity
-      fail malformed("commands[#{index}]", "#{name}!#{arity} (#{args.size})")
+      fail malformed("command#{index}", "#{name}!#{arity} (#{args.size})")
     end
     arity.times do |n|
       arg = args[n]
       unless arg.is_a?(String)
-        fail malformed("commands[#{index}]", "#{name}-#{arity}!String (#{arg.class.name})")
+        fail malformed("command#{index}", "#{name}-#{arity}!String (#{arg.class.name})")
       end
     end
   end

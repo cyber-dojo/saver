@@ -82,8 +82,13 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch(commands)
-    batch_until(commands) {|r| r === :never}
+  def assert(command)
+    result = execute(command)
+    if result
+      result
+    else
+      raise "command != true"
+    end
   end
 
   def batch_assert(commands)
@@ -104,19 +109,29 @@ class Saver
     batch_until(commands) {|r| !r}
   end
 
+  def batch(commands)
+    batch_until(commands) {|r| r === :never}
+  end
+
   private
+
+  def execute(command)
+    name,*args = command
+    case name
+    when 'create'  then create(*args)
+    when 'exists?' then exists?(*args)
+    when 'write'   then write(*args)
+    when 'append'  then append(*args)
+    when 'read'    then read(*args)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
-      name,*args = command
-      result = case name
-      when 'create'  then create(*args)
-      when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      when 'append'  then append(*args)
-      when 'read'    then read(*args)
-      end
+      result = execute(command)
       results << result
       break if block.call(result,index)
     end
