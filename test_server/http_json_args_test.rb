@@ -112,6 +112,51 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # get:command
+
+  test 'C51',
+  'command: get() raises when it is missing' do
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    error = assert_raises { args.get('/assert', externals) }
+    assert_equal 'missing:command:', error.message
+  end
+
+  test 'C52',
+  'command: get() raises when it is not an Array' do
+    command = 'Hello'
+    error = assert_assert_raises(command)
+    assert_equal 'malformed:command:!Array (String):', error.message
+  end
+
+  test 'C55',
+  'command: get() raises when name is unknown' do
+    command = ['spey','ff']
+    error = assert_assert_raises(command)
+    assert_equal 'malformed:command:Unknown (spey):', error.message
+  end
+
+  test 'C58',
+  'command: get() raises when create-command does not have one argument' do
+    command = ['create']
+    error = assert_assert_raises(command)
+    assert_equal 'malformed:command:create!1 (0):', error.message
+  end
+
+  test 'C63',
+  'command: get() raises when any 1st argument is not a string' do
+    command = ['read',42]
+    error = assert_assert_raises(command)
+    assert_equal 'malformed:command:read-1!String (Integer):', error.message
+  end
+
+  test 'C64',
+  'command: get() raises when any 2nd argument is not a string' do
+    command = ['write','a/b/c',nil]
+    error = assert_assert_raises(command)
+    assert_equal 'malformed:command:write-2!String (NilClass):', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # get:commands
 
   test 'B51',
@@ -199,6 +244,12 @@ class HttpJsonArgsTest < TestBase
   end
 
   private
+
+  def assert_assert_raises(command)
+    json = { "command":command }.to_json
+    args = HttpJsonArgs.new(json)
+    assert_raises { args.get('/assert', externals) }
+  end
 
   def assert_batch_raises(commands)
     json = { "commands":commands }.to_json

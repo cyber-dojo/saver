@@ -87,7 +87,7 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - -
 
   def well_formed_command
-    arg_name = 'commands'
+    arg_name = 'command'
     unless args.has_key?(arg_name)
       fail missing(arg_name)
     end

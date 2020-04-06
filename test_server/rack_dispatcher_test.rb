@@ -149,9 +149,32 @@ class RackDispatcherTest < TestBase
       ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
       ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!1 (3):'],
       ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read-1!String (Float):']
-
     ].each do |json, error_message|
       assert_dispatch_raises('batch', json, 400, error_message)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'AC8',
+  'dispatch returns 400 status when command is missing' do
+    assert_dispatch_raises('assert',
+      '{}',
+      400,
+      'missing:command:'
+    )
+  end
+
+  test 'AC9',
+  'dispatch returns 400 status when command is malformed' do
+    [
+      ['{"command":42}', 'malformed:command:!Array (Integer):'],
+      ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],
+      ['{"command":["xxx"]}', 'malformed:command:Unknown (xxx):'],
+      ['{"command":["read",1,2,3]}', 'malformed:command:read!1 (3):'],
+      ['{"command":["read",2.9]}', 'malformed:command:read-1!String (Float):']
+    ].each do |json, error_message|
+      assert_dispatch_raises('assert', json, 400, error_message)
     end
   end
 
@@ -231,23 +254,34 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E47',
-  'dispatches to batch' do
-    saver_stub('batch')
-    assert_saver_dispatch('batch',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'E48',
   'dispatches to batch_assert' do
     saver_stub('batch_assert')
     assert_saver_dispatch('batch_assert',
       { commands: well_formed_commands }.to_json,
       'hello from stubbed saver.batch_assert'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E51',
+  'dispatches to assert' do
+    saver_stub('assert')
+    assert_saver_dispatch('assert',
+      { command: well_formed_command }.to_json,
+      'hello from stubbed saver.assert'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E47',
+  'dispatches to batch' do
+    saver_stub('batch')
+    assert_saver_dispatch('batch',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch'
     )
   end
 
@@ -289,6 +323,10 @@ class RackDispatcherTest < TestBase
 
   def well_formed_value
     { "index" => 23, "time" => [2019,2,3,6,57,8,3242] }.to_json # String
+  end
+
+  def well_formed_command
+    [ 'create',  '/cyber-dojo/katas/12/34/45' ]
   end
 
   def well_formed_commands

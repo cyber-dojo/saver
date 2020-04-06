@@ -130,4 +130,28 @@ class SaverPrimitivesTest < TestBase
     assert saver.read(dirname).is_a?(FalseClass)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # assert()
+
+  test '538',
+  'assert() raises when its command is not true' do
+    dirname = 'groups/Fw/FP/3p'
+    error = assert_raises(RuntimeError) {
+      saver.assert(['exists?',dirname])
+    }
+    assert_equal 'command != true', error.message
+    refute saver.exists?(dirname)
+  end
+
+  test '539',
+  'assert() returns command result when command is true' do
+    dirname = 'groups/sw/EP/7K'
+    filename = dirname + '/' + '3.events.json'
+    content = '{"colour":"red"}'
+    saver.create(dirname)
+    saver.write(filename, content)
+    read = saver.assert(['read',filename])
+    assert_equal content, read
+  end
+
 end
