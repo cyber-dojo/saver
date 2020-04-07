@@ -146,7 +146,6 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   multi_test '841', %w(
   |append(filename,content) returns false
   |and does nothing
@@ -158,7 +157,6 @@ class SaverRunTest < TestBase
     refute append(dirname, content)
     refute read(dirname)
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 

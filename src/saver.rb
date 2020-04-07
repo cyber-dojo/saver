@@ -142,7 +142,8 @@ class Saver
       fd.write(value)
     }
     true
-  rescue Errno::ENOENT # file does not exist
+  rescue Errno::EISDIR, # file is a dir!
+         Errno::ENOENT  # file does not exist
     false
   end
 
@@ -154,8 +155,9 @@ class Saver
       fd.flock(File::LOCK_EX)
       fd.read
     }
-  rescue Errno::ENOENT, # file does not exist
-         Errno::EISDIR  # file is a dir!
+  rescue Errno::EISDIR, # file is a dir!,
+         Errno::ENOENT  # file does not exist
+
     false
   end
 
