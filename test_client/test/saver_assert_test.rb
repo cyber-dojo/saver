@@ -39,12 +39,13 @@ class SaverAssertTest < TestBase
 
   multi_test '433',
   'exists?(dirname) raises when dirname is not a string' do
+    dirname = 42
     error = assert_raises(SaverException) {
-      exists?(42)
+      exists?(dirname)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'exists?',42 ] }
+    expected_body = { 'command'=>[ 'exists?',dirname ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
     assert_equal 'malformed:command:exists?-1!String (Integer):', json['message'], :message
@@ -74,6 +75,22 @@ class SaverAssertTest < TestBase
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
     assert_equal 'command != true', json['message'], :message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '570',
+  'create(dirname) raises when dirname is not a string' do
+    dirname = true
+    error = assert_raises(SaverException) {
+      create(dirname)
+    }
+    json = JSON.parse!(error.message)
+    assert_equal '/assert', json['path'], :path
+    expected_body = { 'command'=>[ 'create',dirname ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:create-1!String (TrueClass):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

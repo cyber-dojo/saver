@@ -95,7 +95,7 @@ class SaverServiceFake
         path:'/assert',
         body:{'command':['exists?',key]}.to_json,
         class:'SaverService',
-        message:'malformed:command:exists?-1!String (Integer):'
+        message:"malformed:command:exists?-1!String (#{key.class.name}):"
       }.to_json
       raise SaverException,message
     end
@@ -103,6 +103,15 @@ class SaverServiceFake
   end
 
   def create(key)
+    unless key.is_a?(String)
+      message = {
+        path:'/assert',
+        body:{'command':['create',key]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:create-1!String (#{key.class.name}):"
+      }.to_json
+      raise SaverException,message
+    end
     if exists?(key)
       false
     else
