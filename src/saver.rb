@@ -46,6 +46,8 @@ class Saver
   # deprecated
 
   def batch(command); batch_run(command); end
+  def batch_until_true(commands); batch_run_until_true(commands); end
+  def batch_until_false(commands); batch_run_until_false(commands); end
 
   def exists?(key)
     Dir.exist?(path_name(key))

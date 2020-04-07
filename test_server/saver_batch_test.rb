@@ -319,7 +319,7 @@ class SaverBatchTest < TestBase
   # DEPRECATED
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '934', %w( support batch till switched to batch_run ) do
+  test '934', %w( support batch() till switched to batch_run() ) do
     dirname = 'batch/e3/t9/34'
     command(true, create_command(dirname))
     command(true, exists_command(dirname))
@@ -333,6 +333,32 @@ class SaverBatchTest < TestBase
     command(false, read_command(there_no))
     result = saver.batch(@commands)
     assert_equal @expected, result
+  end
+
+  test '935', %w( support batch_until_true() till switched to batch_run_until_true() ) do
+    dirname = 'batch-until-true/x3/t9/35'
+    assert saver.create(dirname)
+    command(false, exists_command(dirname+'1'))
+    command(false, exists_command(dirname+'2'))
+    command(false, exists_command(dirname+'3'))
+    command(true,  exists_command(dirname))
+    filename = dirname + '/stops-at-exists-true'
+    not_run(write_command(filename, 'xxx'))
+    assert_batch_until_true
+    refute saver.read(filename), :does_not_execute_subsequent_commands
+  end
+
+  test '936', %w( support batch_until_false() till switched to batch_run_until_false() ) do
+    dirname = 'batch-until-false/x3/t9/36'
+    command(true, create_command(dirname))
+    filename = dirname + '/stops-at-write-false.txt'
+    content = 'murthly tay beat'
+    command(true, write_command(filename, content))
+    command(false, write_command(filename, content))
+    not_run(append_command(filename, 'extra'))
+    assert_batch_until_false
+    assert saver.exists?(dirname)
+    assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   private
@@ -353,6 +379,18 @@ class SaverBatchTest < TestBase
 
   def assert_batch_run_until_true
     result = saver.batch_run_until_true(@commands)
+    assert_equal @expected, result
+  end
+
+  # deprecated
+
+  def assert_batch_until_false
+    result = saver.batch_until_false(@commands)
+    assert_equal @expected, result
+  end
+
+  def assert_batch_until_true
+    result = saver.batch_until_true(@commands)
     assert_equal @expected, result
   end
 
