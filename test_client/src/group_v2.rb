@@ -26,7 +26,7 @@ class Group_v2
   def create(manifest)
     id = manifest['id'] = generate_id
     manifest['version'] = 2
-    saver_assert_batch([
+    saver.batch_assert([
       manifest_write_cmd(id, json_plain(manifest)),
       katas_write_cmd(id, '')
     ])

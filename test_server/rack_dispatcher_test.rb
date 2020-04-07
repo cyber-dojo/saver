@@ -133,7 +133,7 @@ class RackDispatcherTest < TestBase
 
   test 'AC6',
   'dispatch returns 400 status when commands is missing' do
-    assert_dispatch_raises('batch',
+    assert_dispatch_raises('batch_run',
       '{}',
       400,
       'missing:commands:'
@@ -150,7 +150,7 @@ class RackDispatcherTest < TestBase
       ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!1 (3):'],
       ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read-1!String (Float):']
     ].each do |json, error_message|
-      assert_dispatch_raises('batch', json, 400, error_message)
+      assert_dispatch_raises('batch_run', json, 400, error_message)
     end
   end
 
@@ -277,11 +277,11 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E47',
-  'dispatches to batch' do
-    saver_stub('batch')
-    assert_saver_dispatch('batch',
+  'dispatches to batch_run' do
+    saver_stub('batch_run')
+    assert_saver_dispatch('batch_run',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch'
+      'hello from stubbed saver.batch_run'
     )
   end
 

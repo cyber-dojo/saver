@@ -91,8 +91,11 @@ class Saver
     end
   end
 
+  #def run(command)
+  #end
+
   def batch_assert(commands)
-    batch_until(commands) {|r,index|
+    batch_run_until(commands) {|r,index|
       if r
         false
       else
@@ -101,16 +104,16 @@ class Saver
     }
   end
 
-  def batch_until_true(commands)
-    batch_until(commands) {|r| r}
+  def batch_run(commands) # renamed from batch to batch_run
+    batch_run_until(commands) {|r| r === :never}
   end
 
-  def batch_until_false(commands)
-    batch_until(commands) {|r| !r}
+  def batch_until_true(commands) # TODO rename to batch_run_until_true
+    batch_run_until(commands) {|r| r}
   end
 
-  def batch(commands)
-    batch_until(commands) {|r| r === :never}
+  def batch_until_false(commands) # TODO rename to batch_run_until_false
+    batch_run_until(commands) {|r| !r}
   end
 
   private
@@ -128,7 +131,7 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch_until(commands, &block)
+  def batch_run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
       result = execute(command)

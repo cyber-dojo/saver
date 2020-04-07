@@ -133,7 +133,7 @@ class Group_v1
     read_commands = (0..63).map do |index|
       ['read', id_path(id, index, 'kata.id')]
     end
-    reads = saver.batch(read_commands)
+    reads = saver.batch_run(read_commands)
     # reads is an array of 64 entries, eg
     # [
     #    nil,      # 0

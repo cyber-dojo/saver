@@ -15,7 +15,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '314',
-  'batch() runs all its commands, not stopping when any return false' do
+  'batch_run() runs all its commands, not stopping when any return false' do
     dirname = 'batch/e3/t3/14'
     command(true, 'create', dirname)
     command(true, 'exists?', dirname)
@@ -27,7 +27,7 @@ class SaverBatchTest < TestBase
     command(true, 'append', there_yes, content.reverse)
     command(content+content.reverse, 'read', there_yes)
     command(false, 'read', there_no)
-    result = saver.batch(@commands)
+    result = saver.batch_run(@commands)
     assert_equal @expected, result
   end
 
@@ -297,11 +297,10 @@ class SaverBatchTest < TestBase
     event_3 = dirname + '/3.event.json'
     content = '{"colour":"red"}'
 
-    result = saver.batch([
+    saver.batch_assert([
       ['create',dirname],
       ['write',event_3,content]
     ])
-    assert_equal [true,true], result, :setup
 
     command(false, 'write', dirname + '/3.event.json', '{"colour":"amber"}')
     command(false, 'read',  dirname + '/0.event.json')

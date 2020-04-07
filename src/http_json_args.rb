@@ -38,9 +38,9 @@ class HttpJsonArgs
     when '/assert'  then [saver,'assert' , command]
 
     when '/batch_assert'      then [saver,'batch_assert'     ,commands]
+    when '/batch_run'         then [saver,'batch_run'        ,commands]
     when '/batch_until_true'  then [saver,'batch_until_true' ,commands]
     when '/batch_until_false' then [saver,'batch_until_false',commands]
-    when '/batch'             then [saver,'batch'            ,commands]
     else
       fail HttpJson::RequestError, 'unknown path'
     end

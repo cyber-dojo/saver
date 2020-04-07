@@ -186,10 +186,10 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch()
+  # batch_run()
 
   multi_test '514',
-  'batch() batches all other commands (except sha/ready/alive/itself)' do
+  'batch_run() batches all other commands (except sha/ready/alive/itself)' do
     expected = []
     commands = []
 
@@ -216,7 +216,7 @@ class SaverTest < TestBase
     commands << ['read',there_not]
     expected << false
 
-    result = saver.batch(commands)
+    result = saver.batch_run(commands)
     assert_equal expected, result
   end
 
@@ -230,7 +230,6 @@ class SaverTest < TestBase
       saver.create(42)
     }
     json = JSON.parse(error.message)
-    #puts JSON.pretty_generate(json)
     assert_equal '/create', json['path']
     assert_equal 'SaverService', json['class']
     assert_equal 'malformed:key:!String (Integer):', json['message']

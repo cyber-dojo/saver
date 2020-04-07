@@ -84,7 +84,7 @@ class GroupTest < TestBase
         Class.new do
           def create(_key); true; end # v1
           def write(_key,_value); false; end # v1
-          def batch(commands); [false]*commands.size; end # v2
+          def batch_assert(commands); raise SaverException,"v2"; end
         end.new
     }
     assert_service_error {

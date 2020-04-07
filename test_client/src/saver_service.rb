@@ -24,6 +24,8 @@ class SaverService
     @http.get(__method__, {})
   end
 
+  # - - - - - - - - - - - -
+
   def create(key)
     @http.post(__method__, { key:key })
   end
@@ -44,8 +46,18 @@ class SaverService
     @http.get(__method__, { key:key })
   end
 
-  def batch(commands)
+  # - - - - - - - - - - - -
+  #assert
+  #run
+
+  def batch_assert(commands)
     @http.post(__method__, { commands:commands })
   end
 
+  def batch_run(commands)
+    @http.post(__method__, { commands:commands })
+  end
+
+  #batch_run_until_true
+  #batch_run_until_false
 end

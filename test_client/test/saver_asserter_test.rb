@@ -28,6 +28,7 @@ class SaverAsserterTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test '968',
   'saver_assert_batch(commands) raises SaverException when any command fails' do
     error = assert_raises(SaverException) {
@@ -49,5 +50,6 @@ class SaverAsserterTest < TestBase
       ['read','34/45/56/manifest.json']
     ])
   end
+=end
 
 end

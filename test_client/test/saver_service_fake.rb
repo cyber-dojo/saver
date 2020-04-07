@@ -63,7 +63,7 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch(commands)
+  def batch_run(commands)
     results = []
     commands.each do |command|
       name,*args = command
