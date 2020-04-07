@@ -23,23 +23,23 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def exists_command(key)
-    ['exists?',key]
+    [EXISTS_COMMAND_NAME,key]
   end
 
   def create_command(key)
-    ['create',key]
+    [CREATE_COMMAND_NAME,key]
   end
 
   def write_command(key,value)
-    ['write',key,value]
+    [WRITE_COMMAND_NAME,key,value]
   end
 
   def append_command(key,value)
-    ['append',key,value]
+    [APPEND_COMMAND_NAME,key,value]
   end
 
   def read_command(key)
-    ['read',key]
+    [READ_COMMAND_NAME,key]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -108,6 +108,7 @@ class Saver
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # primitives
 
   def assert(command)
     result = run(command)
@@ -121,15 +122,16 @@ class Saver
   def run(command)
     name,*args = command
     case name
-    when 'create'  then create(*args)
-    when 'exists?' then exists?(*args)
-    when 'write'   then write(*args)
-    when 'append'  then append(*args)
-    when 'read'    then read(*args)
+    when CREATE_COMMAND_NAME  then create(*args)
+    when EXISTS_COMMAND_NAME  then exists?(*args)
+    when WRITE_COMMAND_NAME   then write(*args)
+    when APPEND_COMMAND_NAME  then append(*args)
+    when READ_COMMAND_NAME    then read(*args)
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch-methods
 
   def batch_assert(commands)
     batch_run_until(commands) {|r,index|
@@ -154,6 +156,12 @@ class Saver
   end
 
   private
+
+  EXISTS_COMMAND_NAME = 'exists?'
+  CREATE_COMMAND_NAME = 'create'
+  WRITE_COMMAND_NAME  = 'write'
+  APPEND_COMMAND_NAME = 'append'
+  READ_COMMAND_NAME   = 'read'
 
   def batch_run_until(commands, &block)
     results = []
