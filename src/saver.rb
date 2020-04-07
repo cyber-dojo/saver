@@ -100,7 +100,7 @@ class Saver
   def batch_until_false(commands); batch_run_until_false(commands); end
 
   # TODO: make private
-  
+
   def exists?(key)
     Dir.exist?(path_name(key))
   end

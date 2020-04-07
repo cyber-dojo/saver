@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require_relative '../src/saver_service'
+require_relative '../src/saver_exception'
 
 class SaverServiceFake
 
@@ -46,7 +48,20 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # primitives
 
-  #def assert(command)
+  def assert(command)
+    result = run(command)
+    if result
+      result
+    else
+      message = {
+        path:'/assert',
+        body:{'command':command}.to_json,
+        class:'SaverService',
+        message:'command != true'
+      }.to_json
+      raise SaverException,message
+    end
+  end
 
   def run(command)
     name,*args = command
@@ -75,6 +90,15 @@ class SaverServiceFake
   # deprecated
 
   def exists?(key)
+    unless key.is_a?(String)
+      message = {
+        path:'/assert',
+        body:{'command':['exists?',key]}.to_json,
+        class:'SaverService',
+        message:'malformed:command:exists?-1!String (Integer):'
+      }.to_json
+      raise SaverException,message
+    end
     dir?(path_name(key))
   end
 

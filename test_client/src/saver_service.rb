@@ -49,7 +49,9 @@ class SaverService
   # - - - - - - - - - - - -
   # primitives
 
-  #assert(command)
+  def assert(command)
+    @http.post(__method__, { command:command })
+  end
 
   def run(command)
     @http.post(__method__, { command:command })
@@ -87,7 +89,7 @@ class SaverService
   end
 
   def read(filename)
-    @http.get(__method__, { key:filename })    
+    @http.get(__method__, { key:filename })
   end
 
   private

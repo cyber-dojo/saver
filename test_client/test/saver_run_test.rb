@@ -3,14 +3,14 @@ require_relative 'test_base'
 require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
 
-class SaverPrimitiveTest < TestBase
+class SaverRunTest < TestBase
 
   def self.hex_prefix
     '6AA'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : exists?(), create()
+  # exists?(), create()
 
   multi_test '431',
   'exists?(dirname) is false before create(dirname) and true after' do
@@ -28,7 +28,7 @@ class SaverPrimitiveTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : write()
+  # write()
 
   multi_test '640', %w(
     write(filename) succeeds
@@ -67,7 +67,7 @@ class SaverPrimitiveTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : append()
+  # append()
 
   multi_test '840', %w(
     append(filename,content) returns true and appends to the end of filename
@@ -107,7 +107,7 @@ class SaverPrimitiveTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : read()
+  # read()
 
   multi_test '437',
   'read(filename) reads what a successful write(filename,content) writes' do
