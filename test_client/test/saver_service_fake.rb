@@ -7,6 +7,8 @@ class SaverServiceFake
     @@files = {}
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def sha
     '71333653be9b1ca2c31f83810d4e6f128817deac'
   end
@@ -20,6 +22,50 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def exists_command(key)
+    [EXISTS_COMMAND_NAME,key]
+  end
+
+  def create_command(key)
+    [CREATE_COMMAND_NAME,key]
+  end
+
+  def write_command(key,value)
+    [WRITE_COMMAND_NAME,key,value]
+  end
+
+  def append_command(key,value)
+    [APPEND_COMMAND_NAME,key,value]
+  end
+
+  def read_command(key)
+    [READ_COMMAND_NAME,key]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # primitives
+
+  def run(command)
+    name,*args = command
+    case name
+    when 'create'  then create(*args)
+    when 'exists?' then exists?(*args)
+    when 'write'   then write(*args)
+    when 'append'  then append(*args)
+    when 'read'    then read(*args)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # batches
+
+  def batch_run(commands)
+    batch_run_until(commands) {|r| r === :never}
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # deprecated
 
   def exists?(key)
     dir?(path_name(key))
@@ -61,21 +107,22 @@ class SaverServiceFake
     @@files[path_name(key)] || false
   end
 
+  private
+
+  EXISTS_COMMAND_NAME = 'exists?'
+  CREATE_COMMAND_NAME = 'create'
+  WRITE_COMMAND_NAME  = 'write'
+  APPEND_COMMAND_NAME = 'append'
+  READ_COMMAND_NAME   = 'read'
+
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch_run(commands)
+  def batch_run_until(commands, &block)
     results = []
-    commands.each do |command|
-      name,*args = command
-      result = case name
-      when 'create'  then create(*args)
-      when 'exists?' then exists?(*args)
-      when 'write'   then write(*args)
-      when 'append'  then append(*args)
-      when 'read'    then read(*args)
-      #TODO: else raise...
-      end
+    commands.each.with_index(0) do |command,index|
+      result = run(command)
       results << result
+      break if block.call(result,index)
     end
     results
   end

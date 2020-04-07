@@ -163,6 +163,8 @@ class Saver
   APPEND_COMMAND_NAME = 'append'
   READ_COMMAND_NAME   = 'read'
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def batch_run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|

@@ -14,10 +14,6 @@ class SaverTest < TestBase
   REAL_TEST_MARK = '<real>'
   FAKE_TEST_MARK = '<fake>'
 
-  def fake_test?
-    test_name.start_with?(FAKE_TEST_MARK)
-  end
-
   def self.multi_test(hex_suffix, *lines, &block)
     real_lines = [REAL_TEST_MARK] + lines
     test(hex_suffix+'0', *real_lines, &block)
@@ -33,6 +29,10 @@ class SaverTest < TestBase
     else
       @saver ||= SaverService.new
     end
+  end
+
+  def fake_test?
+    test_name.start_with?(FAKE_TEST_MARK)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -63,36 +63,36 @@ class SaverTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?(), create()
+  # run : exists?(), create()
 
   multi_test '431',
   'exists?(k) is false before create(k) and true after' do
     dirname = 'client/34/f7/a8'
-    refute saver.exists?(dirname)
-    assert saver.create(dirname)
-    assert saver.exists?(dirname)
+    refute saver.run(saver.exists_command(dirname))
+    assert saver.run(saver.create_command(dirname))
+    assert saver.run(saver.exists_command(dirname))
   end
 
   multi_test '432',
   'create succeeds once and then fails' do
     dirname = 'client/r5/s7/03'
-    assert saver.create(dirname)
-    refute saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
+    refute saver.run(saver.create_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # write()
+  # run : write()
 
   multi_test '640', %w(
     write() succeeds
     when its dir-name exists and its file-name does not exist
   ) do
     dirname = 'client/32/fg/9j'
-    assert saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
-    assert saver.write(filename, content)
-    assert_equal content, saver.read(filename)
+    assert saver.run(saver.write_command(filename, content))
+    assert_equal content, saver.run(saver.read_command(filename))
   end
 
   multi_test '641', %w(
@@ -100,10 +100,10 @@ class SaverTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'client/5e/94/Aa'
-    # no saver.create(dirname)
+    # no saver.run(saver.create_command(dirname))
     filename = dirname + '/readme.md'
-    refute saver.write(filename, 'bonjour')
-    assert saver.read(filename).is_a?(FalseClass)
+    refute saver.run(saver.write_command(filename, 'bonjour'))
+    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
   end
 
   multi_test '642', %w(
@@ -111,29 +111,29 @@ class SaverTest < TestBase
     when its file-name already exists
   ) do
     dirname = 'client/73/Ff/69'
-    assert saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
     filename = dirname + '/readme.md'
     first_content = 'greetings'
-    assert saver.write(filename, first_content)
-    refute saver.write(filename, 'second-content')
-    assert_equal first_content, saver.read(filename)
+    assert saver.run(saver.write_command(filename, first_content))
+    refute saver.run(saver.write_command(filename, 'second-content'))
+    assert_equal first_content, saver.run(saver.read_command(filename))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # append()
+  # run : append()
 
   multi_test '840', %w(
     append() returns true and appends to the end of file-name
     when file-name already exists
   ) do
     dirname = 'client/69/1b/2B'
-    assert saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert saver.write(filename, content)
+    assert saver.run(saver.write_command(filename, content))
     more = 'some-more'
-    assert saver.append(filename, more)
-    assert_equal content+more, saver.read(filename)
+    assert saver.run(saver.append_command(filename, more))
+    assert_equal content+more, saver.run(saver.read_command(filename))
   end
 
   multi_test '841', %w(
@@ -141,10 +141,10 @@ class SaverTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'client/96/18/59'
-    # no saver.create(dirname)
+    # no saver.run(saver.create_command(dirname))
     filename = dirname + '/readme.md'
-    refute saver.append(filename, 'greetings')
-    assert saver.read(filename).is_a?(FalseClass)
+    refute saver.run(saver.append_command(filename, 'greetings'))
+    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
   end
 
   multi_test '842', %w(
@@ -152,68 +152,68 @@ class SaverTest < TestBase
     when its file-name does not already exist
   ) do
     dirname = 'client/96/18/59'
-    assert saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
     filename = dirname + '/hiker.h'
-    # no saver.write(filename, '...')
-    refute saver.append(filename, 'int main(void);')
-    assert saver.read(filename).is_a?(FalseClass)
+    # no saver.run(saver.write_command(filename, '...'))
+    refute saver.run(saver.append_command(filename, 'int main(void);'))
+    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # read()
+  # run : read()
 
   multi_test '437',
   'read() gives back what a successful write() accepts' do
     dirname = 'client/FD/F4/38'
-    assert saver.create(dirname)
+    assert saver.run(saver.create_command(dirname))
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert saver.write(filename, content)
-    assert_equal content, saver.read(filename)
+    assert saver.run(saver.write_command(filename, content))
+    assert_equal content, saver.run(saver.read_command(filename))
   end
 
   multi_test '438',
   'read() returns false given a non-existent file-name' do
     filename = 'client/1z/23/e4/not-there.txt'
-    assert saver.read(filename).is_a?(FalseClass)
+    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
   end
 
   multi_test '439',
   'read() returns false given an existing dir-name' do
     dirname = 'client/2f/7k/3P'
-    saver.create(dirname)
-    assert saver.read(dirname).is_a?(FalseClass)
+    saver.run(saver.create_command(dirname))
+    assert saver.run(saver.read_command(dirname)).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # batch_run()
 
   multi_test '514',
-  'batch_run() batches all other commands (except sha/ready/alive/itself)' do
+  'batch_run() batches exists/create/write/append/read commands' do
     expected = []
     commands = []
 
     dirname = 'client/e3/t6/A8'
-    commands << ['create',dirname]
+    commands << saver.create_command(dirname)
     expected << true
-    commands << ['exists?',dirname]
+    commands << saver.exists_command(dirname)
     expected << true
 
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
-    commands << ['write',there_yes,content]
+    commands << saver.write_command(there_yes,content)
     expected << true
-    commands << ['append',there_yes,content.reverse]
+    commands << saver.append_command(there_yes,content.reverse)
     expected << true
 
     there_not = dirname + '/there-not.txt'
-    commands << ['append',there_not,'nope']
+    commands << saver.append_command(there_not,'nope')
     expected << false
 
-    commands << ['read',there_yes]
+    commands << saver.read_command(there_yes)
     expected << content+content.reverse
 
-    commands << ['read',there_not]
+    commands << saver.read_command(there_not)
     expected << false
 
     result = saver.batch_run(commands)
@@ -227,12 +227,12 @@ class SaverTest < TestBase
     <real> create with non-string argument raises SaverException
   ) do
     error = assert_raises(SaverException) {
-      saver.create(42)
+      saver.run(saver.create_command(42))
     }
     json = JSON.parse(error.message)
-    assert_equal '/create', json['path']
+    assert_equal '/run', json['path']
     assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:key:!String (Integer):', json['message']
+    assert_equal 'malformed:command:create-1!String (Integer):', json['message']
   end
 
 end

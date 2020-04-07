@@ -26,29 +26,38 @@ class SaverService
 
   # - - - - - - - - - - - -
 
-  def create(key)
-    @http.post(__method__, { key:key })
+  def exists_command(key)
+    [EXISTS_COMMAND_NAME,key]
   end
 
-  def exists?(key)
-    @http.get(__method__, { key:key })
+  def create_command(key)
+    [CREATE_COMMAND_NAME,key]
   end
 
-  def write(key, value)
-    @http.post(__method__, { key:key, value:value })
+  def write_command(key,value)
+    [WRITE_COMMAND_NAME,key,value]
   end
 
-  def append(key, value)
-    @http.post(__method__, { key:key, value:value })
+  def append_command(key,value)
+    [APPEND_COMMAND_NAME,key,value]
   end
 
-  def read(key)
-    @http.get(__method__, { key:key })
+  def read_command(key)
+    [READ_COMMAND_NAME,key]
   end
 
   # - - - - - - - - - - - -
+  # primitives
+
   #assert(command)
-  #run(command)
+
+  def run(command)
+    @http.post(__method__, { command:command })
+  end
+
+  # - - - - - - - - - - - -
+  # batches
+
   #def batch_assert(commands)
 
   def batch_run(commands)
@@ -57,4 +66,22 @@ class SaverService
 
   #batch_run_until_true
   #batch_run_until_false
+
+  # - - - - - - - - - - - -
+  # deprecated
+
+  #exists?
+  #create
+  #write
+  #append
+  #read
+
+  private
+
+  EXISTS_COMMAND_NAME = 'exists?'
+  CREATE_COMMAND_NAME = 'create'
+  WRITE_COMMAND_NAME  = 'write'
+  APPEND_COMMAND_NAME = 'append'
+  READ_COMMAND_NAME   = 'read'
+
 end
