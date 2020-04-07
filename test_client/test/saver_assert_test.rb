@@ -97,7 +97,6 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   multi_test '569', %w(
   |create(dirname) raises
   |when dirname exists as a dir
@@ -121,7 +120,7 @@ class SaverAssertTest < TestBase
   |create(dirname) raises
   |when dirname exists as a file
   ) do
-    dirname = 'client/N5/s7/69'
+    dirname = 'client/N5/s7/70'
     assert create(dirname)
     filename = dirname + '/' + 'readme.me'
     content = '#readme'
@@ -131,12 +130,11 @@ class SaverAssertTest < TestBase
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'create',dirname ] }
+    expected_body = { 'command'=>[ 'create',filename ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
     assert_equal 'command != true', json['message'], :message
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 

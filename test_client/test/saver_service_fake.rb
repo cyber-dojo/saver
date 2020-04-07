@@ -89,7 +89,7 @@ class SaverServiceFake
   #def batch_run_until_false(commands)
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # deprecated
+  # TODO: make private
 
   def exists?(key)
     unless key.is_a?(String)
@@ -104,6 +104,8 @@ class SaverServiceFake
     dir?(path_name(key))
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def create(key)
     unless key.is_a?(String)
       message = {
@@ -114,10 +116,11 @@ class SaverServiceFake
       }.to_json
       raise SaverException,message
     end
-    if exists?(key)
+    path = path_name(key)
+    if dir?(path) || file?(path)
       false
     else
-      @@dirs[path_name(key)] = true
+      @@dirs[path] = true
     end
   end
 
@@ -132,6 +135,8 @@ class SaverServiceFake
       false
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(key, value)
     path = path_name(key)

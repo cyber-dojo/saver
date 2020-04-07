@@ -99,6 +99,7 @@ class Saver
   def batch_until_true(commands); batch_run_until_true(commands); end
   def batch_until_false(commands); batch_run_until_false(commands); end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: make private
 
   def exists?(key)
