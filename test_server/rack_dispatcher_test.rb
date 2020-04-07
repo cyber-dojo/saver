@@ -288,22 +288,22 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E49',
-  'dispatches to batch_until_true' do
-    saver_stub('batch_until_true')
-    assert_saver_dispatch('batch_until_true',
+  'dispatches to batch_run_until_true' do
+    saver_stub('batch_run_until_true')
+    assert_saver_dispatch('batch_run_until_true',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_until_true'
+      'hello from stubbed saver.batch_run_until_true'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E50',
-  'dispatches to batch_until_false' do
-    saver_stub('batch_until_false')
-    assert_saver_dispatch('batch_until_false',
+  'dispatches to batch_run_until_false' do
+    saver_stub('batch_run_until_false')
+    assert_saver_dispatch('batch_run_until_false',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_until_false'
+      'hello from stubbed saver.batch_run_until_false'
     )
   end
 

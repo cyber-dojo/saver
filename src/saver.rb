@@ -108,11 +108,11 @@ class Saver
     batch_run_until(commands) {|r| r === :never}
   end
 
-  def batch_until_true(commands) # TODO rename to batch_run_until_true
+  def batch_run_until_true(commands)
     batch_run_until(commands) {|r| r}
   end
 
-  def batch_until_false(commands) # TODO rename to batch_run_until_false
+  def batch_run_until_false(commands)
     batch_run_until(commands) {|r| !r}
   end
 
