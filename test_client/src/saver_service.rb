@@ -26,24 +26,24 @@ class SaverService
 
   # - - - - - - - - - - - -
 
-  def exists_command(key)
-    [EXISTS_COMMAND_NAME,key]
+  def exists_command(dirname)
+    [EXISTS_COMMAND_NAME,dirname]
   end
 
-  def create_command(key)
-    [CREATE_COMMAND_NAME,key]
+  def create_command(dirname)
+    [CREATE_COMMAND_NAME,dirname]
   end
 
-  def write_command(key,value)
-    [WRITE_COMMAND_NAME,key,value]
+  def write_command(filename,content)
+    [WRITE_COMMAND_NAME,filename,content]
   end
 
-  def append_command(key,value)
-    [APPEND_COMMAND_NAME,key,value]
+  def append_command(filename,content)
+    [APPEND_COMMAND_NAME,filename,content]
   end
 
-  def read_command(key)
-    [READ_COMMAND_NAME,key]
+  def read_command(filename)
+    [READ_COMMAND_NAME,filename]
   end
 
   # - - - - - - - - - - - -
@@ -70,11 +70,25 @@ class SaverService
   # - - - - - - - - - - - -
   # deprecated
 
-  #exists?
-  #create
-  #write
-  #append
-  #read
+  def exists?(dirname)
+    @http.get(__method__, { key:dirname })
+  end
+
+  def create(dirname)
+    @http.post(__method__, { key:dirname })
+  end
+
+  def write(filename, content)
+    @http.post(__method__, { key:filename, value:content })
+  end
+
+  def append(filename, content)
+    @http.post(__method__, { key:filename, value:content })
+  end
+
+  def read(filename)
+    @http.get(__method__, { key:filename })    
+  end
 
   private
 

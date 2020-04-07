@@ -46,6 +46,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # primitives
 
+  #def assert(command)
+
   def run(command)
     name,*args = command
     case name
@@ -60,9 +62,14 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
+  #def batch_assert(commands)
+
   def batch_run(commands)
     batch_run_until(commands) {|r| r === :never}
   end
+
+  #def batch_run_until_true(commands)
+  #def batch_run_until_false(commands)
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # deprecated
