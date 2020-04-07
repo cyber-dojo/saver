@@ -58,8 +58,8 @@ ready()
 wait_till_up()
 {
   local name="${1}"
-  local n=20
-  while [ $(( n -= 1 )) -ge 0 ]
+  local -r max_tries=20
+  for _ in $(seq ${max_tries})
   do
     if docker ps --filter status=running --format '{{.Names}}' | grep -q ^${name}$ ; then
       return
@@ -69,7 +69,7 @@ wait_till_up()
   done
   echo "${name} not up after ${max_tries} tries"
   docker logs "${name}"
-  exit 1
+  exit 42
 }
 
 # - - - - - - - - - - - - - - - - - - -

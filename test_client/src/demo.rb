@@ -1,5 +1,5 @@
 require_relative 'saver_service'
-require_relative 'starter'
+#require_relative 'starter'
 
 class Demo
 

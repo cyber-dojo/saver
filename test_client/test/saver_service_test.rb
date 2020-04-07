@@ -100,7 +100,7 @@ class SaverTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'client/5e/94/Aa'
-    # saver.create(dirname) # missing
+    # no saver.create(dirname)
     filename = dirname + '/readme.md'
     refute saver.write(filename, 'bonjour')
     assert saver.read(filename).is_a?(FalseClass)
@@ -141,7 +141,7 @@ class SaverTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'client/96/18/59'
-    # saver.create(dirname) # missing
+    # no saver.create(dirname)
     filename = dirname + '/readme.md'
     refute saver.append(filename, 'greetings')
     assert saver.read(filename).is_a?(FalseClass)
@@ -154,7 +154,7 @@ class SaverTest < TestBase
     dirname = 'client/96/18/59'
     assert saver.create(dirname)
     filename = dirname + '/hiker.h'
-    # saver.write(filename, '...') # missing
+    # no saver.write(filename, '...')
     refute saver.append(filename, 'int main(void);')
     assert saver.read(filename).is_a?(FalseClass)
   end
