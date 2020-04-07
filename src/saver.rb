@@ -43,6 +43,9 @@ class Saver
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # deprecated
+
+  def batch(command); batch_run(command); end
 
   def exists?(key)
     Dir.exist?(path_name(key))
@@ -126,7 +129,7 @@ class Saver
     }
   end
 
-  def batch_run(commands) # renamed from batch to batch_run
+  def batch_run(commands)
     batch_run_until(commands) {|r| r === :never}
   end
 

@@ -13,6 +13,8 @@ class SaverBatchTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch_run
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '314',
   'batch_run() runs all its commands, not stopping when any return false' do
@@ -311,6 +313,26 @@ class SaverBatchTest < TestBase
 
     assert_batch_run_until_true
     refute saver.read(dirname + '/4.event.json'), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # DEPRECATED
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '934', %w( support batch till switched to batch_run ) do
+    dirname = 'batch/e3/t9/34'
+    command(true, create_command(dirname))
+    command(true, exists_command(dirname))
+    there_no = dirname + '/there-not.txt'
+    command(false, read_command(there_no))
+    there_yes = dirname + '/there-yes.txt'
+    content = 'tulchan spey beat'
+    command(true, write_command(there_yes, content))
+    command(true, append_command(there_yes, content.reverse))
+    command(content+content.reverse, read_command(there_yes))
+    command(false, read_command(there_no))
+    result = saver.batch(@commands)
+    assert_equal @expected, result
   end
 
   private

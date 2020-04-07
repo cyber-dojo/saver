@@ -243,6 +243,13 @@ class HttpJsonArgsTest < TestBase
     assert_equal 'malformed:commands[0]:write-2!String (NilClass):', error.message
   end
 
+  test 'E69',
+  'support batch() till switched to batch_run' do
+    commands = [['write','a/b/c',nil]]
+    error = assert_batch_raises(commands)
+    assert_equal 'malformed:commands[0]:write-2!String (NilClass):', error.message
+  end
+
   private
 
   def assert_assert_raises(command)
@@ -255,6 +262,12 @@ class HttpJsonArgsTest < TestBase
     json = { "commands":commands }.to_json
     args = HttpJsonArgs.new(json)
     assert_raises { args.get('/batch_run', externals) }
+  end
+
+  def assert_batch_raises(commands)
+    json = { "commands":commands }.to_json
+    args = HttpJsonArgs.new(json)
+    assert_raises { args.get('/batch', externals) }
   end
 
 end
