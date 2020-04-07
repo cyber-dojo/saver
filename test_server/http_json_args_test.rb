@@ -114,6 +114,13 @@ class HttpJsonArgsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # get:command
 
+  test 'C50',
+  'command: get() raises when it is missing' do
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    error = assert_raises { args.get('/run', externals) }
+    assert_equal 'missing:command:', error.message
+  end
+
   test 'C51',
   'command: get() raises when it is missing' do
     args = HttpJsonArgs.new('{"key":"a/b/c"}')
