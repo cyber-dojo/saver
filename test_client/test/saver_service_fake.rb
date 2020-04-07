@@ -127,6 +127,26 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
+    unless key.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':['write',key,value]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:write-2!String (#{key.class.name}):"
+      }.to_json
+      raise SaverException,message
+    end
+
+    unless value.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':['write',key,value]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:write-2!String (#{value.class.name}):"
+      }.to_json
+      raise SaverException,message
+    end
+
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = value

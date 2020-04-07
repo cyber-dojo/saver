@@ -66,7 +66,9 @@ class SaverRunTest < TestBase
   # create()
 
   multi_test '5E0', %w(
-  |create(dirname) returns true the first time
+  |create(dirname) returns true
+  |when dirname is a String
+  |and a dir with that name does not exist
   ) do
     dirname = 'client/r5/sE/34'
     assert create(dirname)
@@ -75,11 +77,44 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '5E1', %w(
-  |create(dirname) returns false the second time
+  |create(dirname) returns false
+  |when dirname is a String
+  |and a dir with that name exists
   ) do
     dirname = 'client/r5/sE/35'
     assert create(dirname)
     refute create(dirname)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '5E2', %w(
+  |create(dirname) returns false
+  |when dirname is a String
+  |and a file with that name exists
+  ) do
+    dirname = 'client/r5/s5/E2'
+    assert create(dirname)
+    filename = dirname + '/' + 'manifest.json'
+    content = '{"display_name":"Java, JUnit"}'
+    assert write(filename, content)
+    refute create(filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '5E3', %w(
+  |create(dirname) raises
+  |when dirname is not a String
+  ) do
+    dirname = {"a"=>42}
+    error = assert_raises(SaverException) { create(dirname) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'create',dirname ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:create-1!String (Hash):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,6 +159,56 @@ class SaverRunTest < TestBase
     assert write(filename, first_content)
     refute write(filename, 'second-content')
     assert_equal first_content, read(filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '643', %w(
+  |write(filename,content) fails
+  |when filename is a dir
+  ) do
+    dirname = 'client/43/Ff/69'
+    assert create(dirname)
+    content = 'greetings'
+    refute write(dirname, content)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '644', %w(
+  |write(filename,content) raises
+  |when filename is a not a String
+  ) do
+    dirname = 'client/qZ/Ff/69'
+    assert create(dirname)
+    filename = nil
+    content = 'greetings'
+    error = assert_raises(SaverException) { write(filename, content) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'write',filename,content ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:write-2!String (NilClass):', json['message'], :message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '645', %w(
+  |write(filename,content) raises
+  |when content is a not a String
+  ) do
+    dirname = 'client/44/Ff/69'
+    assert create(dirname)
+    filename = dirname + '/' + 'manifest.json'
+    content = 4.5
+    error = assert_raises(SaverException) { write(filename, content) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'write',filename,content ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:write-2!String (Float):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
