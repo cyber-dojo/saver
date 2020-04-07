@@ -97,7 +97,7 @@ class SaverServiceFake
         path:"/#{@origin}",
         body:{'command':['exists?',key]}.to_json,
         class:'SaverService',
-        message:"malformed:command:exists?-1!String (#{key.class.name}):"
+        message:"malformed:command:exists?(key!=String):"
       }.to_json
       raise SaverException,message
     end
@@ -112,7 +112,7 @@ class SaverServiceFake
         path:"/#{@origin}",
         body:{'command':['create',key]}.to_json,
         class:'SaverService',
-        message:"malformed:command:create-1!String (#{key.class.name}):"
+        message:"malformed:command:create(key!=String):"
       }.to_json
       raise SaverException,message
     end
@@ -132,7 +132,7 @@ class SaverServiceFake
         path:"/#{@origin}",
         body:{'command':['write',key,value]}.to_json,
         class:'SaverService',
-        message:"malformed:command:write-2!String (#{key.class.name}):"
+        message:"malformed:command:write(key!=String):"
       }.to_json
       raise SaverException,message
     end
@@ -142,7 +142,7 @@ class SaverServiceFake
         path:"/#{@origin}",
         body:{'command':['write',key,value]}.to_json,
         class:'SaverService',
-        message:"malformed:command:write-2!String (#{value.class.name}):"
+        message:"malformed:command:write(value!=String):"
       }.to_json
       raise SaverException,message
     end

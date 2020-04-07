@@ -147,8 +147,8 @@ class RackDispatcherTest < TestBase
       ['{"commands":[42]}', 'malformed:commands[0]:!Array (Integer):'],
       ['{"commands":[[true]]}', 'malformed:commands[0][0]:!String (TrueClass):'],
       ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
-      ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!1 (3):'],
-      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read-1!String (Float):']
+      ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!3:'],
+      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read(key!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('batch_run', json, 400, error_message)
     end
@@ -171,8 +171,8 @@ class RackDispatcherTest < TestBase
       ['{"command":42}', 'malformed:command:!Array (Integer):'],
       ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],
       ['{"command":["xxx"]}', 'malformed:command:Unknown (xxx):'],
-      ['{"command":["read",1,2,3]}', 'malformed:command:read!1 (3):'],
-      ['{"command":["read",2.9]}', 'malformed:command:read-1!String (Float):']
+      ['{"command":["read",1,2,3]}', 'malformed:command:read!3:'],
+      ['{"command":["read",2.9]}', 'malformed:command:read(key!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('assert', json, 400, error_message)
     end

@@ -149,12 +149,14 @@ class HttpJsonArgs
   def fail_unless_well_formed_args(command,index,arity)
     name,*args = command
     unless args.size === arity
-      fail malformed("command#{index}", "#{name}!#{arity} (#{args.size})")
+      fail malformed("command#{index}", "#{name}!#{args.size}")
     end
+    args_names = [ 'key', 'value' ]
     arity.times do |n|
       arg = args[n]
+      arg_name = args_names[n]
       unless arg.is_a?(String)
-        fail malformed("command#{index}", "#{name}-#{arity}!String (#{arg.class.name})")
+        fail malformed("command#{index}", "#{name}(#{arg_name}!=String)")
       end
     end
   end

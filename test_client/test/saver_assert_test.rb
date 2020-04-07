@@ -80,7 +80,7 @@ class SaverAssertTest < TestBase
     expected_body = { 'command'=>[ 'exists?',dirname ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:exists?-1!String (Integer):', json['message'], :message
+    assert_equal 'malformed:command:exists?(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -152,7 +152,7 @@ class SaverAssertTest < TestBase
     expected_body = { 'command'=>[ 'create',dirname ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:create-1!String (TrueClass):', json['message'], :message
+    assert_equal 'malformed:command:create(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

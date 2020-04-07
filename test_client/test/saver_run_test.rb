@@ -59,7 +59,7 @@ class SaverRunTest < TestBase
     expected_body = { 'command'=>[ 'exists?',dirname ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:exists?-1!String (Array):', json['message'], :message
+    assert_equal 'malformed:command:exists?(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -114,7 +114,7 @@ class SaverRunTest < TestBase
     expected_body = { 'command'=>[ 'create',dirname ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:create-1!String (Hash):', json['message'], :message
+    assert_equal 'malformed:command:create(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -189,7 +189,7 @@ class SaverRunTest < TestBase
     expected_body = { 'command'=>[ 'write',filename,content ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:write-2!String (NilClass):', json['message'], :message
+    assert_equal 'malformed:command:write(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -208,7 +208,7 @@ class SaverRunTest < TestBase
     expected_body = { 'command'=>[ 'write',filename,content ] }
     assert_equal expected_body, JSON.parse!(json['body']), :body
     assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:write-2!String (Float):', json['message'], :message
+    assert_equal 'malformed:command:write(value!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

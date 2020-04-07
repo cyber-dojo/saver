@@ -146,21 +146,21 @@ class HttpJsonArgsTest < TestBase
   'command: get() raises when create-command does not have one argument' do
     command = ['create']
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:create!1 (0):', error.message
+    assert_equal 'malformed:command:create!0:', error.message
   end
 
   test 'C63',
   'command: get() raises when any 1st argument is not a string' do
     command = ['read',42]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:read-1!String (Integer):', error.message
+    assert_equal 'malformed:command:read(key!=String):', error.message
   end
 
   test 'C64',
   'command: get() raises when any 2nd argument is not a string' do
     command = ['write','a/b/c',nil]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:write-2!String (NilClass):', error.message
+    assert_equal 'malformed:command:write(value!=String):', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -205,56 +205,56 @@ class HttpJsonArgsTest < TestBase
   'commands[i]: get() raises when create-command does not have one argument' do
     commands = [['create']]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:create!1 (0):', error.message
+    assert_equal 'malformed:commands[0]:create!0:', error.message
   end
 
   test 'B59',
   'commands[i]: get() raises when exists-command does not have one argument' do
     commands = [['exists?','a','b','c']]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:exists?!1 (3):', error.message
+    assert_equal 'malformed:commands[0]:exists?!3:', error.message
   end
 
   test 'B60',
   'commands[i]: get() raises when write-command does not have two arguments' do
     commands = [['write','a','b','c','d']]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:write!2 (4):', error.message
+    assert_equal 'malformed:commands[0]:write!4:', error.message
   end
 
   test 'B61',
   'commands[i]: get() raises when append-command does not have two arguments' do
     commands = [['append','a']]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:append!2 (1):', error.message
+    assert_equal 'malformed:commands[0]:append!1:', error.message
   end
 
   test 'B62',
   'commands[i]: get() raises when read-command does not have one argument' do
     commands = [['read']]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:read!1 (0):', error.message
+    assert_equal 'malformed:commands[0]:read!0:', error.message
   end
 
   test 'B63',
   'commands[i]: get() raises when any 1st argument is not a string' do
     commands = [['read',42]]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:read-1!String (Integer):', error.message
+    assert_equal 'malformed:commands[0]:read(key!=String):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
     commands = [['write','a/b/c',nil]]
     error = assert_batch_run_raises(commands)
-    assert_equal 'malformed:commands[0]:write-2!String (NilClass):', error.message
+    assert_equal 'malformed:commands[0]:write(value!=String):', error.message
   end
 
   test 'E69',
   'support batch() till switched to batch_run' do
     commands = [['write','a/b/c',nil]]
     error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:write-2!String (NilClass):', error.message
+    assert_equal 'malformed:commands[0]:write(value!=String):', error.message
   end
 
   private
