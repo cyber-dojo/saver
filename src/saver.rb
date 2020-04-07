@@ -118,8 +118,11 @@ class Saver
     end
   end
 
-  #def run(command)
-  #end
+  def run(command)
+    execute(command)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def batch_assert(commands)
     batch_run_until(commands) {|r,index|
