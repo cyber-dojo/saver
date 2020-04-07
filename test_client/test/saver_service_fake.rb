@@ -49,12 +49,13 @@ class SaverServiceFake
   # primitives
 
   def assert(command)
+    @origin = 'assert'
     result = run(command)
     if result
       result
     else
       message = {
-        path:'/assert',
+        path:"/#{@origin}",
         body:{'command':command}.to_json,
         class:'SaverService',
         message:'command != true'
@@ -64,6 +65,7 @@ class SaverServiceFake
   end
 
   def run(command)
+    @origin ||= 'run'
     name,*args = command
     case name
     when 'create'  then create(*args)
@@ -92,7 +94,7 @@ class SaverServiceFake
   def exists?(key)
     unless key.is_a?(String)
       message = {
-        path:'/assert',
+        path:"/#{@origin}",
         body:{'command':['exists?',key]}.to_json,
         class:'SaverService',
         message:"malformed:command:exists?-1!String (#{key.class.name}):"
@@ -105,7 +107,7 @@ class SaverServiceFake
   def create(key)
     unless key.is_a?(String)
       message = {
-        path:'/assert',
+        path:"/#{@origin}",
         body:{'command':['create',key]}.to_json,
         class:'SaverService',
         message:"malformed:command:create-1!String (#{key.class.name}):"

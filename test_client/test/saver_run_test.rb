@@ -10,19 +10,74 @@ class SaverRunTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?(), create()
+  # exists?()
 
-  multi_test '431',
-  'exists?(dirname) is false before create(dirname) and true after' do
+  multi_test '431', %w(
+  |exists?(dirname) is false
+  |before create(dirname)
+  ) do
     dirname = 'client/34/f7/a8'
     refute exists?(dirname)
+    assert create(dirname)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '432', %w(
+  |exists?(dirname) is true
+  |after create(dirname)
+  ) do
+    dirname = 'client/34/f7/a9'
     assert create(dirname)
     assert exists?(dirname)
   end
 
-  multi_test '432',
-  'create(dirname) succeeds once and then fails' do
-    dirname = 'client/r5/s7/03'
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '433', %w(
+  |exists?(dirname) is false
+  |when dirname is an existing filename
+  ) do
+    dirname = 'client/r5/s7/04'
+    assert create(dirname)
+    filename = dirname + '/' + 'readme.txt'
+    content = 'hello world'
+    assert write(filename, content)
+    refute exists?(filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '434', %w(
+  |exists?(dirname) raises
+  |when dirname is not a String
+  ) do
+    dirname = [2]
+    error = assert_raises(SaverException) { exists?(dirname) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'exists?',dirname ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:exists?-1!String (Array):', json['message'], :message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # create()
+
+  multi_test '5E0', %w(
+  |create(dirname) returns true the first time
+  ) do
+    dirname = 'client/r5/sE/34'
+    assert create(dirname)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '5E1', %w(
+  |create(dirname) returns false the second time
+  ) do
+    dirname = 'client/r5/sE/35'
     assert create(dirname)
     refute create(dirname)
   end
@@ -31,8 +86,9 @@ class SaverRunTest < TestBase
   # write()
 
   multi_test '640', %w(
-    write(filename) succeeds
-    when its dir of filename exists and filename does not exist
+  |write(filename,content) succeeds
+  |when its dir exists
+  |and its file does not exist
   ) do
     dirname = 'client/32/fg/9j'
     assert create(dirname)
@@ -42,9 +98,11 @@ class SaverRunTest < TestBase
     assert_equal content, read(filename)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
   multi_test '641', %w(
-    write(filename) fails
-    when its dir of filename does not already exist
+  |write(filename,content) fails
+  |when its dir does not already exist
   ) do
     dirname = 'client/5e/94/Aa'
     # no create(dirname)
@@ -53,9 +111,11 @@ class SaverRunTest < TestBase
     assert read(filename).is_a?(FalseClass)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
   multi_test '642', %w(
-    write(filename,content) fails
-    when filename already exists
+  |write(filename,content) fails
+  |when filename already exists
   ) do
     dirname = 'client/73/Ff/69'
     assert create(dirname)
@@ -70,8 +130,9 @@ class SaverRunTest < TestBase
   # append()
 
   multi_test '840', %w(
-    append(filename,content) returns true and appends to the end of filename
-    when filename already exists
+  |append(filename,content) returns true
+  |and appends to the end of filename
+  |when filename already exists as a file
   ) do
     dirname = 'client/69/1b/2B'
     assert create(dirname)
@@ -83,9 +144,28 @@ class SaverRunTest < TestBase
     assert_equal content+more, read(filename)
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+=begin
   multi_test '841', %w(
-    append(filename,content) returns false and does nothing
-    when its dir of filename does not already exist
+  |append(filename,content) returns false
+  |and does nothing
+  |when filename already exists as a dir
+  ) do
+    dirname = 'client/69/1b/2C'
+    assert create(dirname)
+    content = 'helloooo'
+    refute append(dirname, content)
+    refute read(dirname)
+  end
+=end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '842', %w(
+  |append(filename,content) returns false
+  |and does nothing
+  |when its dir does not already exist
   ) do
     dirname = 'client/96/18/59'
     # no create(dirname)
@@ -94,9 +174,12 @@ class SaverRunTest < TestBase
     assert read(filename).is_a?(FalseClass)
   end
 
-  multi_test '842', %w(
-    append(filename,content) does nothing and returns false
-    when dir of filenme exists and filename does not exist
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '843', %w(
+  |append(filename,content) does nothing
+  |and returns false
+  |when its dir exists and its file does not exist
   ) do
     dirname = 'client/96/18/59'
     assert create(dirname)
@@ -109,8 +192,9 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # read()
 
-  multi_test '437',
-  'read(filename) reads what a successful write(filename,content) writes' do
+  multi_test '437', %w(
+  |read(filename) reads what a successful write(filename,content) writes
+  ) do
     dirname = 'client/FD/F4/38'
     assert create(dirname)
     filename = dirname + '/limerick.txt'
@@ -119,14 +203,18 @@ class SaverRunTest < TestBase
     assert_equal content, read(filename)
   end
 
-  multi_test '438',
-  'read() returns false given a non-existent file-name' do
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '438', %w(
+  |read(filename) returns false given a non-existent filename
+  ) do
     filename = 'client/1z/23/e4/not-there.txt'
     assert read(filename).is_a?(FalseClass)
   end
 
-  multi_test '439',
-  'read(filename) returns false given an existing dirname' do
+  multi_test '439', %w(
+  |read(filename) returns false given an existing dirname
+  ) do
     dirname = 'client/2f/7k/3P'
     create(dirname)
     assert read(dirname).is_a?(FalseClass)

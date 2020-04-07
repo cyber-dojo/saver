@@ -12,8 +12,11 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # exists?()
 
-  multi_test '431',
-  'exists?(dirname) is true when dirname exists' do
+  multi_test '431', %w(
+  |exists?(dirname) is true
+  |when dirname is a String
+  |and dirname exists as a dir
+  ) do
     dirname = 'client/N4/f4/31'
     assert create(dirname)
     assert exists?(dirname)
@@ -21,8 +24,11 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '432',
-  'exists?(dirname) raises when dirname does not exist' do
+  multi_test '432', %w(
+  |exists?(dirname) raises
+  |when dirname does not exist
+  |either as a dir or as a file
+  ) do
     dirname = 'client/N5/s4/32'
     error = assert_raises(SaverException) {
       exists?(dirname)
@@ -37,8 +43,34 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '433',
-  'exists?(dirname) raises when dirname is not a string' do
+  multi_test '433', %w(
+  |exists?(dirname) raises
+  |when dirname exists as a file
+  ) do
+    dirname = 'client/N5/s4/33'
+    assert create(dirname)
+    filename = dirname + '/' + 'readme.txt'
+    content = 'hello world'
+    assert write(filename, content)
+
+    error = assert_raises(SaverException) {
+      exists?(filename)
+    }
+
+    json = JSON.parse!(error.message)
+    assert_equal '/assert', json['path'], :path
+    expected_body = { 'command'=>[ 'exists?',filename ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'command != true', json['message'], :message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '434', %w(
+  |exists?(dirname) raises
+  |when dirname is not a String
+  ) do
     dirname = 42
     error = assert_raises(SaverException) {
       exists?(dirname)
@@ -54,16 +86,22 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # create()
 
-  multi_test '568',
-  'create(dirname) is true when dirname did not previously exist' do
+  multi_test '568', %w(
+  |create(dirname) is true when dirname is a String
+  |and dirname does not already exist
+  |either as a dir or as a file
+  ) do
     dirname = 'client/N5/s7/68'
     assert create(dirname)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '569',
-  'create(dirname) raises when dirname exists' do
+=begin
+  multi_test '569', %w(
+  |create(dirname) raises
+  |when dirname exists as a dir
+  ) do
     dirname = 'client/N5/s7/69'
     assert create(dirname)
     error = assert_raises(SaverException) {
@@ -79,8 +117,33 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '570',
-  'create(dirname) raises when dirname is not a string' do
+  multi_test '570', %w(
+  |create(dirname) raises
+  |when dirname exists as a file
+  ) do
+    dirname = 'client/N5/s7/69'
+    assert create(dirname)
+    filename = dirname + '/' + 'readme.me'
+    content = '#readme'
+    assert write(filename, content)
+    error = assert_raises(SaverException) {
+      create(filename)
+    }
+    json = JSON.parse!(error.message)
+    assert_equal '/assert', json['path'], :path
+    expected_body = { 'command'=>[ 'create',dirname ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'command != true', json['message'], :message
+  end
+=end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '571', %w(
+  |create(dirname) raises
+  |when dirname is not a String
+  ) do
     dirname = true
     error = assert_raises(SaverException) {
       create(dirname)
@@ -97,10 +160,10 @@ class SaverAssertTest < TestBase
   # write()
 
   multi_test '2E8', %w(
-  write(filename,content) is true when
-  filename is a string naming a dir that exists
-  filename is a string naming a file that does not exist
-  content is a string
+  |write(filename,content) is true when
+  |filename is a String naming a dir that exists
+  |filename is a String naming a file that does not exist
+  |content is a String
   ) do
     dirname = 'client/N5/s2/E8'
     assert create(dirname)
