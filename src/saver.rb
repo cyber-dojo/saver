@@ -122,11 +122,11 @@ class Saver
   def run(command)
     name,*args = command
     case name
-    when CREATE_COMMAND_NAME  then create(*args)
-    when EXISTS_COMMAND_NAME  then exists?(*args)
-    when WRITE_COMMAND_NAME   then write(*args)
-    when APPEND_COMMAND_NAME  then append(*args)
-    when READ_COMMAND_NAME    then read(*args)
+    when CREATE_COMMAND_NAME then create(*args)
+    when EXISTS_COMMAND_NAME then exists?(*args)
+    when WRITE_COMMAND_NAME  then write(*args)
+    when APPEND_COMMAND_NAME then append(*args)
+    when READ_COMMAND_NAME   then read(*args)
     end
   end
 
