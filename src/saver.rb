@@ -110,7 +110,7 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert(command)
-    result = execute(command)
+    result = run(command)
     if result
       result
     else
@@ -119,7 +119,14 @@ class Saver
   end
 
   def run(command)
-    execute(command)
+    name,*args = command
+    case name
+    when 'create'  then create(*args)
+    when 'exists?' then exists?(*args)
+    when 'write'   then write(*args)
+    when 'append'  then append(*args)
+    when 'read'    then read(*args)
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -148,23 +155,10 @@ class Saver
 
   private
 
-  def execute(command)
-    name,*args = command
-    case name
-    when 'create'  then create(*args)
-    when 'exists?' then exists?(*args)
-    when 'write'   then write(*args)
-    when 'append'  then append(*args)
-    when 'read'    then read(*args)
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def batch_run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
-      result = execute(command)
+      result = run(command)
       results << result
       break if block.call(result,index)
     end
