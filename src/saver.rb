@@ -22,6 +22,28 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def exists_command(key)
+    ['exists?',key]
+  end
+
+  def create_command(key)
+    ['create',key]
+  end
+
+  def write_command(key,value)
+    ['write',key,value]
+  end
+
+  def append_command(key,value)
+    ['append',key,value]
+  end
+
+  def read_command(key)
+    ['read',key]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def exists?(key)
     Dir.exist?(path_name(key))
   end

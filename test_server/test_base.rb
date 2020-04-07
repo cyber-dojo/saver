@@ -15,4 +15,24 @@ class TestBase < HexMiniTest
     externals.saver
   end
 
+  def exists_command(key)
+    saver.exists_command(key)
+  end
+
+  def create_command(key)
+    saver.create_command(key)
+  end
+
+  def write_command(key, value)
+    saver.write_command(key, value)
+  end
+
+  def append_command(key, value)
+    saver.append_command(key, value)
+  end
+
+  def read_command(key)
+    saver.read_command(key)
+  end
+
 end

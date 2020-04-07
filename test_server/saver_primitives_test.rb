@@ -45,7 +45,7 @@ class SaverPrimitivesTest < TestBase
     when its dir-name does not already exist
   ) do
     dirname = 'groups/5e/94/Aa'
-    # saver.create(dirname) # missing
+    # no saver.create(dirname)
     filename = dirname + '/readme.md'
     refute saver.write(filename, 'bonjour')
     assert saver.read(filename).is_a?(FalseClass)
