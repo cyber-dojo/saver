@@ -26,8 +26,8 @@ class SaverAssertTest < TestBase
 
   multi_test '432', %w(
   |exists?(dirname) raises
-  |when dirname does not exist
-  |either as a dir or as a file
+  |when dirname does not exist as a dir
+  |and dirname does not exist as a file
   ) do
     dirname = 'client/N5/s4/32'
     error = assert_raises(SaverException) {
@@ -87,9 +87,10 @@ class SaverAssertTest < TestBase
   # create()
 
   multi_test '568', %w(
-  |create(dirname) is true when dirname is a String
-  |and dirname does not already exist
-  |either as a dir or as a file
+  |create(dirname) is true
+  |when dirname is a String
+  |and dirname does not exist as a dir
+  |and dirname does not exist as a file
   ) do
     dirname = 'client/N5/s7/68'
     assert create(dirname)
@@ -158,10 +159,10 @@ class SaverAssertTest < TestBase
   # write()
 
   multi_test '2E8', %w(
-  |write(filename,content) is true when
-  |filename is a String naming a dir that exists
-  |filename is a String naming a file that does not exist
-  |content is a String
+  |write(filename,content) is true
+  |when filename is a String naming a dir that exists
+  |and filename is a String naming a file that does not exist
+  |and content is a String
   ) do
     dirname = 'client/N5/s2/E8'
     assert create(dirname)
@@ -274,19 +275,6 @@ class SaverAssertTest < TestBase
     dirname = 'client/2f/7k/3P'
     create(dirname)
     assert read(dirname).is_a?(FalseClass)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: <real> and <fake> fail "identically"...
-
-  test '514', %w(
-    <real> create with non-string argument raises SaverException
-  ) do
-    error = assert_raises(SaverException) { create(42) }
-    json = JSON.parse(error.message)
-    assert_equal '/run', json['path']
-    assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:command:create-1!String (Integer):', json['message']
   end
 =end
 

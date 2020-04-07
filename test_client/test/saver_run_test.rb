@@ -66,7 +66,7 @@ class SaverRunTest < TestBase
   # create()
 
   multi_test '5E0', %w(
-  |create(dirname) returns true
+  |create(dirname) is true
   |when dirname is a String
   |and a dir with that name does not exist
   ) do
@@ -77,7 +77,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '5E1', %w(
-  |create(dirname) returns false
+  |create(dirname) is false
   |when dirname is a String
   |and a dir with that name exists
   ) do
@@ -89,7 +89,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '5E2', %w(
-  |create(dirname) returns false
+  |create(dirname) is false
   |when dirname is a String
   |and a file with that name exists
   ) do
@@ -121,7 +121,7 @@ class SaverRunTest < TestBase
   # write()
 
   multi_test '640', %w(
-  |write(filename,content) succeeds
+  |write(filename,content) is true
   |when its dir exists
   |and its file does not exist
   ) do
@@ -136,7 +136,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '641', %w(
-  |write(filename,content) fails
+  |write(filename,content) is false
   |when its dir does not already exist
   ) do
     dirname = 'client/5e/94/Aa'
@@ -149,7 +149,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '642', %w(
-  |write(filename,content) fails
+  |write(filename,content) is false
   |when filename already exists
   ) do
     dirname = 'client/73/Ff/69'
@@ -164,7 +164,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '643', %w(
-  |write(filename,content) fails
+  |write(filename,content) is false
   |when filename is a dir
   ) do
     dirname = 'client/43/Ff/69'
@@ -301,19 +301,6 @@ class SaverRunTest < TestBase
     dirname = 'client/2f/7k/3P'
     create(dirname)
     assert read(dirname).is_a?(FalseClass)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: <real> and <fake> fail "identically"...
-
-  test '514', %w(
-    <real> create with non-string argument raises SaverException
-  ) do
-    error = assert_raises(SaverException) { create(42) }
-    json = JSON.parse(error.message)
-    assert_equal '/run', json['path']
-    assert_equal 'SaverService', json['class']
-    assert_equal 'malformed:command:create-1!String (Integer):', json['message']
   end
 
   private
