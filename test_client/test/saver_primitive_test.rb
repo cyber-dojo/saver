@@ -3,63 +3,10 @@ require_relative 'test_base'
 require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
 
-class SaverTest < TestBase
+class SaverPrimitiveTest < TestBase
 
   def self.hex_prefix
     '6AA'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  REAL_TEST_MARK = '<real>'
-  FAKE_TEST_MARK = '<fake>'
-
-  def self.multi_test(hex_suffix, *lines, &block)
-    real_lines = [REAL_TEST_MARK] + lines
-    test(hex_suffix+'0', *real_lines, &block)
-    fake_lines = [FAKE_TEST_MARK] + lines
-    test(hex_suffix+'1', *fake_lines, &block)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def saver
-    if fake_test?
-      @saver ||= SaverServiceFake.new
-    else
-      @saver ||= SaverService.new
-    end
-  end
-
-  def fake_test?
-    test_name.start_with?(FAKE_TEST_MARK)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # sha
-
-  multi_test '190', %w( sha is sha of image's git commit ) do
-    sha = saver.sha
-    assert_equal 40, sha.size
-    sha.each_char do |ch|
-      assert '0123456789abcdef'.include?(ch)
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready?
-
-  multi_test '602',
-  %w( ready? is always true ) do
-    assert saver.ready?
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # alive?
-
-  multi_test '603',
-  %w( alive? is always true ) do
-    assert saver.alive?
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -175,7 +122,7 @@ class SaverTest < TestBase
   multi_test '438',
   'read() returns false given a non-existent file-name' do
     filename = 'client/1z/23/e4/not-there.txt'
-    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
+    assert read(filename).is_a?(FalseClass)
   end
 
   multi_test '439',
@@ -183,41 +130,6 @@ class SaverTest < TestBase
     dirname = 'client/2f/7k/3P'
     create(dirname)
     assert read(dirname).is_a?(FalseClass)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_run()
-
-  multi_test '514',
-  'batch_run() batches exists/create/write/append/read commands' do
-    expected = []
-    commands = []
-
-    dirname = 'client/e3/t6/A8'
-    commands << create_command(dirname)
-    expected << true
-    commands << exists_command(dirname)
-    expected << true
-
-    there_yes = dirname + '/there-yes.txt'
-    content = 'inchmarlo'
-    commands << write_command(there_yes,content)
-    expected << true
-    commands << append_command(there_yes,content.reverse)
-    expected << true
-
-    there_not = dirname + '/there-not.txt'
-    commands << append_command(there_not,'nope')
-    expected << false
-
-    commands << read_command(there_yes)
-    expected << content+content.reverse
-
-    commands << read_command(there_not)
-    expected << false
-
-    result = saver.batch_run(commands)
-    assert_equal expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

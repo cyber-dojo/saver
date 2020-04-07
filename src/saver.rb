@@ -8,6 +8,8 @@ class Saver
     @root_dir = root_dir
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def sha
     ENV['SHA']
   end
@@ -43,12 +45,62 @@ class Saver
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # deprecated
+  # primitives
+
+  def assert(command)
+    result = run(command)
+    if result
+      result
+    else
+      raise "command != true"
+    end
+  end
+
+  def run(command)
+    name,*args = command
+    case name
+    when CREATE_COMMAND_NAME then create(*args)
+    when EXISTS_COMMAND_NAME then exists?(*args)
+    when WRITE_COMMAND_NAME  then write(*args)
+    when APPEND_COMMAND_NAME then append(*args)
+    when READ_COMMAND_NAME   then read(*args)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # batch-methods
+
+  def batch_assert(commands)
+    batch_run_until(commands) {|r,index|
+      if r
+        false
+      else
+        raise "commands[#{index}] != true"
+      end
+    }
+  end
+
+  def batch_run(commands)
+    batch_run_until(commands) {|r| r === :never}
+  end
+
+  def batch_run_until_true(commands)
+    batch_run_until(commands) {|r| r}
+  end
+
+  def batch_run_until_false(commands)
+    batch_run_until(commands) {|r| !r}
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # TODO: deprecated
 
   def batch(command); batch_run(command); end
   def batch_until_true(commands); batch_run_until_true(commands); end
   def batch_until_false(commands); batch_run_until_false(commands); end
 
+  # TODO: make private
+  
   def exists?(key)
     Dir.exist?(path_name(key))
   end
@@ -105,54 +157,6 @@ class Saver
   rescue Errno::ENOENT, # file does not exist
          Errno::EISDIR  # file is a dir!
     false
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-  # primitives
-
-  def assert(command)
-    result = run(command)
-    if result
-      result
-    else
-      raise "command != true"
-    end
-  end
-
-  def run(command)
-    name,*args = command
-    case name
-    when CREATE_COMMAND_NAME then create(*args)
-    when EXISTS_COMMAND_NAME then exists?(*args)
-    when WRITE_COMMAND_NAME  then write(*args)
-    when APPEND_COMMAND_NAME then append(*args)
-    when READ_COMMAND_NAME   then read(*args)
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch-methods
-
-  def batch_assert(commands)
-    batch_run_until(commands) {|r,index|
-      if r
-        false
-      else
-        raise "commands[#{index}] != true"
-      end
-    }
-  end
-
-  def batch_run(commands)
-    batch_run_until(commands) {|r| r === :never}
-  end
-
-  def batch_run_until_true(commands)
-    batch_run_until(commands) {|r| r}
-  end
-
-  def batch_run_until_false(commands)
-    batch_run_until(commands) {|r| !r}
   end
 
   private
