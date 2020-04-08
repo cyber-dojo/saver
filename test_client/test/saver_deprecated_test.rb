@@ -10,13 +10,13 @@ class SaverDeprecatedTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : exists?(), create()
+  # exists?(), create()
 
   multi_test '431',
   'exists?(dirname) is false before create(dirname) and true after' do
     dirname = 'client/34/X7/a8'
     refute exists?(dirname)
-    assert create(dirname)
+    create(dirname)
     assert exists?(dirname)
   end
 
@@ -28,16 +28,16 @@ class SaverDeprecatedTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : write()
+  # write()
 
   multi_test '640', %w(
     write(filename) succeeds
     when its dir of filename exists and filename does not exist
   ) do
     dirname = 'client/32/Xg/9j'
-    assert create(dirname)
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
+    create(dirname)
     assert write(filename, content)
     assert_equal content, read(filename)
   end
@@ -47,8 +47,8 @@ class SaverDeprecatedTest < TestBase
     when its dir of filename does not already exist
   ) do
     dirname = 'client/5e/X4/Aa'
-    # no create(dirname)
     filename = dirname + '/readme.md'
+    # no create(dirname)
     refute write(filename, 'bonjour')
     assert read(filename).is_a?(FalseClass)
   end
@@ -58,26 +58,26 @@ class SaverDeprecatedTest < TestBase
     when filename already exists
   ) do
     dirname = 'client/73/Xf/69'
-    assert create(dirname)
     filename = dirname + '/readme.md'
     first_content = 'greetings'
+    create(dirname)
     assert write(filename, first_content)
     refute write(filename, 'second-content')
     assert_equal first_content, read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : append()
+  # append()
 
   multi_test '840', %w(
     append(filename,content) returns true and appends to the end of filename
     when filename already exists
   ) do
     dirname = 'client/69/Xb/2B'
-    assert create(dirname)
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert write(filename, content)
+    create(dirname)
+    write(filename, content)
     more = 'some-more'
     assert append(filename, more)
     assert_equal content+more, read(filename)
@@ -88,8 +88,8 @@ class SaverDeprecatedTest < TestBase
     when its dir of filename does not already exist
   ) do
     dirname = 'client/96/X8/59'
-    # no create(dirname)
     filename = dirname + '/readme.md'
+    # no create(dirname)
     refute append(filename, 'greetings')
     assert read(filename).is_a?(FalseClass)
   end
@@ -99,23 +99,23 @@ class SaverDeprecatedTest < TestBase
     when dir of filenme exists and filename does not exist
   ) do
     dirname = 'client/96/X8/59'
-    assert create(dirname)
     filename = dirname + '/hiker.h'
+    create(dirname)
     # no write(filename, '...')
     refute append(filename, 'int main(void);')
     assert read(filename).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : read()
+  # read()
 
   multi_test '437',
   'read(filename) reads what a successful write(filename,content) writes' do
     dirname = 'client/FD/X4/38'
-    assert create(dirname)
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert write(filename, content)
+    create(dirname)
+    write(filename, content)
     assert_equal content, read(filename)
   end
 
