@@ -179,7 +179,7 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200
+  # 200 probes
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E39',
@@ -198,8 +198,6 @@ class RackDispatcherTest < TestBase
     )
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'E41',
   'dispatches to sha' do
     saver_stub('sha')
@@ -208,6 +206,8 @@ class RackDispatcherTest < TestBase
     )
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 200 primitives
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E42',
@@ -252,6 +252,20 @@ class RackDispatcherTest < TestBase
     )
   end
 
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E53',
+  'dispatches to batch' do
+    saver_stub('batch')
+    assert_saver_dispatch('batch',
+      { commands: well_formed_commands }.to_json,
+      'hello from stubbed saver.batch'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 200 batches
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E48',
