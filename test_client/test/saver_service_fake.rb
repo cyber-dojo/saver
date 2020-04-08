@@ -86,14 +86,14 @@ class SaverServiceFake
   # TODO: make private
 
   def exists?(key)
-    raise_if_bad_key('exists?',key)
+    raise_unless_key_is_a_String('exists?',key)
     dir?(path_name(key))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def create(key)
-    raise_if_bad_key('create',key)
+    raise_unless_key_is_a_String('create',key)
     path = path_name(key)
     if dir?(path) || file?(path)
       false
@@ -105,8 +105,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
-    raise_if_bad_key('write',key,value)
-    raise_if_bad_value('write',key,value)
+    raise_unless_key_is_a_String('write',key,value)
+    raise_unless_value_is_a_String('write',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = value
@@ -119,8 +119,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(key, value)
-    raise_if_bad_key('append',key,value)
-    raise_if_bad_value('append',key,value)
+    raise_unless_key_is_a_String('append',key,value)
+    raise_unless_value_is_a_String('append',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += value
@@ -169,7 +169,7 @@ class SaverServiceFake
     raise SaverException,message
   end
 
-  def raise_if_bad_key(command,*args)
+  def raise_unless_key_is_a_String(command,*args)
     key = args[0]
     unless key.is_a?(String)
       message = {
@@ -182,7 +182,7 @@ class SaverServiceFake
     end
   end
 
-  def raise_if_bad_value(command,key,value)
+  def raise_unless_value_is_a_String(command,key,value)
     unless value.is_a?(String)
       message = {
         path:"/#{@origin}",
