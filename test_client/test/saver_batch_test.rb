@@ -18,26 +18,26 @@ class SaverBatchTest < TestBase
     commands = []
 
     dirname = 'client/e3/t6/A8'
-    commands << create_command(dirname)
+    commands << dir_make_command(dirname)
     expected << true
-    commands << exists_command(dirname)
+    commands << dir_exists_command(dirname)
     expected << true
 
     there_yes = dirname + '/there-yes.txt'
     content = 'inchmarlo'
-    commands << write_command(there_yes,content)
+    commands << file_create_command(there_yes,content)
     expected << true
-    commands << append_command(there_yes,content.reverse)
+    commands << file_append_command(there_yes,content.reverse)
     expected << true
 
     there_not = dirname + '/there-not.txt'
-    commands << append_command(there_not,'nope')
+    commands << file_append_command(there_not,'nope')
     expected << false
 
-    commands << read_command(there_yes)
+    commands << file_read_command(there_yes)
     expected << content+content.reverse
 
-    commands << read_command(there_not)
+    commands << file_read_command(there_not)
     expected << false
 
     result = saver.run_all(commands)
@@ -46,24 +46,24 @@ class SaverBatchTest < TestBase
 
   private
 
-  def create_command(dirname)
-    saver.create_command(dirname)
+  def dir_make_command(dirname)
+    saver.dir_make_command(dirname)
   end
 
-  def exists_command(dirname)
-    saver.exists_command(dirname)
+  def dir_exists_command(dirname)
+    saver.dir_exists_command(dirname)
   end
 
-  def write_command(filename, content)
-    saver.write_command(filename, content)
+  def file_create_command(filename, content)
+    saver.file_create_command(filename, content)
   end
 
-  def append_command(filename, content)
-    saver.append_command(filename, content)
+  def file_append_command(filename, content)
+    saver.file_append_command(filename, content)
   end
 
-  def read_command(filename)
-    saver.read_command(filename)
+  def file_read_command(filename)
+    saver.file_read_command(filename)
   end
 
 end

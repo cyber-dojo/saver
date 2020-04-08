@@ -10,28 +10,28 @@ class SaverAssertTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?()
+  # dir_exists?()
 
   multi_test '431', %w(
-  |exists?(dirname) is true
+  |dir_exists?(dirname) is true
   |when dirname is a String
   |and dirname exists as a dir
   ) do
     dirname = 'client/N4/f4/31'
-    assert create(dirname)
-    assert exists?(dirname)
+    assert dir_make(dirname)
+    assert dir_exists?(dirname)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '432', %w(
-  |exists?(dirname) raises
+  |dir_exists?(dirname) raises
   |when dirname does not exist as a dir
   |and dirname does not exist as a file
   ) do
     dirname = 'client/N5/s4/32'
     error = assert_raises(SaverException) {
-      exists?(dirname)
+      dir_exists?(dirname)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
@@ -44,17 +44,17 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '433', %w(
-  |exists?(dirname) raises
+  |dir_exists?(dirname) raises
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s4/33'
-    assert create(dirname)
+    assert dir_make(dirname)
     filename = dirname + '/' + 'readme.txt'
     content = 'hello world'
-    assert write(filename, content)
+    assert file_create(filename, content)
 
     error = assert_raises(SaverException) {
-      exists?(filename)
+      dir_exists?(filename)
     }
 
     json = JSON.parse!(error.message)
@@ -68,12 +68,12 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '434', %w(
-  |exists?(dirname) raises
+  |dir_exists?(dirname) raises
   |when dirname is not a String
   ) do
     dirname = 42
     error = assert_raises(SaverException) {
-      exists?(dirname)
+      dir_exists?(dirname)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
@@ -84,28 +84,28 @@ class SaverAssertTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # create()
+  # dir_make()
 
   multi_test '568', %w(
-  |create(dirname) is true
+  |dir_make(dirname) is true
   |when dirname is a String
   |and dirname does not exist as a dir
   |and dirname does not exist as a file
   ) do
     dirname = 'client/N5/s7/68'
-    assert create(dirname)
+    assert dir_make(dirname)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '569', %w(
-  |create(dirname) raises
+  |dir_make(dirname) raises
   |when dirname exists as a dir
   ) do
     dirname = 'client/N5/s7/69'
-    assert create(dirname)
+    assert dir_make(dirname)
     error = assert_raises(SaverException) {
-      create(dirname)
+      dir_make(dirname)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
@@ -118,16 +118,16 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '570', %w(
-  |create(dirname) raises
+  |dir_make(dirname) raises
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s7/70'
-    assert create(dirname)
+    assert dir_make(dirname)
     filename = dirname + '/' + 'readme.me'
     content = '#readme'
-    assert write(filename, content)
+    assert file_create(filename, content)
     error = assert_raises(SaverException) {
-      create(filename)
+      dir_make(filename)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
@@ -140,12 +140,12 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '571', %w(
-  |create(dirname) raises
+  |dir_make(dirname) raises
   |when dirname is not a String
   ) do
     dirname = true
     error = assert_raises(SaverException) {
-      create(dirname)
+      dir_make(dirname)
     }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path
@@ -156,19 +156,19 @@ class SaverAssertTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # write()
+  # file_create()
 
   multi_test '2E8', %w(
-  |write(filename,content) is true
+  |file_create(filename,content) is true
   |when filename is a String naming a dir that exists
   |and filename is a String naming a file that does not exist
   |and content is a String
   ) do
     dirname = 'client/N5/s2/E8'
-    assert create(dirname)
+    assert dir_make(dirname)
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
-    assert write(filename,content)
+    assert file_create(filename,content)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -280,48 +280,48 @@ class SaverAssertTest < TestBase
 
   private
 
-  def create(dirname)
-    saver.assert(create_command(dirname))
+  def dir_make(dirname)
+    saver.assert(dir_make_command(dirname))
   end
 
-  def exists?(dirname)
-    saver.assert(exists_command(dirname))
+  def dir_exists?(dirname)
+    saver.assert(dir_exists_command(dirname))
   end
 
-  def write(filename, content)
-    saver.assert(write_command(filename, content))
+  def file_create(filename, content)
+    saver.assert(file_create_command(filename, content))
   end
 
 =begin
-  def append(filename, content)
-    saver.assert(append_command(filename, content))
+  def file_append(filename, content)
+    saver.assert(file_append_command(filename, content))
   end
 
-  def read(filename)
-    saver.assert(read_command(filename))
+  def file_read(filename)
+    saver.assert(file_read_command(filename))
   end
 =end
   # - - - - - - - - - - - - - - - - - - - -
 
-  def create_command(dirname)
-    saver.create_command(dirname)
+  def dir_make_command(dirname)
+    saver.dir_make_command(dirname)
   end
 
-  def exists_command(dirname)
-    saver.exists_command(dirname)
+  def dir_exists_command(dirname)
+    saver.dir_exists_command(dirname)
   end
 
-  def write_command(filename, content)
-    saver.write_command(filename, content)
+  def file_create_command(filename, content)
+    saver.file_create_command(filename, content)
   end
 
 =begin
-  def append_command(filename, content)
-    saver.append_command(filename, content)
+  def file_append_command(filename, content)
+    saver.file_append_command(filename, content)
   end
 
-  def read_command(filename)
-    saver.read_command(filename)
+  def file_read_command(filename)
+    saver.file_read_command(filename)
   end
 =end
 end

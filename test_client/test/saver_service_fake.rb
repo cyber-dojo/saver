@@ -25,24 +25,24 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def exists_command(key)
-    [EXISTS_COMMAND_NAME,key]
+  def dir_exists_command(key)
+    [DIR_EXISTS_COMMAND_NAME,key]
   end
 
-  def create_command(key)
-    [CREATE_COMMAND_NAME,key]
+  def dir_make_command(key)
+    [DIR_MAKE_COMMAND_NAME,key]
   end
 
-  def write_command(key,value)
-    [WRITE_COMMAND_NAME,key,value]
+  def file_create_command(key,value)
+    [FILE_CREATE_COMMAND_NAME,key,value]
   end
 
-  def append_command(key,value)
-    [APPEND_COMMAND_NAME,key,value]
+  def file_append_command(key,value)
+    [FILE_APPEND_COMMAND_NAME,key,value]
   end
 
-  def read_command(key)
-    [READ_COMMAND_NAME,key]
+  def file_read_command(key)
+    [FILE_READ_COMMAND_NAME,key]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -81,7 +81,7 @@ class SaverServiceFake
 
   #def run_until_true
   #def run_until_false
-  
+
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: make private
 
@@ -138,11 +138,12 @@ class SaverServiceFake
 
   private
 
-  EXISTS_COMMAND_NAME = 'exists?'
-  CREATE_COMMAND_NAME = 'create'
-  WRITE_COMMAND_NAME  = 'write'
-  APPEND_COMMAND_NAME = 'append'
-  READ_COMMAND_NAME   = 'read'
+  DIR_EXISTS_COMMAND_NAME = 'exists?'
+  DIR_MAKE_COMMAND_NAME   = 'create'
+
+  FILE_CREATE_COMMAND_NAME  = 'write'
+  FILE_APPEND_COMMAND_NAME = 'append'
+  FILE_READ_COMMAND_NAME   = 'read'
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 

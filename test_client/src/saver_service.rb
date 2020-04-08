@@ -26,24 +26,24 @@ class SaverService
 
   # - - - - - - - - - - - -
 
-  def exists_command(dirname)
-    [EXISTS_COMMAND_NAME,dirname]
+  def dir_exists_command(dirname)
+    [DIR_EXISTS_COMMAND_NAME,dirname]
   end
 
-  def create_command(dirname)
-    [CREATE_COMMAND_NAME,dirname]
+  def dir_make_command(dirname)
+    [DIR_MAKE_COMMAND_NAME,dirname]
   end
 
-  def write_command(filename,content)
-    [WRITE_COMMAND_NAME,filename,content]
+  def file_create_command(filename,content)
+    [FILE_CREATE_COMMAND_NAME,filename,content]
   end
 
-  def append_command(filename,content)
-    [APPEND_COMMAND_NAME,filename,content]
+  def file_append_command(filename,content)
+    [FILE_APPEND_COMMAND_NAME,filename,content]
   end
 
-  def read_command(filename)
-    [READ_COMMAND_NAME,filename]
+  def file_read_command(filename)
+    [FILE_READ_COMMAND_NAME,filename]
   end
 
   # - - - - - - - - - - - -
@@ -98,10 +98,11 @@ class SaverService
 
   private
 
-  EXISTS_COMMAND_NAME = 'exists?'
-  CREATE_COMMAND_NAME = 'create'
-  WRITE_COMMAND_NAME  = 'write'
-  APPEND_COMMAND_NAME = 'append'
-  READ_COMMAND_NAME   = 'read'
+  DIR_EXISTS_COMMAND_NAME = 'exists?'
+  DIR_MAKE_COMMAND_NAME   = 'create'
+
+  FILE_CREATE_COMMAND_NAME = 'write'
+  FILE_APPEND_COMMAND_NAME = 'append'
+  FILE_READ_COMMAND_NAME   = 'read'
 
 end

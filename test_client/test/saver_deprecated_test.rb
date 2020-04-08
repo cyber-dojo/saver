@@ -122,7 +122,7 @@ class SaverDeprecatedTest < TestBase
   multi_test '438',
   'read() returns false given a non-existent file-name' do
     filename = 'client/1z/X3/e4/not-there.txt'
-    assert saver.run(saver.read_command(filename)).is_a?(FalseClass)
+    assert read(filename).is_a?(FalseClass)
   end
 
   multi_test '439',

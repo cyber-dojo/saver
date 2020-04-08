@@ -137,7 +137,7 @@ class SaverPrimitivesTest < TestBase
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
     error = assert_raises(RuntimeError) {
-      saver.assert(['exists?',dirname])
+      saver.assert(saver.dir_exists_command(dirname))
     }
     assert_equal 'command != true', error.message
     refute saver.exists?(dirname)
@@ -155,126 +155,126 @@ class SaverPrimitivesTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run() : exists? create
+  # run() : dir_exists? dir_make
 
   test '601',
-  'exists?(k) is false before create(k) and true after' do
+  'dir_exists?(k) is false before dir_make(k) and true after' do
     dirname = 'groups/34/f6/01'
-    refute saver.run(exists_command(dirname))
-    assert saver.run(create_command(dirname))
-    assert saver.run(exists_command(dirname))
+    refute saver.run(dir_exists_command(dirname))
+    assert saver.run(dir_make_command(dirname))
+    assert saver.run(dir_exists_command(dirname))
   end
 
   test '602',
-  'create succeeds once and then fails' do
+  'dir_make succeeds once and then fails' do
     dirname = 'groups/r5/s6/02'
-    assert saver.run(create_command(dirname))
-    refute saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
+    refute saver.run(dir_make_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : write()
+  # run : file_create()
 
   test '603', %w(
-    write() succeeds
+    file_create() succeeds
     when its dir-name exists and its file-name does not exist
   ) do
     dirname = 'groups/32/f6/03'
-    assert saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
-    assert saver.run(write_command(filename, content))
+    assert saver.run(file_create_command(filename, content))
     assert_equal content, saver.read(filename)
   end
 
   test '604', %w(
-    write() fails
+    file_create() fails
     when its dir-name does not already exist
   ) do
     dirname = 'groups/5e/96/04'
     # no saver.create(dirname)
     filename = dirname + '/readme.md'
-    refute saver.run(write_command(filename, 'bonjour'))
-    assert saver.run(read_command(filename)).is_a?(FalseClass)
+    refute saver.run(file_create_command(filename, 'bonjour'))
+    assert saver.run(file_read_command(filename)).is_a?(FalseClass)
   end
 
   test '605', %w(
-    write() fails
+    file_create() fails
     when its file-name already exists
   ) do
     dirname = 'groups/73/F6/05'
-    assert saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
     filename = dirname + '/readme.md'
     first_content = 'greetings'
-    assert saver.run(write_command(filename, first_content))
-    refute saver.run(write_command(filename, 'second-content'))
+    assert saver.run(file_create_command(filename, first_content))
+    refute saver.run(file_create_command(filename, 'second-content'))
     assert_equal first_content, saver.read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : append()
+  # run : file_append()
 
   test '606', %w(
-    append() returns true and appends to the end of file-name
+    file_append() returns true and appends to the end of file-name
     when file-name already exists
   ) do
     dirname = 'groups/69/16/06'
-    assert saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert saver.run(write_command(filename, content))
+    assert saver.run(file_create_command(filename, content))
     more = 'some-more'
-    assert saver.run(append_command(filename, more))
+    assert saver.run(file_append_command(filename, more))
     assert_equal content+more, saver.read(filename)
   end
 
   test '607', %w(
-    append() returns false and does nothing
+    file_append() returns false and does nothing
     when its dir-name does not already exist
   ) do
     dirname = 'groups/96/16/07'
     # no saver.run(create_command(dirname))
     filename = dirname + '/readme.md'
-    assert saver.run(append_command(filename, 'greetings')).is_a?(FalseClass)
-    assert saver.run(read_command(filename)).is_a?(FalseClass)
+    assert saver.run(file_append_command(filename, 'greetings')).is_a?(FalseClass)
+    assert saver.run(file_read_command(filename)).is_a?(FalseClass)
   end
 
   test '608', %w(
-    append() does nothing and returns false
+    file_append() does nothing and returns false
     when its file-name does not already exist
   ) do
     dirname = 'groups/96/16/08'
-    assert saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
     filename = dirname + '/hiker.h'
     # no saver.run(write_command(filename, '...'))
-    assert saver.run(append_command(filename, 'int main(void);')).is_a?(FalseClass)
-    assert saver.run(read_command(filename)).is_a?(FalseClass)
+    assert saver.run(file_append_command(filename, 'main')).is_a?(FalseClass)
+    assert saver.run(file_read_command(filename)).is_a?(FalseClass)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run : read()
+  # run : file_read()
 
   test '609',
-  'read() gives back what a successful write() accepts' do
+  'file_read() gives back what a successful file_create() accepts' do
     dirname = 'groups/FD/F6/09'
-    assert saver.run(create_command(dirname))
+    assert saver.run(dir_make_command(dirname))
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert saver.run(write_command(filename, content))
+    assert saver.run(file_create_command(filename, content))
     assert_equal content, saver.read(filename)
   end
 
   test '610',
-  'read() returns false given a non-existent file-name' do
+  'file_read() returns false given a non-existent file-name' do
     filename = 'groups/1z/26/10/not-there.txt'
-    assert saver.run(read_command(filename)).is_a?(FalseClass)
+    assert saver.run(file_read_command(filename)).is_a?(FalseClass)
   end
 
   test '611',
-  'read() returns false given an existing dir-name' do
+  'file_read() returns false given an existing dir-name' do
     dirname = 'groups/2f/76/11'
-    assert saver.run(create_command(dirname))
-    assert saver.run(read_command(dirname)).is_a?(FalseClass)
+    assert saver.run(dir_make_command(dirname))
+    assert saver.run(file_read_command(dirname)).is_a?(FalseClass)
   end
 
 end
