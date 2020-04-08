@@ -37,7 +37,7 @@ class HttpJsonArgsTest < TestBase
     commands = [['create','a/g/d'],['exists?','a/g/g']]
     json = {"commands":commands}.to_json
     args = HttpJsonArgs.new(json)
-    assert_equal [saver,'batch_run',[commands]], args.get('/batch_run',externals)
+    assert_equal [saver,'run_all',[commands]], args.get('/run_all',externals)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -169,84 +169,84 @@ class HttpJsonArgsTest < TestBase
   test 'B51',
   'commands: get() raises when it is missing' do
     args = HttpJsonArgs.new('{"key":"a/b/c"}')
-    error = assert_raises { args.get('/batch_run', externals) }
+    error = assert_raises { args.get('/run_all', externals) }
     assert_equal 'missing:commands:', error.message
   end
 
   test 'B52',
   'commands: get() raises when it is not an Array' do
     commands = 42
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands:!Array (Integer):', error.message
   end
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
     commands = [['exists?','a/b/c'],true]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
     commands = [['exists?','/d/e/f'],[4.2]]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
 
   test 'B55',
   'commands[i]: get() raises when name is unknown' do
     commands = [['create','/t/45/readme.md'],['qwerty','ff']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:Unknown (qwerty):', error.message
   end
 
   test 'B58',
   'commands[i]: get() raises when create-command does not have one argument' do
     commands = [['create']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:create!0:', error.message
   end
 
   test 'B59',
   'commands[i]: get() raises when exists-command does not have one argument' do
     commands = [['exists?','a','b','c']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:exists?!3:', error.message
   end
 
   test 'B60',
   'commands[i]: get() raises when write-command does not have two arguments' do
     commands = [['write','a','b','c','d']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:write!4:', error.message
   end
 
   test 'B61',
   'commands[i]: get() raises when append-command does not have two arguments' do
     commands = [['append','a']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:append!1:', error.message
   end
 
   test 'B62',
   'commands[i]: get() raises when read-command does not have one argument' do
     commands = [['read']]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:read!0:', error.message
   end
 
   test 'B63',
   'commands[i]: get() raises when any 1st argument is not a string' do
     commands = [['read',42]]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:read(key!=String):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
     commands = [['write','a/b/c',nil]]
-    error = assert_batch_run_raises(commands)
+    error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:write(value!=String):', error.message
   end
 
@@ -265,10 +265,10 @@ class HttpJsonArgsTest < TestBase
     assert_raises { args.get('/assert', externals) }
   end
 
-  def assert_batch_run_raises(commands)
+  def assert_run_all_raises(commands)
     json = { "commands":commands }.to_json
     args = HttpJsonArgs.new(json)
-    assert_raises { args.get('/batch_run', externals) }
+    assert_raises { args.get('/run_all', externals) }
   end
 
   def assert_batch_raises(commands)

@@ -60,14 +60,14 @@ class SaverService
   # - - - - - - - - - - - -
   # batches
 
-  #def batch_assert(commands)
+  #def assert_all(commands)
 
-  def batch_run(commands)
+  def run_all(commands)
     @http.post(__method__, { commands:commands })
   end
 
-  #batch_run_until_true
-  #batch_run_until_false
+  #run_until_true(commands)
+  #run_until_false(commands)
 
   # - - - - - - - - - - - -
   # deprecated
@@ -90,6 +90,10 @@ class SaverService
 
   def read(filename)
     @http.get(__method__, { key:filename })
+  end
+
+  def batch(commands)
+    @http.post(__method__, { commands:commands })
   end
 
   private

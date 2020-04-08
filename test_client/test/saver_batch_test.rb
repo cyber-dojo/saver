@@ -10,10 +10,10 @@ class SaverBatchTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_run()
+  # run_all()
 
   multi_test '514',
-  'batch_run() batches exists/create/write/append/read commands' do
+  'run_all() batches exists/create/write/append/read commands' do
     expected = []
     commands = []
 
@@ -40,7 +40,7 @@ class SaverBatchTest < TestBase
     commands << read_command(there_not)
     expected << false
 
-    result = saver.batch_run(commands)
+    result = saver.run_all(commands)
     assert_equal expected, result
   end
 

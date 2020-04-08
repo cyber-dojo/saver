@@ -73,15 +73,15 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
-  #def batch_assert(commands)
+  #def assert_all(commands)
 
-  def batch_run(commands)
-    batch_run_until(commands) {|r| r === :never}
+  def run_all(commands)
+    run_until(commands) {|r| r === :never}
   end
 
-  #def batch_run_until_true(commands)
-  #def batch_run_until_false(commands)
-
+  #def run_until_true
+  #def run_until_false
+  
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: make private
 
@@ -146,7 +146,7 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def batch_run_until(commands, &block)
+  def run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
       result = run(command)

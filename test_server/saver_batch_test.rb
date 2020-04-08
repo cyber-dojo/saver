@@ -13,11 +13,11 @@ class SaverBatchTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_run
+  # run_all
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '314',
-  'batch_run() runs all its commands, not stopping when any return false' do
+  'run_all() runs all its commands, not stopping when any return false' do
     dirname = 'batch/e3/t3/14'
     command(true, create_command(dirname))
     command(true, exists_command(dirname))
@@ -29,16 +29,16 @@ class SaverBatchTest < TestBase
     command(true, append_command(there_yes, content.reverse))
     command(content+content.reverse, read_command(there_yes))
     command(false, read_command(there_no))
-    result = saver.batch_run(@commands)
+    result = saver.run_all(@commands)
     assert_equal @expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_assert
+  # assert_all
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '416',
-  'batch_assert() returns array of results when all commands are true' do
+  'assert_all() returns array of results when all commands are true' do
     dirname = 'batch/e3/t4/16'
     command(true, create_command(dirname))
     command(true, exists_command(dirname))
@@ -47,14 +47,14 @@ class SaverBatchTest < TestBase
     command(true, write_command(there_yes, content))
     command(true, append_command(there_yes, content.reverse))
     command(content+content.reverse, read_command(there_yes))
-    result = saver.batch_assert(@commands)
+    result = saver.assert_all(@commands)
     assert_equal @expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '417', %w(
-  batch_assert() raises
+  assert_all() raises
   when any command is not true
   and subsequent commands are not executed
   ) do
@@ -68,18 +68,18 @@ class SaverBatchTest < TestBase
     command(false, read_command(there_no))
     command(true, append_command(there_yes, content.reverse))
     error = assert_raises(RuntimeError) {
-      saver.batch_assert(@commands)
+      saver.assert_all(@commands)
     }
     assert_equal "commands[3] != true", error.message
     assert_equal content, saver.read(there_yes), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_run_until_false
+  # run_until_false
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '512', %w(
-  batch_run_until_false()
+  run_until_false()
   completes all its commands
   when nothing returns false
   ) do
@@ -91,13 +91,13 @@ class SaverBatchTest < TestBase
     command(true, write_command(filename, content))
     command(true, append_command(filename, '1'))
     command(content+'1', read_command(filename))
-    assert_batch_run_until_false
+    assert_run_until_false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '513', %w(
-  batch_run_until_false()
+  run_until_false()
   stops at exists?() returning false
   and does not execute subsequent commands
   ) do
@@ -108,7 +108,7 @@ class SaverBatchTest < TestBase
     filename = dirname + '/stops-at-exists-false.txt'
     content = 'dalmarnock tay beat'
     not_run(write_command(filename, content))
-    assert_batch_run_until_false
+    assert_run_until_false
     assert saver.exists?(dirname)
     refute saver.exists?(dirname+'X'), :does_not_execute_subsequent_commands
     refute saver.read(filename), :does_not_execute_subsequent_commands
@@ -117,7 +117,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '514', %w(
-  batch_run_until_false()
+  run_until_false()
   stops at create() returning false
   and does not execute subsequent commands
   ) do
@@ -127,7 +127,7 @@ class SaverBatchTest < TestBase
     filename = dirname + '/stops-at-exists.txt'
     content = 'stenton tay beat'
     not_run(write_command(filename, content))
-    assert_batch_run_until_false
+    assert_run_until_false
     assert saver.exists?(dirname)
     refute saver.read(filename), :does_not_execute_subsequent_commands
   end
@@ -135,7 +135,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '515', %w(
-  batch_run_until_false()
+  run_until_false()
   stops at write() already existing file
   and does not execute subsequent commands
   ) do
@@ -146,7 +146,7 @@ class SaverBatchTest < TestBase
     command(true, write_command(filename, content))
     command(false, write_command(filename, content))
     not_run(append_command(filename, 'extra'))
-    assert_batch_run_until_false
+    assert_run_until_false
     assert saver.exists?(dirname)
     assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
@@ -154,7 +154,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '516', %w(
-  batch_run_until_false()
+  run_until_false()
   stops at append() to non-existant file
   and does not execute subsequent commands
   ) do
@@ -167,7 +167,7 @@ class SaverBatchTest < TestBase
     command(true, append_command(filename, '2'))
     command(false, append_command(filename+'X', '3'))
     not_run(append_command(filename, '4'))
-    assert_batch_run_until_false
+    assert_run_until_false
     assert saver.exists?(dirname)
     assert_equal content+'12', saver.read(filename), :does_not_execute_subsequent_commands
   end
@@ -175,7 +175,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '517', %w(
-  batch_run_until_false()
+  run_until_false()
   stops at read() non-existent file
   and does not execute subsequent commands
   ) do
@@ -186,16 +186,16 @@ class SaverBatchTest < TestBase
     command(true, write_command(filename, content))
     command(false, read_command(filename+'X'))
     not_run(append_command(filename, 'extra'))
-    assert_batch_run_until_false
+    assert_run_until_false
     assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # batch_until_true
+  # run_until_true
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '712', %w(
-  batch_run_until_true()
+  run_until_true()
   completes all its commands
   when nothing returns true
   ) do
@@ -206,13 +206,13 @@ class SaverBatchTest < TestBase
     command(false, read_command(filename+'3'))
     command(false, read_command(filename+'4'))
     command(false, read_command(filename+'5'))
-    assert_batch_run_until_true
+    assert_run_until_true
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '713', %w(
-  batch_run_until_true()
+  run_until_true()
   stops at exists?() returning true
   and does not execute subsequent commands
   ) do
@@ -224,14 +224,14 @@ class SaverBatchTest < TestBase
     command(true,  exists_command(dirname))
     filename = dirname + '/stops-at-exists-true'
     not_run(write_command(filename, 'xxx'))
-    assert_batch_run_until_true
+    assert_run_until_true
     refute saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '714', %w(
-  batch_run_until_true()
+  run_until_true()
   stops at create() returning true
   and does not execute subsequent commands
   ) do
@@ -243,7 +243,7 @@ class SaverBatchTest < TestBase
     command(true,  create_command(dirname+'1'))
     filename = dirname + '1/stops-at-create-true'
     not_run(write_command(filename, 'xxx'))
-    assert_batch_run_until_true
+    assert_run_until_true
     assert saver.exists?(dirname+'1'), :does_not_execute_subsequent_commands
     refute saver.read(filename), :does_not_execute_subsequent_commands
   end
@@ -251,7 +251,7 @@ class SaverBatchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '715', %w(
-  batch_run_until_true()
+  run_until_true()
   stops at write() returning true
   and does not execute subsequent commands
   ) do
@@ -264,14 +264,14 @@ class SaverBatchTest < TestBase
     command(false, write_command(filename, content))
     command(true, write_command(filename+'1', content))
     not_run(append_command(filename, 'to-the-end'))
-    assert_batch_run_until_true
+    assert_run_until_true
     assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '716', %w(
-  batch_run_until_true()
+  run_until_true()
   stops at append() returning true
   and does not execute subsequent commands
   ) do
@@ -284,14 +284,14 @@ class SaverBatchTest < TestBase
     command(false, append_command(filename+'1', content))
     command(true, append_command(filename, content))
     not_run(append_command(filename, 'to-the-end'))
-    assert_batch_run_until_true
+    assert_run_until_true
     assert_equal 'XX', saver.read(filename), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '717', %w(
-  batch_run_until_true()
+  run_until_true()
   stops at read() a file that exists
   and does not execute subsequent commands
   ) do
@@ -299,7 +299,7 @@ class SaverBatchTest < TestBase
     event_3 = dirname + '/3.event.json'
     content = '{"colour":"red"}'
 
-    saver.batch_assert([
+    saver.assert_all([
       ['create',dirname],
       ['write',event_3,content]
     ])
@@ -311,7 +311,7 @@ class SaverBatchTest < TestBase
     command(content, read_command(dirname + '/3.event.json'))
     not_run(write_command(dirname + '/4.event.json', '{"colour":"green"}'))
 
-    assert_batch_run_until_true
+    assert_run_until_true
     refute saver.read(dirname + '/4.event.json'), :does_not_execute_subsequent_commands
   end
 
@@ -335,6 +335,7 @@ class SaverBatchTest < TestBase
     assert_equal @expected, result
   end
 
+=begin
   test '935', %w( support batch_until_true() till switched to batch_run_until_true() ) do
     dirname = 'batch-until-true/x3/t9/35'
     assert saver.create(dirname)
@@ -360,6 +361,7 @@ class SaverBatchTest < TestBase
     assert saver.exists?(dirname)
     assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
   end
+=end
 
   private
 
@@ -372,25 +374,13 @@ class SaverBatchTest < TestBase
     @commands << cmd
   end
 
-  def assert_batch_run_until_false
-    result = saver.batch_run_until_false(@commands)
+  def assert_run_until_false
+    result = saver.run_until_false(@commands)
     assert_equal @expected, result
   end
 
-  def assert_batch_run_until_true
-    result = saver.batch_run_until_true(@commands)
-    assert_equal @expected, result
-  end
-
-  # deprecated
-
-  def assert_batch_until_false
-    result = saver.batch_until_false(@commands)
-    assert_equal @expected, result
-  end
-
-  def assert_batch_until_true
-    result = saver.batch_until_true(@commands)
+  def assert_run_until_true
+    result = saver.run_until_true(@commands)
     assert_equal @expected, result
   end
 

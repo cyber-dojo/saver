@@ -30,10 +30,10 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '167',
-  'dispatch returns 500 status when batch_assert raises' do
+  'dispatch returns 500 status when assert_all raises' do
     message = 'commands[1] != true'
     body = { "commands":[['create','167'],['create','167']] }.to_json
-    assert_dispatch_raises('batch_assert', body, 500, message)
+    assert_dispatch_raises('assert_all', body, 500, message)
     assert saver.exists?('167')
   end
 
@@ -133,7 +133,7 @@ class RackDispatcherTest < TestBase
 
   test 'AC6',
   'dispatch returns 400 status when commands is missing' do
-    assert_dispatch_raises('batch_run',
+    assert_dispatch_raises('run_all',
       '{}',
       400,
       'missing:commands:'
@@ -150,7 +150,7 @@ class RackDispatcherTest < TestBase
       ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!3:'],
       ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read(key!=String):']
     ].each do |json, error_message|
-      assert_dispatch_raises('batch_run', json, 400, error_message)
+      assert_dispatch_raises('run_all', json, 400, error_message)
     end
   end
 
@@ -255,11 +255,11 @@ class RackDispatcherTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E48',
-  'dispatches to batch_assert' do
-    saver_stub('batch_assert')
-    assert_saver_dispatch('batch_assert',
+  'dispatches to assert_all' do
+    saver_stub('assert_all')
+    assert_saver_dispatch('assert_all',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_assert'
+      'hello from stubbed saver.assert_all'
     )
   end
 
@@ -276,34 +276,45 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test 'E52',
+  'dispatches to run' do
+    saver_stub('run')
+    assert_saver_dispatch('run',
+      { command: well_formed_command }.to_json,
+      'hello from stubbed saver.run'
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'E47',
-  'dispatches to batch_run' do
-    saver_stub('batch_run')
-    assert_saver_dispatch('batch_run',
+  'dispatches to run_all' do
+    saver_stub('run_all')
+    assert_saver_dispatch('run_all',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_run'
+      'hello from stubbed saver.run_all'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E49',
-  'dispatches to batch_run_until_true' do
-    saver_stub('batch_run_until_true')
-    assert_saver_dispatch('batch_run_until_true',
+  'dispatches to run_until_true' do
+    saver_stub('run_until_true')
+    assert_saver_dispatch('run_until_true',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_run_until_true'
+      'hello from stubbed saver.run_until_true'
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E50',
-  'dispatches to batch_run_until_false' do
-    saver_stub('batch_run_until_false')
-    assert_saver_dispatch('batch_run_until_false',
+  'dispatches to run_until_false' do
+    saver_stub('run_until_false')
+    assert_saver_dispatch('run_until_false',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.batch_run_until_false'
+      'hello from stubbed saver.run_until_false'
     )
   end
 
