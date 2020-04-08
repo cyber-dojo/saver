@@ -18,7 +18,7 @@ class SaverAssertTest < TestBase
   |and dirname exists as a dir
   ) do
     dirname = 'client/N4/f4/31'
-    assert dir_make(dirname)
+    dir_make(dirname)
     assert dir_exists?(dirname)
   end
 
@@ -30,15 +30,10 @@ class SaverAssertTest < TestBase
   |and dirname does not exist as a file
   ) do
     dirname = 'client/N5/s4/32'
-    error = assert_raises(SaverException) {
+    message = 'command != true'
+    assert_raises_SaverException(message,'exists?',dirname ) {
       dir_exists?(dirname)
     }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'exists?',dirname ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'command != true', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -48,21 +43,14 @@ class SaverAssertTest < TestBase
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s4/33'
-    assert dir_make(dirname)
     filename = dirname + '/' + 'readme.txt'
     content = 'hello world'
-    assert file_create(filename, content)
-
-    error = assert_raises(SaverException) {
+    dir_make(dirname)
+    file_create(filename, content)
+    message = 'command != true'
+    assert_raises_SaverException(message,'exists?',filename) {
       dir_exists?(filename)
     }
-
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'exists?',filename ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'command != true', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,15 +60,10 @@ class SaverAssertTest < TestBase
   |when dirname is not a String
   ) do
     dirname = 42
-    error = assert_raises(SaverException) {
+    message = 'malformed:command:exists?(key!=String):'
+    assert_raises_SaverException(message,'exists?',dirname) {
       dir_exists?(dirname)
     }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'exists?',dirname ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:exists?(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,16 +86,11 @@ class SaverAssertTest < TestBase
   |when dirname exists as a dir
   ) do
     dirname = 'client/N5/s7/69'
-    assert dir_make(dirname)
-    error = assert_raises(SaverException) {
+    dir_make(dirname)
+    message = 'command != true'
+    assert_raises_SaverException(message,'create',dirname) {
       dir_make(dirname)
     }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'create',dirname ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'command != true', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -122,19 +100,14 @@ class SaverAssertTest < TestBase
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s7/70'
-    assert dir_make(dirname)
     filename = dirname + '/' + 'readme.me'
     content = '#readme'
-    assert file_create(filename, content)
-    error = assert_raises(SaverException) {
+    dir_make(dirname)
+    file_create(filename, content)
+    message = 'command != true'
+    assert_raises_SaverException(message,'create',filename) {
       dir_make(filename)
     }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'create',filename ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'command != true', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -144,15 +117,10 @@ class SaverAssertTest < TestBase
   |when dirname is not a String
   ) do
     dirname = true
-    error = assert_raises(SaverException) {
+    message = 'malformed:command:create(key!=String):'
+    assert_raises_SaverException(message,'create',dirname) {
       dir_make(dirname)
     }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>[ 'create',dirname ] }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal 'malformed:command:create(key!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -165,9 +133,9 @@ class SaverAssertTest < TestBase
   |and content is a String
   ) do
     dirname = 'client/N5/s2/E8'
-    assert dir_make(dirname)
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
+    dir_make(dirname)
     assert file_create(filename,content)
   end
 
@@ -324,4 +292,15 @@ class SaverAssertTest < TestBase
     saver.file_read_command(filename)
   end
 =end
+
+  def assert_raises_SaverException(message,*command)
+    error = assert_raises(SaverException) { yield }
+    json = JSON.parse!(error.message)
+    assert_equal '/assert', json['path'], :path
+    expected_body = { 'command'=>command }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal message, json['message'], :message
+  end
+
 end
