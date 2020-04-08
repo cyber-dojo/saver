@@ -335,34 +335,6 @@ class SaverBatchTest < TestBase
     assert_equal @expected, result
   end
 
-=begin
-  test '935', %w( support batch_until_true() till switched to batch_run_until_true() ) do
-    dirname = 'batch-until-true/x3/t9/35'
-    assert saver.create(dirname)
-    command(false, dir_exists_command(dirname+'1'))
-    command(false, dir_exists_command(dirname+'2'))
-    command(false, dir_exists_command(dirname+'3'))
-    command(true,  dir_exists_command(dirname))
-    filename = dirname + '/stops-at-exists-true'
-    not_run(file_create_command(filename, 'xxx'))
-    assert_batch_until_true
-    refute saver.read(filename), :does_not_execute_subsequent_commands
-  end
-
-  test '936', %w( support batch_until_false() till switched to batch_run_until_false() ) do
-    dirname = 'batch-until-false/x3/t9/36'
-    command(true, dir_make_command(dirname))
-    filename = dirname + '/stops-at-write-false.txt'
-    content = 'murthly tay beat'
-    command(true, file_create_command(filename, content))
-    command(false, file_create_command(filename, content))
-    not_run(file_append_command(filename, 'extra'))
-    assert_batch_until_false
-    assert saver.exists?(dirname)
-    assert_equal content, saver.read(filename), :does_not_execute_subsequent_commands
-  end
-=end
-
   private
 
   def command(expected, cmd)
