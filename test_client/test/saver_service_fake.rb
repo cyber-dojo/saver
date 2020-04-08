@@ -54,13 +54,7 @@ class SaverServiceFake
     if result
       result
     else
-      message = {
-        path:"/#{@origin}",
-        body:{'command':command}.to_json,
-        class:'SaverService',
-        message:'command != true'
-      }.to_json
-      raise SaverException,message
+      raise_assert_exception(command)
     end
   end
 
@@ -92,30 +86,14 @@ class SaverServiceFake
   # TODO: make private
 
   def exists?(key)
-    unless key.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['exists?',key]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:exists?(key!=String):"
-      }.to_json
-      raise SaverException,message
-    end
+    raise_if_bad_key('exists?',key)
     dir?(path_name(key))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def create(key)
-    unless key.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['create',key]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:create(key!=String):"
-      }.to_json
-      raise SaverException,message
-    end
+    raise_if_bad_key('create',key)
     path = path_name(key)
     if dir?(path) || file?(path)
       false
@@ -127,26 +105,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def write(key, value)
-    unless key.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['write',key,value]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:write(key!=String):"
-      }.to_json
-      raise SaverException,message
-    end
-
-    unless value.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['write',key,value]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:write(value!=String):"
-      }.to_json
-      raise SaverException,message
-    end
-
+    raise_if_bad_key('write',key,value)
+    raise_if_bad_value('write',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = value
@@ -159,26 +119,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(key, value)
-    unless key.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['append',key,value]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:append(key!=String):"
-      }.to_json
-      raise SaverException,message
-    end
-
-    unless value.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':['append',key,value]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:append(value!=String):"
-      }.to_json
-      raise SaverException,message
-    end
-
+    raise_if_bad_key('append',key,value)
+    raise_if_bad_value('append',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += value
@@ -212,6 +154,43 @@ class SaverServiceFake
       break if block.call(result,index)
     end
     results
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def raise_assert_exception(command)
+    message = {
+      path:"/#{@origin}",
+      body:{'command':command}.to_json,
+      class:'SaverService',
+      message:'command != true'
+    }.to_json
+    raise SaverException,message
+  end
+
+  def raise_if_bad_key(command,*args)
+    key = args[0]
+    unless key.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':[command,*args]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:#{command}(key!=String):"
+      }.to_json
+      raise SaverException,message
+    end
+  end
+
+  def raise_if_bad_value(command,key,value)
+    unless value.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':[command,key,value]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:#{command}(value!=String):"
+      }.to_json
+      raise SaverException,message
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
