@@ -217,7 +217,8 @@ class SaverRunTest < TestBase
   multi_test '840', %w(
   |append(filename,content) returns true
   |and appends to the end of filename
-  |when filename already exists as a file
+  |when filename is a String and already exists as a file
+  |and content is a String
   ) do
     dirname = 'client/69/1b/2B'
     assert create(dirname)
@@ -270,6 +271,40 @@ class SaverRunTest < TestBase
     # no write(filename, '...')
     refute append(filename, 'int main(void);')
     assert read(filename).is_a?(FalseClass)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '844', %w(
+  |append(filename,content) raises
+  |when filename is not a String
+  ) do
+    filename = false
+    content = 'wibble'
+    error = assert_raises(SaverException) { append(filename,content) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'append',filename,content ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:append(key!=String):', json['message'], :message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '845', %w(
+  |append(filename,content) raises
+  |when content is not a String
+  ) do
+    filename = 'wibble.txt'
+    content = false
+    error = assert_raises(SaverException) { append(filename,content) }
+    json = JSON.parse!(error.message)
+    assert_equal '/run', json['path'], :path
+    expected_body = { 'command'=>[ 'append',filename,content ] }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal 'malformed:command:append(value!=String):', json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

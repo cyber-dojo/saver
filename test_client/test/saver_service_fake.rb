@@ -159,6 +159,26 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def append(key, value)
+    unless key.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':['append',key,value]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:append(key!=String):"
+      }.to_json
+      raise SaverException,message
+    end
+
+    unless value.is_a?(String)
+      message = {
+        path:"/#{@origin}",
+        body:{'command':['append',key,value]}.to_json,
+        class:'SaverService',
+        message:"malformed:command:append(value!=String):"
+      }.to_json
+      raise SaverException,message
+    end
+
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += value
