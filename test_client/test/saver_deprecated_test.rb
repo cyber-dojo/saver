@@ -44,7 +44,7 @@ class SaverDeprecatedTest < TestBase
 
   multi_test '641', %w(
     write(filename) fails
-    when its dir of filename does not already exist
+    when its dir of filename does not exist
   ) do
     dirname = 'client/5e/X4/Aa'
     filename = dirname + '/readme.md'
