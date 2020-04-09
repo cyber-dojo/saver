@@ -278,8 +278,11 @@ class SaverBatchTest < TestBase
     dirname = 'batch-run-until-true/x3/t7/16'
     filename = dirname + '/stop-at-append-true'
     content = 'X'
-    assert saver.create(dirname)
-    assert saver.write(filename, content)
+
+    saver.assert_all([
+      saver.dir_make_command(dirname),
+      saver.file_create_command(filename, content)
+    ])
 
     command(false, file_append_command(filename+'1', content))
     command(true, file_append_command(filename, content))
@@ -300,8 +303,8 @@ class SaverBatchTest < TestBase
     content = '{"colour":"red"}'
 
     saver.assert_all([
-      ['create',dirname],
-      ['write',event_3,content]
+      saver.dir_make_command(dirname),
+      saver.file_create_command(event_3,content)
     ])
 
     command(false, file_create_command(dirname + '/3.event.json', '{"colour":"amber"}'))

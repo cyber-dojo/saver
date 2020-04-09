@@ -150,7 +150,7 @@ class SaverPrimitivesTest < TestBase
     content = '{"colour":"red"}'
     saver.create(dirname)
     saver.write(filename, content)
-    read = saver.assert(['read',filename])
+    read = saver.assert(saver.file_read_command(filename))
     assert_equal content, read
   end
 

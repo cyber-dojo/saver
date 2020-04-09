@@ -32,7 +32,10 @@ class RackDispatcherTest < TestBase
   test '167',
   'dispatch returns 500 status when assert_all raises' do
     message = 'commands[1] != true'
-    body = { "commands":[['create','167'],['create','167']] }.to_json
+    body = { "commands":[
+      saver.dir_make_command('167'),
+      saver.dir_make_command('167')
+    ]}.to_json
     assert_dispatch_raises('assert_all', body, 500, message)
     assert saver.exists?('167')
   end
