@@ -66,26 +66,20 @@ class SaverServiceFake
     when FILE_CREATE_COMMAND_NAME then file_create(*args)
     when FILE_APPEND_COMMAND_NAME then file_append(*args)
     when FILE_READ_COMMAND_NAME   then file_read(*args)
-    # deprecated
-    when 'exists?' then exists?(*args)
-    when 'create'  then create(*args)
-    when 'write'   then write(*args)
-    when 'append'  then append(*args)
-    when 'read'    then read(*args)
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
-  #def assert_all(commands)
+  #TODO: def assert_all(commands)
 
   def run_all(commands)
     run_until(commands) {|r| r === :never}
   end
 
-  #def run_until_true
-  #def run_until_false
+  #TODO: def run_until_true
+  #TODO: def run_until_false
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # TODO: deprecated
