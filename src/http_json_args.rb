@@ -39,8 +39,8 @@ class HttpJsonArgs
     when '/run_until_false' then [saver,'run_until_false',commands]
 
     # deprecated
-    when '/create'  then [saver,'create'  ,key]
     when '/exists'  then [saver,'exists?' ,key]
+    when '/create'  then [saver,'create'  ,key]
     when '/write'   then [saver,'write'   ,key,value]
     when '/append'  then [saver,'append'  ,key,value]
     when '/read'    then [saver,'read'    ,key]

@@ -61,14 +61,14 @@ class SaverServiceFake
     @origin ||= 'run'
     name,*args = command
     case name
-    when DIR_EXISTS_COMMAND_NAME  then exists?(*args)
-    when DIR_MAKE_COMMAND_NAME    then create(*args)
-    when FILE_CREATE_COMMAND_NAME then write(*args)
-    when FILE_APPEND_COMMAND_NAME then append(*args)
-    when FILE_READ_COMMAND_NAME   then read(*args)
+    when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
+    when DIR_MAKE_COMMAND_NAME    then dir_make(*args)
+    when FILE_CREATE_COMMAND_NAME then file_create(*args)
+    when FILE_APPEND_COMMAND_NAME then file_append(*args)
+    when FILE_READ_COMMAND_NAME   then file_read(*args)
     # deprecated
-    when 'create'  then create(*args)
     when 'exists?' then exists?(*args)
+    when 'create'  then create(*args)
     when 'write'   then write(*args)
     when 'append'  then append(*args)
     when 'read'    then read(*args)
@@ -88,59 +88,14 @@ class SaverServiceFake
   #def run_until_false
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: make private
+  # TODO: deprecated
 
-  def exists?(key)
-    raise_unless_key_is_a_String('exists?',key)
-    dir?(path_name(key))
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def create(key)
-    raise_unless_key_is_a_String('create',key)
-    path = path_name(key)
-    if dir?(path) || file?(path)
-      false
-    else
-      @@dirs[path] = true
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def write(key, value)
-    raise_unless_key_is_a_String('write',key,value)
-    raise_unless_value_is_a_String('write',key,value)
-    path = path_name(key)
-    if dir?(File.dirname(path)) && !file?(path)
-      @@files[path] = value
-      true
-    else
-      false
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def append(key, value)
-    raise_unless_key_is_a_String('append',key,value)
-    raise_unless_value_is_a_String('append',key,value)
-    path = path_name(key)
-    if dir?(File.dirname(path)) && file?(path)
-      @@files[path] += value
-      true
-    else
-      false
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def read(key)
-    raise_unless_key_is_a_String('read',key)
-    @@files[path_name(key)] || false
-  end
+  # def batch(commands); run_all(commands); end
+  def exists?(key); dir_exists?(key); end
+  def create(key); dir_make(key); end
+  def write(key,value); file_create(key,value); end
+  def append(key, value); file_append(key, value); end
+  def read(key); file_read(key); end
 
   private
 
@@ -164,6 +119,62 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # commands 
+
+  def dir_exists?(key)
+    raise_unless_key_is_a_String('exists?',key)
+    dir?(path_name(key))
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def dir_make(key)
+    raise_unless_key_is_a_String('create',key)
+    path = path_name(key)
+    if dir?(path) || file?(path)
+      false
+    else
+      @@dirs[path] = true
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_create(key, value)
+    raise_unless_key_is_a_String('write',key,value)
+    raise_unless_value_is_a_String('write',key,value)
+    path = path_name(key)
+    if dir?(File.dirname(path)) && !file?(path)
+      @@files[path] = value
+      true
+    else
+      false
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_append(key, value)
+    raise_unless_key_is_a_String('append',key,value)
+    raise_unless_value_is_a_String('append',key,value)
+    path = path_name(key)
+    if dir?(File.dirname(path)) && file?(path)
+      @@files[path] += value
+      true
+    else
+      false
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_read(key)
+    raise_unless_key_is_a_String('read',key)
+    @@files[path_name(key)] || false
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # exception helpers
 
   def raise_assert_exception(command)
     message = {
