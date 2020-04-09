@@ -14,7 +14,7 @@ class SaverDeprecatedPrimitivesTest < TestBase
   'exists?(k) is false before create(k) and true after' do
     dirname = 'groups/34/f7/a8'
     refute saver.exists?(dirname)
-    assert saver.create(dirname)
+    saver.create(dirname)
     assert saver.exists?(dirname)
   end
 
@@ -35,7 +35,7 @@ class SaverDeprecatedPrimitivesTest < TestBase
     dirname = 'groups/32/fg/9j'
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
-    assert saver.create(dirname)
+    saver.create(dirname)
     assert saver.write(filename, content)
     assert_equal content, saver.read(filename)
   end
@@ -58,7 +58,7 @@ class SaverDeprecatedPrimitivesTest < TestBase
     dirname = 'groups/73/Ff/69'
     filename = dirname + '/readme.md'
     first_content = 'greetings'
-    assert saver.create(dirname)
+    saver.create(dirname)
     assert saver.write(filename, first_content)
     refute saver.write(filename, 'second-content')
     assert_equal first_content, saver.read(filename)
@@ -74,8 +74,8 @@ class SaverDeprecatedPrimitivesTest < TestBase
     dirname = 'groups/69/1b/2B'
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert saver.create(dirname)
-    assert saver.write(filename, content)
+    saver.create(dirname)
+    saver.write(filename, content)
     more = 'some-more'
     assert saver.append(filename, more)
     assert_equal content+more, saver.read(filename)
@@ -98,7 +98,7 @@ class SaverDeprecatedPrimitivesTest < TestBase
   ) do
     dirname = 'groups/96/18/59'
     filename = dirname + '/hiker.h'
-    assert saver.create(dirname)
+    saver.create(dirname)
     # no saver.write(filename, '...')
     refute saver.append(filename, 'int main(void);')
     assert saver.read(filename).is_a?(FalseClass)
@@ -112,8 +112,8 @@ class SaverDeprecatedPrimitivesTest < TestBase
     dirname = 'groups/FD/F4/38'
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert saver.create(dirname)
-    assert saver.write(filename, content)
+    saver.create(dirname)
+    saver.write(filename, content)
     assert_equal content, saver.read(filename)
   end
 

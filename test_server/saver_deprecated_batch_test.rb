@@ -17,16 +17,16 @@ class SaverDeprecatedBatchTest < TestBase
 
   test '934', %w( support batch() till switched to run_all() ) do
     dirname = 'batch/e3/t9/34'
-    command(true, ['create',dirname])
-    command(true, ['exists?',dirname])
+    command(true, old_dir_make_command(dirname))
+    command(true, old_dir_exists_command(dirname))
     there_no = dirname + '/there-not.txt'
-    command(false, ['read',there_no])
+    command(false, old_file_read_command(there_no))
     there_yes = dirname + '/there-yes.txt'
     content = 'tulchan spey beat'
-    command(true, ['write',there_yes, content])
-    command(true, ['append',there_yes, content.reverse])
-    command(content+content.reverse, ['read',there_yes])
-    command(false, ['read',there_no])
+    command(true, old_file_create_command(there_yes, content))
+    command(true, old_file_append_command(there_yes, content.reverse))
+    command(content+content.reverse, old_file_read_command(there_yes))
+    command(false, old_file_read_command(there_no))
     result = saver.batch(@commands)
     assert_equal @expected, result
   end
@@ -36,6 +36,26 @@ class SaverDeprecatedBatchTest < TestBase
   def command(expected, cmd)
     @expected << expected
     @commands << cmd
+  end
+
+  def old_dir_make_command(dirname)
+    ['create',dirname]
+  end
+
+  def old_dir_exists_command(dirname)
+    ['exists?',dirname]
+  end
+
+  def old_file_create_command(filename,content)
+    ['write',filename,content]
+  end
+
+  def old_file_append_command(filename,content)
+    ['append',filename,content]
+  end
+
+  def old_file_read_command(filename)
+    ['read',filename]
   end
 
 end

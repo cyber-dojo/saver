@@ -14,7 +14,7 @@ class SaverRunTest < TestBase
   'dir_exists?(k) is false before dir_make(k) and true after' do
     dirname = 'groups/34/f6/01'
     refute saver.run(dir_exists_command(dirname))
-    assert saver.run(dir_make_command(dirname))
+    saver.run(dir_make_command(dirname))
     assert saver.run(dir_exists_command(dirname))
   end
 
@@ -35,7 +35,7 @@ class SaverRunTest < TestBase
     dirname = 'groups/32/f6/03'
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
-    assert saver.run(dir_make_command(dirname))
+    saver.run(dir_make_command(dirname))
     assert saver.run(file_create_command(filename, content))
     assert_equal content, saver.read(filename)
   end
@@ -58,7 +58,7 @@ class SaverRunTest < TestBase
     dirname = 'groups/73/F6/05'
     filename = dirname + '/readme.md'
     content = 'greetings'
-    assert saver.run(dir_make_command(dirname))
+    saver.run(dir_make_command(dirname))
     assert saver.run(file_create_command(filename, content))
     refute saver.run(file_create_command(filename, 'appended-content'))
     assert_equal content, saver.read(filename)
@@ -74,8 +74,8 @@ class SaverRunTest < TestBase
     dirname = 'groups/69/16/06'
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert saver.run(dir_make_command(dirname))
-    assert saver.run(file_create_command(filename, content))
+    saver.run(dir_make_command(dirname))
+    saver.run(file_create_command(filename, content))
     more = 'some-more'
     assert saver.run(file_append_command(filename, more))
     assert_equal content+more, saver.read(filename)
@@ -98,7 +98,7 @@ class SaverRunTest < TestBase
   ) do
     dirname = 'groups/96/16/08'
     filename = dirname + '/hiker.h'
-    assert saver.run(dir_make_command(dirname))
+    saver.run(dir_make_command(dirname))
     # no saver.run(saver.file_create_command(filename, '...'))
     assert saver.run(file_append_command(filename, 'main')).is_a?(FalseClass)
     assert saver.run(file_read_command(filename)).is_a?(FalseClass)
@@ -112,8 +112,8 @@ class SaverRunTest < TestBase
     dirname = 'groups/FD/F6/09'
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert saver.run(dir_make_command(dirname))
-    assert saver.run(file_create_command(filename, content))
+    saver.run(dir_make_command(dirname))
+    saver.run(file_create_command(filename, content))
     assert_equal content, saver.read(filename)
   end
 
@@ -126,7 +126,7 @@ class SaverRunTest < TestBase
   test '611',
   'file_read() returns false given an existing dir-name' do
     dirname = 'groups/2f/76/11'
-    assert saver.run(dir_make_command(dirname))
+    saver.run(dir_make_command(dirname))
     assert saver.run(file_read_command(dirname)).is_a?(FalseClass)
   end
 
