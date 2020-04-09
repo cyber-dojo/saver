@@ -3,7 +3,7 @@ require_relative 'test_base'
 require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
 
-class SaverRunAllTest < TestBase
+class SaverRunManyTest < TestBase
 
   def self.hex_prefix
     '86A'
@@ -13,7 +13,7 @@ class SaverRunAllTest < TestBase
   # run_all()
 
   multi_test '514',
-  'run_all() batches exists/create/write/append/read commands' do
+  'run_all() batches new commands' do
     expected = []
     commands = []
 
