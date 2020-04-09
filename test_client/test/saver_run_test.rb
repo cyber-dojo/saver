@@ -270,8 +270,8 @@ class SaverRunTest < TestBase
   ) do
     filename = false
     content = 'wibble'
-    message = 'malformed:command:append(key!=String):'
-    assert_raises_SaverException(message,'append',filename,content) {
+    message = 'malformed:command:file_append(key!=String):'
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
   end
@@ -284,8 +284,8 @@ class SaverRunTest < TestBase
   ) do
     filename = 'wibble.txt'
     content = false
-    message = 'malformed:command:append(value!=String):'
-    assert_raises_SaverException(message,'append',filename,content) {
+    message = 'malformed:command:file_append(value!=String):'
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
   end

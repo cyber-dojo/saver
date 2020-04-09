@@ -256,7 +256,7 @@ class SaverAssertTest < TestBase
     filename = dirname + '/readme.md'
     content = '#readme'
     message = 'command != true'
-    assert_raises_SaverException(message,'append',filename,content) {
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -274,7 +274,7 @@ class SaverAssertTest < TestBase
     content = '#readme'
     message = 'command != true'
     dir_make(dirname)
-    assert_raises_SaverException(message,'append',filename,content) {
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -291,7 +291,7 @@ class SaverAssertTest < TestBase
     content = '#readme'
     message = 'command != true'
     dir_make(filename)
-    assert_raises_SaverException(message,'append',filename,content) {
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -305,8 +305,8 @@ class SaverAssertTest < TestBase
   ) do
     filename = nil
     content = '#readme'
-    message = 'malformed:command:append(key!=String):'
-    assert_raises_SaverException(message,'append',filename,content) {
+    message = 'malformed:command:file_append(key!=String):'
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
   end
@@ -320,8 +320,8 @@ class SaverAssertTest < TestBase
     dirname = 'client/96/18/45'
     filename = dirname + '/readme.md'
     content = [34]
-    message = 'malformed:command:append(value!=String):'
-    assert_raises_SaverException(message,'append',filename,content) {
+    message = 'malformed:command:file_append(value!=String):'
+    assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
   end

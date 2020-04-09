@@ -107,7 +107,7 @@ class SaverService
   DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
   FILE_CREATE_COMMAND_NAME = 'write'
-  FILE_APPEND_COMMAND_NAME = 'append'
+  FILE_APPEND_COMMAND_NAME = 'file_append'
   FILE_READ_COMMAND_NAME   = 'file_read'
 
 end

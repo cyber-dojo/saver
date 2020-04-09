@@ -155,8 +155,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_append(key, value)
-    raise_unless_key_is_a_String('append',key,value)
-    raise_unless_value_is_a_String('append',key,value)
+    raise_unless_key_is_a_String('file_append',key,value)
+    raise_unless_value_is_a_String('file_append',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += value

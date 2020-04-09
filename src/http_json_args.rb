@@ -134,6 +134,7 @@ class HttpJsonArgs
     case name
     when 'dir_exists?' then fail_unless_well_formed_args(command,index,1)
     when 'dir_make'    then fail_unless_well_formed_args(command,index,1)
+    when 'file_append' then fail_unless_well_formed_args(command,index,2)
     when 'file_read'   then fail_unless_well_formed_args(command,index,1)
     # deprecated
     when 'exists?' then fail_unless_well_formed_args(command,index,1)
