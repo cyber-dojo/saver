@@ -3,7 +3,7 @@ require_relative 'test_base'
 require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
 
-class SaverDeprecatedTest < TestBase
+class SaverDeprecatedPrimitivesTest < TestBase
 
   def self.hex_prefix
     'AD4'

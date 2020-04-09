@@ -3,7 +3,7 @@ require_relative 'test_base'
 require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
 
-class SaverBatchTest < TestBase
+class SaverRunAllTest < TestBase
 
   def self.hex_prefix
     '86A'
