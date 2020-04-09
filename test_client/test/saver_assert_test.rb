@@ -143,7 +143,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '2E9', %w(
-  |file_create(filename,content) raises
+  |file_create(filename,content) raises and does nothing
   |when dir of filename does not exist
   ) do
     dirname = 'client/N5/s2/E9'
@@ -154,12 +154,14 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'write',filename,content) {
       file_create(filename,content)
     }
+    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '2A0', %w(
-  |file_create(filename,content) raises
+  |file_create(filename,content) raises and does nothing
   |when filename aready exists as a file
   ) do
     dirname = 'client/N5/s2/A0'
@@ -171,7 +173,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'write',filename,content*2) {
       file_create(filename,content*2)
     }
-    assert_equal content, file_read(filename)
+    assert_equal content, file_read(filename), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -180,7 +182,7 @@ class SaverAssertTest < TestBase
   |file_create(filename,content) raises
   |when filename aready exists as a dir
   ) do
-    dirname = 'client/N5/s2/A0'
+    dirname = 'client/N5/s2/A1'
     filename = dirname + '/events.json'
     content = '{"time":[3,4,5,6,7,8]}'
     dir_make(filename)
@@ -188,6 +190,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'write',filename,content) {
       file_create(filename,content)
     }
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -207,7 +210,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '2A3', %w(
-  |file_create(filename,content) raises
+  |file_create(filename,content) raises and does nothing
   |when content is not a String
   ) do
     dirname = 'client/N5/s2/A3'
@@ -218,38 +221,46 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'write',filename,content) {
       file_create(filename,content)
     }
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
   end
-
-=begin
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # append()
+  # file_append()
 
   multi_test '840', %w(
-    append(filename,content) returns true and appends to the end of filename
-    when filename already exists
+  |append(filename,content) returns true
+  |and appends to the end of filename
+  |when filename already exists
   ) do
-    dirname = 'client/69/1b/2B'
-    assert create(dirname)
+    dirname = 'client/69/18/40'
     filename = dirname + '/readme.md'
     content = 'helloooo'
-    assert write(filename, content)
-    more = 'some-more'
-    assert append(filename, more)
-    assert_equal content+more, read(filename)
+    dir_make(dirname)
+    file_create(filename, content)
+    assert file_append(filename, content)
+    assert_equal content*2, file_read(filename)
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '841', %w(
-    append(filename,content) returns false and does nothing
-    when its dir of filename does not already exist
+  |append(filename,content) raises and does nothing
+  |when dir of filename does not already exist
   ) do
-    dirname = 'client/96/18/59'
-    # no create(dirname)
+    dirname = 'client/96/18/41'
     filename = dirname + '/readme.md'
-    refute append(filename, 'greetings')
-    assert read(filename).is_a?(FalseClass)
+    content = '#readme'
+    message = 'command != true'
+    assert_raises_SaverException(message,'append',filename,content) {
+      file_append(filename,content)
+    }
+    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+=begin
   multi_test '842', %w(
     append(filename,content) does nothing and returns false
     when dir of filenme exists and filename does not exist
@@ -303,11 +314,9 @@ class SaverAssertTest < TestBase
     saver.assert(file_create_command(filename, content))
   end
 
-=begin
   def file_append(filename, content)
     saver.assert(file_append_command(filename, content))
   end
-=end
 
   def file_read(filename)
     saver.assert(file_read_command(filename))
@@ -327,11 +336,9 @@ class SaverAssertTest < TestBase
     saver.file_create_command(filename, content)
   end
 
-=begin
   def file_append_command(filename, content)
     saver.file_append_command(filename, content)
   end
-=end
 
   def file_read_command(filename)
     saver.file_read_command(filename)
