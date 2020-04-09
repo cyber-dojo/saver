@@ -108,6 +108,6 @@ class SaverService
 
   FILE_CREATE_COMMAND_NAME = 'write'
   FILE_APPEND_COMMAND_NAME = 'append'
-  FILE_READ_COMMAND_NAME   = 'read'
+  FILE_READ_COMMAND_NAME   = 'file_read'
 
 end

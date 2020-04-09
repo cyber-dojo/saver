@@ -350,7 +350,7 @@ class SaverAssertTest < TestBase
   ) do
     filename = '/does-not-exist.txt'
     message = 'command != true'
-    assert_raises_SaverException(message,'read',filename) {
+    assert_raises_SaverException(message,'file_read',filename) {
       file_read(filename)
     }
   end
@@ -364,7 +364,7 @@ class SaverAssertTest < TestBase
     filename = '/exists-as-a-dir.txt'
     message = 'command != true'
     dir_make(filename)
-    assert_raises_SaverException(message,'read',filename) {
+    assert_raises_SaverException(message,'file_read',filename) {
       file_read(filename)
     }
     assert dir_exists?(filename)
@@ -377,8 +377,8 @@ class SaverAssertTest < TestBase
   |when filename is not a String
   ) do
     filename = 45.6
-    message = 'malformed:command:read(key!=String):'
-    assert_raises_SaverException(message,'read',filename) {
+    message = 'malformed:command:file_read(key!=String):'
+    assert_raises_SaverException(message,'file_read',filename) {
       file_read(filename)
     }
   end

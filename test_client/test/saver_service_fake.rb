@@ -169,7 +169,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_read(key)
-    raise_unless_key_is_a_String('read',key)
+    raise_unless_key_is_a_String('file_read',key)
     @@files[path_name(key)] || false
   end
 
