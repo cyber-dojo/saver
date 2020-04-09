@@ -64,6 +64,12 @@ class Saver
     when FILE_CREATE_COMMAND_NAME then file_create(*args)
     when FILE_APPEND_COMMAND_NAME then file_append(*args)
     when FILE_READ_COMMAND_NAME   then file_read(*args)
+    # deprecated - for now, needed by batch()
+    when 'exists?' then exists?(*args)
+    when 'create'  then create(*args)
+    when 'write'   then write(*args)
+    when 'append'  then append(*args)
+    when 'read'    then read(*args)
     end
   end
 

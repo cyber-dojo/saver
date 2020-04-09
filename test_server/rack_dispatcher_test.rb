@@ -257,12 +257,19 @@ class RackDispatcherTest < TestBase
 
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # deprecated
 
   test 'E53',
   'dispatches to batch' do
     saver_stub('batch')
     assert_saver_dispatch('batch',
-      { commands: well_formed_commands }.to_json,
+      { commands: [
+        [ 'create',  '/cyber-dojo/katas/12/34/45' ],
+        [ 'exists?', '/cyber-dojo/katas/12/34/45' ],
+        [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
+        [ 'append',  '/cyber-dojo/katas/12/34/45/manifest.json', {"b"=>"yes"}.to_json ],
+        [ 'read',    '/cyber-dojo/katas/12/34/45/manifest.json']
+      ]}.to_json,
       'hello from stubbed saver.batch'
     )
   end
@@ -354,14 +361,14 @@ class RackDispatcherTest < TestBase
   end
 
   def well_formed_command
-    [ 'create',  '/cyber-dojo/katas/12/34/45' ]
+    [ 'dir_make',  '/cyber-dojo/katas/12/34/45' ]
   end
 
   def well_formed_commands
     [
-      [ 'create',  '/cyber-dojo/katas/12/34/45' ],
-      [ 'exists?', '/cyber-dojo/katas/12/34/45' ],
-      [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
+      [ 'dir_make',    '/cyber-dojo/katas/12/34/45' ],
+      [ 'dir_exists?', '/cyber-dojo/katas/12/34/45' ],
+      [ 'file_create', '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
     ]
   end
 

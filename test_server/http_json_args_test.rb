@@ -78,40 +78,6 @@ class HttpJsonArgsTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # get:key
-
-  test 'B41',
-  'key: get() raises when it is missing' do
-    args = HttpJsonArgs.new('{}')
-    error = assert_raises { args.get('/create', externals) }
-    assert_equal 'missing:key:', error.message
-  end
-
-  test 'B42',
-  'key: get() raises when it is not a String' do
-    args = HttpJsonArgs.new('{"key":42}')
-    error = assert_raises { args.get('/create', externals) }
-    assert_equal 'malformed:key:!String (Integer):', error.message
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # get:value
-
-  test 'B43',
-  'value: get() raises when it is missing' do
-    args = HttpJsonArgs.new('{"key":"a/b/c"}')
-    error = assert_raises { args.get('/write', externals) }
-    assert_equal 'missing:value:', error.message
-  end
-
-  test 'B44',
-  'value: get() raises when it is not a String' do
-    args = HttpJsonArgs.new('{"key":"a/b/c","value":42}')
-    error = assert_raises { args.get('/write', externals) }
-    assert_equal 'malformed:value:!String (Integer):', error.message
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # get:command
 
   test 'C50',
@@ -143,24 +109,24 @@ class HttpJsonArgsTest < TestBase
   end
 
   test 'C58',
-  'command: get() raises when create-command does not have one argument' do
-    command = ['create']
+  'command: get() raises when dir_make-command does not have one argument' do
+    command = ['dir_make']
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:create!0:', error.message
+    assert_equal 'malformed:command:dir_make!0:', error.message
   end
 
   test 'C63',
   'command: get() raises when any 1st argument is not a string' do
-    command = ['read',42]
+    command = ['file_read',42]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:read(filename!=String):', error.message
+    assert_equal 'malformed:command:file_read(filename!=String):', error.message
   end
 
   test 'C64',
   'command: get() raises when any 2nd argument is not a string' do
-    command = ['write','a/b/c',nil]
+    command = ['file_create','a/b/c',nil]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:write(content!=String):', error.message
+    assert_equal 'malformed:command:file_create(content!=String):', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -182,79 +148,116 @@ class HttpJsonArgsTest < TestBase
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
-    commands = [['exists?','a/b/c'],true]
+    commands = [['dir_exists?','a/b/c'],true]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
-    commands = [['exists?','/d/e/f'],[4.2]]
+    commands = [['dir_exists?','/d/e/f'],[4.2]]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
 
   test 'B55',
   'commands[i]: get() raises when name is unknown' do
-    commands = [['create','/t/45/readme.md'],['qwerty','ff']]
+    commands = [['dir_make','/t/45/readme.md'],['qwerty','ff']]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:Unknown (qwerty):', error.message
   end
 
   test 'B58',
-  'commands[i]: get() raises when create-command does not have one argument' do
-    commands = [['create']]
+  'commands[i]: get() raises when dir_make-command does not have one argument' do
+    commands = [['dir_make']]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:create!0:', error.message
+    assert_equal 'malformed:commands[0]:dir_make!0:', error.message
   end
 
   test 'B59',
-  'commands[i]: get() raises when exists-command does not have one argument' do
-    commands = [['exists?','a','b','c']]
+  'commands[i]: get() raises when dir_exists-command does not have one argument' do
+    commands = [['dir_exists?','a','b','c']]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:exists?!3:', error.message
+    assert_equal 'malformed:commands[0]:dir_exists?!3:', error.message
   end
 
   test 'B60',
-  'commands[i]: get() raises when write-command does not have two arguments' do
-    commands = [['write','a','b','c','d']]
+  'commands[i]: get() raises when file_create-command does not have two arguments' do
+    commands = [['file_create','a','b','c','d']]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:write!4:', error.message
+    assert_equal 'malformed:commands[0]:file_create!4:', error.message
   end
 
   test 'B61',
-  'commands[i]: get() raises when append-command does not have two arguments' do
-    commands = [['append','a']]
+  'commands[i]: get() raises when file_append-command does not have two arguments' do
+    commands = [['file_append','a']]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:append!1:', error.message
+    assert_equal 'malformed:commands[0]:file_append!1:', error.message
   end
 
   test 'B62',
-  'commands[i]: get() raises when read-command does not have one argument' do
-    commands = [['read']]
+  'commands[i]: get() raises when file_read-command does not have one argument' do
+    commands = [['file_read']]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:read!0:', error.message
+    assert_equal 'malformed:commands[0]:file_read!0:', error.message
   end
 
   test 'B63',
   'commands[i]: get() raises when any 1st argument is not a string' do
-    commands = [['read',42]]
+    commands = [['file_read',42]]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:read(filename!=String):', error.message
+    assert_equal 'malformed:commands[0]:file_read(filename!=String):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
-    commands = [['write','a/b/c',nil]]
+    commands = [['file_create','a/b/c',nil]]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:write(content!=String):', error.message
+    assert_equal 'malformed:commands[0]:file_create(content!=String):', error.message
   end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
+  # deprecated
 
   test 'E69',
   'support batch() till switched to batch_run' do
-    commands = [['write','a/b/c',nil]]
+    commands = [['file_create','a/b/c',nil]]
     error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:write(content!=String):', error.message
+    assert_equal 'malformed:commands[0]:file_create(content!=String):', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # get:key
+
+  test 'B41',
+  'key: get() raises when it is missing' do
+    args = HttpJsonArgs.new('{}')
+    error = assert_raises { args.get('/create', externals) }
+    assert_equal 'missing:key:', error.message
+  end
+
+  test 'B42',
+  'key: get() raises when it is not a String' do
+    args = HttpJsonArgs.new('{"key":42}')
+    error = assert_raises { args.get('/create', externals) }
+    assert_equal 'malformed:key:!String (Integer):', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # get:value
+
+  test 'B43',
+  'value: get() raises when it is missing' do
+    args = HttpJsonArgs.new('{"key":"a/b/c"}')
+    error = assert_raises { args.get('/write', externals) }
+    assert_equal 'missing:value:', error.message
+  end
+
+  test 'B44',
+  'value: get() raises when it is not a String' do
+    args = HttpJsonArgs.new('{"key":"a/b/c","value":42}')
+    error = assert_raises { args.get('/write', externals) }
+    assert_equal 'malformed:value:!String (Integer):', error.message
   end
 
   private

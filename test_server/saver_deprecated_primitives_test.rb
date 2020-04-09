@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require_relative '../src/saver'
 
-class SaverPrimitivesTest < TestBase
+class SaverDeprecatedPrimitivesTest < TestBase
 
   def self.hex_prefix
     'FA4'

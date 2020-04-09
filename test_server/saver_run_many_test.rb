@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require_relative '../src/saver'
 
-class SaverBatchTest < TestBase
+class SaverRunManyTest < TestBase
 
   def self.hex_prefix
     '34F'
@@ -31,47 +31,6 @@ class SaverBatchTest < TestBase
     command(false, file_read_command(there_no))
     result = saver.run_all(@commands)
     assert_equal @expected, result
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # assert_all
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '416',
-  'assert_all() returns array of results when all commands are true' do
-    dirname = 'batch/e3/t4/16'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-    there_yes = dirname + '/there-yes.txt'
-    content = 'dunkeld tay beat'
-    command(true, file_create_command(there_yes, content))
-    command(true, file_append_command(there_yes, content.reverse))
-    command(content+content.reverse, file_read_command(there_yes))
-    result = saver.assert_all(@commands)
-    assert_equal @expected, result
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '417', %w(
-  assert_all() raises
-  when any command is not true
-  and subsequent commands are not executed
-  ) do
-    dirname = 'batch/e3/t4/17'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-    there_yes = dirname + '/there-yes.txt'
-    content = 'monaltrie dee beat'
-    command(true, file_create_command(there_yes, content))
-    there_no = dirname + '/there-not.txt'
-    command(false, file_read_command(there_no))
-    command(true, file_append_command(there_yes, content.reverse))
-    error = assert_raises(RuntimeError) {
-      saver.assert_all(@commands)
-    }
-    assert_equal "commands[3] != true", error.message
-    assert_equal content, saver.read(there_yes), :does_not_execute_subsequent_commands
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -316,26 +275,6 @@ class SaverBatchTest < TestBase
 
     assert_run_until_true
     refute saver.read(dirname + '/4.event.json'), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # DEPRECATED
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '934', %w( support batch() till switched to batch_run() ) do
-    dirname = 'batch/e3/t9/34'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-    there_no = dirname + '/there-not.txt'
-    command(false, file_read_command(there_no))
-    there_yes = dirname + '/there-yes.txt'
-    content = 'tulchan spey beat'
-    command(true, file_create_command(there_yes, content))
-    command(true, file_append_command(there_yes, content.reverse))
-    command(content+content.reverse, file_read_command(there_yes))
-    command(false, file_read_command(there_no))
-    result = saver.batch(@commands)
-    assert_equal @expected, result
   end
 
   private
