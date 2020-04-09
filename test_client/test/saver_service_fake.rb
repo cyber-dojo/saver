@@ -132,6 +132,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
+    raise_unless_key_is_a_String('read',key)    
     @@files[path_name(key)] || false
   end
 
@@ -187,7 +188,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def path_name(key)
-    File.join('', 'cyber-dojo', key)
+    File.join('', 'cyber-dojo', key.to_s)
   end
 
   def dir?(key)

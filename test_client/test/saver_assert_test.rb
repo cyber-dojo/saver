@@ -233,7 +233,7 @@ class SaverAssertTest < TestBase
   # file_append()
 
   multi_test '840', %w(
-  |append(filename,content) returns true
+  |file_append(filename,content) returns true
   |and appends to the end of filename
   |when filename already exists
   ) do
@@ -249,7 +249,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '841', %w(
-  |append(filename,content) raises and does nothing
+  |file_append(filename,content) raises and does nothing
   |when dir of filename does not already exist
   ) do
     dirname = 'client/96/18/41'
@@ -266,7 +266,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '842', %w(
-  |append(filename,content) raises and does nothing
+  |file_append(filename,content) raises and does nothing
   |when dir of filename exists but filename does not exist
   ) do
     dirname = 'client/96/18/42'
@@ -283,7 +283,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '843', %w(
-  |append(filename,content) raises and does nothing
+  |file_append(filename,content) raises and does nothing
   |when filename exists as a dir
   ) do
     dirname = 'client/96/18/43'
@@ -300,7 +300,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '844', %w(
-  |append(filename,content) raises and does nothing
+  |file_append(filename,content) raises and does nothing
   |when filename is not a String
   ) do
     filename = nil
@@ -314,8 +314,8 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '845', %w(
-  |append(filename,content) raises and does nothing
-  |when conten is not a String
+  |file_append(filename,content) raises and does nothing
+  |when content is not a String
   ) do
     dirname = 'client/96/18/45'
     filename = dirname + '/readme.md'
@@ -326,33 +326,62 @@ class SaverAssertTest < TestBase
     }
   end
 
-=begin
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # read()
+  # file_read()
 
-  multi_test '437',
-  'read(filename) reads what a successful write(filename,content) writes' do
-    dirname = 'client/FD/F4/38'
-    assert create(dirname)
+  multi_test '437', %w(
+  |file_read(filename) reads
+  |what a successful file_write(filename,content) wrote
+  ) do
+    dirname = 'client/FD/F4/37'
     filename = dirname + '/limerick.txt'
     content = 'the boy stood on the burning deck'
-    assert write(filename, content)
-    assert_equal content, read(filename)
+    dir_make(dirname)
+    file_create(filename, content)
+    assert_equal content, file_read(filename)
   end
 
-  multi_test '438',
-  'read() returns false given a non-existent file-name' do
-    filename = 'client/1z/23/e4/not-there.txt'
-    assert read(filename).is_a?(FalseClass)
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '438', %w(
+  |file_read(filename) raises
+  |when filename does not exist as a dir
+  |and filename does not exist as a file
+  ) do
+    filename = '/does-not-exist.txt'
+    message = 'command != true'
+    assert_raises_SaverException(message,'read',filename) {
+      file_read(filename)
+    }
   end
 
-  multi_test '439',
-  'read(filename) returns false given an existing dirname' do
-    dirname = 'client/2f/7k/3P'
-    create(dirname)
-    assert read(dirname).is_a?(FalseClass)
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '439', %w(
+  |file_read(filename) raises
+  |when filename exists as a dir
+  ) do
+    filename = '/exists-as-a-dir.txt'
+    message = 'command != true'
+    dir_make(filename)
+    assert_raises_SaverException(message,'read',filename) {
+      file_read(filename)
+    }
+    assert dir_exists?(filename)
   end
-=end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '440', %w(
+  |file_read(filename) raises
+  |when filename is not a String
+  ) do
+    filename = 45.6
+    message = 'malformed:command:read(key!=String):'
+    assert_raises_SaverException(message,'read',filename) {
+      file_read(filename)
+    }
+  end
 
   private
 
