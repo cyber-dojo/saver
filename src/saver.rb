@@ -113,7 +113,7 @@ class Saver
   DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
   DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
-  FILE_CREATE_COMMAND_NAME = 'file_write'
+  FILE_CREATE_COMMAND_NAME = 'file_create'
   FILE_APPEND_COMMAND_NAME = 'file_append'
   FILE_READ_COMMAND_NAME   = 'file_read'
 
