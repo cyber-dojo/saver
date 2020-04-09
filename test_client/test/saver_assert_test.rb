@@ -25,7 +25,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '432', %w(
-  |dir_exists?(dirname) raises
+  |dir_exists?(dirname) raises and does nothing
   |when dirname does not exist as a dir
   |and dirname does not exist as a file
   ) do
@@ -34,12 +34,13 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'exists?',dirname ) {
       dir_exists?(dirname)
     }
+    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '433', %w(
-  |dir_exists?(dirname) raises
+  |dir_exists?(dirname) raises and does nothing
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s4/33'
@@ -51,12 +52,13 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'exists?',filename) {
       dir_exists?(filename)
     }
+    assert_equal content, saver.run(saver.file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '434', %w(
-  |dir_exists?(dirname) raises
+  |dir_exists?(dirname) raises and does nothing
   |when dirname is not a String
   ) do
     dirname = 42
@@ -77,12 +79,13 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s7/68'
     assert dir_make(dirname)
+    assert dir_exists?(dirname)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '569', %w(
-  |dir_make(dirname) raises
+  |dir_make(dirname) raises and does nothing
   |when dirname exists as a dir
   ) do
     dirname = 'client/N5/s7/69'
@@ -91,12 +94,13 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'create',dirname) {
       dir_make(dirname)
     }
+    assert dir_exists?(dirname), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test '570', %w(
-  |dir_make(dirname) raises
+  |dir_make(dirname) raises and does nothing
   |when dirname exists as a file
   ) do
     dirname = 'client/N5/s7/70'
@@ -108,6 +112,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'create',filename) {
       dir_make(filename)
     }
+    assert_equal content, file_read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -260,19 +265,68 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   multi_test '842', %w(
-    append(filename,content) does nothing and returns false
-    when dir of filenme exists and filename does not exist
+  |append(filename,content) raises and does nothing
+  |when dir of filename exists but filename does not exist
   ) do
-    dirname = 'client/96/18/59'
-    assert create(dirname)
-    filename = dirname + '/hiker.h'
-    # no write(filename, '...')
-    refute append(filename, 'int main(void);')
-    assert read(filename).is_a?(FalseClass)
+    dirname = 'client/96/18/42'
+    filename = dirname + '/readme.md'
+    content = '#readme'
+    message = 'command != true'
+    dir_make(dirname)
+    assert_raises_SaverException(message,'append',filename,content) {
+      file_append(filename,content)
+    }
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '843', %w(
+  |append(filename,content) raises and does nothing
+  |when filename exists as a dir
+  ) do
+    dirname = 'client/96/18/43'
+    filename = dirname + '/readme.md'
+    content = '#readme'
+    message = 'command != true'
+    dir_make(filename)
+    assert_raises_SaverException(message,'append',filename,content) {
+      file_append(filename,content)
+    }
+    refute saver.run(saver.file_read_command(filename)), :did_nothing
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '844', %w(
+  |append(filename,content) raises and does nothing
+  |when filename is not a String
+  ) do
+    filename = nil
+    content = '#readme'
+    message = 'malformed:command:append(key!=String):'
+    assert_raises_SaverException(message,'append',filename,content) {
+      file_append(filename,content)
+    }
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '845', %w(
+  |append(filename,content) raises and does nothing
+  |when conten is not a String
+  ) do
+    dirname = 'client/96/18/45'
+    filename = dirname + '/readme.md'
+    content = [34]
+    message = 'malformed:command:append(value!=String):'
+    assert_raises_SaverException(message,'append',filename,content) {
+      file_append(filename,content)
+    }
+  end
+
+=begin
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # read()
 

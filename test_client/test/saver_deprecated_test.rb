@@ -70,7 +70,8 @@ class SaverDeprecatedTest < TestBase
   # append()
 
   multi_test '840', %w(
-    append(filename,content) returns true and appends to the end of filename
+    append(filename,content) returns true
+    and appends to the end of filename
     when filename already exists
   ) do
     dirname = 'client/69/Xb/2B'
