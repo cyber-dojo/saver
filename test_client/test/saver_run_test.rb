@@ -178,8 +178,8 @@ class SaverRunTest < TestBase
     filename = nil
     content = 'greetings'
     dir_make(dirname)
-    message = 'malformed:command:write(key!=String):'
-    assert_raises_SaverException(message,'write',filename,content) {
+    message = 'malformed:command:file_create(key!=String):'
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)
     }
   end
@@ -194,8 +194,8 @@ class SaverRunTest < TestBase
     filename = dirname + '/' + 'manifest.json'
     content = 4.5
     dir_make(dirname)
-    message = 'malformed:command:write(value!=String):'
-    assert_raises_SaverException(message,'write',filename,content) {
+    message = 'malformed:command:file_create(value!=String):'
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)
     }
   end

@@ -156,7 +156,7 @@ class SaverAssertTest < TestBase
     content = '{"time":[3,4,5,6,7,8]}'
     # no dir_make(dirname)
     message = 'command != true'
-    assert_raises_SaverException(message,'write',filename,content) {
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -175,7 +175,7 @@ class SaverAssertTest < TestBase
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
-    assert_raises_SaverException(message,'write',filename,content*2) {
+    assert_raises_SaverException(message,'file_create',filename,content*2) {
       file_create(filename,content*2)
     }
     assert_equal content, file_read(filename), :did_nothing
@@ -192,7 +192,7 @@ class SaverAssertTest < TestBase
     content = '{"time":[3,4,5,6,7,8]}'
     dir_make(filename)
     message = 'command != true'
-    assert_raises_SaverException(message,'write',filename,content) {
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -206,8 +206,8 @@ class SaverAssertTest < TestBase
   ) do
     filename = 42
     content = '{"time":[3,4,5,6,7,8]}'
-    message = 'malformed:command:write(key!=String):'
-    assert_raises_SaverException(message,'write',filename,content) {
+    message = 'malformed:command:file_create(key!=String):'
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
   end
@@ -222,8 +222,8 @@ class SaverAssertTest < TestBase
     filename = dirname + '/events.json'
     content = true
     dir_make(dirname)
-    message = 'malformed:command:write(value!=String):'
-    assert_raises_SaverException(message,'write',filename,content) {
+    message = 'malformed:command:file_create(value!=String):'
+    assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing

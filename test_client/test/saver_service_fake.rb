@@ -102,7 +102,7 @@ class SaverServiceFake
   DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
   DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
-  FILE_CREATE_COMMAND_NAME = 'file_write'
+  FILE_CREATE_COMMAND_NAME = 'file_create'
   FILE_APPEND_COMMAND_NAME = 'file_append'
   FILE_READ_COMMAND_NAME   = 'file_read'
 
@@ -141,8 +141,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(key, value)
-    raise_unless_key_is_a_String('write',key,value)
-    raise_unless_value_is_a_String('write',key,value)
+    raise_unless_key_is_a_String('file_create',key,value)
+    raise_unless_value_is_a_String('file_create',key,value)
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = value
