@@ -61,6 +61,12 @@ class SaverServiceFake
     @origin ||= 'run'
     name,*args = command
     case name
+    when DIR_EXISTS_COMMAND_NAME  then exists?(*args)
+    when DIR_MAKE_COMMAND_NAME    then create(*args)
+    when FILE_CREATE_COMMAND_NAME then write(*args)
+    when FILE_APPEND_COMMAND_NAME then append(*args)
+    when FILE_READ_COMMAND_NAME   then read(*args)
+    # deprecated
     when 'create'  then create(*args)
     when 'exists?' then exists?(*args)
     when 'write'   then write(*args)
@@ -132,11 +138,20 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def read(key)
-    raise_unless_key_is_a_String('read',key)    
+    raise_unless_key_is_a_String('read',key)
     @@files[path_name(key)] || false
   end
 
   private
+
+  DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
+  DIR_MAKE_COMMAND_NAME   = 'dir_make'
+
+  FILE_CREATE_COMMAND_NAME = 'file_write'
+  FILE_APPEND_COMMAND_NAME = 'file_append'
+  FILE_READ_COMMAND_NAME   = 'file_read'
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def run_until(commands, &block)
     results = []

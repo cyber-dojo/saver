@@ -64,6 +64,12 @@ class Saver
     when FILE_CREATE_COMMAND_NAME then write(*args)
     when FILE_APPEND_COMMAND_NAME then append(*args)
     when FILE_READ_COMMAND_NAME   then read(*args)
+    # deprecated
+    when 'create'  then create(*args)
+    when 'exists?' then exists?(*args)
+    when 'write'   then write(*args)
+    when 'append'  then append(*args)
+    when 'read'    then read(*args)
     end
   end
 
@@ -162,12 +168,12 @@ class Saver
 
   private
 
-  DIR_EXISTS_COMMAND_NAME = 'exists?'
-  DIR_MAKE_COMMAND_NAME = 'create'
+  DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
+  DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
-  FILE_CREATE_COMMAND_NAME  = 'write'
-  FILE_APPEND_COMMAND_NAME = 'append'
-  FILE_READ_COMMAND_NAME   = 'read'
+  FILE_CREATE_COMMAND_NAME = 'file_write'
+  FILE_APPEND_COMMAND_NAME = 'file_append'
+  FILE_READ_COMMAND_NAME   = 'file_read'
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
