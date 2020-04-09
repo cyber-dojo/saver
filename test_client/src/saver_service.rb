@@ -12,7 +12,7 @@ class SaverService
 
   def initialize
     requester = HttpJson::Requester.new(Net::HTTP, 'saver', 4537)
-    @http = HttpJson::Responder.new(requester, Error)
+    @http = HttpJson::Responder.new(requester, Error, {keyed:true})
   end
 
   # - - - - - - - - - - - -
