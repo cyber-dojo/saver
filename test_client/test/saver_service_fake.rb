@@ -129,7 +129,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_make(key)
-    raise_unless_key_is_a_String('create',key)
+    raise_unless_key_is_a_String('dir_make',key)
     path = path_name(key)
     if dir?(path) || file?(path)
       false

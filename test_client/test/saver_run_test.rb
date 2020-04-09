@@ -106,8 +106,8 @@ class SaverRunTest < TestBase
   |when dirname is not a String
   ) do
     dirname = {"a"=>42}
-    message = 'malformed:command:create(key!=String):'
-    assert_raises_SaverException(message,'create',dirname) {
+    message = 'malformed:command:dir_make(key!=String):'
+    assert_raises_SaverException(message,'dir_make',dirname) {
       dir_make(dirname)
     }
   end

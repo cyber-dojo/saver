@@ -133,7 +133,8 @@ class HttpJsonArgs
     end
     case name
     when 'dir_exists?' then fail_unless_well_formed_args(command,index,1)
-    # deprecated    
+    when 'dir_make'    then fail_unless_well_formed_args(command,index,1)
+    # deprecated
     when 'exists?' then fail_unless_well_formed_args(command,index,1)
     when 'create'  then fail_unless_well_formed_args(command,index,1)
     when 'write'   then fail_unless_well_formed_args(command,index,2)
