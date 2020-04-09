@@ -23,6 +23,7 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # commands
 
   def dir_exists_command(key)
     SaverService.new.dir_exists_command(key)
@@ -45,7 +46,7 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # primitives
+  # singular
 
   def assert(command)
     @origin = 'assert'
@@ -76,19 +77,32 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # batches
+  # batched
 
-  #TODO: def assert_all(commands)
+  def assert_all(commands)
+    run_until(commands) {|r,index|
+      if r
+        false
+      else
+        raise "commands[#{index}] != true"
+      end
+    }
+  end
 
   def run_all(commands)
     run_until(commands) {|r| r === :never}
   end
 
-  #TODO: def run_until_true
-  #TODO: def run_until_false
+  def run_until_true(commands)
+    run_until(commands) {|r| r}
+  end
+
+  def run_until_false(commands)
+    run_until(commands) {|r| !r}
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # TODO: deprecated
+  # deprecated
 
   def exists?(key); dir_exists?(key); end
   def create(key); dir_make(key); end
