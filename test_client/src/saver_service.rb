@@ -103,7 +103,7 @@ class SaverService
 
   private
 
-  DIR_EXISTS_COMMAND_NAME = 'exists?'
+  DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
   DIR_MAKE_COMMAND_NAME   = 'create'
 
   FILE_CREATE_COMMAND_NAME = 'write'

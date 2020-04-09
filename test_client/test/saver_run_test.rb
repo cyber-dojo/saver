@@ -53,8 +53,8 @@ class SaverRunTest < TestBase
   |when dirname is not a String
   ) do
     dirname = [2]
-    message = 'malformed:command:exists?(key!=String):'
-    assert_raises_SaverException(message,'exists?',dirname) {
+    message = 'malformed:command:dir_exists?(key!=String):'
+    assert_raises_SaverException(message,'dir_exists?',dirname) {
       dir_exists?(dirname)
     }
   end

@@ -119,10 +119,10 @@ class SaverServiceFake
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
-  # commands 
+  # commands
 
   def dir_exists?(key)
-    raise_unless_key_is_a_String('exists?',key)
+    raise_unless_key_is_a_String('dir_exists?',key)
     dir?(path_name(key))
   end
 

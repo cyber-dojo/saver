@@ -132,8 +132,10 @@ class HttpJsonArgs
       fail malformed("command#{index}[0]", "!String (#{name.class.name})")
     end
     case name
-    when 'create'  then fail_unless_well_formed_args(command,index,1)
+    when 'dir_exists?' then fail_unless_well_formed_args(command,index,1)
+    # deprecated    
     when 'exists?' then fail_unless_well_formed_args(command,index,1)
+    when 'create'  then fail_unless_well_formed_args(command,index,1)
     when 'write'   then fail_unless_well_formed_args(command,index,2)
     when 'append'  then fail_unless_well_formed_args(command,index,2)
     when 'read'    then fail_unless_well_formed_args(command,index,1)

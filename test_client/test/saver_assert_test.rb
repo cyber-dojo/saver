@@ -31,7 +31,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s4/32'
     message = 'command != true'
-    assert_raises_SaverException(message,'exists?',dirname ) {
+    assert_raises_SaverException(message,'dir_exists?',dirname ) {
       dir_exists?(dirname)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -49,7 +49,7 @@ class SaverAssertTest < TestBase
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
-    assert_raises_SaverException(message,'exists?',filename) {
+    assert_raises_SaverException(message,'dir_exists?',filename) {
       dir_exists?(filename)
     }
     assert_equal content, saver.run(saver.file_read_command(filename)), :did_nothing
@@ -62,8 +62,8 @@ class SaverAssertTest < TestBase
   |when dirname is not a String
   ) do
     dirname = 42
-    message = 'malformed:command:exists?(key!=String):'
-    assert_raises_SaverException(message,'exists?',dirname) {
+    message = 'malformed:command:dir_exists?(key!=String):'
+    assert_raises_SaverException(message,'dir_exists?',dirname) {
       dir_exists?(dirname)
     }
   end
