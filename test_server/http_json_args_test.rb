@@ -153,14 +153,14 @@ class HttpJsonArgsTest < TestBase
   'command: get() raises when any 1st argument is not a string' do
     command = ['read',42]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:read(key!=String):', error.message
+    assert_equal 'malformed:command:read(filename!=String):', error.message
   end
 
   test 'C64',
   'command: get() raises when any 2nd argument is not a string' do
     command = ['write','a/b/c',nil]
     error = assert_assert_raises(command)
-    assert_equal 'malformed:command:write(value!=String):', error.message
+    assert_equal 'malformed:command:write(content!=String):', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -240,21 +240,21 @@ class HttpJsonArgsTest < TestBase
   'commands[i]: get() raises when any 1st argument is not a string' do
     commands = [['read',42]]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:read(key!=String):', error.message
+    assert_equal 'malformed:commands[0]:read(filename!=String):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
     commands = [['write','a/b/c',nil]]
     error = assert_run_all_raises(commands)
-    assert_equal 'malformed:commands[0]:write(value!=String):', error.message
+    assert_equal 'malformed:commands[0]:write(content!=String):', error.message
   end
 
   test 'E69',
   'support batch() till switched to batch_run' do
     commands = [['write','a/b/c',nil]]
     error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:write(value!=String):', error.message
+    assert_equal 'malformed:commands[0]:write(content!=String):', error.message
   end
 
   private

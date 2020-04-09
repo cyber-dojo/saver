@@ -53,7 +53,7 @@ class SaverRunTest < TestBase
   |when dirname is not a String
   ) do
     dirname = [2]
-    message = 'malformed:command:dir_exists?(key!=String):'
+    message = 'malformed:command:dir_exists?(dirname!=String):'
     assert_raises_SaverException(message,'dir_exists?',dirname) {
       dir_exists?(dirname)
     }
@@ -106,7 +106,7 @@ class SaverRunTest < TestBase
   |when dirname is not a String
   ) do
     dirname = {"a"=>42}
-    message = 'malformed:command:dir_make(key!=String):'
+    message = 'malformed:command:dir_make(dirname!=String):'
     assert_raises_SaverException(message,'dir_make',dirname) {
       dir_make(dirname)
     }
@@ -178,7 +178,7 @@ class SaverRunTest < TestBase
     filename = nil
     content = 'greetings'
     dir_make(dirname)
-    message = 'malformed:command:file_create(key!=String):'
+    message = 'malformed:command:file_create(filename!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)
     }
@@ -194,7 +194,7 @@ class SaverRunTest < TestBase
     filename = dirname + '/' + 'manifest.json'
     content = 4.5
     dir_make(dirname)
-    message = 'malformed:command:file_create(value!=String):'
+    message = 'malformed:command:file_create(content!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)
     }
@@ -270,7 +270,7 @@ class SaverRunTest < TestBase
   ) do
     filename = false
     content = 'wibble'
-    message = 'malformed:command:file_append(key!=String):'
+    message = 'malformed:command:file_append(filename!=String):'
     assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
@@ -284,7 +284,7 @@ class SaverRunTest < TestBase
   ) do
     filename = 'wibble.txt'
     content = false
-    message = 'malformed:command:file_append(value!=String):'
+    message = 'malformed:command:file_append(content!=String):'
     assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }

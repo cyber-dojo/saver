@@ -121,16 +121,16 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # commands
 
-  def dir_exists?(key)
-    raise_unless_key_is_a_String('dir_exists?',key)
-    dir?(path_name(key))
+  def dir_exists?(dirname)
+    raise_unless_String('dir_exists?','dirname',0,dirname)
+    dir?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def dir_make(key)
-    raise_unless_key_is_a_String('dir_make',key)
-    path = path_name(key)
+  def dir_make(dirname)
+    raise_unless_String('dir_make','dirname',0,dirname)
+    path = path_name(dirname)
     if dir?(path) || file?(path)
       false
     else
@@ -140,12 +140,12 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(key, value)
-    raise_unless_key_is_a_String('file_create',key,value)
-    raise_unless_value_is_a_String('file_create',key,value)
-    path = path_name(key)
+  def file_create(filename, content)
+    raise_unless_String('file_create','filename',0,filename,content)
+    raise_unless_String('file_create','content',1,filename,content)
+    path = path_name(filename)
     if dir?(File.dirname(path)) && !file?(path)
-      @@files[path] = value
+      @@files[path] = content
       true
     else
       false
@@ -154,12 +154,12 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_append(key, value)
-    raise_unless_key_is_a_String('file_append',key,value)
-    raise_unless_value_is_a_String('file_append',key,value)
-    path = path_name(key)
+  def file_append(filename, content)
+    raise_unless_String('file_append','filename',0,filename,content)
+    raise_unless_String('file_append','content',1,filename,content)
+    path = path_name(filename)
     if dir?(File.dirname(path)) && file?(path)
-      @@files[path] += value
+      @@files[path] += content
       true
     else
       false
@@ -168,9 +168,9 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_read(key)
-    raise_unless_key_is_a_String('file_read',key)
-    @@files[path_name(key)] || false
+  def file_read(filename)
+    raise_unless_String('file_read','filename',0,filename)
+    @@files[path_name(filename)] || false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -186,26 +186,14 @@ class SaverServiceFake
     raise SaverService::Error,message
   end
 
-  def raise_unless_key_is_a_String(command,*args)
-    key = args[0]
-    unless key.is_a?(String)
+  def raise_unless_String(command, arg_name, index, *args)
+    arg = args[index]
+    unless arg.is_a?(String)
       message = {
         path:"/#{@origin}",
         body:{'command':[command,*args]}.to_json,
         class:'SaverService',
-        message:"malformed:command:#{command}(key!=String):"
-      }.to_json
-      raise SaverService::Error,message
-    end
-  end
-
-  def raise_unless_value_is_a_String(command,key,value)
-    unless value.is_a?(String)
-      message = {
-        path:"/#{@origin}",
-        body:{'command':[command,key,value]}.to_json,
-        class:'SaverService',
-        message:"malformed:command:#{command}(value!=String):"
+        message:"malformed:command:#{command}(#{arg_name}!=String):"
       }.to_json
       raise SaverService::Error,message
     end

@@ -132,17 +132,17 @@ class HttpJsonArgs
       fail malformed("command#{index}[0]", "!String (#{name.class.name})")
     end
     case name
-    when 'dir_exists?' then fail_unless_well_formed_args(command,index,1)
-    when 'dir_make'    then fail_unless_well_formed_args(command,index,1)
-    when 'file_create' then fail_unless_well_formed_args(command,index,2)
-    when 'file_append' then fail_unless_well_formed_args(command,index,2)
-    when 'file_read'   then fail_unless_well_formed_args(command,index,1)
+    when 'dir_exists?' then fail_unless_well_formed_args(command,index,'dirname')
+    when 'dir_make'    then fail_unless_well_formed_args(command,index,'dirname')
+    when 'file_create' then fail_unless_well_formed_args(command,index,'filename','content')
+    when 'file_append' then fail_unless_well_formed_args(command,index,'filename','content')
+    when 'file_read'   then fail_unless_well_formed_args(command,index,'filename')
     # deprecated
-    when 'exists?' then fail_unless_well_formed_args(command,index,1)
-    when 'create'  then fail_unless_well_formed_args(command,index,1)
-    when 'write'   then fail_unless_well_formed_args(command,index,2)
-    when 'append'  then fail_unless_well_formed_args(command,index,2)
-    when 'read'    then fail_unless_well_formed_args(command,index,1)
+    when 'exists?' then fail_unless_well_formed_args(command,index,'dirname')
+    when 'create'  then fail_unless_well_formed_args(command,index,'dirname')
+    when 'write'   then fail_unless_well_formed_args(command,index,'filename','content')
+    when 'append'  then fail_unless_well_formed_args(command,index,'filename','content')
+    when 'read'    then fail_unless_well_formed_args(command,index,'filename')
     else
       fail malformed("command#{index}", "Unknown (#{name})")
     end
@@ -150,15 +150,15 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - -
 
-  def fail_unless_well_formed_args(command,index,arity)
+  def fail_unless_well_formed_args(command,index,*arg_names)
     name,*args = command
+    arity = arg_names.size
     unless args.size === arity
       fail malformed("command#{index}", "#{name}!#{args.size}")
     end
-    args_names = [ 'key', 'value' ]
     arity.times do |n|
       arg = args[n]
-      arg_name = args_names[n]
+      arg_name = arg_names[n]
       unless arg.is_a?(String)
         fail malformed("command#{index}", "#{name}(#{arg_name}!=String)")
       end

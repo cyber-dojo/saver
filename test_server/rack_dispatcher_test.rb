@@ -148,7 +148,7 @@ class RackDispatcherTest < TestBase
       ['{"commands":[[true]]}', 'malformed:commands[0][0]:!String (TrueClass):'],
       ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
       ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!3:'],
-      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read(key!=String):']
+      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read(filename!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('run_all', json, 400, error_message)
     end
@@ -172,7 +172,7 @@ class RackDispatcherTest < TestBase
       ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],
       ['{"command":["xxx"]}', 'malformed:command:Unknown (xxx):'],
       ['{"command":["read",1,2,3]}', 'malformed:command:read!3:'],
-      ['{"command":["read",2.9]}', 'malformed:command:read(key!=String):']
+      ['{"command":["read",2.9]}', 'malformed:command:read(filename!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('assert', json, 400, error_message)
     end

@@ -62,7 +62,7 @@ class SaverAssertTest < TestBase
   |when dirname is not a String
   ) do
     dirname = 42
-    message = 'malformed:command:dir_exists?(key!=String):'
+    message = 'malformed:command:dir_exists?(dirname!=String):'
     assert_raises_SaverException(message,'dir_exists?',dirname) {
       dir_exists?(dirname)
     }
@@ -122,7 +122,7 @@ class SaverAssertTest < TestBase
   |when dirname is not a String
   ) do
     dirname = true
-    message = 'malformed:command:dir_make(key!=String):'
+    message = 'malformed:command:dir_make(dirname!=String):'
     assert_raises_SaverException(message,'dir_make',dirname) {
       dir_make(dirname)
     }
@@ -206,7 +206,7 @@ class SaverAssertTest < TestBase
   ) do
     filename = 42
     content = '{"time":[3,4,5,6,7,8]}'
-    message = 'malformed:command:file_create(key!=String):'
+    message = 'malformed:command:file_create(filename!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
@@ -222,7 +222,7 @@ class SaverAssertTest < TestBase
     filename = dirname + '/events.json'
     content = true
     dir_make(dirname)
-    message = 'malformed:command:file_create(value!=String):'
+    message = 'malformed:command:file_create(content!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename,content)
     }
@@ -305,7 +305,7 @@ class SaverAssertTest < TestBase
   ) do
     filename = nil
     content = '#readme'
-    message = 'malformed:command:file_append(key!=String):'
+    message = 'malformed:command:file_append(filename!=String):'
     assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
@@ -320,7 +320,7 @@ class SaverAssertTest < TestBase
     dirname = 'client/96/18/45'
     filename = dirname + '/readme.md'
     content = [34]
-    message = 'malformed:command:file_append(value!=String):'
+    message = 'malformed:command:file_append(content!=String):'
     assert_raises_SaverException(message,'file_append',filename,content) {
       file_append(filename,content)
     }
@@ -377,7 +377,7 @@ class SaverAssertTest < TestBase
   |when filename is not a String
   ) do
     filename = 45.6
-    message = 'malformed:command:file_read(key!=String):'
+    message = 'malformed:command:file_read(filename!=String):'
     assert_raises_SaverException(message,'file_read',filename) {
       file_read(filename)
     }
