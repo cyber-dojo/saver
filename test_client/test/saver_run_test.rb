@@ -370,7 +370,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - -
 
   def assert_raises_SaverException(message,*command)
-    error = assert_raises(SaverException) { yield }
+    error = assert_raises(SaverService::Error) { yield }
     json = JSON.parse!(error.message)
     assert_equal '/run', json['path'], :path
     expected_body = { 'command'=>command }

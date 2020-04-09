@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative '../src/saver_service'
-require_relative '../src/saver_exception'
 
 class SaverServiceFake
 
@@ -26,23 +25,23 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_exists_command(key)
-    [DIR_EXISTS_COMMAND_NAME,key]
+    SaverService.new.dir_exists_command(key)
   end
 
   def dir_make_command(key)
-    [DIR_MAKE_COMMAND_NAME,key]
+    SaverService.new.dir_make_command(key)
   end
 
   def file_create_command(key,value)
-    [FILE_CREATE_COMMAND_NAME,key,value]
+    SaverService.new.file_create_command(key,value)
   end
 
   def file_append_command(key,value)
-    [FILE_APPEND_COMMAND_NAME,key,value]
+    SaverService.new.file_append_command(key,value)
   end
 
   def file_read_command(key)
-    [FILE_READ_COMMAND_NAME,key]
+    SaverService.new.file_read_command(key)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -138,15 +137,6 @@ class SaverServiceFake
 
   private
 
-  DIR_EXISTS_COMMAND_NAME = 'exists?'
-  DIR_MAKE_COMMAND_NAME   = 'create'
-
-  FILE_CREATE_COMMAND_NAME  = 'write'
-  FILE_APPEND_COMMAND_NAME = 'append'
-  FILE_READ_COMMAND_NAME   = 'read'
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
@@ -166,7 +156,7 @@ class SaverServiceFake
       class:'SaverService',
       message:'command != true'
     }.to_json
-    raise SaverException,message
+    raise SaverService::Error,message
   end
 
   def raise_unless_key_is_a_String(command,*args)
@@ -178,7 +168,7 @@ class SaverServiceFake
         class:'SaverService',
         message:"malformed:command:#{command}(key!=String):"
       }.to_json
-      raise SaverException,message
+      raise SaverService::Error,message
     end
   end
 
@@ -190,7 +180,7 @@ class SaverServiceFake
         class:'SaverService',
         message:"malformed:command:#{command}(value!=String):"
       }.to_json
-      raise SaverException,message
+      raise SaverService::Error,message
     end
   end
 

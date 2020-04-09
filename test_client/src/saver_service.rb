@@ -1,13 +1,18 @@
 require_relative 'http_json/requester'
 require_relative 'http_json/responder'
-require_relative 'saver_exception'
 require 'net/http'
 
 class SaverService
 
+  class Error < RuntimeError
+    def initialize(message)
+      super
+    end
+  end
+
   def initialize
     requester = HttpJson::Requester.new(Net::HTTP, 'saver', 4537)
-    @http = HttpJson::Responder.new(requester, SaverException)
+    @http = HttpJson::Responder.new(requester, Error)
   end
 
   # - - - - - - - - - - - -
