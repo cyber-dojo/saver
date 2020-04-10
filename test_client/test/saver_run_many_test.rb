@@ -311,28 +311,6 @@ class SaverRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - -
 
-  def dir_make_command(dirname)
-    saver.dir_make_command(dirname)
-  end
-
-  def dir_exists_command(dirname)
-    saver.dir_exists_command(dirname)
-  end
-
-  def file_create_command(filename, content)
-    saver.file_create_command(filename, content)
-  end
-
-  def file_append_command(filename, content)
-    saver.file_append_command(filename, content)
-  end
-
-  def file_read_command(filename)
-    saver.file_read_command(filename)
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
   def dir_exists?(dirname)
     saver.run(dir_exists_command(dirname))
   end

@@ -16,7 +16,7 @@ class SaverAssertAllTest < TestBase
 
   test '416',
   'assert_all() returns array of results when all commands are true' do
-    dirname = 'batch/e3/t4/16'
+    dirname = 'server/assert-all/e3/t4/16'
     command(true, dir_make_command(dirname))
     command(true, dir_exists_command(dirname))
     there_yes = dirname + '/there-yes.txt'
@@ -35,7 +35,7 @@ class SaverAssertAllTest < TestBase
   when any command is not true
   and subsequent commands are not executed
   ) do
-    dirname = 'batch/e3/t4/17'
+    dirname = 'server/assert-all/e3/t4/17'
     command(true, dir_make_command(dirname))
     command(true, dir_exists_command(dirname))
     there_yes = dirname + '/there-yes.txt'
@@ -48,7 +48,7 @@ class SaverAssertAllTest < TestBase
       saver.assert_all(@commands)
     }
     assert_equal "commands[3] != true", error.message
-    assert_equal content, saver.read(there_yes), :does_not_execute_subsequent_commands
+    assert_equal content, saver.run(saver.file_read_command(there_yes)), :does_not_execute_subsequent_commands
   end
 
   private
