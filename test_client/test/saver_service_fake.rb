@@ -54,7 +54,7 @@ class SaverServiceFake
     if result
       result
     else
-      raise_assert_exception(command)
+      raise_assert_exception(command, 'command != true')
     end
   end
 
@@ -193,7 +193,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # exception helpers
 
-  def raise_assert_exception(command, message = 'command != true')
+  def raise_assert_exception(command, message)
     message = {
       path:"/#{@origin}",
       body:{'command':command}.to_json,
