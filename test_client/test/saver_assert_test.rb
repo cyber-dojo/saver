@@ -31,7 +31,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s4/32'
     message = 'command != true'
-    assert_raises_SaverException(message,'dir_exists?',dirname ) {
+    assert_raises_SaverException(message,['dir_exists?',dirname]) {
       dir_exists?(dirname)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -49,7 +49,7 @@ class SaverAssertTest < TestBase
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
-    assert_raises_SaverException(message,'dir_exists?',filename) {
+    assert_raises_SaverException(message,['dir_exists?',filename]) {
       dir_exists?(filename)
     }
     assert_equal content, file_read(filename), :did_nothing
@@ -63,7 +63,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 42
     message = 'malformed:command:dir_exists?(dirname!=String):'
-    assert_raises_SaverException(message,'dir_exists?',dirname) {
+    assert_raises_SaverException(message,['dir_exists?',dirname]) {
       dir_exists?(dirname)
     }
   end
@@ -91,7 +91,7 @@ class SaverAssertTest < TestBase
     dirname = 'client/N5/s7/69'
     dir_make(dirname)
     message = 'command != true'
-    assert_raises_SaverException(message,'dir_make',dirname) {
+    assert_raises_SaverException(message,['dir_make',dirname]) {
       dir_make(dirname)
     }
     assert dir_exists?(dirname), :did_nothing
@@ -109,7 +109,7 @@ class SaverAssertTest < TestBase
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
-    assert_raises_SaverException(message,'dir_make',filename) {
+    assert_raises_SaverException(message,['dir_make',filename]) {
       dir_make(filename)
     }
     assert_equal content, file_read(filename)
@@ -123,7 +123,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = true
     message = 'malformed:command:dir_make(dirname!=String):'
-    assert_raises_SaverException(message,'dir_make',dirname) {
+    assert_raises_SaverException(message,['dir_make',dirname]) {
       dir_make(dirname)
     }
   end
@@ -156,7 +156,7 @@ class SaverAssertTest < TestBase
     content = '{"time":[3,4,5,6,7,8]}'
     # no dir_make(dirname)
     message = 'command != true'
-    assert_raises_SaverException(message,'file_create',filename,content) {
+    assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -175,7 +175,7 @@ class SaverAssertTest < TestBase
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
-    assert_raises_SaverException(message,'file_create',filename,content*2) {
+    assert_raises_SaverException(message,['file_create',filename,content*2]) {
       file_create(filename,content*2)
     }
     assert_equal content, file_read(filename), :did_nothing
@@ -192,7 +192,7 @@ class SaverAssertTest < TestBase
     content = '{"time":[3,4,5,6,7,8]}'
     dir_make(filename)
     message = 'command != true'
-    assert_raises_SaverException(message,'file_create',filename,content) {
+    assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -207,7 +207,7 @@ class SaverAssertTest < TestBase
     filename = 42
     content = '{"time":[3,4,5,6,7,8]}'
     message = 'malformed:command:file_create(filename!=String):'
-    assert_raises_SaverException(message,'file_create',filename,content) {
+    assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
   end
@@ -223,7 +223,7 @@ class SaverAssertTest < TestBase
     content = true
     dir_make(dirname)
     message = 'malformed:command:file_create(content!=String):'
-    assert_raises_SaverException(message,'file_create',filename,content) {
+    assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -256,7 +256,7 @@ class SaverAssertTest < TestBase
     filename = dirname + '/readme.md'
     content = '#readme'
     message = 'command != true'
-    assert_raises_SaverException(message,'file_append',filename,content) {
+    assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
     refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
@@ -274,7 +274,7 @@ class SaverAssertTest < TestBase
     content = '#readme'
     message = 'command != true'
     dir_make(dirname)
-    assert_raises_SaverException(message,'file_append',filename,content) {
+    assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -291,7 +291,7 @@ class SaverAssertTest < TestBase
     content = '#readme'
     message = 'command != true'
     dir_make(filename)
-    assert_raises_SaverException(message,'file_append',filename,content) {
+    assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
     refute saver.run(saver.file_read_command(filename)), :did_nothing
@@ -306,7 +306,7 @@ class SaverAssertTest < TestBase
     filename = nil
     content = '#readme'
     message = 'malformed:command:file_append(filename!=String):'
-    assert_raises_SaverException(message,'file_append',filename,content) {
+    assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
   end
@@ -321,7 +321,7 @@ class SaverAssertTest < TestBase
     filename = dirname + '/readme.md'
     content = [34]
     message = 'malformed:command:file_append(content!=String):'
-    assert_raises_SaverException(message,'file_append',filename,content) {
+    assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
   end
@@ -350,7 +350,7 @@ class SaverAssertTest < TestBase
   ) do
     filename = '/does-not-exist.txt'
     message = 'command != true'
-    assert_raises_SaverException(message,'file_read',filename) {
+    assert_raises_SaverException(message,['file_read',filename]) {
       file_read(filename)
     }
   end
@@ -364,7 +364,7 @@ class SaverAssertTest < TestBase
     filename = '/exists-as-a-dir.txt'
     message = 'command != true'
     dir_make(filename)
-    assert_raises_SaverException(message,'file_read',filename) {
+    assert_raises_SaverException(message,['file_read',filename]) {
       file_read(filename)
     }
     assert dir_exists?(filename)
@@ -378,7 +378,7 @@ class SaverAssertTest < TestBase
   ) do
     filename = 45.6
     message = 'malformed:command:file_read(filename!=String):'
-    assert_raises_SaverException(message,'file_read',filename) {
+    assert_raises_SaverException(message,['file_read',filename]) {
       file_read(filename)
     }
   end
@@ -386,13 +386,15 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   multi_test 'DE5', %w(
-  unknown command raises
+  command not an Array raises
   ) do
-    message = 'malformed:command:Unknown (xyz):'
-    assert_raises_SaverException(message,'xyz','some-arg') {
-      saver.assert(['xyz','some-arg'])
+    message = 'malformed:command:!Array (Integer):'
+    assert_raises_SaverException(message,23) {
+      saver.assert(23)
     }
   end
+
+  #unknown command raises
 
   private
 
@@ -418,7 +420,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def assert_raises_SaverException(message,*command)
+  def assert_raises_SaverException(message,command)
     error = assert_raises(SaverService::Error) { yield }
     json = JSON.parse!(error.message)
     assert_equal '/assert', json['path'], :path

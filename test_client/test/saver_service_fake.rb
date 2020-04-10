@@ -60,6 +60,7 @@ class SaverServiceFake
 
   def run(command)
     @origin ||= 'run'
+    raise_unless_well_formed_command(command)
     name,*args = command
     case name
     when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
@@ -83,6 +84,7 @@ class SaverServiceFake
   # batched
 
   def assert_all(commands)
+    @origin = 'assert_all'
     run_until(commands) {|r,index|
       if r
         false
@@ -93,14 +95,17 @@ class SaverServiceFake
   end
 
   def run_all(commands)
+    #@origin = 'run_all'
     run_until(commands) {|r| r === :never}
   end
 
   def run_until_true(commands)
+    #@origin = 'run_until_true'
     run_until(commands) {|r| r}
   end
 
   def run_until_false(commands)
+    #@origin = 'run_until_false'
     run_until(commands) {|r| !r}
   end
 
@@ -212,6 +217,22 @@ class SaverServiceFake
     }.to_json
     raise SaverService::Error,message
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def raise_unless_well_formed_command(command)
+    unless command.is_a?(Array)
+      message = malformed('command', "!Array (#{command.class.name})")
+      raise_assert_exception(command, message)
+    end
+    #TODO: check command entries
+  end
+
+  def malformed(arg_name, msg)
+    RuntimeError.new("malformed:#{arg_name}:#{msg}:")
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def raise_unless_String(command, arg_name, index, *args)
     arg = args[index]
