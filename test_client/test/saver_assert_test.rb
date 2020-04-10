@@ -52,7 +52,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,'dir_exists?',filename) {
       dir_exists?(filename)
     }
-    assert_equal content, saver.run(saver.file_read_command(filename)), :did_nothing
+    assert_equal content, file_read(filename), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
