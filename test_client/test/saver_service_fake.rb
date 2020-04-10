@@ -73,6 +73,9 @@ class SaverServiceFake
     when 'write'   then write(*args)
     when 'append'  then append(*args)
     when 'read'    then read(*args)
+
+    else
+      raise_assert_exception(command, "malformed:command:Unknown (#{name}):")
     end
   end
 
@@ -190,12 +193,12 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # exception helpers
 
-  def raise_assert_exception(command)
+  def raise_assert_exception(command, message = 'command != true')
     message = {
       path:"/#{@origin}",
       body:{'command':command}.to_json,
       class:'SaverService',
-      message:'command != true'
+      message:message
     }.to_json
     raise SaverService::Error,message
   end

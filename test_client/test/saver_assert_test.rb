@@ -383,6 +383,17 @@ class SaverAssertTest < TestBase
     }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test 'DE5', %w(
+  unknown command raises
+  ) do
+    message = 'malformed:command:Unknown (xyz):'
+    assert_raises_SaverException(message,'xyz','some-arg') {
+      saver.assert(['xyz','some-arg'])
+    }
+  end
+
   private
 
   def dir_make(dirname)
