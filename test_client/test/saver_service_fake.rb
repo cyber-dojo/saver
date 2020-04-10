@@ -49,7 +49,7 @@ class SaverServiceFake
   # singular
 
   def assert(command)
-    @origin = 'assert'
+    @path = 'assert'
     result = run(command)
     if result
       result
@@ -59,7 +59,7 @@ class SaverServiceFake
   end
 
   def run(command)
-    @origin ||= 'run'
+    @path ||= 'run'
     raise_unless_well_formed_command(command)
     name,*args = command
     case name
@@ -85,7 +85,7 @@ class SaverServiceFake
   # batched
 
   def assert_all(commands)
-    @origin = 'assert_all'
+    @path = 'assert_all'
     run_until(commands) {|r,index|
       if r
         false
@@ -97,17 +97,17 @@ class SaverServiceFake
   end
 
   def run_all(commands)
-    #@origin = 'run_all'
+    #@path = 'run_all'
     run_until(commands) {|r| r === :never}
   end
 
   def run_until_true(commands)
-    #@origin = 'run_until_true'
+    #@path = 'run_until_true'
     run_until(commands) {|r| r}
   end
 
   def run_until_false(commands)
-    #@origin = 'run_until_false'
+    #@path = 'run_until_false'
     run_until(commands) {|r| !r}
   end
 
@@ -203,7 +203,7 @@ class SaverServiceFake
 
   def raise_command_exception(command, message)
     message = {
-      path:"/#{@origin}",
+      path:"/#{@path}",
       body:{'command':command}.to_json,
       class:'SaverService',
       message:message
@@ -279,7 +279,7 @@ class SaverServiceFake
     arg = args[index]
     unless arg.is_a?(String)
       message = {
-        path:"/#{@origin}",
+        path:"/#{@path}",
         body:{'command':[command,*args]}.to_json,
         class:'SaverService',
         message:"malformed:command:#{command}(#{arg_name}!=String):"
