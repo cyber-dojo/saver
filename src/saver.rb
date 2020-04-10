@@ -9,16 +9,16 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def sha
-    ENV['SHA']
+  def alive?
+    true
   end
 
   def ready?
     true
   end
 
-  def alive?
-    true
+  def sha
+    ENV['SHA']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -

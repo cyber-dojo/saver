@@ -10,16 +10,16 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def sha
-    '71333653be9b1ca2c31f83810d4e6f128817deac'
+  def alive?
+    true
   end
 
   def ready?
     true
   end
 
-  def alive?
-    true
+  def sha
+    '71333653be9b1ca2c31f83810d4e6f128817deac'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
