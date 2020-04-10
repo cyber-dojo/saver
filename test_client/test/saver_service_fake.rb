@@ -54,7 +54,7 @@ class SaverServiceFake
     if result
       result
     else
-      raise_assert_exception(command, 'command != true')
+      raise_command_exception(command, 'command != true')
     end
   end
 
@@ -76,7 +76,7 @@ class SaverServiceFake
     when 'read'    then read(*args)
 
     else
-      raise_assert_exception(command, "malformed:command:Unknown (#{name}):")
+      raise_command_exception(command, "malformed:command:Unknown (#{name}):")
     end
   end
 
@@ -89,7 +89,7 @@ class SaverServiceFake
       if r
         false
       else
-        raise_assert_all_exception(commands,index)
+        raise_commands_exception(commands,index)
       end
     }
   end
@@ -131,6 +131,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def run_until(commands, &block)
+    #TODO: raise_unless_well_formed_commands(commands)    
     results = []
     commands.each.with_index(0) do |command,index|
       result = run(command)
@@ -198,7 +199,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # exception helpers
 
-  def raise_assert_exception(command, message)
+  def raise_command_exception(command, message)
     message = {
       path:"/#{@origin}",
       body:{'command':command}.to_json,
@@ -208,7 +209,7 @@ class SaverServiceFake
     raise SaverService::Error,message
   end
 
-  def raise_assert_all_exception(commands,index)
+  def raise_commands_exception(commands,index)
     message = {
       path:'/assert_all',
       body:{'commands':commands}.to_json,
@@ -223,7 +224,7 @@ class SaverServiceFake
   def raise_unless_well_formed_command(command)
     unless command.is_a?(Array)
       message = malformed('command', "!Array (#{command.class.name})")
-      raise_assert_exception(command, message)
+      raise_command_exception(command, message)
     end
     #TODO: check command entries
   end
