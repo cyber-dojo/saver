@@ -229,7 +229,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def path_name(s)
-    File.join('', 'cyber-dojo', s.to_s)
+    File.join('', 'cyber-dojo', s)
   end
 
   def dir?(dirname)
