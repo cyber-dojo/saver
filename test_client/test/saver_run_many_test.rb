@@ -15,33 +15,6 @@ class SaverRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run_all()
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  multi_test '511',
-  'run_all() batches new commands' do
-
-    dirname = 'client/run-all/e3/t6/A1'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-
-    there_yes = dirname + '/there-yes.txt'
-    content = 'inchmarlo'
-    command(true, file_create_command(there_yes,content))
-    command(true, file_append_command(there_yes,content.reverse))
-
-    there_not = dirname + '/there-not.txt'
-    command(false, file_append_command(there_not,'nope'))
-
-    command(content+content.reverse, file_read_command(there_yes))
-
-    command(false, file_read_command(there_not))
-
-    result = saver.run_all(@commands)
-    assert_equal @expected, result
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
   # run_until_false()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -76,10 +76,6 @@ class SaverServiceFake
     when 'write'   then write(*args)
     when 'append'  then append(*args)
     when 'read'    then read(*args)
-
-    else
-      message = "malformed:command:Unknown (#{name}):"
-      raise_fake_exception(message)
     end
   end
 
@@ -246,6 +242,13 @@ class SaverServiceFake
     when 'file_create' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_append' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_read'   then raise_unless_well_formed_args(command,index,'filename')
+    # deprecated, needed for batch()
+    when 'exists?' then raise_unless_well_formed_args(command,index,'dirname')
+    when 'create'  then raise_unless_well_formed_args(command,index,'dirname')
+    when 'write'   then raise_unless_well_formed_args(command,index,'filename','content')
+    when 'append'  then raise_unless_well_formed_args(command,index,'filename','content')
+    when 'read'    then raise_unless_well_formed_args(command,index,'filename')
+
     else
       message = "malformed:command#{index}:Unknown (#{name}):"
       raise_fake_exception(message)
