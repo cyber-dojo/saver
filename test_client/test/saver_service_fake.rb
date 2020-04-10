@@ -50,16 +50,18 @@ class SaverServiceFake
 
   def assert(command)
     @path = 'assert'
+    @body = {command:command}
     result = run(command)
     if result
       result
     else
-      raise_command_exception(command, 'command != true')
+      raise_fake_exception('command != true')
     end
   end
 
   def run(command)
     @path ||= 'run'
+    @body ||= {command:command}
     raise_unless_well_formed_command(command)
     name,*args = command
     case name
@@ -77,7 +79,7 @@ class SaverServiceFake
 
     else
       message = "malformed:command:Unknown (#{name}):"
-      raise_command_exception(command, message)
+      raise_fake_exception(message)
     end
   end
 
@@ -86,28 +88,32 @@ class SaverServiceFake
 
   def assert_all(commands)
     @path = 'assert_all'
+    @body = {commands:commands}
     run_until(commands) {|r,index|
       if r
         false
       else
         message = "commands[#{index}] != true"
-        raise_commands_exception(commands, message)
+        raise_fake_exception(message)
       end
     }
   end
 
   def run_all(commands)
-    #@path = 'run_all'
+    @path = 'run_all'
+    @body = {commands:commands}
     run_until(commands) {|r| r === :never}
   end
 
   def run_until_true(commands)
-    #@path = 'run_until_true'
+    @path = 'run_until_true'
+    @body = {commands:commands}
     run_until(commands) {|r| r}
   end
 
   def run_until_false(commands)
-    #@path = 'run_until_false'
+    @path = 'run_until_false'
+    @body = {commands:commands}
     run_until(commands) {|r| !r}
   end
 
@@ -201,24 +207,13 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # exception helpers
 
-  def raise_command_exception(command, message)
-    message = {
+  def raise_fake_exception(message)
+    raise SaverService::Error,{
       path:"/#{@path}",
-      body:{'command':command}.to_json,
+      body:@body.to_json,
       class:'SaverService',
       message:message
     }.to_json
-    raise SaverService::Error,message
-  end
-
-  def raise_commands_exception(commands, message)
-    message = {
-      path:'/assert_all',
-      body:{'commands':commands}.to_json,
-      class:'SaverService',
-      message:message,
-    }.to_json
-    raise SaverService::Error,message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -226,12 +221,12 @@ class SaverServiceFake
   def raise_unless_well_formed_commands(commands)
     unless commands.is_a?(Array)
       message = malformed('commands', "!Array (#{commands.class.name})")
-      raise_commands_exception(commands, message)
+      raise_fake_exception(message)
     end
     commands.each.with_index do |command,index|
       unless command.is_a?(Array)
         message = malformed("commands[#{index}]", "!Array (#{command.class.name})")
-        raise_commands_exception(commands, message)
+        raise_fake_exception(message)
       end
       raise_unless_well_formed_command(command, "s[#{index}]")
     end
@@ -240,7 +235,7 @@ class SaverServiceFake
   def raise_unless_well_formed_command(command, index='')
     unless command.is_a?(Array)
       message = malformed("command#{index}", "!Array (#{command.class.name})")
-      raise_command_exception(command, message)
+      raise_fake_exception(message)
     end
     name = command[0]
     case name
@@ -257,14 +252,14 @@ class SaverServiceFake
     arity = arg_names.size
     unless args.size === arity
       message = malformed("command#{index}", "#{name}!#{args.size}")
-      raise_command_exception(command, message)
+      raise_fake_exception(message)
     end
     arity.times do |n|
       arg = args[n]
       arg_name = arg_names[n]
       unless arg.is_a?(String)
         message = malformed("command#{index}", "#{name}(#{arg_name}!=String)")
-        raise_command_exception(command, message)
+        raise_fake_exception(message)
       end
     end
   end
@@ -279,7 +274,7 @@ class SaverServiceFake
     arg = args[index]
     unless arg.is_a?(String)
       message = {
-        path:"/#{@path}",
+        path:"/#{command}",
         body:{'command':[command,*args]}.to_json,
         class:'SaverService',
         message:"malformed:command:#{command}(#{arg_name}!=String):"

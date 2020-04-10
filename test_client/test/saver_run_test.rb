@@ -174,10 +174,8 @@ class SaverRunTest < TestBase
   |file_create(filename,content) raises
   |when filename is a not a String
   ) do
-    dirname = 'client/qZ/Ff/69'
     filename = nil
     content = 'greetings'
-    dir_make(dirname)
     message = 'malformed:command:file_create(filename!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)
@@ -190,10 +188,9 @@ class SaverRunTest < TestBase
   |file_create(filename,content) raises
   |when content is a not a String
   ) do
-    dirname = 'client/44/Ff/69'
+    dirname = 'client/44/qR/6P'
     filename = dirname + '/' + 'manifest.json'
     content = 4.5
-    dir_make(dirname)
     message = 'malformed:command:file_create(content!=String):'
     assert_raises_SaverException(message,'file_create',filename,content) {
       file_create(filename, content)

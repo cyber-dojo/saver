@@ -10,7 +10,7 @@ class SaverDeprecatedPrimitivesTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # exists?(), create()
+  # exists?()
 
   multi_test '431',
   'exists?(dirname) is false before create(dirname) and true after' do
@@ -19,6 +19,18 @@ class SaverDeprecatedPrimitivesTest < TestBase
     create(dirname)
     assert exists?(dirname)
   end
+
+=begin
+  multi_test 'B30',
+  'exists?(dirname) raises when dirname is not a String' do
+    error = assert_raises(RuntimeError) {
+
+    }
+  end
+=end
+  
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # create()
 
   multi_test '432',
   'create(dirname) succeeds once and then fails' do
