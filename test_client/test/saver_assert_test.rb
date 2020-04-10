@@ -384,17 +384,51 @@ class SaverAssertTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # malformed command
 
   multi_test 'DE5', %w(
-  command not an Array raises
+  |when command not an Array
+  |raise
   ) do
+    commands = 23
     message = 'malformed:command:!Array (Integer):'
-    assert_raises_SaverException(message,23) {
-      saver.assert(23)
+    assert_raises_SaverException(message,commands) {
+      saver.assert(commands)
     }
   end
 
-  #unknown command raises
+  multi_test 'DE6', %w(
+  |when command is unknown
+  |raise
+  ) do
+    commands = ['dfdf']
+    message = 'malformed:command:Unknown (dfdf):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert(commands)
+    }
+  end
+
+  multi_test 'DE7', %w(
+  |when command has wrong number of arguments
+  |raise
+  ) do
+    commands = ['file_read',3,4,5,6]
+    message = 'malformed:command:file_read!4:'
+    assert_raises_SaverException(message,commands) {
+      saver.assert(commands)
+    }
+  end
+
+  multi_test 'DE8', %w(
+  |when command has non String argument
+  |raise
+  ) do
+    commands = ['file_read',3]
+    message = 'malformed:command:file_read(filename!=String):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert(commands)
+    }
+  end
 
   private
 

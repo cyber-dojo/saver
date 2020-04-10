@@ -76,7 +76,8 @@ class SaverServiceFake
     when 'read'    then read(*args)
 
     else
-      raise_command_exception(command, "malformed:command:Unknown (#{name}):")
+      message = "malformed:command:Unknown (#{name}):"
+      raise_command_exception(command, message)
     end
   end
 
@@ -89,7 +90,8 @@ class SaverServiceFake
       if r
         false
       else
-        raise_commands_exception(commands,index)
+        message = "commands[#{index}] != true"
+        raise_commands_exception(commands, message)
       end
     }
   end
@@ -131,7 +133,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def run_until(commands, &block)
-    #TODO: raise_unless_well_formed_commands(commands)    
+    raise_unless_well_formed_commands(commands)
     results = []
     commands.each.with_index(0) do |command,index|
       result = run(command)
@@ -209,24 +211,62 @@ class SaverServiceFake
     raise SaverService::Error,message
   end
 
-  def raise_commands_exception(commands,index)
+  def raise_commands_exception(commands, message)
     message = {
       path:'/assert_all',
       body:{'commands':commands}.to_json,
       class:'SaverService',
-      message:"commands[#{index}] != true"
+      message:message,
     }.to_json
     raise SaverService::Error,message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def raise_unless_well_formed_command(command)
+  def raise_unless_well_formed_commands(commands)
+    unless commands.is_a?(Array)
+      message = malformed('commands', "!Array (#{commands.class.name})")
+      raise_commands_exception(commands, message)
+    end
+    commands.each.with_index do |command,index|
+      unless command.is_a?(Array)
+        message = malformed("commands[#{index}]", "!Array (#{command.class.name})")
+        raise_commands_exception(commands, message)
+      end
+      raise_unless_well_formed_command(command, "s[#{index}]")
+    end
+  end
+
+  def raise_unless_well_formed_command(command, index='')
     unless command.is_a?(Array)
-      message = malformed('command', "!Array (#{command.class.name})")
+      message = malformed("command#{index}", "!Array (#{command.class.name})")
       raise_command_exception(command, message)
     end
-    #TODO: check command entries
+    name = command[0]
+    case name
+    when 'dir_exists?' then raise_unless_well_formed_args(command,index,'dirname')
+    when 'dir_make'    then raise_unless_well_formed_args(command,index,'dirname')
+    when 'file_create' then raise_unless_well_formed_args(command,index,'filename','content')
+    when 'file_append' then raise_unless_well_formed_args(command,index,'filename','content')
+    when 'file_read'   then raise_unless_well_formed_args(command,index,'filename')
+    end
+  end
+
+  def raise_unless_well_formed_args(command,index,*arg_names)
+    name,*args = command
+    arity = arg_names.size
+    unless args.size === arity
+      message = malformed("command#{index}", "#{name}!#{args.size}")
+      raise_command_exception(command, message)
+    end
+    arity.times do |n|
+      arg = args[n]
+      arg_name = arg_names[n]
+      unless arg.is_a?(String)
+        message = malformed("command#{index}", "#{name}(#{arg_name}!=String)")
+        raise_command_exception(command, message)
+      end
+    end
   end
 
   def malformed(arg_name, msg)

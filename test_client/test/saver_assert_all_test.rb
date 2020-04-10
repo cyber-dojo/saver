@@ -55,6 +55,43 @@ class SaverAssertAllTest < TestBase
     assert_equal content, saver.run(file_read_command(there_yes)), :does_not_execute_subsequent_commands
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  multi_test '121', %w(
+  |when commands is not an Array
+  |raise
+  ) do
+    commands = 23
+    message = 'malformed:commands:!Array (Integer):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert_all(commands)
+    }
+  end
+
+  multi_test '122', %w(
+  |when commands entry is not an Array
+  |raise
+  ) do
+    commands = [42]
+    message = 'malformed:commands[0]:!Array (Integer):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert_all(commands)
+    }
+  end
+
+=begin
+  multi_test '123', %w(
+  |when commands entry is unknown
+  |raise
+  ) do
+    commands = [['hgttg']]
+    message = 'malformed:commands[0]:Unknown (hgttg):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert_all(commands)
+    }
+  end
+=end
+
   private
 
   def command(expected, cmd)
