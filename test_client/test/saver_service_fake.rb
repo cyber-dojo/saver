@@ -25,24 +25,24 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # commands
 
-  def dir_exists_command(key)
-    SaverService.new.dir_exists_command(key)
+  def dir_exists_command(dirname)
+    SaverService.new.dir_exists_command(dirname)
   end
 
-  def dir_make_command(key)
-    SaverService.new.dir_make_command(key)
+  def dir_make_command(dirname)
+    SaverService.new.dir_make_command(dirname)
   end
 
-  def file_create_command(key,value)
-    SaverService.new.file_create_command(key,value)
+  def file_create_command(filename, content)
+    SaverService.new.file_create_command(filename, content)
   end
 
-  def file_append_command(key,value)
-    SaverService.new.file_append_command(key,value)
+  def file_append_command(filename, content)
+    SaverService.new.file_append_command(filename, content)
   end
 
-  def file_read_command(key)
-    SaverService.new.file_read_command(key)
+  def file_read_command(filename)
+    SaverService.new.file_read_command(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -225,16 +225,16 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def path_name(key)
-    File.join('', 'cyber-dojo', key.to_s)
+  def path_name(s)
+    File.join('', 'cyber-dojo', s.to_s)
   end
 
-  def dir?(key)
-    @@dirs.has_key?(key)
+  def dir?(dirname)
+    @@dirs.has_key?(dirname)
   end
 
-  def file?(key)
-    @@files.has_key?(key)
+  def file?(filename)
+    @@files.has_key?(filename)
   end
 
 end
