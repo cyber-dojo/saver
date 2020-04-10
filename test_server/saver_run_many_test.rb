@@ -219,8 +219,10 @@ class SaverRunManyTest < TestBase
     dirname = 'batch-run-until-true/x3/t7/15'
     filename = dirname + '/stop-at-write-true'
     content = 'xxxxxx'
-    assert saver.create(dirname)
-    assert saver.write(filename, content)
+    saver.assert_all([
+      saver.dir_make_command(dirname),
+      saver.file_create_command(filename, content)
+    ])
 
     command(false, file_create_command(filename, content))
     command(true, file_create_command(filename+'1', content))
