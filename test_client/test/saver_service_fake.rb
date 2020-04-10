@@ -84,7 +84,7 @@ class SaverServiceFake
       if r
         false
       else
-        raise "commands[#{index}] != true"
+        raise_assert_all_exception(commands,index)
       end
     }
   end
@@ -196,6 +196,16 @@ class SaverServiceFake
       body:{'command':command}.to_json,
       class:'SaverService',
       message:'command != true'
+    }.to_json
+    raise SaverService::Error,message
+  end
+
+  def raise_assert_all_exception(commands,index)
+    message = {
+      path:'/assert_all',
+      body:{'commands':commands}.to_json,
+      class:'SaverService',
+      message:"commands[#{index}] != true"
     }.to_json
     raise SaverService::Error,message
   end

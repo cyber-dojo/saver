@@ -33,7 +33,6 @@ class SaverAssertAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   multi_test '417', %w(
   |assert_all() raises
   |when any command is not true
@@ -48,19 +47,28 @@ class SaverAssertAllTest < TestBase
     there_no = dirname + '/there-not.txt'
     command(false, file_read_command(there_no))
     command(true, file_append_command(there_yes, content.reverse))
-    error = assert_raises(SaverService::Error) {
+    message = 'commands[3] != true'
+    assert_raises_SaverException(message,@commands) {
       saver.assert_all(@commands)
     }
-    assert_equal "commands[3] != true", error.message
-    assert_equal content, saver.run(saver.file_read_command(there_yes)), :does_not_execute_subsequent_commands
+    assert_equal content, saver.run(file_read_command(there_yes)), :does_not_execute_subsequent_commands
   end
-=end
 
   private
 
   def command(expected, cmd)
     @expected << expected
     @commands << cmd
+  end
+
+  def assert_raises_SaverException(message,commands)
+    error = assert_raises(SaverService::Error) { yield }
+    json = JSON.parse!(error.message)
+    assert_equal '/assert_all', json['path'], :path
+    expected_body = { 'commands'=>commands }
+    assert_equal expected_body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal message, json['message'], :message
   end
 
 end
