@@ -24,21 +24,11 @@ class SaverDeprecatedPrimitivesTest < TestBase
   'exists?(dirname) raises when dirname is not a String' do
     dirname = 23
     path = 'exists'
-    body = {"key"=>dirname} 
+    body = {'key'=>dirname}
     message = 'malformed:key:!String (Integer):'
     assert_raises_SaverException(path,body,message) {
       exists?(dirname)
     }
-  end
-
-  def assert_raises_SaverException(path,body,message)
-    error = assert_raises(SaverService::Error) { yield }
-    json = JSON.parse!(error.message)
-    assert_equal "/#{path}", json['path'], :path
-    #expected_body = { 'command'=>command }
-    assert_equal body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal message, json['message'], :message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -49,6 +39,17 @@ class SaverDeprecatedPrimitivesTest < TestBase
     dirname = 'client/r5/X7/03'
     assert create(dirname)
     refute create(dirname)
+  end
+
+  multi_test 'B31',
+  'create(dirname) raises when dirname is not a String' do
+    dirname = 23
+    path = 'create'
+    body = {'key'=>dirname}
+    message = 'malformed:key:!String (Integer):'
+    assert_raises_SaverException(path,body,message) {
+      create(dirname)
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -88,6 +89,30 @@ class SaverDeprecatedPrimitivesTest < TestBase
     assert write(filename, first_content)
     refute write(filename, 'second-content')
     assert_equal first_content, read(filename)
+  end
+
+  multi_test 'B32',
+  'write(filename,content) raises when filename is not a String' do
+    filename = false
+    content = 'once upon a time'
+    path = 'write'
+    body = {'key'=>filename, 'value'=>content}
+    message = 'malformed:key:!String (FalseClass):'
+    assert_raises_SaverException(path,body,message) {
+      write(filename,content)
+    }
+  end
+
+  multi_test 'B33',
+  'write(filename,content) raises when content is not a String' do
+    filename = 'readme.me'
+    content = [23]
+    path = 'write'
+    body = {'key'=>filename, 'value'=>content}
+    message = 'malformed:value:!String (Array):'
+    assert_raises_SaverException(path,body,message) {
+      write(filename,content)
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -131,6 +156,30 @@ class SaverDeprecatedPrimitivesTest < TestBase
     assert read(filename).is_a?(FalseClass)
   end
 
+  multi_test 'B34',
+  'append(filename,content) raises when filename is not a String' do
+    filename = false
+    content = 'once upon a time'
+    path = 'append'
+    body = {'key'=>filename, 'value'=>content}
+    message = 'malformed:key:!String (FalseClass):'
+    assert_raises_SaverException(path,body,message) {
+      append(filename,content)
+    }
+  end
+
+  multi_test 'B35',
+  'append(filename,content) raises when content is not a String' do
+    filename = 'readme.me'
+    content = [23]
+    path = 'append'
+    body = {'key'=>filename, 'value'=>content}
+    message = 'malformed:value:!String (Array):'
+    assert_raises_SaverException(path,body,message) {
+      append(filename,content)
+    }
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # read()
 
@@ -157,7 +206,27 @@ class SaverDeprecatedPrimitivesTest < TestBase
     assert read(dirname).is_a?(FalseClass)
   end
 
+  multi_test 'B36',
+  'read(filename) raises when filename is not a String' do
+    filename = true
+    path = 'read'
+    body = {'key'=>filename}
+    message = 'malformed:key:!String (TrueClass):'
+    assert_raises_SaverException(path,body,message) {
+      read(filename)
+    }
+  end
+
   private
+
+  def assert_raises_SaverException(path,body,message)
+    error = assert_raises(SaverService::Error) { yield }
+    json = JSON.parse!(error.message)
+    assert_equal "/#{path}", json['path'], :path
+    assert_equal body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal message, json['message'], :message
+  end
 
   def create(dirname)
     saver.create(dirname)

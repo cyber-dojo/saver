@@ -153,14 +153,16 @@ class SaverServiceFake
   # commands
 
   def dir_exists?(dirname)
-    raise_unless_String('exists', 'key', dirname)
+    args = {'key'=>dirname}
+    raise_unless_String('exists', 'key', dirname, args)
     dir?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_make(dirname)
-    raise_unless_String('create', 'key', dirname)
+    args = {'key'=>dirname}
+    raise_unless_String('create', 'key', dirname, args)
     path = path_name(dirname)
     if dir?(path) || file?(path)
       false
@@ -172,8 +174,9 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(filename, content)
-    raise_unless_String('write', 'key', filename)
-    raise_unless_String('write', 'value', content)
+    args = {'key'=>filename, 'value'=>content}
+    raise_unless_String('write', 'key', filename, args)
+    raise_unless_String('write', 'value', content, args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = content
@@ -186,8 +189,9 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_append(filename, content)
-    raise_unless_String('write', 'key', filename)
-    raise_unless_String('write', 'value', content)
+    args = {'key'=>filename, 'value'=>content}
+    raise_unless_String('append', 'key', filename, args)
+    raise_unless_String('append', 'value', content, args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += content
@@ -200,7 +204,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_read(filename)
-    raise_unless_String('read', 'key', filename)
+    args = {'key'=>filename}
+    raise_unless_String('read', 'key', filename, args)
     @@files[path_name(filename)] || false
   end
 
@@ -270,11 +275,11 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def raise_unless_String(command, arg_name, arg)
+  def raise_unless_String(command, arg_name, arg, args)
     unless arg.is_a?(String)
       raise SaverService::Error,{
         path:"/#{command}",
-        body:{arg_name => arg}.to_json,
+        body:args.to_json,
         class:'SaverService',
         message:"malformed:#{arg_name}:!String (#{arg.class.name}):"
       }.to_json
