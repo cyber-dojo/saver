@@ -153,14 +153,14 @@ class SaverServiceFake
   # commands
 
   def dir_exists?(dirname)
-    raise_unless_String('dir_exists?','dirname',0,dirname)
+    raise_unless_String('exists', 'key', dirname)
     dir?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_make(dirname)
-    raise_unless_String('dir_make','dirname',0,dirname)
+    raise_unless_String('create', 'key', dirname)
     path = path_name(dirname)
     if dir?(path) || file?(path)
       false
@@ -172,8 +172,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(filename, content)
-    raise_unless_String('file_create','filename',0,filename,content)
-    raise_unless_String('file_create','content',1,filename,content)
+    raise_unless_String('write', 'key', filename)
+    raise_unless_String('write', 'value', content)
     path = path_name(filename)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = content
@@ -186,8 +186,8 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_append(filename, content)
-    raise_unless_String('file_append','filename',0,filename,content)
-    raise_unless_String('file_append','content',1,filename,content)
+    raise_unless_String('write', 'key', filename)
+    raise_unless_String('write', 'value', content)
     path = path_name(filename)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += content
@@ -200,7 +200,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_read(filename)
-    raise_unless_String('file_read','filename',0,filename)
+    raise_unless_String('read', 'key', filename)
     @@files[path_name(filename)] || false
   end
 
@@ -270,16 +270,14 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def raise_unless_String(command, arg_name, index, *args)
-    arg = args[index]
+  def raise_unless_String(command, arg_name, arg)
     unless arg.is_a?(String)
-      message = {
+      raise SaverService::Error,{
         path:"/#{command}",
-        body:{'command':[command,*args]}.to_json,
+        body:{arg_name => arg}.to_json,
         class:'SaverService',
-        message:"malformed:command:#{command}(#{arg_name}!=String):"
+        message:"malformed:#{arg_name}:!String (#{arg.class.name}):"
       }.to_json
-      raise SaverService::Error,message
     end
   end
 

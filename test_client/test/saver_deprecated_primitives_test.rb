@@ -20,15 +20,27 @@ class SaverDeprecatedPrimitivesTest < TestBase
     assert exists?(dirname)
   end
 
-=begin
   multi_test 'B30',
   'exists?(dirname) raises when dirname is not a String' do
-    error = assert_raises(RuntimeError) {
-
+    dirname = 23
+    path = 'exists'
+    body = {"key"=>dirname} 
+    message = 'malformed:key:!String (Integer):'
+    assert_raises_SaverException(path,body,message) {
+      exists?(dirname)
     }
   end
-=end
-  
+
+  def assert_raises_SaverException(path,body,message)
+    error = assert_raises(SaverService::Error) { yield }
+    json = JSON.parse!(error.message)
+    assert_equal "/#{path}", json['path'], :path
+    #expected_body = { 'command'=>command }
+    assert_equal body, JSON.parse!(json['body']), :body
+    assert_equal 'SaverService', json['class'], :class
+    assert_equal message, json['message'], :message
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # create()
 
