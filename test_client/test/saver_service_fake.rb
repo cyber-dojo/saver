@@ -153,16 +153,14 @@ class SaverServiceFake
   # commands
 
   def dir_exists?(dirname)
-    args = {'key'=>dirname}
-    raise_unless_String('exists', 'key', dirname, args)
+    raise_unless_String('exists', {'key'=>dirname})
     dir?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_make(dirname)
-    args = {'key'=>dirname}
-    raise_unless_String('create', 'key', dirname, args)
+    raise_unless_String('create', {'key'=>dirname})
     path = path_name(dirname)
     if dir?(path) || file?(path)
       false
@@ -175,8 +173,7 @@ class SaverServiceFake
 
   def file_create(filename, content)
     args = {'key'=>filename, 'value'=>content}
-    raise_unless_String('write', 'key', filename, args)
-    raise_unless_String('write', 'value', content, args)
+    raise_unless_String('write', args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = content
@@ -190,8 +187,7 @@ class SaverServiceFake
 
   def file_append(filename, content)
     args = {'key'=>filename, 'value'=>content}
-    raise_unless_String('append', 'key', filename, args)
-    raise_unless_String('append', 'value', content, args)
+    raise_unless_String('append', args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += content
@@ -204,8 +200,7 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_read(filename)
-    args = {'key'=>filename}
-    raise_unless_String('read', 'key', filename, args)
+    raise_unless_String('read', {'key'=>filename})
     @@files[path_name(filename)] || false
   end
 
@@ -237,6 +232,8 @@ class SaverServiceFake
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+
   def raise_unless_well_formed_command(command, index='')
     unless command.is_a?(Array)
       message = malformed("command#{index}", "!Array (#{command.class.name})")
@@ -251,6 +248,8 @@ class SaverServiceFake
     when 'file_read'   then raise_unless_well_formed_args(command,index,'filename')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def raise_unless_well_formed_args(command,index,*arg_names)
     name,*args = command
@@ -275,14 +274,17 @@ class SaverServiceFake
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def raise_unless_String(command, arg_name, arg, args)
-    unless arg.is_a?(String)
-      raise SaverService::Error,{
-        path:"/#{command}",
-        body:args.to_json,
-        class:'SaverService',
-        message:"malformed:#{arg_name}:!String (#{arg.class.name}):"
-      }.to_json
+  def raise_unless_String(command, args)
+    ['key','value'].each do |arg_name|
+      arg = args[arg_name]
+      if args.has_key?(arg_name) && !arg.is_a?(String)
+        raise SaverService::Error,{
+          path:"/#{command}",
+          body:args.to_json,
+          class:'SaverService',
+          message:"malformed:#{arg_name}:!String (#{arg.class.name}):"
+        }.to_json
+      end
     end
   end
 
