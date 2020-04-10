@@ -23,24 +23,24 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def dir_exists_command(key)
-    [DIR_EXISTS_COMMAND_NAME,key]
+  def dir_exists_command(dirname)
+    [DIR_EXISTS_COMMAND_NAME,dirname]
   end
 
-  def dir_make_command(key)
-    [DIR_MAKE_COMMAND_NAME,key]
+  def dir_make_command(dirname)
+    [DIR_MAKE_COMMAND_NAME,dirname]
   end
 
-  def file_create_command(key,value)
-    [FILE_CREATE_COMMAND_NAME,key,value]
+  def file_create_command(filename,content)
+    [FILE_CREATE_COMMAND_NAME,filename,content]
   end
 
-  def file_append_command(key,value)
-    [FILE_APPEND_COMMAND_NAME,key,value]
+  def file_append_command(filename,content)
+    [FILE_APPEND_COMMAND_NAME,filename,content]
   end
 
-  def file_read_command(key)
-    [FILE_READ_COMMAND_NAME,key]
+  def file_read_command(filename)
+    [FILE_READ_COMMAND_NAME,filename]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -131,31 +131,31 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # commands
 
-  def dir_exists?(key)
-    Dir.exist?(path_name(key))
+  def dir_exists?(dirname)
+    Dir.exist?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def dir_make(key)
+  def dir_make(dirname)
     # Returns true iff key's dir does not already exist and
     # is made. Can't find a Ruby library method for this
     # (FileUtils.mkdir_p does not tell) so using shell.
     #   -p creates intermediate dirs as required.
     #   -v verbose mode, output each dir actually made
-    command = "mkdir -vp '#{path_name(key)}'"
+    command = "mkdir -vp '#{path_name(dirname)}'"
     stdout,stderr,r = Open3.capture3(command)
     stdout != '' && stderr === '' && r.exitstatus === 0
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(key, value)
+  def file_create(filename, content)
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::CREAT | File::EXCL
-    File.open(path_name(key), mode) { |fd|
-      fd.write(value)
+    File.open(path_name(filename), mode) { |fd|
+      fd.write(content)
     }
     true
   rescue Errno::ENOENT, # dir does not exist
@@ -165,13 +165,13 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_append(key, value)
+  def file_append(filename, content)
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::APPEND
-    File.open(path_name(key), mode) { |fd|
+    File.open(path_name(filename), mode) { |fd|
       fd.flock(File::LOCK_EX)
-      fd.write(value)
+      fd.write(content)
     }
     true
   rescue Errno::EISDIR, # file is a dir!
@@ -181,9 +181,9 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_read(key)
+  def file_read(filename)
     mode = File::RDONLY
-    File.open(path_name(key), mode) { |fd|
+    File.open(path_name(filename), mode) { |fd|
       fd.flock(File::LOCK_EX)
       fd.read
     }
@@ -195,8 +195,8 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def path_name(key)
-    File.join('', @root_dir, key)
+  def path_name(s)
+    File.join('', @root_dir, s)
   end
 
 end
