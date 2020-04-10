@@ -56,6 +56,7 @@ class SaverAssertAllTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # raises when malformed commands
 
   multi_test '121', %w(
   |when commands is not an Array
@@ -79,7 +80,6 @@ class SaverAssertAllTest < TestBase
     }
   end
 
-=begin
   multi_test '123', %w(
   |when commands entry is unknown
   |raise
@@ -90,7 +90,28 @@ class SaverAssertAllTest < TestBase
       saver.assert_all(commands)
     }
   end
-=end
+
+  multi_test '124', %w(
+  |when commands entry is incorrect arity
+  |raises
+  ) do
+    commands = [['dir_make','abc/d/e/f'],['file_read',1,2,3,4,5,6]]
+    message = 'malformed:commands[1]:file_read!6:'
+    assert_raises_SaverException(message,commands) {
+      saver.assert_all(commands)
+    }
+  end
+
+  multi_test '125', %w(
+  |when commands entry has non String parameter
+  |raises
+  ) do
+    commands = [['dir_exists?','abc/d/e/f'],['dir_make',nil]]
+    message = 'malformed:commands[1]:dir_make(dirname!=String):'
+    assert_raises_SaverException(message,commands) {
+      saver.assert_all(commands)
+    }
+  end
 
   private
 

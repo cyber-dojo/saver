@@ -246,6 +246,9 @@ class SaverServiceFake
     when 'file_create' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_append' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_read'   then raise_unless_well_formed_args(command,index,'filename')
+    else
+      message = "malformed:command#{index}:Unknown (#{name}):"
+      raise_fake_exception(message)
     end
   end
 
