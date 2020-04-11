@@ -3,7 +3,7 @@
 - - - -
 ## POST assert(command)
 Runs a single [command](#command).  
-Returns its result when it succeeds.  
+Returns  [(JSON-out)](#json-out) its result when it succeeds.  
 Raises `ServiceError` when it fails.
 - example
   ```bash
@@ -21,7 +21,7 @@ Raises `ServiceError` when it fails.
 - - - -
 ## POST run(command)
 Runs a single [command](#command).  
-Returns its result.
+Returns  [(JSON-out)](#json-out) its result.
 - example
   ```bash
   $ dirname=/cyber-dojo/katas/34/E3/R6
@@ -32,14 +32,14 @@ Returns its result.
     -X POST \
       http://${IP_ADDRESS}:${PORT}/run
 
-  {"run":false}
+  {"run":true}
   ```
 
 - - - -
 ## POST assert_all(commands)
 Runs all [commands](#commands).  
-Returns their results in an array when they all succeed.  
-Raises `ServiceError` when any of them fail.
+When they all succeed, returns their results in an array.  
+When one of them fails, immediately raises `ServiceError`.  
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/45/Pe/6N
@@ -93,7 +93,7 @@ Runs [commands](#commands) until one is false.
 Returns their results (including the last false one) in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/12/45/6E
+  $ dirname=/cyber-dojo/groups/1q/K4/d9
   $ curl \
     --data '{"commands":[["dir_make","${dirname}"],["dir_make","${dirname}"]]}' \
     --header 'Content-type: application/json' \
@@ -104,6 +104,93 @@ Returns their results (including the last false one) in an array.
   {"run_until_true":[true,false]}
   ```
 
+- - - -
+## commands
+An array of [command]s(#commands)s
+
+
+## command
+There are 5 commands.  
+They _always_ raise when there is no space left of the file-system device.  
+They raise instead of returning false, when in an `assert` or `assert_all` command.
+* [dir_make_command](#dir_make_command)
+* [dir_exists_command](#dir_exists_command)
+* [file_create_command](#file_create_command)
+* [file_append_command](#file_append_command)
+* [file_read_command](#file_read_command)
+
+- - - -
+# dir_make_command
+A command to create a dir.  
+An array of two elements `["dir_make","${DIRNAME}"]`  
+Corresponds to the bash command `mkdir -p ${DIRNAME}`.
+- example
+  ```json
+  [ "dir_make", "/cyber-dojo/katas/4R/5S/w4" ]
+  ```
+- returns
+  * **true** when the `dir_make` succeeds.
+  * **false** when the `dir_make` fails.
+    - Can fail because **DIRNAME** already exists as a dir.
+    - Can fail because **DIRNAME** already exists as a file.
+
+- - - -
+# dir_exists_command
+A query to determine if a dir exists.  
+An array of two elements `["dir_exists?","${DIRNAME}"]`  
+Corresponds to the bash command `[ -d ${DIRNAME} ]`.    
+- example
+  ```json
+  [ "dir_exists?", "/cyber-dojo/katas/4R/5S/w4" ]
+  ```
+- returns
+  * **true** when **DIRNAME** exists.
+  * **false** when **DIRNAME** does not exist.
+
+- - - -
+# file_create_command
+A command to create a _new_ file.  
+An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
+Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existing_ dir (created with a `dir_make_command`).
+- example
+  ```json
+  [ "file_create", "/cyber-dojo/katas/4R/5S/w4/manifest.json", "{...}" ]
+  ```
+- returns
+  * **true** when the file creation succeeds.
+  * **false** when the file creation fails.
+    - Can fail because **FILENAME** already exists.
+    - Can fail because **FILENAME** exists as a dir.
+
+- - - -
+# file_append_command
+A command to append to an _existing_ file.  
+An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
+Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `file_create_command`)
+- example
+  ```json
+  [ "file_append", "/cyber-dojo/katas/RS/y3/1B/manifest.json", "{...}" ]  
+  ```
+- returns
+  * **true** when the file append succeeds.
+  * **false** when the file append fails.
+    - Can fail because **FILENAME** does not exist.
+    - Can fail because **FILENAME** exists as a dir.
+
+- - - -
+# file_read_command
+A command to read from an _existing_ file.  
+An array of two elements `["file_read","${FILENAME}"]`  
+Reads the contents of an _existing_ file called **FILENAME**.
+- example
+  ```json
+  [ "file_read", "/cyber-dojo/katas/N2/u8/9W/events.json" ]
+  ```
+- returns
+  * **content** when the file read succeeds.
+  * **false** when the file read fails.
+    - Can fail because **FILENAME** does not exist.
+    - Can fail because **FILENAME** exists as a dir.
 
 - - - -
 ## GET ready?
@@ -112,8 +199,8 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
 - parameters
   * none
 - returns [(JSON-out)](#json-out)
-  * **true** if the service is ready
-  * **false** if the service is not ready
+  * **true** when the service is ready
+  * **false** when the service is not ready
 - example
   ```bash     
   $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/ready?
@@ -150,102 +237,6 @@ The git commit sha used to create the Docker image.
   {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
   ```
 
-- - - -
-## commands
-An array of [command]s(#commands)s
-
-
-## command
-There are 5 commands. 
-* [dir_make](#dir_make)
-* [dir_exists?](#dir_exists)
-* [file_create](#file_create)
-* [file_append](#file_append)
-* [file_read](#file_read)
-
-- - - -
-# dir_make
-A command to create a dir.  
-An array of two elements `["dir_make","${DIRNAME}"]`  
-Corresponds to `mkdir -p ${DIRNAME}` on a file-system.
-- example
-  ```json
-  ["dir_make","/cyber-dojo/katas/4R/5S/w4"]
-  ```
-- returns
-  * **true** if a dir called **DIRNAME** is successfully created.
-  * **false** if a dir called **DIRNAME** cannot be created.
-
-- - - -
-# dir_exists?
-A command to determine if a dir exists.
-An array of two elements `["dir_exists?","${DIRNAME}"]`  
-Corresponds to the bash command `[ -d ${DIRNAME} ]` on a file-system.
-- example
-  ```json
-  ["dir_exists?","/cyber-dojo/katas/4R/5S/w4"]
-  ```
-- returns
-  * **true** if **DIRNAME** exists.
-  * **false** if **DIRNAME** does not exist.
-
-- - - -
-# file_create
-A command to create a new file.  
-An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
-Corresponds to creating a _new_ file called **FILENAME** with content **CONTENT** in an _existing_ dir on a file-system.
-- example
-  ```json
-  ["file_create","/cyber-dojo/katas/4R/5S/w4/manifest.json","{...}"]
-  ```
-- returns
-  * **true** if the file creation succeeds.
-  * **false** if the file creation fails.
-    Can fail because **FILENAME** already exists.
-    Can fail because **FILENAME** exists as a dir.
-
-- - - -
-# file_append
-Appends **value** to the existing **key**.
-Corresponds to appending **value** to an _existing_ file called **key** on a file-system.
-- parameters
-  * **key** a full-filename-like **String**
-  * **value** a **String**
-  ```json
-  { "key": "katas/N2/u8/9W/events.json",
-    "value": "{...}"
-  }
-  ```
-- returns
-  * **true** if the ```append``` succeeds
-  ```json
-  { "append": true }
-  ```
-  * **false** if the ```append``` fails, eg because a successful call to ```write(key,...)```
-  has _not_ previously occurred.
-  ```json
-  { "append": false }
-  ```
-
-- - - -
-# file_read(key)
-Reads the value saved against **key**.
-Corresponds to reading the contents of an _existing_ file called **key** on a file-system.
-- parameter
-  * **key** a full-filename-like **String**
-  ```json
-  { "key": "katas/N2/u8/9W/events.json" }
-  ```
-- returns
-  * **String** stored against **key** if the ```read``` succeeds.
-  ```json
-  { "read": "{...}" }
-  ```
-  * **false** if the ```read``` fails, eg because there was no previous successful call
-  to ```write``` with the given **key**.
-  ```json
-  { "read": false }
-  ```
 
 - - - -
 ## JSON in
