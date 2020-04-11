@@ -125,7 +125,7 @@ They `raise` instead of returning **false**, when in an `assert` or `assert_all`
 * [file_read_command](#file_read_command)
 
 - - - -
-# dir_make_command
+### dir_make_command
 A command to create a dir.  
 An array of two elements `["dir_make","${DIRNAME}"]`  
 Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
@@ -140,7 +140,7 @@ Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
     - Can fail because **DIRNAME** already exists as a file.
 
 - - - -
-# dir_exists_command
+### dir_exists_command
 A query to determine if a dir exists.  
 An array of two elements `["dir_exists?","${DIRNAME}"]`  
 Corresponds to the `bash` command `[ -d ${DIRNAME} ]`.    
@@ -153,7 +153,7 @@ Corresponds to the `bash` command `[ -d ${DIRNAME} ]`.
   * **false** when **DIRNAME** does not exist.
 
 - - - -
-# file_create_command
+### file_create_command
 A command to create a _new_ file.  
 An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
 Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existing_ dir (created with a `dir_make_command`).
@@ -168,7 +168,7 @@ Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existin
     - when **FILENAME** exists as a dir.
 
 - - - -
-# file_append_command
+### file_append_command
 A command to append to an _existing_ file.  
 An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
 Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `file_create_command`)
@@ -183,7 +183,7 @@ Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `f
     - when **FILENAME** exists as a dir.
 
 - - - -
-# file_read_command
+### file_read_command
 A command to read from an _existing_ file.  
 An array of two elements `["file_read","${FILENAME}"]`  
 Reads the contents of an _existing_ file called **FILENAME**.
