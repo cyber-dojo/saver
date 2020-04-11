@@ -106,11 +106,11 @@ hits_ratio    = (src_stats[:hits_per_line].to_f / test_stats[:hits_per_line].to_
 
 table =
   [
-    [ 'tests',                  test_count,     '!=',   0 ],
     [ 'failures',               failure_count,  '==',   0 ],
     [ 'errors',                 error_count,    '==',   0 ],
     [ 'warnings',               warning_count,  '==',   0 ],
     [ 'skips',                  skip_count,     '==',   0 ],
+    [ 'tests',                  test_count,     '!=',   0 ],
     [ 'duration(test)[s]',      test_duration,  '<=',   2 ],
     [ 'coverage(src)[%]',       src_coverage,   '==', 100 ],
     [ 'coverage(test)[%]',      test_coverage,  '==', 100 ],
