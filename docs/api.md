@@ -156,7 +156,7 @@ An array of [command]s(#commands)s
 
 
 ## command
-There are 5 commands
+There are 5 commands. 
 * [dir_make](#dir_make)
 * [dir_exists?](#dir_exists)
 * [file_create](#file_create)
@@ -166,56 +166,46 @@ There are 5 commands
 - - - -
 # dir_make
 A command to create a dir.  
-An array of two elements:  
-  - [0] == "dir_make"
-  - [1] == ${DIRNAME}
+An array of two elements `["dir_make","${DIRNAME}"]`  
 Corresponds to `mkdir -p ${DIRNAME}` on a file-system.
 - example
   ```json
   ["dir_make","/cyber-dojo/katas/4R/5S/w4"]
   ```
 - returns
-  * **true** if **DIRNAME** is newly created.
-  * **false** (or raises) **DIRNAME** cannot be created.
+  * **true** if a dir called **DIRNAME** is successfully created.
+  * **false** if a dir called **DIRNAME** cannot be created.
 
 - - - -
 # dir_exists?
 A command to determine if a dir exists.
-Determines if there has been a previous call to `dir_make` with the given **key**.
-Corresponds to the bash command `[ -d ${key} ]` on a file-system.
+An array of two elements `["dir_exists?","${DIRNAME}"]`  
+Corresponds to the bash command `[ -d ${DIRNAME} ]` on a file-system.
 - example
   ```json
-  ["dir_exists?",${DIRNAME}"]
+  ["dir_exists?","/cyber-dojo/katas/4R/5S/w4"]
   ```
 - returns
-  * **true** if there _has_ been a previous call to ```create``` with the given **key**
-  * **false** if there has _not_ been a previous call to ```create``` with the given **key**
+  * **true** if **DIRNAME** exists.
+  * **false** if **DIRNAME** does not exist.
 
 - - - -
-# file_create(key,value)
-Saves **value** against a new **key**.
-Corresponds to saving **value** in a _new_ file called **key** in an _existing_ dir on a file-system.
-- parameters
-  * **key** a full-filename-like **String**
-  * **value** a **String**
+# file_create
+A command to create a new file.  
+An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
+Corresponds to creating a _new_ file called **FILENAME** with content **CONTENT** in an _existing_ dir on a file-system.
+- example
   ```json
-  { "key": "katas/N2/u8/9W/manifest.json",
-    "value": "{\"image_name\":...}"
-  }
+  ["file_create","/cyber-dojo/katas/4R/5S/w4/manifest.json","{...}"]
   ```
 - returns
-  * **true** if the ```write``` succeeds.
-  ```json
-  { "write": true }
-  ```
-  * **false** if the ```write``` fails, eg because **key** already exists, or a call
-  to ```create()``` with the base-dir of **key** has _not_ previously occurred.
-  ```json
-  { "write": false }
-  ```
+  * **true** if the file creation succeeds.
+  * **false** if the file creation fails.
+    Can fail because **FILENAME** already exists.
+    Can fail because **FILENAME** exists as a dir.
 
 - - - -
-# file_append(key,value)
+# file_append
 Appends **value** to the existing **key**.
 Corresponds to appending **value** to an _existing_ file called **key** on a file-system.
 - parameters
