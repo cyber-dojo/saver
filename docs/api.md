@@ -136,8 +136,8 @@ Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
 - result
   * **true** when the `dir_make` succeeds.
   * **false** when the `dir_make` fails.
-    - Can fail because **DIRNAME** already exists as a dir.
-    - Can fail because **DIRNAME** already exists as a file.
+    - when **DIRNAME** already exists as a dir.
+    - when **DIRNAME** already exists as a file.
 
 - - - -
 ### dir_exists_command
