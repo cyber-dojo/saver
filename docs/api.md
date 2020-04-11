@@ -2,11 +2,14 @@
 # API
 - - - -
 ## POST assert(command)
-Runs [command](#command) raising `ServiceError` if it fails.
+Runs a single [command](#command).
+Returns its result when it succeeds,
+Raises `ServiceError` when it fails.
 - example
   ```bash
+  $ dirname=/cyber-dojo/katas/12/34/56
   $ curl \
-    --data '{"command":["dir_make","/cyber-dojo/katas/12/34/56"]}' \
+    --data '{"command":["dir_make","${dirname}"]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -17,7 +20,8 @@ Runs [command](#command) raising `ServiceError` if it fails.
 
 - - - -
 ## POST run(command)
-Runs [command](#command).
+Runs a single [command](#command).
+Returns its result.
 - example
   ```bash
   $ dirname=/cyber-dojo/katas/34/E3/R6
@@ -33,10 +37,12 @@ Runs [command](#command).
 
 - - - -
 ## POST assert_all(commands)
-Runs all [commands](#commands) raising `ServiceError` if any of them fail.
+Runs all [commands](#commands).
+Returns their results in an array when they all succeed.
+Raises `ServiceError` when any of them fail.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/12/45/6E
+  $ dirname=/cyber-dojo/groups/45/Pe/6N
   $ curl \
     --data '{"commands":[["dir_make","${dirname}"],["dir_exists?","${dirname}"]]}' \
     --header 'Content-type: application/json' \
@@ -49,10 +55,11 @@ Runs all [commands](#commands) raising `ServiceError` if any of them fail.
 
 - - - -
 ## POST run_all(commands)
-Runs all [commands](#commands) returning their results in an array.
+Runs all [commands](#commands).
+Returns their results in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/12/45/6E
+  $ dirname=/cyber-dojo/groups/2P/45/6E
   $ curl \
     --data '{"commands":[["dir_make","${dirname}"],["dir_make","${dirname}"]]}' \
     --header 'Content-type: application/json' \
@@ -65,25 +72,25 @@ Runs all [commands](#commands) returning their results in an array.
 
 - - - -
 ## POST run_until_true(commands)
-Runs commands [commands](#commands) until one is not true, returning the results
-(including the non true one) in an array.
+Runs [commands](#commands) until one is true.
+Returns their results (including the last true one) in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/12/45/6E
+  $ dirname=/cyber-dojo/groups/12/5Q/6E
   $ curl \
-    --data '{"commands":[["dir_make","${dirname}"],["dir_make","${dirname}"]]}' \
+    --data '{"commands":[["dir_exists?","${dirname}"],["dir_make","${dirname}"]]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
       http://${IP_ADDRESS}:${PORT}/run_until_true
 
-  {"run_until_true":[true]}
+  {"run_until_true":[false,true]}
   ```
 
 - - - -
 ## POST run_until_false(commands)
-Runs commands [commands](#commands) until one is not false, returning the results
-(including the false one) in an array.
+Runs [commands](#commands) until one is false.
+Returns their results (including the last false one) in an array.
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/12/45/6E

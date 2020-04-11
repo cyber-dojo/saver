@@ -9,7 +9,7 @@
 
 - - - -
 * [POST assert(command)](docs/api.md#post-assertcommand)
-* [POST run(command)](docs/api.md#post-run-command)
+* [POST run(command)](docs/api.md#post-runcommand)
 * [POST assert_all(commands)](docs/api.md#post-assert_allcommands)
 * [POST run_all](docs/api.md#post-run_allcommands)
 * [POST run_until_true](docs/api.md#post-run_until_truecommands)
