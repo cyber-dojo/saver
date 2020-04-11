@@ -37,14 +37,6 @@ class HttpJsonArgs
     when '/run_until_true'  then [saver,'run_until_true' ,commands]
     when '/run_until_false' then [saver,'run_until_false',commands]
 
-    # deprecated
-    when '/exists'  then [saver,'exists?' ,key]
-    when '/create'  then [saver,'create'  ,key]
-    when '/write'   then [saver,'write'   ,key,value]
-    when '/append'  then [saver,'append'  ,key,value]
-    when '/read'    then [saver,'read'    ,key]
-    when '/batch'   then [saver,'batch'   ,commands]
-
     else
       fail HttpJson::RequestError, 'unknown path'
     end
@@ -59,33 +51,12 @@ class HttpJsonArgs
 
   attr_reader :args
 
-  def key
-    well_formed_string('key')
-  end
-
-  def value
-    well_formed_string('value')
-  end
-
   def command
     well_formed_command
   end
 
   def commands
     well_formed_commands
-  end
-
-  # - - - - - - - - - - - - - - -
-
-  def well_formed_string(arg_name)
-    unless args.has_key?(arg_name)
-      fail missing(arg_name)
-    end
-    arg = args[arg_name]
-    unless arg.is_a?(String)
-      fail malformed(arg_name, "!String (#{arg.class.name})")
-    end
-    arg
   end
 
   # - - - - - - - - - - - - - - -
@@ -136,12 +107,6 @@ class HttpJsonArgs
     when 'file_create' then fail_unless_well_formed_args(command,index,'filename','content')
     when 'file_append' then fail_unless_well_formed_args(command,index,'filename','content')
     when 'file_read'   then fail_unless_well_formed_args(command,index,'filename')
-    # deprecated - for now, needed for batch()
-    when 'exists?' then fail_unless_well_formed_args(command,index,'dirname')
-    when 'create'  then fail_unless_well_formed_args(command,index,'dirname')
-    when 'write'   then fail_unless_well_formed_args(command,index,'filename','content')
-    when 'append'  then fail_unless_well_formed_args(command,index,'filename','content')
-    when 'read'    then fail_unless_well_formed_args(command,index,'filename')
     else
       fail malformed("command#{index}", "Unknown (#{name})")
     end

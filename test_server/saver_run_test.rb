@@ -38,7 +38,7 @@ class SaverRunTest < TestBase
     content = '{"time":[3,4,5,6,7,8]}'
     saver.run(dir_make_command(dirname))
     assert saver.run(file_create_command(filename, content))
-    assert_equal content, saver.read(filename)
+    assert_equal content, saver.run(file_read_command(filename))
   end
 
   test '604', %w(
@@ -62,7 +62,7 @@ class SaverRunTest < TestBase
     saver.run(dir_make_command(dirname))
     assert saver.run(file_create_command(filename, content))
     refute saver.run(file_create_command(filename, 'appended-content'))
-    assert_equal content, saver.read(filename)
+    assert_equal content, saver.run(file_read_command(filename))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,7 +79,7 @@ class SaverRunTest < TestBase
     saver.run(file_create_command(filename, content))
     more = 'some-more'
     assert saver.run(file_append_command(filename, more))
-    assert_equal content+more, saver.read(filename)
+    assert_equal content+more, saver.run(file_read_command(filename))
   end
 
   test '607', %w(
@@ -100,7 +100,7 @@ class SaverRunTest < TestBase
     dirname = 'groups/96/16/08'
     filename = dirname + '/hiker.h'
     saver.run(dir_make_command(dirname))
-    # no saver.run(saver.file_create_command(filename, '...'))
+    # no saver.run(file_create_command(filename, '...'))
     assert saver.run(file_append_command(filename, 'main')).is_a?(FalseClass)
     assert saver.run(file_read_command(filename)).is_a?(FalseClass)
   end
@@ -115,7 +115,7 @@ class SaverRunTest < TestBase
     content = 'the boy stood on the burning deck'
     saver.run(dir_make_command(dirname))
     saver.run(file_create_command(filename, content))
-    assert_equal content, saver.read(filename)
+    assert_equal content, saver.run(file_read_command(filename))
   end
 
   test '610',

@@ -28,17 +28,23 @@ class HttpJsonArgsTest < TestBase
     assert_equal [saver,'sha',[]], args.get('/sha', externals)
     assert_equal [saver,'alive?',[]], args.get('/alive', externals)
     assert_equal [saver,'ready?',[]], args.get('/ready', externals)
-    args = HttpJsonArgs.new('{"key":"a/b/c"}')
-    assert_equal [saver,'create',['a/b/c']], args.get('/create', externals)
-    assert_equal [saver,'exists?',['a/b/c']], args.get('/exists', externals)
-    assert_equal [saver,'read',['a/b/c']], args.get('/read', externals)
-    args = HttpJsonArgs.new('{"key":"a/b/c","value":"qwerty"}')
-    assert_equal [saver,'write',['a/b/c','qwerty']], args.get('/write', externals)
-    assert_equal [saver,'append',['a/b/c','qwerty']], args.get('/append', externals)
-    commands = [['create','a/g/d'],['exists?','a/g/g']]
-    json = {"commands":commands}.to_json
-    args = HttpJsonArgs.new(json)
-    assert_equal [saver,'run_all',[commands]], args.get('/run_all',externals)
+
+    dirname = 'F18'
+    filename = dirname + '/' + 'readme.txt'
+    content = 'hello world'
+
+    command = dir_make_command(dirname)
+    args = HttpJsonArgs.new({"command":command}.to_json)
+    expected = [saver,'run',[command]]
+    assert_equal expected, args.get('/run', externals)
+
+    commands = [
+        dir_make_command(dirname),
+        file_create_command(filename, content)
+    ]
+    args = HttpJsonArgs.new({"commands":commands}.to_json)
+    expected = [saver,'run_all',[commands]]
+    assert_equal expected, args.get('/run_all', externals)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -217,50 +223,6 @@ class HttpJsonArgsTest < TestBase
     assert_equal 'malformed:commands[0]:file_create(content!=String):', error.message
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - -
-  # deprecated
-
-  test 'E69',
-  'support batch() till switched to batch_run' do
-    commands = [['file_create','a/b/c',nil]]
-    error = assert_batch_raises(commands)
-    assert_equal 'malformed:commands[0]:file_create(content!=String):', error.message
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # get:key
-
-  test 'B41',
-  'key: get() raises when it is missing' do
-    args = HttpJsonArgs.new('{}')
-    error = assert_raises { args.get('/create', externals) }
-    assert_equal 'missing:key:', error.message
-  end
-
-  test 'B42',
-  'key: get() raises when it is not a String' do
-    args = HttpJsonArgs.new('{"key":42}')
-    error = assert_raises { args.get('/create', externals) }
-    assert_equal 'malformed:key:!String (Integer):', error.message
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # get:value
-
-  test 'B43',
-  'value: get() raises when it is missing' do
-    args = HttpJsonArgs.new('{"key":"a/b/c"}')
-    error = assert_raises { args.get('/write', externals) }
-    assert_equal 'missing:value:', error.message
-  end
-
-  test 'B44',
-  'value: get() raises when it is not a String' do
-    args = HttpJsonArgs.new('{"key":"a/b/c","value":42}')
-    error = assert_raises { args.get('/write', externals) }
-    assert_equal 'malformed:value:!String (Integer):', error.message
-  end
-
   private
 
   def assert_assert_raises(command)
@@ -273,12 +235,6 @@ class HttpJsonArgsTest < TestBase
     json = { "commands":commands }.to_json
     args = HttpJsonArgs.new(json)
     assert_raises { args.get('/run_all', externals) }
-  end
-
-  def assert_batch_raises(commands)
-    json = { "commands":commands }.to_json
-    args = HttpJsonArgs.new(json)
-    assert_raises { args.get('/batch', externals) }
   end
 
 end

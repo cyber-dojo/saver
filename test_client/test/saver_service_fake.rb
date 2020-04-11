@@ -70,12 +70,6 @@ class SaverServiceFake
     when FILE_CREATE_COMMAND_NAME then file_create(*args)
     when FILE_APPEND_COMMAND_NAME then file_append(*args)
     when FILE_READ_COMMAND_NAME   then file_read(*args)
-    # deprecated, used by batch()
-    when 'exists?' then exists?(*args)
-    when 'create'  then create(*args)
-    when 'write'   then write(*args)
-    when 'append'  then append(*args)
-    when 'read'    then read(*args)
     end
   end
 
@@ -113,16 +107,6 @@ class SaverServiceFake
     run_until(commands) {|r| !r}
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-  # deprecated
-
-  def exists?(key); dir_exists?(key); end
-  def create(key); dir_make(key); end
-  def write(key,value); file_create(key,value); end
-  def append(key, value); file_append(key, value); end
-  def read(key); file_read(key); end
-  def batch(commands); run_all(commands); end
-
   private
 
   DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
@@ -149,14 +133,12 @@ class SaverServiceFake
   # commands
 
   def dir_exists?(dirname)
-    raise_unless_String('exists', {'key'=>dirname})
     dir?(path_name(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_make(dirname)
-    raise_unless_String('create', {'key'=>dirname})
     path = path_name(dirname)
     if dir?(path) || file?(path)
       false
@@ -168,8 +150,6 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(filename, content)
-    args = {'key'=>filename, 'value'=>content}
-    raise_unless_String('write', args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = content
@@ -182,8 +162,6 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_append(filename, content)
-    args = {'key'=>filename, 'value'=>content}
-    raise_unless_String('append', args)
     path = path_name(filename)
     if dir?(File.dirname(path)) && file?(path)
       @@files[path] += content
@@ -196,7 +174,6 @@ class SaverServiceFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def file_read(filename)
-    raise_unless_String('read', {'key'=>filename})
     @@files[path_name(filename)] || false
   end
 
@@ -242,13 +219,6 @@ class SaverServiceFake
     when 'file_create' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_append' then raise_unless_well_formed_args(command,index,'filename','content')
     when 'file_read'   then raise_unless_well_formed_args(command,index,'filename')
-    # deprecated, needed for batch()
-    when 'exists?' then raise_unless_well_formed_args(command,index,'dirname')
-    when 'create'  then raise_unless_well_formed_args(command,index,'dirname')
-    when 'write'   then raise_unless_well_formed_args(command,index,'filename','content')
-    when 'append'  then raise_unless_well_formed_args(command,index,'filename','content')
-    when 'read'    then raise_unless_well_formed_args(command,index,'filename')
-
     else
       message = "malformed:command#{index}:Unknown (#{name}):"
       raise_fake_exception(message)
@@ -276,22 +246,6 @@ class SaverServiceFake
 
   def malformed(arg_name, msg)
     RuntimeError.new("malformed:#{arg_name}:#{msg}:")
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def raise_unless_String(command, args)
-    ['key','value'].each do |arg_name|
-      arg = args[arg_name]
-      if args.has_key?(arg_name) && !arg.is_a?(String)
-        raise SaverService::Error,{
-          path:"/#{command}",
-          body:args.to_json,
-          class:'SaverService',
-          message:"malformed:#{arg_name}:!String (#{arg.class.name}):"
-        }.to_json
-      end
-    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -

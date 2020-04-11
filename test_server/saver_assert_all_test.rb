@@ -49,7 +49,7 @@ class SaverAssertAllTest < TestBase
       saver.assert_all(@commands)
     }
     assert_equal "commands[3] != true", error.message
-    assert_equal content, saver.run(saver.file_read_command(there_yes)), :does_not_execute_subsequent_commands
+    assert_equal content, saver.run(file_read_command(there_yes)), :does_not_execute_subsequent_commands
   end
 
   private

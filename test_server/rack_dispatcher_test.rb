@@ -34,12 +34,13 @@ class RackDispatcherTest < TestBase
   test '167',
   'dispatch returns 500 status when assert_all raises' do
     message = 'commands[1] != true'
+    dirname = '167'
     body = { "commands":[
-      dir_make_command('167'),
-      dir_make_command('167')
+      dir_make_command(dirname),
+      dir_make_command(dirname) # repeat
     ]}.to_json
     assert_dispatch_raises('assert_all', body, 500, message)
-    assert saver.exists?('167')
+    saver.assert(dir_exists_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -96,46 +97,6 @@ class RackDispatcherTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'AC2',
-  'dispatch returns 400 status when key is missing' do
-    assert_dispatch_raises('read',
-      '{}',
-      400,
-      'missing:key:'
-    )
-  end
-
-  test 'AC3',
-  'dispatch returns 400 status when key is malformed' do
-    assert_dispatch_raises('read',
-      '{"key":42}',
-      400,
-      'malformed:key:!String (Integer):'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'AC4',
-  'dispatch returns 400 status when value is missing' do
-    assert_dispatch_raises('write',
-      '{"key":"/a/b/c"}',
-      400,
-      'missing:value:'
-    )
-  end
-
-  test 'AC5',
-  'dispatch returns 400 status when value is malformed' do
-    assert_dispatch_raises('write',
-      '{"key":"a/b/c","value":42}',
-      400,
-      'malformed:value:!String (Integer):'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'AC6',
   'dispatch returns 400 status when commands is missing' do
     assert_dispatch_raises('run_all',
@@ -152,8 +113,8 @@ class RackDispatcherTest < TestBase
       ['{"commands":[42]}', 'malformed:commands[0]:!Array (Integer):'],
       ['{"commands":[[true]]}', 'malformed:commands[0][0]:!String (TrueClass):'],
       ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
-      ['{"commands":[["read",1,2,3]]}', 'malformed:commands[0]:read!3:'],
-      ['{"commands":[["read",2.9]]}', 'malformed:commands[0]:read(filename!=String):']
+      ['{"commands":[["file_read",1,2,3]]}', 'malformed:commands[0]:file_read!3:'],
+      ['{"commands":[["file_read",2.9]]}', 'malformed:commands[0]:file_read(filename!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('run_all', json, 400, error_message)
     end
@@ -176,8 +137,8 @@ class RackDispatcherTest < TestBase
       ['{"command":42}', 'malformed:command:!Array (Integer):'],
       ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],
       ['{"command":["xxx"]}', 'malformed:command:Unknown (xxx):'],
-      ['{"command":["read",1,2,3]}', 'malformed:command:read!3:'],
-      ['{"command":["read",2.9]}', 'malformed:command:read(filename!=String):']
+      ['{"command":["file_read",1,2,3]}', 'malformed:command:file_read!3:'],
+      ['{"command":["file_read",2.9]}', 'malformed:command:file_read(filename!=String):']
     ].each do |json, error_message|
       assert_dispatch_raises('assert', json, 400, error_message)
     end

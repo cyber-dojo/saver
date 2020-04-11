@@ -34,7 +34,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['dir_exists?',dirname]) {
       dir_exists?(dirname)
     }
-    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
+    refute saver.run(dir_exists_command(dirname)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -159,8 +159,8 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
-    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(dir_exists_command(dirname)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,7 +195,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -226,7 +226,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
     }
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -259,8 +259,8 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
-    refute saver.run(saver.dir_exists_command(dirname)), :did_nothing
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(dir_exists_command(dirname)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -277,7 +277,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -294,7 +294,7 @@ class SaverAssertTest < TestBase
     assert_raises_SaverException(message,['file_append',filename,content]) {
       file_append(filename,content)
     }
-    refute saver.run(saver.file_read_command(filename)), :did_nothing
+    refute saver.run(file_read_command(filename)), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

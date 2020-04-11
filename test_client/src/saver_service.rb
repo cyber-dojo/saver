@@ -81,33 +81,6 @@ class SaverService
     @http.post(__method__, { commands:commands })
   end
 
-  # - - - - - - - - - - - -
-  # deprecated
-
-  def exists?(dirname)
-    @http.get(__method__, { key:dirname })
-  end
-
-  def create(dirname)
-    @http.post(__method__, { key:dirname })
-  end
-
-  def write(filename, content)
-    @http.post(__method__, { key:filename, value:content })
-  end
-
-  def append(filename, content)
-    @http.post(__method__, { key:filename, value:content })
-  end
-
-  def read(filename)
-    @http.get(__method__, { key:filename })
-  end
-
-  def batch(commands)
-    @http.post(__method__, { commands:commands })
-  end
-
   private
 
   DIR_EXISTS_COMMAND_NAME = 'dir_exists?'

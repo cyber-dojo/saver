@@ -35,11 +35,11 @@ class SaverRunUntilTrueTest < TestBase
 
   multi_test '713', %w(
   |run_until_true()
-  |stops at exists?() returning true
+  |stops at dir_exists?() returning true
   |and does not execute subsequent commands
   ) do
     dirname = 'client/batch-run-until-true/x3/t7/13'
-    assert saver.create(dirname)
+    saver.assert(dir_make_command(dirname))
     command(false, dir_exists_command(dirname+'1'))
     command(false, dir_exists_command(dirname+'2'))
     command(false, dir_exists_command(dirname+'3'))
@@ -54,11 +54,11 @@ class SaverRunUntilTrueTest < TestBase
 
   multi_test '714', %w(
   |run_until_true()
-  |stops at create() returning true
+  |stops at dir_make() returning true
   |and does not execute subsequent commands
   ) do
     dirname = 'client/batch-run-until-true/x3/t7/14'
-    assert saver.create(dirname)
+    saver.assert(dir_make_command(dirname))
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
@@ -74,15 +74,15 @@ class SaverRunUntilTrueTest < TestBase
 
   multi_test '715', %w(
   |run_until_true()
-  |stops at write() returning true
+  |stops at file_create() returning true
   |and does not execute subsequent commands
   ) do
     dirname = 'client/batch-run-until-true/x3/t7/15'
     filename = dirname + '/stop-at-write-true'
     content = 'xxxxxx'
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(filename, content)
+      dir_make_command(dirname),
+      file_create_command(filename, content)
     ])
 
     command(false, file_create_command(filename, content))
@@ -96,7 +96,7 @@ class SaverRunUntilTrueTest < TestBase
 
   multi_test '716', %w(
   |run_until_true()
-  |stops at append() returning true
+  |stops at file_append() returning true
   |and does not execute subsequent commands
   ) do
     dirname = 'client/batch-run-until-true/x3/t7/16'
@@ -104,8 +104,8 @@ class SaverRunUntilTrueTest < TestBase
     content = 'X'
 
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(filename, content)
+      dir_make_command(dirname),
+      file_create_command(filename, content)
     ])
 
     command(false, file_append_command(filename+'1', content))
@@ -119,7 +119,7 @@ class SaverRunUntilTrueTest < TestBase
 
   multi_test '717', %w(
   |run_until_true()
-  |stops at read() a file that exists
+  |stops at file_read() a file that exists
   |and does not execute subsequent commands
   ) do
     dirname = 'client/batch-run-until-true/x3/t7/17'
@@ -127,8 +127,8 @@ class SaverRunUntilTrueTest < TestBase
     content = '{"colour":"red"}'
 
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(event_3,content)
+      dir_make_command(dirname),
+      file_create_command(event_3,content)
     ])
 
     command(false, file_create_command(dirname + '/3.event.json', '{"colour":"amber"}'))

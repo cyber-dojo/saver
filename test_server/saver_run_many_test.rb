@@ -109,7 +109,7 @@ class SaverRunManyTest < TestBase
     command(false, file_create_command(filename, content))
     not_run(file_append_command(filename, 'extra'))
     assert_run_until_false
-    assert saver.exists?(dirname)
+    assert dir_exists?(dirname)
     assert_equal content, file_read(filename), :does_not_execute_subsequent_commands
   end
 
@@ -179,7 +179,8 @@ class SaverRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/13'
-    assert saver.create(dirname)
+    saver.assert(dir_make_command(dirname))
+
     command(false, dir_exists_command(dirname+'1'))
     command(false, dir_exists_command(dirname+'2'))
     command(false, dir_exists_command(dirname+'3'))
@@ -198,7 +199,8 @@ class SaverRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/14'
-    assert saver.create(dirname)
+    saver.assert(dir_make_command(dirname))
+
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
@@ -221,8 +223,8 @@ class SaverRunManyTest < TestBase
     filename = dirname + '/stop-at-write-true'
     content = 'xxxxxx'
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(filename, content)
+      dir_make_command(dirname),
+      file_create_command(filename, content)
     ])
 
     command(false, file_create_command(filename, content))
@@ -244,8 +246,8 @@ class SaverRunManyTest < TestBase
     content = 'X'
 
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(filename, content)
+      dir_make_command(dirname),
+      file_create_command(filename, content)
     ])
 
     command(false, file_append_command(filename+'1', content))
@@ -267,8 +269,8 @@ class SaverRunManyTest < TestBase
     content = '{"colour":"red"}'
 
     saver.assert_all([
-      saver.dir_make_command(dirname),
-      saver.file_create_command(event_3,content)
+      dir_make_command(dirname),
+      file_create_command(event_3,content)
     ])
 
     command(false, file_create_command(dirname + '/3.event.json', '{"colour":"amber"}'))
@@ -308,11 +310,11 @@ class SaverRunManyTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   def dir_exists?(dirname)
-    saver.run(saver.dir_exists_command(dirname))
+    saver.run(dir_exists_command(dirname))
   end
 
   def file_read(filename)
-    saver.run(saver.file_read_command(filename))
+    saver.run(file_read_command(filename))
   end
 
 end
