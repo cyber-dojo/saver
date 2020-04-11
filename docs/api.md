@@ -3,8 +3,9 @@
 - - - -
 ## POST assert(command)
 Runs a single [command](#command).  
-Returns  [(JSON-out)](#json-out) its result when it succeeds.  
-Raises `ServiceError` when it fails.
+- result [(JSON-out)](#json-out)
+  When it succeeds, the single result of the command.
+  When it fails, raises `ServiceError`.
 - example
   ```bash
   $ dirname=/cyber-dojo/katas/12/34/56
@@ -21,7 +22,8 @@ Raises `ServiceError` when it fails.
 - - - -
 ## POST run(command)
 Runs a single [command](#command).  
-Returns  [(JSON-out)](#json-out) its result.
+- result [(JSON-out)](#json-out)
+  The single result of the command.
 - example
   ```bash
   $ dirname=/cyber-dojo/katas/34/E3/R6
@@ -38,8 +40,9 @@ Returns  [(JSON-out)](#json-out) its result.
 - - - -
 ## POST assert_all(commands)
 Runs all [commands](#commands).  
-When they all succeed, returns their results in an array.  
-When one of them fails, immediately raises `ServiceError`.  
+- result [(JSON-out)](#json-out)
+  When they all succeed, the commands results in an array.  
+  When one of them fails, immediately raises `ServiceError`.  
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/45/Pe/6N
@@ -55,8 +58,9 @@ When one of them fails, immediately raises `ServiceError`.
 
 - - - -
 ## POST run_all(commands)
-Runs all [commands](#commands).  
-Returns their results in an array.
+Runs all [commands](#commands).
+- result [(JSON-out)](#json-out)  
+  The commands results, in an array.
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/2P/45/6E
@@ -73,7 +77,8 @@ Returns their results in an array.
 - - - -
 ## POST run_until_true(commands)
 Runs [commands](#commands) until one is true.  
-Returns their results (including the last true one) in an array.
+- result [(JSON-out)](#json-out)
+  The commands results (including the last true one) in an array.
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/12/5Q/6E
@@ -89,8 +94,9 @@ Returns their results (including the last true one) in an array.
 
 - - - -
 ## POST run_until_false(commands)
-Runs [commands](#commands) until one is false.  
-Returns their results (including the last false one) in an array.
+Runs [commands](#commands) until one is false.
+- result [(JSON-out)](#json-out)
+  The commands results (including the last false one) in an array.
 - example
   ```bash
   $ dirname=/cyber-dojo/groups/1q/K4/d9
@@ -128,7 +134,7 @@ Corresponds to the bash command `mkdir -p ${DIRNAME}`.
   ```json
   [ "dir_make", "/cyber-dojo/katas/4R/5S/w4" ]
   ```
-- returns
+- result
   * **true** when the `dir_make` succeeds.
   * **false** when the `dir_make` fails.
     - Can fail because **DIRNAME** already exists as a dir.
@@ -143,7 +149,7 @@ Corresponds to the bash command `[ -d ${DIRNAME} ]`.
   ```json
   [ "dir_exists?", "/cyber-dojo/katas/4R/5S/w4" ]
   ```
-- returns
+- result
   * **true** when **DIRNAME** exists.
   * **false** when **DIRNAME** does not exist.
 
@@ -156,7 +162,7 @@ Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existin
   ```json
   [ "file_create", "/cyber-dojo/katas/4R/5S/w4/manifest.json", "{...}" ]
   ```
-- returns
+- result
   * **true** when the file creation succeeds.
   * **false** when the file creation fails.
     - Can fail because **FILENAME** already exists.
@@ -171,7 +177,7 @@ Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `f
   ```json
   [ "file_append", "/cyber-dojo/katas/RS/y3/1B/manifest.json", "{...}" ]  
   ```
-- returns
+- result
   * **true** when the file append succeeds.
   * **false** when the file append fails.
     - Can fail because **FILENAME** does not exist.
@@ -186,7 +192,7 @@ Reads the contents of an _existing_ file called **FILENAME**.
   ```json
   [ "file_read", "/cyber-dojo/katas/N2/u8/9W/events.json" ]
   ```
-- returns
+- result
   * **content** when the file read succeeds.
   * **false** when the file read fails.
     - Can fail because **FILENAME** does not exist.
@@ -198,7 +204,7 @@ Tests if the service is ready to handle requests.
 Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
 - parameters
   * none
-- returns [(JSON-out)](#json-out)
+- result [(JSON-out)](#json-out)
   * **true** when the service is ready
   * **false** when the service is not ready
 - example
@@ -214,7 +220,7 @@ Tests if the service is alive.
 Used as a [Kubernetes](https://kubernetes.io/) liveness probe.  
 - parameters
   * none
-- returns [(JSON-out)](#json-out)
+- result [(JSON-out)](#json-out)
   * **true**
 - example
   ```bash     
@@ -228,7 +234,7 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
 The git commit sha used to create the Docker image.
 - parameters
   * none
-- returns [(JSON-out)](#json-out)
+- result [(JSON-out)](#json-out)
   * the 40 character commit sha string.
 - example
   ```bash     
