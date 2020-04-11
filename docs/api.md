@@ -112,7 +112,7 @@ Runs [commands](#commands) until one is **false**.
 
 - - - -
 ## commands
-An array of [command]s(#commands)s
+An array of commands.
 
 ## command
 There are 5 commands.  
