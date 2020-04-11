@@ -127,7 +127,7 @@ They `raise` instead of returning **false**, when in an `assert` or `assert_all`
 - - - -
 ### dir_make_command
 A command to create a dir.  
-An array of two elements `["dir_make","${DIRNAME}"]`  
+An array of two elements `[ "dir_make", "${DIRNAME}" ]`  
 Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
 - example
   ```json
@@ -142,7 +142,7 @@ Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
 - - - -
 ### dir_exists_command
 A query to determine if a dir exists.  
-An array of two elements `["dir_exists?","${DIRNAME}"]`  
+An array of two elements `[ "dir_exists?", "${DIRNAME}" ]`  
 Corresponds to the `bash` command `[ -d ${DIRNAME} ]`.    
 - example
   ```json
@@ -155,7 +155,7 @@ Corresponds to the `bash` command `[ -d ${DIRNAME} ]`.
 - - - -
 ### file_create_command
 A command to create a _new_ file.  
-An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
+An array of three elements `[ "file_create", "${FILENAME}", "${CONTENT}" ]`  
 Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existing_ dir (created with a `dir_make_command`).
 - example
   ```json
@@ -170,7 +170,7 @@ Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existin
 - - - -
 ### file_append_command
 A command to append to an _existing_ file.  
-An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`  
+An array of three elements `[ "file_create", "${FILENAME}","${CONTENT}" ]`  
 Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `file_create_command`)
 - example
   ```json
@@ -185,7 +185,7 @@ Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `f
 - - - -
 ### file_read_command
 A command to read from an _existing_ file.  
-An array of two elements `["file_read","${FILENAME}"]`  
+An array of two elements `[ "file_read", "${FILENAME}" ]`  
 Reads the contents of an _existing_ file called **FILENAME**.
 - example
   ```json
