@@ -8,9 +8,9 @@ Runs a single [command](#command).
   When it fails, raises `ServiceError`.
 - example
   ```bash
-  $ dirname=/cyber-dojo/katas/12/34/56
+  $ DIRNAME=/cyber-dojo/katas/12/34/56
   $ curl \
-    --data '{"command":["dir_make","${dirname}"]}' \
+    --data '{"command":["dir_make","${DIRNAME}"]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -26,9 +26,9 @@ Runs a single [command](#command).
   The single result of the command.
 - example
   ```bash
-  $ dirname=/cyber-dojo/katas/34/E3/R6
+  $ DIRNAME=/cyber-dojo/katas/34/E3/R6
   $ curl \
-    --data '{"command":["dir_make","${dirname}"]}' \
+    --data '{"command":["dir_make","${DIRNAME}"]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -45,9 +45,9 @@ Runs all [commands](#commands).
   When one of them fails, immediately raises `ServiceError`.  
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/45/Pe/6N
+  $ DIRNAME=/cyber-dojo/groups/45/Pe/6N
   $ curl \
-    --data '{"commands":[["dir_make","${dirname}"],["dir_exists?","${dirname}"]]}' \
+    --data '{"commands":[["dir_make","${DIRNAME}"],["dir_exists?","${DIRNAME}"]]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -63,9 +63,9 @@ Runs all [commands](#commands).
   The commands results, in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/2P/45/6E
+  $ DIRNAME=/cyber-dojo/groups/2P/45/6E
   $ curl \
-    --data '{"commands":[["dir_make","${dirname}"],["dir_make","${dirname}"]]}' \
+    --data '{"commands":[["dir_make","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -81,9 +81,9 @@ Runs [commands](#commands) until one is true.
   The commands results (including the last true one) in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/12/5Q/6E
+  $ DIRNAME=/cyber-dojo/groups/12/5Q/6E
   $ curl \
-    --data '{"commands":[["dir_exists?","${dirname}"],["dir_make","${dirname}"]]}' \
+    --data '{"commands":[["dir_exists?","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
@@ -99,26 +99,25 @@ Runs [commands](#commands) until one is false.
   The commands results (including the last false one) in an array.
 - example
   ```bash
-  $ dirname=/cyber-dojo/groups/1q/K4/d9
+  $ DIRNAME=/cyber-dojo/groups/1q/K4/d9
   $ curl \
-    --data '{"commands":[["dir_make","${dirname}"],["dir_make","${dirname}"]]}' \
+    --data '{"commands":[["dir_make","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
     --header 'Content-type: application/json' \
     --silent \
     -X POST \
       http://${IP_ADDRESS}:${PORT}/run_until_false
 
-  {"run_until_true":[true,false]}
+  {"run_until_false":[true,false]}
   ```
 
 - - - -
 ## commands
 An array of [command]s(#commands)s
 
-
 ## command
 There are 5 commands.  
-They _always_ raise when there is no space left of the file-system device.  
-They raise instead of returning false, when in an `assert` or `assert_all` command.
+They _always_ raise when there is no space left on the file-system device.  
+They `raise` instead of returning **false**, when in an `assert` or `assert_all` command.
 * [dir_make_command](#dir_make_command)
 * [dir_exists_command](#dir_exists_command)
 * [file_create_command](#file_create_command)
@@ -175,7 +174,7 @@ An array of three elements `["file_create", "${FILENAME}","${CONTENT}"]`
 Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `file_create_command`)
 - example
   ```json
-  [ "file_append", "/cyber-dojo/katas/RS/y3/1B/manifest.json", "{...}" ]  
+  [ "file_append", "/cyber-dojo/katas/4R/5S/w4/manifest.json", "{...}" ]  
   ```
 - result
   * **true** when the file append succeeds.
@@ -190,13 +189,28 @@ An array of two elements `["file_read","${FILENAME}"]`
 Reads the contents of an _existing_ file called **FILENAME**.
 - example
   ```json
-  [ "file_read", "/cyber-dojo/katas/N2/u8/9W/events.json" ]
+  [ "file_read", "/cyber-dojo/katas/4R/5S/w4/manifest.json" ]
   ```
 - result
   * **content** when the file read succeeds.
   * **false** when the file read fails.
     - Can fail because **FILENAME** does not exist.
     - Can fail because **FILENAME** exists as a dir.
+
+- - - -
+## GET alive?
+Tests if the service is alive.  
+Used as a [Kubernetes](https://kubernetes.io/) liveness probe.  
+- parameters
+  * none
+- result [(JSON-out)](#json-out)
+  * **true**
+- example
+  ```bash     
+  $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/alive?
+
+  {"alive?":true}
+  ```
 
 - - - -
 ## GET ready?
@@ -212,21 +226,6 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
   $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/ready?
 
   {"ready?":false}
-  ```
-
-- - - -
-## GET alive?
-Tests if the service is alive.  
-Used as a [Kubernetes](https://kubernetes.io/) liveness probe.  
-- parameters
-  * none
-- result [(JSON-out)](#json-out)
-  * **true**
-- example
-  ```bash     
-  $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/alive?
-
-  {"alive?":true}
   ```
 
 - - - -
