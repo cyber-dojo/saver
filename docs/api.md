@@ -2,8 +2,8 @@
 # API
 - - - -
 ## POST assert(command)
-Runs a single [command](#command).
-Returns its result when it succeeds,
+Runs a single [command](#command).  
+Returns its result when it succeeds.  
 Raises `ServiceError` when it fails.
 - example
   ```bash
@@ -20,7 +20,7 @@ Raises `ServiceError` when it fails.
 
 - - - -
 ## POST run(command)
-Runs a single [command](#command).
+Runs a single [command](#command).  
 Returns its result.
 - example
   ```bash
@@ -37,8 +37,8 @@ Returns its result.
 
 - - - -
 ## POST assert_all(commands)
-Runs all [commands](#commands).
-Returns their results in an array when they all succeed.
+Runs all [commands](#commands).  
+Returns their results in an array when they all succeed.  
 Raises `ServiceError` when any of them fail.
 - example
   ```bash
@@ -55,7 +55,7 @@ Raises `ServiceError` when any of them fail.
 
 - - - -
 ## POST run_all(commands)
-Runs all [commands](#commands).
+Runs all [commands](#commands).  
 Returns their results in an array.
 - example
   ```bash
@@ -72,7 +72,7 @@ Returns their results in an array.
 
 - - - -
 ## POST run_until_true(commands)
-Runs [commands](#commands) until one is true.
+Runs [commands](#commands) until one is true.  
 Returns their results (including the last true one) in an array.
 - example
   ```bash
@@ -89,7 +89,7 @@ Returns their results (including the last true one) in an array.
 
 - - - -
 ## POST run_until_false(commands)
-Runs [commands](#commands) until one is false.
+Runs [commands](#commands) until one is false.  
 Returns their results (including the last false one) in an array.
 - example
   ```bash
@@ -107,7 +107,7 @@ Returns their results (including the last false one) in an array.
 
 - - - -
 ## GET ready?
-Tests if the service is ready to handle requests.
+Tests if the service is ready to handle requests.  
 Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
 - parameters
   * none
@@ -123,7 +123,7 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
 
 - - - -
 ## GET alive?
-Tests if the service is alive.
+Tests if the service is alive.  
 Used as a [Kubernetes](https://kubernetes.io/) liveness probe.  
 - parameters
   * none
@@ -156,49 +156,40 @@ An array of [command]s(#commands)s
 
 
 ## command
-There are 5 core commands
-* dir_make
-* dir_exists?
-* file_create
-* file_append
-# file_read
+There are 5 commands
+* [dir_make](#dir_make)
+* [dir_exists?](#dir_exists)
+* [file_create](#file_create)
+* [file_append](#file_append)
+* [file_read](#file_read)
 
 - - - -
-# dir_make(key)
-Creates **key** to allow subsequent calls to ```write``` and ```append```.
-Corresponds to ```mkdir -p ${key}``` on a file-system.
-- parameter
-  * **key** a dir-like **String**, eg
+# dir_make
+A command to create a dir.  
+An array of two elements:  
+  - [0] == "dir_make"
+  - [1] == ${DIRNAME}
+Corresponds to `mkdir -p ${DIRNAME}` on a file-system.
+- example
   ```json
-  { "key": "katas/N2/u8/9W" }
+  ["dir_make","/cyber-dojo/katas/4R/5S/w4"]
+  ```
 - returns
-  * **true** if there has _not_ been a previous call to ```create``` with the given **key**
-  ```json
-  { "create": true }
-  ```
-  * **false** if the ```create``` fails, eg there _has_ been a previous call to ```create``` with the given **key**
-  ```json
-  { "create": false }
-  ```
+  * **true** if **DIRNAME** is newly created.
+  * **false** (or raises) **DIRNAME** cannot be created.
 
 - - - -
-# dir_exists?(key)
-Determines if there has been a previous call to ```create``` with the given **key**.
-Corresponds to the bash command ```[ -d ${key} ]``` on a file-system.
-- parameter
-  * **key** a dir-like **String**, eg
+# dir_exists?
+A command to determine if a dir exists.
+Determines if there has been a previous call to `dir_make` with the given **key**.
+Corresponds to the bash command `[ -d ${key} ]` on a file-system.
+- example
   ```json
-  { "key": "katas/N2/u8/9W" }
+  ["dir_exists?",${DIRNAME}"]
   ```
 - returns
   * **true** if there _has_ been a previous call to ```create``` with the given **key**
-  ```json
-  { "exists?": true }
-  ```
   * **false** if there has _not_ been a previous call to ```create``` with the given **key**
-  ```json
-  { "exists?": false }
-  ```
 
 - - - -
 # file_create(key,value)
