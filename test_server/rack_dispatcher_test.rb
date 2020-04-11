@@ -212,71 +212,6 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200 primitives
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E42',
-  'dispatches to exists?' do
-    saver_stub('exists?')
-    assert_saver_dispatch('exists',
-      { key: well_formed_key }.to_json,
-      'hello from stubbed saver.exists?'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E44',
-  'dispatches to write' do
-    saver_stub('write')
-    assert_saver_dispatch('write',
-      { key: well_formed_key, value: well_formed_value }.to_json,
-      'hello from stubbed saver.write'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E45',
-  'dispatches to append' do
-    saver_stub('append')
-    assert_saver_dispatch('append',
-      { key: well_formed_key, value: well_formed_value }.to_json,
-      'hello from stubbed saver.append'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E46',
-  'dispatches to read' do
-    saver_stub('read')
-    assert_saver_dispatch('read',
-      { key: well_formed_key }.to_json,
-      'hello from stubbed saver.read'
-    )
-  end
-
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # deprecated
-
-  test 'E53',
-  'dispatches to batch' do
-    saver_stub('batch')
-    assert_saver_dispatch('batch',
-      { commands: [
-        [ 'create',  '/cyber-dojo/katas/12/34/45' ],
-        [ 'exists?', '/cyber-dojo/katas/12/34/45' ],
-        [ 'write',   '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
-        [ 'append',  '/cyber-dojo/katas/12/34/45/manifest.json', {"b"=>"yes"}.to_json ],
-        [ 'read',    '/cyber-dojo/katas/12/34/45/manifest.json']
-      ]}.to_json,
-      'hello from stubbed saver.batch'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200 batches
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -353,14 +288,6 @@ class RackDispatcherTest < TestBase
   end
 
   # - - - - - - -
-
-  def well_formed_key
-    '/katas/12/34/56/event.json' # String
-  end
-
-  def well_formed_value
-    { "index" => 23, "time" => [2019,2,3,6,57,8,3242] }.to_json # String
-  end
 
   def well_formed_command
     [ 'dir_make',  '/cyber-dojo/katas/12/34/45' ]
