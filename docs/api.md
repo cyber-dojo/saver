@@ -4,8 +4,8 @@
 ## POST assert(command)
 Runs a single [command](#command).  
 - result [(JSON-out)](#json-out)
-  When it succeeds, the single result of the command.
-  When it fails, raises `ServiceError`.
+  - When it succeeds, the single result of the `command`.
+  - When it fails, raises `ServiceError`.
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/katas/12/34/56
@@ -23,7 +23,7 @@ Runs a single [command](#command).
 ## POST run(command)
 Runs a single [command](#command).  
 - result [(JSON-out)](#json-out)
-  The single result of the command.
+  - The single result of the `command`.
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/katas/34/E3/R6
@@ -41,8 +41,8 @@ Runs a single [command](#command).
 ## POST assert_all(commands)
 Runs all [commands](#commands).  
 - result [(JSON-out)](#json-out)
-  When they all succeed, the commands results in an array.  
-  When one of them fails, immediately raises `ServiceError`.  
+  - When they all succeed, the `commands` results in an array.  
+  - When one of them fails, immediately raises `ServiceError`.  
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/groups/45/Pe/6N
@@ -60,7 +60,7 @@ Runs all [commands](#commands).
 ## POST run_all(commands)
 Runs all [commands](#commands).
 - result [(JSON-out)](#json-out)  
-  The commands results, in an array.
+  - The `commands` results, in an array.
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/groups/2P/45/6E
@@ -76,9 +76,9 @@ Runs all [commands](#commands).
 
 - - - -
 ## POST run_until_true(commands)
-Runs [commands](#commands) until one is true.  
+Runs [commands](#commands) until one is **true**.  
 - result [(JSON-out)](#json-out)
-  The commands results (including the last true one) in an array.
+  - The `commands` results (including the last **true** one) in an array.
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/groups/12/5Q/6E
@@ -94,9 +94,9 @@ Runs [commands](#commands) until one is true.
 
 - - - -
 ## POST run_until_false(commands)
-Runs [commands](#commands) until one is false.
+Runs [commands](#commands) until one is **false**.
 - result [(JSON-out)](#json-out)
-  The commands results (including the last false one) in an array.
+  - The `commands` results (including the last **false** one) in an array.
 - example
   ```bash
   $ DIRNAME=/cyber-dojo/groups/1q/K4/d9
@@ -128,7 +128,7 @@ They `raise` instead of returning **false**, when in an `assert` or `assert_all`
 # dir_make_command
 A command to create a dir.  
 An array of two elements `["dir_make","${DIRNAME}"]`  
-Corresponds to the bash command `mkdir -p ${DIRNAME}`.
+Corresponds to the `bash` command `mkdir -p ${DIRNAME}`.
 - example
   ```json
   [ "dir_make", "/cyber-dojo/katas/4R/5S/w4" ]
@@ -143,7 +143,7 @@ Corresponds to the bash command `mkdir -p ${DIRNAME}`.
 # dir_exists_command
 A query to determine if a dir exists.  
 An array of two elements `["dir_exists?","${DIRNAME}"]`  
-Corresponds to the bash command `[ -d ${DIRNAME} ]`.    
+Corresponds to the `bash` command `[ -d ${DIRNAME} ]`.    
 - example
   ```json
   [ "dir_exists?", "/cyber-dojo/katas/4R/5S/w4" ]
@@ -164,8 +164,8 @@ Creates a _new_ file called **FILENAME** with content **CONTENT** in an _existin
 - result
   * **true** when the file creation succeeds.
   * **false** when the file creation fails.
-    - Can fail because **FILENAME** already exists.
-    - Can fail because **FILENAME** exists as a dir.
+    - when **FILENAME** already exists.
+    - when **FILENAME** exists as a dir.
 
 - - - -
 # file_append_command
@@ -179,8 +179,8 @@ Appends **CONTENT** to an _existing_ file called **FILENAME** (created with a `f
 - result
   * **true** when the file append succeeds.
   * **false** when the file append fails.
-    - Can fail because **FILENAME** does not exist.
-    - Can fail because **FILENAME** exists as a dir.
+    - when **FILENAME** does not exist.
+    - when **FILENAME** exists as a dir.
 
 - - - -
 # file_read_command
@@ -192,10 +192,10 @@ Reads the contents of an _existing_ file called **FILENAME**.
   [ "file_read", "/cyber-dojo/katas/4R/5S/w4/manifest.json" ]
   ```
 - result
-  * **content** when the file read succeeds.
+  * the contents of the file when the read succeeds.
   * **false** when the file read fails.
-    - Can fail because **FILENAME** does not exist.
-    - Can fail because **FILENAME** exists as a dir.
+    - when **FILENAME** does not exist.
+    - when **FILENAME** exists as a dir.
 
 - - - -
 ## GET alive?
