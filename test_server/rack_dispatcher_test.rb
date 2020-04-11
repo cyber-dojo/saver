@@ -19,12 +19,14 @@ class RackDispatcherTest < TestBase
       # See sh/docker_containers_up.sh create_space_limited_volume()
       @saver = Saver.new('one_k')
     }
-    assert saver.create('166')
-    assert saver.write('166/file','x'*1024)
-    message = 'No space left on device @ io_write - /one_k/166/file'
-    body = { "key":'166/file', "value":'x'*1024*16 }.to_json
-    assert_dispatch_raises('append', body, 500, message)
-    assert saver.exists?('166')
+    dirname = '166'
+    filename = '166/file'
+    content = 'x'*1024
+    saver.assert(dir_make_command(dirname))
+    saver.assert(file_create_command(filename,content))
+    message = "No space left on device @ io_write - /one_k/#{filename}"
+    body = { "command": file_append_command(filename, content*16) }.to_json
+    assert_dispatch_raises('run', body, 500, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
