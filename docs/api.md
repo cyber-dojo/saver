@@ -250,9 +250,9 @@ The git commit sha used to create the Docker image.
 - - - -
 ## JSON in
 - All methods pass their argument in a json hash in the http request body.
-  * The json hash key must be the string `"command"` or `"commands"`
-  * If there are no arguments (`alive?`,`ready?`,`sha`) you can use `''` (which is the default
-    for `curl --data`) instead of `'{}'`.
+  * For `alive?`,`ready?` and `sha` you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
+  * For `assert` and `run` the key must be `"command"`.
+  * For `assert_all`, `run_all`, `run_until_true`, `run_until_false` the key must be `"commands"`.
 
 - - - -
 ## JSON out      
@@ -266,12 +266,12 @@ The git commit sha used to create the Docker image.
   * If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
     ```bash
-    $ curl --silent -X POST http://${IP_ADDRESS}:${PORT}/assert_all | jq      
+    $ curl --data 'not-json-hash' --silent -X GET http://${IP_ADDRESS}:${PORT}/run | jq      
 
     {
       "exception": {
-        "path": "/assert_all",
-        "body": "",
+        "path": "/run",
+        "body": "not-json-hash",
         "class": "SaverService",
         "message": "...",
         "backtrace": [
