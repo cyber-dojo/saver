@@ -116,11 +116,12 @@ An array of commands.
 
 ## command
 There are 5 commands:
-* [dir_make_command](#dir_make_command)
-* [dir_exists_command](#dir_exists_command)
-* [file_create_command](#file_create_command)
-* [file_append_command](#file_append_command)
-* [file_read_command](#file_read_command)
+  * [dir_make_command](#dir_make_command)
+  * [dir_exists_command](#dir_exists_command)
+  * [file_create_command](#file_create_command)
+  * [file_append_command](#file_append_command)
+  * [file_read_command](#file_read_command)
+
 They can all be used in the 6 methods `assert`, `run`, `assert_all`, `run_all`, `run_until_true`, `run_until_false`.   
 The 6 methods _always_ raise when
   * there is no space left on the file-system.  
