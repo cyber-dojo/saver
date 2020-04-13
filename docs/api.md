@@ -123,10 +123,10 @@ There are 5 commands:
   * [file_read_command](#file_read_command)
 
 They can all be used in the 6 methods `assert`, `run`, `assert_all`, `run_all`, `run_until_true`, `run_until_false`.   
+The 2 methods `assert` or `assert_all` raise instead of returning **false**.  
 The 6 methods _always_ raise when
   * there is no space left on the file-system.  
   * `command` or `commands` is malformed (eg unknown, incorrect arity, not a String)
-The 2 methods `assert` or `assert_all` raise instead of returning **false**.
 
 - - - -
 ### dir_make_command
