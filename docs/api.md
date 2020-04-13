@@ -115,14 +115,17 @@ Runs [commands](#commands) until one is **false**.
 An array of commands.
 
 ## command
-There are 5 commands.  
-They _always_ raise when there is no space left on the file-system device.  
-They `raise` instead of returning **false**, when in an `assert` or `assert_all` command.
+There are 5 commands:
 * [dir_make_command](#dir_make_command)
 * [dir_exists_command](#dir_exists_command)
 * [file_create_command](#file_create_command)
 * [file_append_command](#file_append_command)
 * [file_read_command](#file_read_command)
+They can all be used in the 6 methods `assert`, `run`, `assert_all`, `run_all`, `run_until_true`, `run_until_false`.   
+The 6 methods _always_ raise when
+  * there is no space left on the file-system.  
+  * `command` or `commands` is malformed (eg unknown, incorrect arity, not a String)
+The 2 methods `assert` or `assert_all` raise instead of returning **false**.
 
 - - - -
 ### dir_make_command
