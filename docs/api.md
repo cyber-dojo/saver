@@ -249,14 +249,15 @@ The git commit sha used to create the Docker image.
 
 - - - -
 ## JSON in
-- All methods pass any arguments as a json hash in the http request body.
-  * If there are no arguments you can use `''` (which is the default
+- All methods pass their argument in a json hash in the http request body.
+  * The json hash key must be the string `"command"` or `"commands"`
+  * If there are no arguments (`alive?`,`ready?`,`sha`) you can use `''` (which is the default
     for `curl --data`) instead of `'{}'`.
 
 - - - -
 ## JSON out      
 - All methods return a json hash in the http response body.
-  * If the method completes, a string key equals the method's name. eg
+  * If the method does not raise, a string key equals the method's name. eg
     ```bash
     $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/ready?
 
