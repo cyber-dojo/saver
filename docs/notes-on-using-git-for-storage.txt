@@ -1,50 +1,62 @@
 
-The saver could store more events than the creation event and test events.
+Using git for storage
+---------------------
+
+The current format of 23.event.json holding everything in one file.
+Suppose a simple git repo held the files, and commit tag 23 would hold separate files.
+Would lose 23.events.json's ability to store extra info, eg was a file truncated?
+
+Would obviously save disk space.
+
+The saver could then store more events than the creation event and test events.
   o) file new
   o) file rename
   o) file delete
   o) move to different file
-Also, saver could move to git repo for each kata to save disk space.
-I think this will get more important if cyber-dojo gets more popular.
 
-Moving to git storage for just the current events is doable.
-The only really tricky bit is, eg, files being deleted.
-To solve this I can use the same trick the differ uses.
-For example, for a new test event
-  o) move the .git dir to a /tmp dir
-  o) delete *all* content in the dir (* and .*)
+
+Ensuring unsync'd pair failure is a no-op
+-----------------------------------------
+The browser maintains the index (eg 23) and that comes in with the [test] result.
+There is a git repo in the kata's dir.
+There is also a lock/ dir (which is in .gitignore)
+  o) attempt file_create lock/23.tag (as empty dir)
+  o) move the katas/ .git dir to a /tmp dir  (move not copy)
+  o) delete *all* content in the dir including dot files (but not lock/)
   o) move the /tmp .git dir back into the katas/ dir
-  o) save all the files
+  o) save all the incoming files
   o) git add .
-  o) git commit -m "#{index}"
-This is obviously not concurrent-safe.
-How can an unsync'd pair be made safe?
+  o) git commit --allow-empty --message "#{index}" --quiet
+The events.json file could be maintained as is and added to the .gitignore file?
+The meta info (eg file truncation) could be stored in a json file?
+
+
+What if the user has their own file called events.json ?
+--------------------------------------------------------
+Any "meta info" file clearly has this problem.
+Could create a dir with a long name from a hash and put them in this dir?
+
+
+Could the files could be sent from the browser already in .tgz format?
+----------------------------------------------------------------------
+Eg using an npm library such as archiver?
+That would mean less bytes travelling across networks.
+Then runner could perhaps use that format directly for a small speed up?
+And saver could use it too.
+Runner can modify the files; it returns {@created,@changed,@deleted}
+Saver could be passed these @@@ args directly.
+It could untar the main .tgz file and _then_ process
+{@created,@changed,@deleted} _itself_ on top of the
+untarred files. The git add, git commit, git tag.
+
 
 How do you get all the files back for a given commit index?
-You could git checkout the index and then tar and compress
-all the files into .tgz file.
-You wouldn't need to erase the checked out files afterwards
-if (as above) a git commit was always preceded by deleting the
-dir's contents.
-But there is a concurrency issue. So the checkout would need to
-be to a /tmp dir.
-  git checkout-index --all --force --prefix=/destination/path/
-This checks out files from the index.
-So it would need to be preceeded by a git checkout.
-Again that has concurrency issues.
-From 1.8.0 git clone can clone a specified branch/tag
-  git clone --branch TAG --depth 1 REPO_URL
-This is ok but what I really want is to get all the files for a tag
-in a format that completely drops the git repo (with its .git dir).
-Searching...
-There is a git archive command. Has to be faster!
-A git archive just creates raw files.
-  $ git archive --output /tmp/X/index-files.zip #{INDEX} #{REPO_DIR}
-These could then be put into a single json string.
-You would need to get a dir listing.
-Simpler would be to just use the .tgz file as the payload.
+-----------------------------------------------------------
+This is needed for kata/edit (eg on a refresh).
+Would also allow diff to work as it does now.
+There is a git archive command, which can create tgz files.
+Return tgz as the payload.
+Here's how to create a tgz file.
   $ git archive --prefix=#{KATA_ID}-#{INDEX}/ --output /tmp/#{KATA_ID}-#{INDEX}.tar.gz #{INDEX}
-This still writes the tgz file which then has to be read.
-There must be a way to read the tgz file directly into a variable (in Ruby).
-
-  
+There must be a way to read the tgz file directly into a variable (eg in Ruby)
+so it can be put directly into the response payload.
