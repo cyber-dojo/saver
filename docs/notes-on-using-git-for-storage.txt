@@ -34,7 +34,10 @@ The meta info (eg file truncation) could be stored in a json file?
 What if the user has their own file called events.json ?
 --------------------------------------------------------
 Any "meta info" file clearly has this problem.
-Could create a dir with a long name from a hash and put them in this dir?
+Put the incoming files into a subdir, eg src/
+The stdout/stdout/status could go into the top-level dir
+which would allow the user to have their own files called
+stdout/stder/status.
 
 
 Could the files could be sent from the browser already in .tgz format?
