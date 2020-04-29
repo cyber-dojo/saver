@@ -4,7 +4,7 @@ Using git for storage
 
 The current format of 23.event.json holding everything in one file.
 Suppose a simple git repo held the files, and commit tag 23 would hold separate files.
-Would lose 23.events.json's ability to store extra info, eg was a file truncated?
+Would lose 23.events.json's ability to store extra info, eg was a file truncated...
 
 Would obviously save disk space.
 
@@ -20,24 +20,18 @@ Ensuring unsync'd pair failure is a no-op
 The browser maintains the index (eg 23) and that comes in with the [test] result.
 There is a git repo in the kata's dir.
 There is also a lock/ dir (which is in .gitignore)
-  o) attempt file_create lock/23.tag (as empty dir)
-  o) move the katas/ .git dir to a /tmp dir  (move not copy)
-  o) delete *all* content in the dir including dot files (but not lock/)
-  o) move the /tmp .git dir back into the katas/ dir
-  o) save all the incoming files
+  o) attempt file_create lock/23.tag (as empty file)
+  o) rm -rf source/ dir
+  o) mkdir source/ dir
+  o) save all the incoming files into source/
+  o) overwrite stdout/stderr/status  files all on root repo dir.
+  o) append to events.json file (also on root repo dir)
   o) git add .
   o) git commit --allow-empty --message "#{index}" --quiet
-The events.json file could be maintained as is and added to the .gitignore file?
-The meta info (eg file truncation) could be stored in a json file?
-
-
-What if the user has their own file called events.json ?
---------------------------------------------------------
-Any "meta info" file clearly has this problem.
-Put the incoming files into a subdir, eg src/
-The stdout/stdout/status could go into the top-level dir
-which would allow the user to have their own files called
-stdout/stder/status.
+The meta info (eg file truncation?) could likewise be stored in a json file
+also outside the source/ dir.
+If the incoming .tgz file the correct structure the above would be simplified
+and faster too.
 
 
 Could the files could be sent from the browser already in .tgz format?
@@ -51,6 +45,7 @@ Saver could be passed these @@@ args directly.
 It could untar the main .tgz file and _then_ process
 {@created,@changed,@deleted} _itself_ on top of the
 untarred files. The git add, git commit, git tag.
+kata/index already processes @created,@changed,@delete anyway.
 
 
 How do you get all the files back for a given commit index?
@@ -59,7 +54,17 @@ This is needed for kata/edit (eg on a refresh).
 Would also allow diff to work as it does now.
 There is a git archive command, which can create tgz files.
 Return tgz as the payload.
+A big step towards git on the saver would be if kata/edit was
+refactored to take a .tgz file on load/refresh.
 Here's how to create a tgz file.
   $ git archive --prefix=#{KATA_ID}-#{INDEX}/ --output /tmp/#{KATA_ID}-#{INDEX}.tar.gz #{INDEX}
-There must be a way to read the tgz file directly into a variable (eg in Ruby)
+There must be a way to create the tgz file directly into a variable (eg via StringIO in Ruby)
 so it can be put directly into the response payload.
+
+
+You could keep 23.events.json as well if you wanted...
+------------------------------------------------------
+Have a git repo with
+/source/<files here>
+/manifest.json
+/options/predict
