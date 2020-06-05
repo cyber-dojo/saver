@@ -6,10 +6,8 @@ updateStrategy: "Recreate"
 replicaCount: 1
 
 service:
-  port: 4537
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "4537"
 
 volumes:
   - name: saver-tmp-dir
@@ -20,7 +18,6 @@ volumes:
 
 containers:
   - name: saver
-    image: cyberdojo/saver
     securityContext:
       runAsUser: 19663
       fsGroup: 65533
