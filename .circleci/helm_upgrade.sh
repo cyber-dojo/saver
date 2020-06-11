@@ -10,11 +10,7 @@ helm_upgrade()
   local -r tag="${5}"
   local -r port="${6}"
   local -r general_values="${7}"
-  if [ -z "${8:-}" ]; then
-    local -r specific_values=""
-  else
-    local -r specific_values="--values ${8}"
-  fi
+  local -r specific_values="${8}"
 
   helm upgrade \
     --install \
@@ -24,7 +20,7 @@ helm_upgrade()
     --set service.port=${port} \
     --set-string service.annotations."prometheus\.io/port"=${port} \
     --values ${general_values} \
-    ${specific_values} \
+    --values ${specific_values} \
     ${namespace}-${repo} \
     ${helm_repo}
 }
