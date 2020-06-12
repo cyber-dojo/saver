@@ -5,6 +5,11 @@ updateStrategy: "Recreate"
 
 replicaCount: 1
 
+podSecurityContext:
+  runAsUser: 19663
+  runAsGroup: 65533
+  fsGroup: 65533
+
 service:
   annotations:
     prometheus.io/scrape: "true"
