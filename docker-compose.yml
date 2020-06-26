@@ -50,7 +50,7 @@ services:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   languages:
-    user: nobody
+    user: root
     image: cyberdojo/languages-start-points-small
     container_name: test-saver-languages
     init: true
