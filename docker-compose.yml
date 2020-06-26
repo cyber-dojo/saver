@@ -60,12 +60,12 @@ services:
     tmpfs: /tmp
     restart: 'no'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock    
+      - /var/run/docker.sock:/var/run/docker.sock
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   exercises:
-    user: nobody
+    user: root
     image: cyberdojo/exercises-start-points
     container_name: test-saver-exercises
     init: true
@@ -74,3 +74,5 @@ services:
     read_only: true
     tmpfs: /tmp
     restart: 'no'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
