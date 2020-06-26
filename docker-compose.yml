@@ -59,6 +59,8 @@ services:
     read_only: true
     tmpfs: /tmp
     restart: 'no'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock    
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
