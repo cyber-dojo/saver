@@ -5,6 +5,11 @@ updateStrategy: "Recreate"
 
 replicaCount: 1
 
+envFromSecret: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
 service:
   annotations:
     prometheus.io/scrape: "true"
@@ -36,11 +41,6 @@ containers:
     #readinessProbe:
     #  path: /ready?
     #  port: 4537
-
-envFromSecret: {}
-
-nodeSelector: {}
-
-affinity: {}
-
-tolerations: []
+    env:
+      CYBER_DOJO_PROMETHEUS: "true"
+      CYBER_DOJO_SAVER_PORT: "4537"
