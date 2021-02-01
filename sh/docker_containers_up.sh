@@ -96,7 +96,7 @@ exit_unless_clean()
 
   local -r line_count=$(echo -n "${log}" | grep -c '^')
   echo -n "Checking ${name} started cleanly..."
-  if [ "${line_count}" == '3' ]; then
+  if [ "${line_count}" == '3' ] || [ "${line_count}" == '6' ] ; then
     echo 'OK'
   else
     echo 'FAIL'
