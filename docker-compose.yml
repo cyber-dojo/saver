@@ -53,7 +53,6 @@ services:
     user: root
     image: cyberdojo/languages-start-points
     container_name: test-saver-languages
-    init: true
     environment: [ NO_PROMETHEUS ]
     ports: [ "4524:4524" ]
     read_only: true
@@ -68,7 +67,6 @@ services:
     user: root
     image: cyberdojo/exercises-start-points
     container_name: test-saver-exercises
-    init: true
     environment: [ NO_PROMETHEUS ]
     ports: [ "4525:4525" ]
     read_only: true
