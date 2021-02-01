@@ -51,7 +51,7 @@ services:
 
   languages:
     user: root
-    image: cyberdojo/languages-start-points-small
+    image: cyberdojo/languages-start-points
     container_name: test-saver-languages
     init: true
     environment: [ NO_PROMETHEUS ]
