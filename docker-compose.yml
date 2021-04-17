@@ -48,7 +48,7 @@ services:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   languages:
-    user: root
+    user: nobody:nogroup
     image: cyberdojo/languages-start-points
     container_name: test-saver-languages
     environment: [ NO_PROMETHEUS ]
@@ -60,7 +60,7 @@ services:
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   exercises:
-    user: root
+    user: nobody:nogroup
     image: cyberdojo/exercises-start-points
     container_name: test-saver-exercises
     environment: [ NO_PROMETHEUS ]
