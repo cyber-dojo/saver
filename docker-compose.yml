@@ -29,7 +29,7 @@ services:
       context: .
       args: [ COMMIT_SHA ]
     user: saver
-    image: cyberdojo/saver
+    image: ${CYBER_DOJO_SAVER_IMAGE}
     container_name: test-saver-server
     environment: [ NO_PROMETHEUS ]
     ports: [ "4537:4537" ]
@@ -49,7 +49,7 @@ services:
 
   languages:
     user: nobody:nogroup
-    image: cyberdojo/languages-start-points
+    image: ${CYBER_DOJO_LANGUAGES_START_POINTS_IMAGE}:${CYBER_DOJO_LANGUAGES_START_POINTS_TAG}
     container_name: test-saver-languages
     environment: [ NO_PROMETHEUS ]
     ports: [ "4524:4524" ]
@@ -61,7 +61,7 @@ services:
 
   exercises:
     user: nobody:nogroup
-    image: cyberdojo/exercises-start-points
+    image: ${CYBER_DOJO_EXERCISES_START_POINTS_IMAGE}:${CYBER_DOJO_EXERCISES_START_POINTS_TAG}
     container_name: test-saver-exercises
     environment: [ NO_PROMETHEUS ]
     ports: [ "4525:4525" ]
