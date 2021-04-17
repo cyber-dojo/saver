@@ -24,19 +24,19 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dir_exists_command(dirname)
-    [DIR_EXISTS_COMMAND_NAME,dirname]
+    [DIR_EXISTS_COMMAND_NAME, dirname]
   end
 
   def dir_make_command(dirname)
-    [DIR_MAKE_COMMAND_NAME,dirname]
+    [DIR_MAKE_COMMAND_NAME, dirname]
   end
 
-  def file_create_command(filename,content)
-    [FILE_CREATE_COMMAND_NAME,filename,content]
+  def file_create_command(filename, content)
+    [FILE_CREATE_COMMAND_NAME, filename, content]
   end
 
-  def file_append_command(filename,content)
-    [FILE_APPEND_COMMAND_NAME,filename,content]
+  def file_append_command(filename, content)
+    [FILE_APPEND_COMMAND_NAME, filename, content]
   end
 
   def file_read_command(filename)
@@ -46,8 +46,8 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # primitives
 
-  def assert(command)
-    result = run(command)
+  def assert(command:)
+    result = run(command:command)
     if result
       result
     else
@@ -55,7 +55,7 @@ class Saver
     end
   end
 
-  def run(command)
+  def run(command:)
     name,*args = command
     case name
     when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
@@ -69,7 +69,7 @@ class Saver
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
-  def assert_all(commands)
+  def assert_all(commands:)
     run_until(commands) {|r,index|
       if r
         false
@@ -79,15 +79,15 @@ class Saver
     }
   end
 
-  def run_all(commands)
+  def run_all(commands:)
     run_until(commands) {|r| r === :never}
   end
 
-  def run_until_true(commands)
+  def run_until_true(commands:)
     run_until(commands) {|r| r}
   end
 
-  def run_until_false(commands)
+  def run_until_false(commands:)
     run_until(commands) {|r| !r}
   end
 
@@ -105,9 +105,9 @@ class Saver
   def run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command,index|
-      result = run(command)
+      result = run(command:command)
       results << result
-      break if block.call(result,index)
+      break if block.call(result, index)
     end
     results
   end

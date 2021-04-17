@@ -40,8 +40,13 @@ class HttpJsonArgs
     else
       fail HttpJson::RequestError, 'unknown path'
     end
+
     target = args.shift
     name = args.shift
+    if args != []
+      args = args[0]
+    end
+    args = Hash[args.map{ |key,value| [key.to_sym, value] }]
     [target, name, args]
   end
 
@@ -71,7 +76,7 @@ class HttpJsonArgs
       fail malformed(arg_name, "!Array (#{command.class.name})")
     end
     fail_unless_well_formed_command(command,'')
-    command
+    { "command" => command }
   end
 
   # - - - - - - - - - - - - - - -
@@ -91,7 +96,7 @@ class HttpJsonArgs
       end
       fail_unless_well_formed_command(command,"s[#{index}]")
     end
-    commands
+    { "commands" => commands }
   end
 
   # - - - - - - - - - - - - - - -

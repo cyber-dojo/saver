@@ -25,7 +25,7 @@ class SaverAssertAllTest < TestBase
     command(true, file_create_command(there_yes, content))
     command(true, file_append_command(there_yes, content.reverse))
     command(content+content.reverse, file_read_command(there_yes))
-    result = saver.assert_all(@commands)
+    result = saver.assert_all(commands:@commands)
     assert_equal @expected, result
   end
 
@@ -46,10 +46,10 @@ class SaverAssertAllTest < TestBase
     command(false, file_read_command(there_no))
     command(true, file_append_command(there_yes, content.reverse))
     error = assert_raises(RuntimeError) {
-      saver.assert_all(@commands)
+      saver.assert_all(commands:@commands)
     }
     assert_equal "commands[3] != true", error.message
-    assert_equal content, saver.run(file_read_command(there_yes)), :does_not_execute_subsequent_commands
+    assert_equal content, saver.run(command:file_read_command(there_yes)), :does_not_execute_subsequent_commands
   end
 
   private

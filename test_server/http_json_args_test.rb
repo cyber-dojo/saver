@@ -17,17 +17,17 @@ class HttpJsonArgsTest < TestBase
     especially kubernetes liveness/readyness probes
   ) do
     args = HttpJsonArgs.new('')
-    assert_equal [saver,'alive?',[]], args.get('/alive', externals)
-    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
+    assert_equal [saver,'alive?',{}], args.get('/alive', externals)
+    assert_equal [saver,'ready?',{}], args.get('/ready', externals)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'F18', 'get: [saver] path and body ok' do
     args = HttpJsonArgs.new('{}')
-    assert_equal [saver,'sha',[]], args.get('/sha', externals)
-    assert_equal [saver,'alive?',[]], args.get('/alive', externals)
-    assert_equal [saver,'ready?',[]], args.get('/ready', externals)
+    assert_equal [saver,'sha',{}], args.get('/sha', externals)
+    assert_equal [saver,'alive?',{}], args.get('/alive', externals)
+    assert_equal [saver,'ready?',{}], args.get('/ready', externals)
 
     dirname = 'F18'
     filename = dirname + '/' + 'readme.txt'
@@ -35,7 +35,7 @@ class HttpJsonArgsTest < TestBase
 
     command = dir_make_command(dirname)
     args = HttpJsonArgs.new({"command":command}.to_json)
-    expected = [saver,'run',[command]]
+    expected = [saver,'run',{ command: command}]
     assert_equal expected, args.get('/run', externals)
 
     commands = [
@@ -43,7 +43,7 @@ class HttpJsonArgsTest < TestBase
         file_create_command(filename, content)
     ]
     args = HttpJsonArgs.new({"commands":commands}.to_json)
-    expected = [saver,'run_all',[commands]]
+    expected = [saver,'run_all',{ commands: commands }]
     assert_equal expected, args.get('/run_all', externals)
   end
 

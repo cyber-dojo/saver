@@ -22,8 +22,8 @@ class RackDispatcherTest < TestBase
     dirname = '166'
     filename = '166/file'
     content = 'x'*1024
-    saver.assert(dir_make_command(dirname))
-    saver.assert(file_create_command(filename,content))
+    saver.assert(command:dir_make_command(dirname))
+    saver.assert(command:file_create_command(filename,content))
     message = "No space left on device @ io_write - /one_k/#{filename}"
     body = { "command": file_append_command(filename, content*16) }.to_json
     assert_dispatch_raises('run', body, 500, message)
@@ -40,7 +40,7 @@ class RackDispatcherTest < TestBase
       dir_make_command(dirname) # repeat
     ]}.to_json
     assert_dispatch_raises('assert_all', body, 500, message)
-    saver.assert(dir_exists_command(dirname))
+    saver.assert(command:dir_exists_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

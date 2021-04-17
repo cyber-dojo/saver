@@ -32,7 +32,7 @@ class SaverRunManyTest < TestBase
     command(true, file_append_command(there_yes, content.reverse))
     command(content+content.reverse, file_read_command(there_yes))
     command(false, file_read_command(there_no))
-    result = saver.run_all(@commands)
+    result = saver.run_all(commands:@commands)
     assert_equal @expected, result
   end
 
@@ -179,7 +179,7 @@ class SaverRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/13'
-    saver.assert(dir_make_command(dirname))
+    saver.assert(command:dir_make_command(dirname))
 
     command(false, dir_exists_command(dirname+'1'))
     command(false, dir_exists_command(dirname+'2'))
@@ -199,7 +199,7 @@ class SaverRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/14'
-    saver.assert(dir_make_command(dirname))
+    saver.assert(command:dir_make_command(dirname))
 
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
@@ -222,7 +222,7 @@ class SaverRunManyTest < TestBase
     dirname = 'batch-run-until-true/x3/t7/15'
     filename = dirname + '/stop-at-write-true'
     content = 'xxxxxx'
-    saver.assert_all([
+    saver.assert_all(commands:[
       dir_make_command(dirname),
       file_create_command(filename, content)
     ])
@@ -245,7 +245,7 @@ class SaverRunManyTest < TestBase
     filename = dirname + '/stop-at-append-true'
     content = 'X'
 
-    saver.assert_all([
+    saver.assert_all(commands:[
       dir_make_command(dirname),
       file_create_command(filename, content)
     ])
@@ -268,7 +268,7 @@ class SaverRunManyTest < TestBase
     event_3 = dirname + '/3.event.json'
     content = '{"colour":"red"}'
 
-    saver.assert_all([
+    saver.assert_all(commands:[
       dir_make_command(dirname),
       file_create_command(event_3,content)
     ])
@@ -298,23 +298,23 @@ class SaverRunManyTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   def assert_run_until_false
-    result = saver.run_until_false(@commands)
+    result = saver.run_until_false(commands:@commands)
     assert_equal @expected, result
   end
 
   def assert_run_until_true
-    result = saver.run_until_true(@commands)
+    result = saver.run_until_true(commands:@commands)
     assert_equal @expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def dir_exists?(dirname)
-    saver.run(dir_exists_command(dirname))
+    saver.run(command:dir_exists_command(dirname))
   end
 
   def file_read(filename)
-    saver.run(file_read_command(filename))
+    saver.run(command:file_read_command(filename))
   end
 
 end
