@@ -13,7 +13,6 @@ services:
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
-    init: true
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -32,7 +31,6 @@ services:
     user: saver
     image: cyberdojo/saver
     container_name: test-saver-server
-    init: true
     environment: [ NO_PROMETHEUS ]
     ports: [ "4537:4537" ]
     read_only: true
