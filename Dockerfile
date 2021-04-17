@@ -18,4 +18,5 @@ ENV SHA=${COMMIT_SHA}
 
 EXPOSE 4537
 USER saver
+ENTRYPOINT ["/sbin/tini", "-g", "--"]
 CMD [ "/app/config/up.sh" ]
