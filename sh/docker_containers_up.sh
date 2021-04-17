@@ -90,10 +90,12 @@ exit_unless_clean()
 {
   local -r name="${1}"
   local log=$(docker logs "${name}" 2>&1)
-  if [ "${name}" != 'test-saver-exercises' ]; then
-    local -r lines=3
-  else
-    local -r lines=6
+  local lines=3
+  if [ "${name}" == 'test-saver-exercises' ]; then
+    local lines=6
+  fi
+  if [ "${name}" == 'test-saver-languages' ]; then
+    local lines=6
   fi
 
   local -r mismatched_indent_warning="application(.*): warning: mismatched indentations at 'rescue' with 'begin'"
@@ -105,6 +107,8 @@ exit_unless_clean()
     echo 'OK'
   else
     echo 'FAIL'
+    echo "Expecting ${lines} lines"
+    echo "   Actual ${line_count} lines"
     echo_docker_log "${name}" "${log}"
     exit 1
   fi
