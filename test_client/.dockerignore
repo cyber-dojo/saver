@@ -5,9 +5,6 @@
 #-----!Except these dirs
 
 !src
+!config
 !test
 
-#-----!Except these files
-
-!config.ru
-!up.sh

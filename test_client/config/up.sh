@@ -9,4 +9,4 @@ rackup \
   --port 4538 \
   --server thin \
   --env production \
-    config.ru
+    /app/config/config.ru
