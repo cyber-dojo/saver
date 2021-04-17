@@ -1,4 +1,4 @@
-FROM cyberdojo/rack-base
+FROM cyberdojo/sinatra-base:0fcdde3
 LABEL maintainer=jon@jaggersoft.com
 
 COPY . /app
