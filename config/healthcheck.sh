@@ -12,8 +12,8 @@
 # --retries=N      number of tries until container considered unhealthy
 # --start-period=S grace period when healthcheck fails dont count towards --retries
 
-#readonly PORT="${CYBER_DOJO_K8S_PORT:-${CYBER_DOJO_DASHBOARD_PORT}}"
-#readonly PORT="${CYBER_DOJO_DASHBOARD_PORT}"
+#readonly PORT="${CYBER_DOJO_K8S_PORT:-${CYBER_DOJO_SAVER_PORT}}"
+#readonly PORT="${CYBER_DOJO_SAVER_PORT}"
 readonly PORT=4537
 readonly READY_LOG_FILENAME=/tmp/ready.log
 
