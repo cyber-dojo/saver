@@ -90,13 +90,18 @@ exit_unless_clean()
 {
   local -r name="${1}"
   local log=$(docker logs "${name}" 2>&1)
+  if [ "${name}" != 'test-saver-exercises' ]; then
+    local -r lines=3
+  else
+    local -r lines=6
+  fi
 
   local -r mismatched_indent_warning="application(.*): warning: mismatched indentations at 'rescue' with 'begin'"
   log=$(strip_known_warning "${log}" "${mismatched_indent_warning}")
 
   local -r line_count=$(echo -n "${log}" | grep -c '^')
   echo -n "Checking ${name} started cleanly..."
-  if [ "${line_count}" == '3' ] || [ "${line_count}" == '6' ] ; then
+  if [ "${line_count}" == "${lines}" ]; then
     echo 'OK'
   else
     echo 'FAIL'
