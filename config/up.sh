@@ -57,4 +57,4 @@ rackup             \
   --port 4537      \
   --server thin    \
   --env production \
-    config.ru
+    /app/config/config.ru

@@ -18,4 +18,4 @@ ENV SHA=${COMMIT_SHA}
 
 EXPOSE 4537
 USER saver
-CMD [ "./up.sh" ]
+CMD [ "/app/config/up.sh" ]
