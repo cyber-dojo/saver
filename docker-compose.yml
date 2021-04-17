@@ -32,7 +32,7 @@ services:
     image: ${CYBER_DOJO_SAVER_IMAGE}
     container_name: test-saver-server
     environment: [ NO_PROMETHEUS ]
-    ports: [ "4537:4537" ]
+    ports: [ "${CYBER_DOJO_SAVER_PORT}:${CYBER_DOJO_SAVER_PORT}" ]
     read_only: true
     restart: 'no'
     volumes:
@@ -52,7 +52,7 @@ services:
     image: ${CYBER_DOJO_LANGUAGES_START_POINTS_IMAGE}:${CYBER_DOJO_LANGUAGES_START_POINTS_TAG}
     container_name: test-saver-languages
     environment: [ NO_PROMETHEUS ]
-    ports: [ "4524:4524" ]
+    ports: [ "${CYBER_DOJO_LANGUAGES_START_POINTS_PORT}:${CYBER_DOJO_LANGUAGES_START_POINTS_PORT}" ]
     read_only: true
     tmpfs: /tmp
     restart: 'no'
@@ -64,7 +64,7 @@ services:
     image: ${CYBER_DOJO_EXERCISES_START_POINTS_IMAGE}:${CYBER_DOJO_EXERCISES_START_POINTS_TAG}
     container_name: test-saver-exercises
     environment: [ NO_PROMETHEUS ]
-    ports: [ "4525:4525" ]
+    ports: [ "${CYBER_DOJO_EXERCISES_START_POINTS_PORT}:${CYBER_DOJO_EXERCISES_START_POINTS_PORT}" ]
     read_only: true
     tmpfs: /tmp
     restart: 'no'
