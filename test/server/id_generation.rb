@@ -128,7 +128,7 @@ class IdGenerationTest < TestBase
   test '14b', %w(
   group-id generator will skip id that already exists as a kata
   ) do
-    kata_id = '5rTJv5' # copied in test-data
+    kata_id = '5rTJv5'
     saver.assert(command:saver.dir_make_command(kata_id_path(kata_id)))
     id = 'hY86s3'
     id_generator = stubbed_id_generator(kata_id + id)
@@ -164,6 +164,32 @@ class IdGenerationTest < TestBase
     refute id?('1234567'), :not_length_6
   end
 
+  # - - - - - - - - - - - - - - - - - - -
+
+  test '13e', %w(
+  kata-id generation tries 42 times and then gives up and returns nil
+  and you either have the worst random-number generator ever
+  or you are the unluckiest person ever
+  or both
+  ) do
+    id_generator = stubbed_id_generator(saver_offline_id*42)
+    assert_nil id_generator.kata_id
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
+  test '13f', %w(
+  group-id generation tries 42 times and then gives up and returns nil
+  and you either have the worst random-number generator ever
+  or you are the unluckiest person ever
+  or both
+  ) do
+    id_generator = stubbed_id_generator(saver_offline_id*42)
+    assert_nil id_generator.group_id
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
 =begin
 
   test '13b', %w(
@@ -186,28 +212,6 @@ class IdGenerationTest < TestBase
     id_generator = stubbed_id_generator(id)
     assert_equal id, id_generator.kata_id
     assert kata_exists?(id), "!kata_exists?(#{id}) !!"
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test '13e', %w(
-  kata-id generation tries 42 times and then gives up and returns nil
-  and you either have the worst random-number generator ever
-  or you are the unluckiest person ever
-  ) do
-    id_generator = stubbed_id_generator(saver_offline_id*42)
-    assert_nil id_generator.kata_id
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test '13f', %w(
-  group-id generation tries 42 times and then gives up and returns nil
-  and you either have the worst random-number generator ever
-  or you are the unluckiest person ever
-  ) do
-    id_generator = stubbed_id_generator(saver_offline_id*42)
-    assert_nil id_generator.group_id
   end
 
 =end
