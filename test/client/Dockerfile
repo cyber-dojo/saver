@@ -2,7 +2,10 @@ FROM cyberdojo/sinatra-base:0fcdde3
 LABEL maintainer=jon@jaggersoft.com
 
 WORKDIR /app
-COPY --chown=nobody:nogroup . .
+COPY . .
+RUN chown -R nobody:nogroup /app
+# Note: The following does not (yet) work on circleci
+# COPY --chown=nobody:nogroup . /app
 
 USER nobody
 EXPOSE 4538
