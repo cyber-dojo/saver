@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require_relative 'require_source'
-require_source 'disk'
+require_source 'external/disk'
 
 class DiskFake
 
@@ -146,8 +146,7 @@ class DiskFake
   end
 
   def disk
-    # For the commands only
-    Disk.new()
+    External::Disk.new() # For the commands only
   end
 
 end

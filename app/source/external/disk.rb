@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 require 'open3'
 
+module External
+
 class Disk
 
   def initialize(root_dir = 'cyber-dojo')
@@ -170,3 +172,6 @@ class Disk
   end
 
 end
+
+end
+
