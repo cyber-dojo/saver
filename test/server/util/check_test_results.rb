@@ -85,7 +85,7 @@ end
 
 log_stats = get_test_log_stats
 test_stats = get_index_stats('test')
-src_stats  = get_index_stats('src')
+src_stats  = get_index_stats('code')
 
 # - - - - - - - - - - - - - - - - - - - - - - -
 
