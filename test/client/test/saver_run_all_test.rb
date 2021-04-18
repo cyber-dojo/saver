@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative '../src/saver_service'
 require_relative 'saver_service_fake'
+require_source 'saver_service'
 
 class SaverRunAllTest < TestBase
 

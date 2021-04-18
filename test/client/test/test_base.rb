@@ -1,6 +1,10 @@
 # frozen_string_literal: true
+def require_source(required)
+  require_relative "../source/#{required}"
+end
+
 require_relative 'hex_mini_test'
-require_relative '../src/saver_service'
+require_source 'saver_service'
 
 class TestBase < HexMiniTest
 
