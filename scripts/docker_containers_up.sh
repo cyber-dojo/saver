@@ -73,6 +73,38 @@ wait_till_up()
 }
 
 # - - - - - - - - - - - - - - - - - - -
+exit_non_zero_unless_healthy()
+{
+  local -r SERVICE_NAME="${1}"
+  local -r CONTAINER_NAME="${2}"
+  local -r MAX_TRIES=50
+
+  echo
+  printf "Waiting until ${SERVICE_NAME} is healthy"
+  for _ in $(seq ${MAX_TRIES})
+  do
+    if healthy "${CONTAINER_NAME}"; then
+      echo; echo "${SERVICE_NAME} is healthy."
+      return
+    else
+      printf .
+      sleep 0.1
+    fi
+  done
+  echo; echo "${SERVICE_NAME} not healthy after ${MAX_TRIES} tries."
+  echo_docker_log
+  echo
+  exit 42
+}
+
+
+# - - - - - - - - - - - - - - - - - - -
+healthy()
+{
+  docker ps --filter health=healthy --format '{{.Names}}' | grep -q "${CONTAINER_NAME}"
+}
+
+# - - - - - - - - - - - - - - - - - - -
 strip_known_warning()
 {
   local -r log="${1}"
@@ -170,7 +202,7 @@ exit_unless_clean  test-saver-languages
 wait_until_ready   test-saver-exercises 4525
 exit_unless_clean  test-saver-exercises
 
-wait_until_ready   test-saver-server 4537
+exit_non_zero_unless_healthy saver test-saver-server
 exit_unless_clean  test-saver-server
 
 wait_till_up       test-saver-client

@@ -13,14 +13,16 @@ services:
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
+    ports: [ "${CYBER_DOJO_SAVER_CLIENT_PORT}:${CYBER_DOJO_SAVER_CLIENT_PORT}" ]
+    env_file: [ .env ]
     read_only: true
-    tmpfs: /tmp
     restart: 'no'
+    volumes: []
+    tmpfs: /tmp
     depends_on:
       - saver
       - languages # for tests
       - exercises # for tests
-    ports: [ "4538:4538" ]
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -31,7 +33,6 @@ services:
     user: saver
     image: ${CYBER_DOJO_SAVER_IMAGE}
     container_name: test-saver-server
-    ports: [ "${CYBER_DOJO_SAVER_PORT}:${CYBER_DOJO_SAVER_PORT}" ]
     env_file: [ .env ]
     read_only: true
     restart: 'no'

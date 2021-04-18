@@ -17,7 +17,6 @@ RUN chown -R saver:nogroup /app
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
 
-EXPOSE 4537
 USER saver
 HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /app/config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
