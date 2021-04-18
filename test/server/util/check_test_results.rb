@@ -106,16 +106,17 @@ hits_ratio = (code_stats[:hits_per_line].to_f / test_stats[:hits_per_line].to_f)
 
 table =
   [
-    [ 'failures',               failure_count,  '==',   0 ],
-    [ 'errors',                 error_count,    '==',   0 ],
-    [ 'warnings',               warning_count,  '==',   0 ],
-    [ 'skips',                  skip_count,     '==',   0 ],
-    [ 'tests',                  test_count,     '!=',   0 ],
+    [ 'failures',               failure_count,  '<=',   0 ],
+    [ 'errors',                 error_count,    '<=',   0 ],
+    [ 'warnings',               warning_count,  '<=',   0 ],
+    [ 'skips',                  skip_count,     '<=',   0 ],
     [ 'duration(test)[s]',      test_duration,  '<=',   5 ],
-    [ 'coverage(code)[%]',      code_coverage,  '>=',  99 ],
-    [ 'coverage(test)[%]',      test_coverage,  '>=',  95 ],
-    [ 'lines(test/code)',       f2(line_ratio), '>=', 2.8 ],
-    [ 'hits(code/test)',        f2(hits_ratio), '>=', 2.8 ],
+
+    [ 'tests',                  test_count,     '>=',  50 ],
+    [ 'coverage(code)[%]',      code_coverage,  '>=', 100 ],
+    [ 'coverage(test)[%]',      test_coverage,  '>=',  96 ],
+    [ 'lines(test/code)',       f2(line_ratio), '>=', 2.9 ],
+    [ 'hits(code/test)',        f2(hits_ratio), '>=', 2.9 ],
   ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -
