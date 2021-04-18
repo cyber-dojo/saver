@@ -17,17 +17,17 @@ class HttpJsonArgsTest < TestBase
     especially kubernetes liveness/readyness probes
   ) do
     args = HttpJsonArgs.new('')
-    assert_equal [saver,'alive?',{}], args.get('/alive', externals)
-    assert_equal [saver,'ready?',{}], args.get('/ready', externals)
+    assert_equal [ prober, 'alive?', {} ], args.get('/alive', externals)
+    assert_equal [ prober, 'ready?', {} ], args.get('/ready', externals)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'F18', 'get: [saver] path and body ok' do
     args = HttpJsonArgs.new('{}')
-    assert_equal [saver,'sha',{}], args.get('/sha', externals)
-    assert_equal [saver,'alive?',{}], args.get('/alive', externals)
-    assert_equal [saver,'ready?',{}], args.get('/ready', externals)
+    assert_equal [ prober, 'sha'   , {} ], args.get('/sha'  , externals)
+    assert_equal [ prober, 'alive?', {} ], args.get('/alive', externals)
+    assert_equal [ prober, 'ready?', {} ], args.get('/ready', externals)
 
     dirname = 'F18'
     filename = dirname + '/' + 'readme.txt'

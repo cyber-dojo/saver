@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_source 'saver'
 
 class ProbingTest < TestBase
 
@@ -12,7 +11,7 @@ class ProbingTest < TestBase
   # sha
 
   test '190', %w( sha is sha of image's git commit ) do
-    sha = saver.sha
+    sha = prober.sha
     assert_equal 40, sha.size
     sha.each_char do |ch|
       assert '0123456789abcdef'.include?(ch)
@@ -24,7 +23,7 @@ class ProbingTest < TestBase
 
   test '602',
   %w( ready? is always true ) do
-    assert saver.ready?
+    assert prober.ready?
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,7 +31,7 @@ class ProbingTest < TestBase
 
   test '603',
   %w( alive? is always true ) do
-    assert saver.alive?
+    assert prober.alive?
   end
 
 end

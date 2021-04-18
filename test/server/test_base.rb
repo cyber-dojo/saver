@@ -16,9 +16,15 @@ class TestBase < HexMiniTest
     @externals ||= Externals.new
   end
 
+  def prober
+    externals.prober
+  end
+
   def saver
     externals.saver
   end
+
+  # - - - - - - - - - - - - - - - - -
 
   def dir_exists_command(key)
     saver.dir_exists_command(key)

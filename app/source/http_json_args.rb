@@ -23,11 +23,12 @@ class HttpJsonArgs
   # - - - - - - - - - - - - - - - -
 
   def get(path, externals)
+    prober = externals.prober
     saver = externals.saver
     args = case path
-    when '/sha'     then [saver,'sha']
-    when '/ready'   then [saver,'ready?']
-    when '/alive'   then [saver,'alive?']
+    when '/sha'     then [prober,'sha']
+    when '/ready'   then [prober,'ready?']
+    when '/alive'   then [prober,'alive?']
 
     when '/assert'  then [saver,'assert',command]
     when '/run'     then [saver,'run'   ,command]

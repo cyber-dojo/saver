@@ -2,7 +2,7 @@ require_relative 'rack_request_stub'
 require_relative 'test_base'
 require_source 'rack_dispatcher'
 
-class RackDispatchingrTest < TestBase
+class RackDispatchingTest < TestBase
 
   def self.hex_prefix
     'FF0'
@@ -47,7 +47,7 @@ class RackDispatchingrTest < TestBase
 
   test 'F1A',
   'dispatch returns 500 status when implementation raises' do
-    def saver.sha
+    def prober.sha
       raise ArgumentError, 'wibble'
     end
     assert_dispatch_raises('sha', {}.to_json, 500, 'wibble')
@@ -57,7 +57,7 @@ class RackDispatchingrTest < TestBase
 
   test 'F1B',
   'dispatch returns 500 status when implementation has syntax error' do
-    def saver.sha
+    def prober.sha
       raise SyntaxError, 'fubar'
     end
     assert_dispatch_raises('sha', {}.to_json, 500, 'fubar')
@@ -150,25 +150,25 @@ class RackDispatchingrTest < TestBase
 
   test 'E39',
   'dispatches to alive' do
-    saver_stub('alive?')
+    prober_stub('alive?')
     assert_saver_dispatch('alive', {}.to_json,
-      'hello from stubbed saver.alive?'
+      'hello from stubbed prober.alive?'
     )
   end
 
   test 'E40',
   'dispatches to ready' do
-    saver_stub('ready?')
+    prober_stub('ready?')
     assert_saver_dispatch('ready', {}.to_json,
-      'hello from stubbed saver.ready?'
+      'hello from stubbed prober.ready?'
     )
   end
 
   test 'E41',
   'dispatches to sha' do
-    saver_stub('sha')
+    prober_stub('sha')
     assert_saver_dispatch('sha', {}.to_json,
-      'hello from stubbed saver.sha'
+      'hello from stubbed prober.sha'
     )
   end
 
@@ -245,6 +245,12 @@ class RackDispatchingrTest < TestBase
   def saver_stub(name)
     saver.define_singleton_method name do |*_args|
       "hello from stubbed saver.#{name}"
+    end
+  end
+
+  def prober_stub(name)
+    prober.define_singleton_method name do |*_args|
+      "hello from stubbed prober.#{name}"
     end
   end
 

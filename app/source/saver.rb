@@ -9,20 +9,6 @@ class Saver
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def alive?
-    true
-  end
-
-  def ready?
-    true
-  end
-
-  def sha
-    ENV['SHA']
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def dir_exists_command(dirname)
     [DIR_EXISTS_COMMAND_NAME, dirname]
   end
