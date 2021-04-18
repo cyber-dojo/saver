@@ -14,16 +14,16 @@ class TestBase < HexMiniTest
     @externals ||= Externals.new
   end
 
+  def disk
+    externals.disk
+  end
+
   def prober
     externals.prober
   end
 
   def random
     externals.random
-  end
-
-  def saver
-    externals.saver
   end
 
   def time
@@ -33,23 +33,23 @@ class TestBase < HexMiniTest
   # - - - - - - - - - - - - - - - - -
 
   def dir_exists_command(key)
-    saver.dir_exists_command(key)
+    disk.dir_exists_command(key)
   end
 
   def dir_make_command(key)
-    saver.dir_make_command(key)
+    disk.dir_make_command(key)
   end
 
   def file_create_command(key, value)
-    saver.file_create_command(key, value)
+    disk.file_create_command(key, value)
   end
 
   def file_append_command(key, value)
-    saver.file_append_command(key, value)
+    disk.file_append_command(key, value)
   end
 
   def file_read_command(key)
-    saver.file_read_command(key)
+    disk.file_read_command(key)
   end
 
 end

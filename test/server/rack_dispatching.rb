@@ -16,14 +16,14 @@ class RackDispatchingTest < TestBase
   'dispatch returns 500 status when no space left on device' do
     externals.instance_exec {
       # See docker-compose.yml
-      # See sh/docker_containers_up.sh create_space_limited_volume()
-      @saver = Saver.new('one_k')
+      # See scripts/docker_containers_up.sh create_space_limited_volume()
+      @disk = Disk.new('one_k')
     }
     dirname = '166'
     filename = '166/file'
     content = 'x'*1024
-    saver.assert(command:dir_make_command(dirname))
-    saver.assert(command:file_create_command(filename,content))
+    disk.assert(command:dir_make_command(dirname))
+    disk.assert(command:file_create_command(filename,content))
     message = "No space left on device @ io_write - /one_k/#{filename}"
     body = { "command": file_append_command(filename, content*16) }.to_json
     assert_dispatch_raises('run', body, 500, message)
@@ -40,7 +40,7 @@ class RackDispatchingTest < TestBase
       dir_make_command(dirname) # repeat
     ]}.to_json
     assert_dispatch_raises('assert_all', body, 500, message)
-    saver.assert(command:dir_exists_command(dirname))
+    disk.assert(command:dir_exists_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -151,7 +151,7 @@ class RackDispatchingTest < TestBase
   test 'E39',
   'dispatches to alive' do
     prober_stub('alive?')
-    assert_saver_dispatch('alive', {}.to_json,
+    assert_dispatch('alive', {}.to_json,
       'hello from stubbed prober.alive?'
     )
   end
@@ -159,7 +159,7 @@ class RackDispatchingTest < TestBase
   test 'E40',
   'dispatches to ready' do
     prober_stub('ready?')
-    assert_saver_dispatch('ready', {}.to_json,
+    assert_dispatch('ready', {}.to_json,
       'hello from stubbed prober.ready?'
     )
   end
@@ -167,7 +167,7 @@ class RackDispatchingTest < TestBase
   test 'E41',
   'dispatches to sha' do
     prober_stub('sha')
-    assert_saver_dispatch('sha', {}.to_json,
+    assert_dispatch('sha', {}.to_json,
       'hello from stubbed prober.sha'
     )
   end
@@ -178,10 +178,10 @@ class RackDispatchingTest < TestBase
 
   test 'E48',
   'dispatches to assert_all' do
-    saver_stub('assert_all')
-    assert_saver_dispatch('assert_all',
+    disk_stub('assert_all')
+    assert_dispatch('assert_all',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.assert_all'
+      'hello from stubbed disk.assert_all'
     )
   end
 
@@ -189,10 +189,10 @@ class RackDispatchingTest < TestBase
 
   test 'E51',
   'dispatches to assert' do
-    saver_stub('assert')
-    assert_saver_dispatch('assert',
+    disk_stub('assert')
+    assert_dispatch('assert',
       { command: well_formed_command }.to_json,
-      'hello from stubbed saver.assert'
+      'hello from stubbed disk.assert'
     )
   end
 
@@ -200,10 +200,10 @@ class RackDispatchingTest < TestBase
 
   test 'E52',
   'dispatches to run' do
-    saver_stub('run')
-    assert_saver_dispatch('run',
+    disk_stub('run')
+    assert_dispatch('run',
       { command: well_formed_command }.to_json,
-      'hello from stubbed saver.run'
+      'hello from stubbed disk.run'
     )
   end
 
@@ -211,10 +211,10 @@ class RackDispatchingTest < TestBase
 
   test 'E47',
   'dispatches to run_all' do
-    saver_stub('run_all')
-    assert_saver_dispatch('run_all',
+    disk_stub('run_all')
+    assert_dispatch('run_all',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.run_all'
+      'hello from stubbed disk.run_all'
     )
   end
 
@@ -222,10 +222,10 @@ class RackDispatchingTest < TestBase
 
   test 'E49',
   'dispatches to run_until_true' do
-    saver_stub('run_until_true')
-    assert_saver_dispatch('run_until_true',
+    disk_stub('run_until_true')
+    assert_dispatch('run_until_true',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.run_until_true'
+      'hello from stubbed disk.run_until_true'
     )
   end
 
@@ -233,18 +233,18 @@ class RackDispatchingTest < TestBase
 
   test 'E50',
   'dispatches to run_until_false' do
-    saver_stub('run_until_false')
-    assert_saver_dispatch('run_until_false',
+    disk_stub('run_until_false')
+    assert_dispatch('run_until_false',
       { commands: well_formed_commands }.to_json,
-      'hello from stubbed saver.run_until_false'
+      'hello from stubbed disk.run_until_false'
     )
   end
 
   private
 
-  def saver_stub(name)
-    saver.define_singleton_method name do |*_args|
-      "hello from stubbed saver.#{name}"
+  def disk_stub(name)
+    disk.define_singleton_method name do |*_args|
+      "hello from stubbed disk.#{name}"
     end
   end
 
@@ -270,7 +270,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_saver_dispatch(name, args, stubbed)
+  def assert_dispatch(name, args, stubbed)
     if query?(name)
       qname = name + '?'
     else

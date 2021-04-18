@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 require_relative 'require_source'
-require_source 'saver'
+require_source 'disk'
 
-class SaverFake
+class DiskFake
 
   def initialize(externals)
     @externals = externals
@@ -14,23 +14,23 @@ class SaverFake
   # commands
 
   def dir_make_command(dir_name)
-    saver.dir_make_command(dir_name)
+    disk.dir_make_command(dir_name)
   end
 
   def dir_exists_command(dir_name)
-    saver.dir_exists_command(dir_name)
+    disk.dir_exists_command(dir_name)
   end
 
   def file_create_command(filename, content)
-    saver.file_create_command(filename, content)
+    disk.file_create_command(filename, content)
   end
 
   def file_append_command(filename, content)
-    saver.file_append_command(filename, content)
+    disk.file_append_command(filename, content)
   end
 
   def file_read_command(filename)
-    saver.file_read_command(filename)
+    disk.file_read_command(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -145,9 +145,9 @@ class SaverFake
     @@files.has_key?(key)
   end
 
-  def saver
-    # For the primitives only
-    Saver.new()
+  def disk
+    # For the commands only
+    Disk.new()
   end
 
 end

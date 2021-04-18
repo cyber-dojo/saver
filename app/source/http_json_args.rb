@@ -24,19 +24,19 @@ class HttpJsonArgs
 
   def get(path, externals)
     prober = externals.prober
-    saver = externals.saver
+    disk = externals.disk
     args = case path
     when '/sha'     then [prober,'sha']
     when '/ready'   then [prober,'ready?']
     when '/alive'   then [prober,'alive?']
 
-    when '/assert'  then [saver,'assert',command]
-    when '/run'     then [saver,'run'   ,command]
+    when '/assert'  then [disk,'assert',command]
+    when '/run'     then [disk,'run'   ,command]
 
-    when '/assert_all'      then [saver,'assert_all'     ,commands]
-    when '/run_all'         then [saver,'run_all'        ,commands]
-    when '/run_until_true'  then [saver,'run_until_true' ,commands]
-    when '/run_until_false' then [saver,'run_until_false',commands]
+    when '/assert_all'      then [disk,'assert_all'     ,commands]
+    when '/run_all'         then [disk,'run_all'        ,commands]
+    when '/run_until_true'  then [disk,'run_until_true' ,commands]
+    when '/run_until_false' then [disk,'run_until_false',commands]
 
     else
       fail HttpJson::RequestError, 'unknown path'

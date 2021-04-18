@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'open3'
 
-class Saver
+class Disk
 
   def initialize(root_dir = 'cyber-dojo')
     @root_dir = root_dir
@@ -160,7 +160,6 @@ class Saver
     }
   rescue Errno::EISDIR, # file is a dir!,
          Errno::ENOENT  # file does not exist
-
     false
   end
 

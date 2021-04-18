@@ -43,12 +43,12 @@ class IdGenerator
       if reserved?(id)
         next
       end
-      dir_exists = saver.dir_exists_command(method(not_pather).call(id))
-      if saver.run(command:dir_exists)
+      dir_exists_command = disk.dir_exists_command(method(not_pather).call(id))
+      if disk.run(command:dir_exists_command)
         next
       end
-      dir_make = saver.dir_make_command(method(pather).call(id))
-      if saver.run(command:dir_make)
+      dir_make_command = disk.dir_make_command(method(pather).call(id))
+      if disk.run(command:dir_make_command)
         break id
       end
     end
@@ -66,13 +66,13 @@ class IdGenerator
     @externals.random
   end
 
-  def saver
-    @externals.saver
+  def disk
+    @externals.disk
   end
 
 end
 
-# Similar to https://en.wikipedia.org/wiki/Base58
+# The id alphabet is similar to https://en.wikipedia.org/wiki/Base58
 # o) includes the digits zero and one
 #    (to be backwards compatible as hex)
 # o) excludes the letters IO

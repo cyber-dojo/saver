@@ -35,7 +35,7 @@ class HttpJsonArgsTest < TestBase
 
     command = dir_make_command(dirname)
     args = HttpJsonArgs.new({"command":command}.to_json)
-    expected = [saver,'run',{ command: command}]
+    expected = [disk,'run',{ command: command}]
     assert_equal expected, args.get('/run', externals)
 
     commands = [
@@ -43,7 +43,7 @@ class HttpJsonArgsTest < TestBase
         file_create_command(filename, content)
     ]
     args = HttpJsonArgs.new({"commands":commands}.to_json)
-    expected = [saver,'run_all',{ commands: commands }]
+    expected = [disk,'run_all',{ commands: commands }]
     assert_equal expected, args.get('/run_all', externals)
   end
 
