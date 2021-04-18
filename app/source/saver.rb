@@ -8,6 +8,7 @@ class Saver
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
+  # commands
 
   def dir_exists_command(dirname)
     [DIR_EXISTS_COMMAND_NAME, dirname]

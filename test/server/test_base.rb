@@ -1,9 +1,7 @@
 # frozen_string_literal: true
-def require_source(required)
-  require_relative "../source/#{required}"
-end
 
 require_relative 'hex_mini_test'
+require_relative 'require_source'
 require_source 'externals'
 
 class TestBase < HexMiniTest
@@ -20,8 +18,16 @@ class TestBase < HexMiniTest
     externals.prober
   end
 
+  def random
+    externals.random
+  end
+
   def saver
     externals.saver
+  end
+
+  def time
+    externals.time
   end
 
   # - - - - - - - - - - - - - - - - -

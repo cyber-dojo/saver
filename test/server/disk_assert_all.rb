@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_source 'saver'
 
-class SaverAssertAllTest < TestBase
+class DiskAssertAllTest < TestBase
 
   def self.hex_prefix
     '21C'

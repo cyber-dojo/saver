@@ -41,7 +41,7 @@ class HexMiniTest < MiniTest::Test
     pointer.prepend("\n\n")
     raise "#{pointer}missing#{pointee}" unless respond_to?(:hex_prefix)
     raise "#{pointer}empty#{pointee}" if hex_prefix == ''
-    raise "#{pointer}not hex#{pointee}" unless hex_prefix =~ /^[0-9A-F]+$/
+    raise "#{pointer}not hex#{pointee}" unless hex_prefix =~ /^[0-9A-Fa-f]+$/
 
     method = "test '#{hex_suffix}',"
     pointer = ' ' * method.index("'") + '!'
@@ -50,7 +50,7 @@ class HexMiniTest < MiniTest::Test
     hex_id = hex_prefix + hex_suffix
     pointer.prepend("\n\n")
     raise "#{pointer}empty#{pointee}" if hex_suffix == ''
-    raise "#{pointer}not hex#{pointee}" unless hex_suffix =~ /^[0-9A-F]+$/
+    raise "#{pointer}not hex#{pointee}" unless hex_suffix =~ /^[0-9A-Fa-f]+$/
     raise "#{pointer}duplicate#{pointee}" if @@seen_hex_ids.include?(hex_id)
     raise "#{pointer}overlap#{pointee}" if hex_prefix[-2..-1] == hex_suffix[0..1]
     @@seen_hex_ids << hex_id
