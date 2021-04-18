@@ -3,6 +3,10 @@
 require_relative 'hex_mini_test'
 require_relative 'require_source'
 require_source 'externals'
+require_relative 'doubles/disk_fake'
+require_relative 'doubles/rack_request_stub'
+require_relative 'doubles/random_stub'
+require_relative 'doubles/time_stub'
 
 class TestBase < HexMiniTest
 

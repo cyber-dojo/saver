@@ -1,4 +1,3 @@
-require_relative 'rack_request_stub'
 require_relative 'test_base'
 require_source 'rack_dispatcher'
 

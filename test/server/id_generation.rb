@@ -1,5 +1,4 @@
 require_relative 'test_base'
-require_relative 'disk_fake'
 require_source 'model/id_generator'
 require 'fileutils'
 require 'tmpdir'
@@ -208,19 +207,6 @@ class IdGenerationTest < TestBase
       @random = RandomStub.new(stub)
     }
     IdGenerator.new(externals)
-  end
-
-  class RandomStub
-    def initialize(letters)
-      alphabet = IdGenerator::ALPHABET
-      @indexes = letters.each_char.map{ |ch| alphabet.index(ch) }
-      @n = 0
-    end
-    def sample(_size)
-      index = @indexes[@n]
-      @n += 1
-      index
-    end
   end
 
 end
