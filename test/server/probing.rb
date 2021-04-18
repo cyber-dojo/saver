@@ -2,7 +2,7 @@
 require_relative 'test_base'
 require_source 'saver'
 
-class ProbeTest < TestBase
+class ProbingTest < TestBase
 
   def self.hex_prefix
     'AEA'

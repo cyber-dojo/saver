@@ -1,7 +1,7 @@
 #!/bin/bash
 
 readonly MY_DIR="$( cd "$( dirname "${0}" )" && pwd )"
-readonly TEST_FILES=(${MY_DIR}/../*_test.rb)
+readonly TEST_FILES=(${MY_DIR}/../*.rb)
 readonly TEST_LOG=${COVERAGE_ROOT}/test.log
 readonly TEST_ARGS=(${*})
 
