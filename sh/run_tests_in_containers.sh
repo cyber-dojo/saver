@@ -9,7 +9,7 @@ run_tests()
 {
   local coverage_root=/tmp/coverage
   local user="${1}"
-  local test_dir="test_${2}"
+  local test_dir="test/${2}"
   local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${2}")
 
   docker exec \
@@ -39,7 +39,7 @@ declare client_status=0
 
 run_server_tests()
 {
-  run_tests 'saver' 'server' "${*}"
+  run_tests saver server "${*}"
   server_status=$?
 }
 
@@ -47,16 +47,16 @@ run_server_tests()
 
 run_client_tests()
 {
-  run_tests 'nobody' 'client' "${*}"
+  run_tests nobody client "${*}"
   client_status=$?
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if [ "$1" = "server" ]; then
+if [ "$1" = server ]; then
   shift
   run_server_tests "$@"
-elif [ "$1" = "client" ]; then
+elif [ "$1" = client ]; then
   shift
   run_client_tests "$@"
 else

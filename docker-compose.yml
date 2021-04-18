@@ -9,7 +9,7 @@ services:
 
   saver_client:
     build:
-      context: test_client
+      context: test/client
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
@@ -36,7 +36,7 @@ services:
     read_only: true
     restart: 'no'
     volumes:
-      - ./test_server:/app/test:ro
+      - ./test/server:/app/test:ro
       - one_k:/one_k
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
