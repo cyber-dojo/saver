@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly root_dir="$(cd "$(dirname "${0}")/.." && pwd)"
+readonly root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly my_name=saver
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -12,6 +12,10 @@ run_tests()
   local type="${2}" # client|server
   local test_dir="test/${type}"
   local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
+
+  echo
+  echo '======================================'
+  echo "Testing: ${type}"
 
   docker exec \
     --user "${user}" \
@@ -70,6 +74,7 @@ fi
 if [ "${server_status}" = "0" ] && [ "${client_status}" = "0" ]; then
   echo '------------------------------------------------------'
   echo 'All passed'
+  echo
   exit 0
 else
   echo
