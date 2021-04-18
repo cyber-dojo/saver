@@ -11,8 +11,8 @@ unless ENV['NO_PROMETHEUS']
   use Prometheus::Middleware::Exporter
 end
 
-require_relative '../src/externals'
-require_relative '../src/rack_dispatcher'
+require_relative '../source/externals'
+require_relative '../source/rack_dispatcher'
 externals = Externals.new
 dispatcher = RackDispatcher.new(externals, Rack::Request)
 run dispatcher
