@@ -16,3 +16,9 @@ require_relative '../source/rack_dispatcher'
 externals = Externals.new
 dispatcher = RackDispatcher.new(externals, Rack::Request)
 run dispatcher
+
+
+#require_relative '../source/app'
+#require_relative '../source/externals'
+#externals = Externals.new
+#run App.new(externals)

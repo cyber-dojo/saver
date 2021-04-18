@@ -1,4 +1,5 @@
 #!/bin/bash
+readonly MY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 readonly service_name=saver
 readonly dir=cyber-dojo
@@ -58,3 +59,12 @@ rackup             \
   --server thin    \
   --env production \
     /app/config/config.ru
+
+
+#readonly PORT="${CYBER_DOJO_K8S_PORT:-${CYBER_DOJO_SAVER_PORT}}"
+#readonly PORT="${CYBER_DOJO_SAVER_PORT}"
+
+#puma \
+#  --port=${PORT} \
+#  --config=${MY_DIR}/puma.rb
+

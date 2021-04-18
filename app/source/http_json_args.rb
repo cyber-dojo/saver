@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require_relative 'http_json/request_error'
-require_relative 'oj_adapter'
+require_relative 'lib/json_adapter'
 
 class HttpJsonArgs
 
@@ -16,7 +16,8 @@ class HttpJsonArgs
     unless @args.is_a?(Hash)
       fail HttpJson::RequestError, 'body is not JSON Hash'
     end
-  rescue Oj::ParseError
+  rescue JSON::ParserError
+  #rescue Oj::ParseError
     fail HttpJson::RequestError, 'body is not JSON'
   end
 
@@ -53,7 +54,7 @@ class HttpJsonArgs
 
   private
 
-  include OjAdapter
+  include JsonAdapter
 
   attr_reader :args
 
@@ -91,7 +92,7 @@ class HttpJsonArgs
     unless commands.is_a?(Array)
       fail malformed(arg_name, "!Array (#{commands.class.name})")
     end
-    commands.each.with_index do |command,index|
+    commands.each.with_index do |command, index|
       unless command.is_a?(Array)
         fail malformed("commands[#{index}]", "!Array (#{command.class.name})")
       end
@@ -102,7 +103,7 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - -
 
-  def fail_unless_well_formed_command(command,index)
+  def fail_unless_well_formed_command(command, index)
     name = command[0]
     unless name.is_a?(String)
       fail malformed("command#{index}[0]", "!String (#{name.class.name})")
@@ -120,7 +121,7 @@ class HttpJsonArgs
 
   # - - - - - - - - - - - - - - -
 
-  def fail_unless_well_formed_args(command,index,*arg_names)
+  def fail_unless_well_formed_args(command, index, *arg_names)
     name,*args = command
     arity = arg_names.size
     unless args.size === arity

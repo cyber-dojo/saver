@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require_relative 'http_json/request_error'
 require_relative 'http_json_args'
-require_relative 'oj_adapter'
+require_relative 'lib/json_adapter'
 
 class RackDispatcher
 
@@ -25,7 +25,7 @@ class RackDispatcher
 
   private
 
-  include OjAdapter
+  include JsonAdapter
 
   def json_response_pass(status, obj)
     body = json_plain(obj)

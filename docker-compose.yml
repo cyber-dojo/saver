@@ -32,6 +32,7 @@ services:
     image: ${CYBER_DOJO_SAVER_IMAGE}
     container_name: test-saver-server
     ports: [ "${CYBER_DOJO_SAVER_PORT}:${CYBER_DOJO_SAVER_PORT}" ]
+    env_file: [ .env ]
     read_only: true
     restart: 'no'
     volumes:
