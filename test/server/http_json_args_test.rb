@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative '../src/http_json_args'
-require_relative '../src/http_json/request_error'
+require_source 'http_json_args'
+require_source 'http_json/request_error'
 
 class HttpJsonArgsTest < TestBase
 

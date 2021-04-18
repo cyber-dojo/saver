@@ -1,6 +1,10 @@
 # frozen_string_literal: true
+def require_source(required)
+  require_relative "../src/#{required}"
+end
+
 require_relative 'hex_mini_test'
-require_relative '../src/externals'
+require_source 'externals'
 
 class TestBase < HexMiniTest
 

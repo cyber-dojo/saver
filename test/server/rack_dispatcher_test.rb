@@ -1,6 +1,6 @@
 require_relative 'rack_request_stub'
 require_relative 'test_base'
-require_relative '../src/rack_dispatcher'
+require_source 'rack_dispatcher'
 
 class RackDispatcherTest < TestBase
 
