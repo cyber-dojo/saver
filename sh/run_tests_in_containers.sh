@@ -9,8 +9,9 @@ run_tests()
 {
   local coverage_root=/tmp/coverage
   local user="${1}"
-  local test_dir="test/${2}"
-  local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${2}")
+  local type="${2}" # client|server
+  local test_dir="test/${type}"
+  local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
 
   docker exec \
     --user "${user}" \
