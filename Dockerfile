@@ -9,9 +9,8 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
+COPY --chown=saver . /
 WORKDIR /app
-COPY . .
-RUN chown -R saver .
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
