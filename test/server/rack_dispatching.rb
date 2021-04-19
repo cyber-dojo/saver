@@ -242,13 +242,13 @@ class RackDispatchingTest < TestBase
   private
 
   def disk_stub(name)
-    disk.define_singleton_method name do |*_args|
+    disk.define_singleton_method(name) do |*_args|
       "hello from stubbed disk.#{name}"
     end
   end
 
   def prober_stub(name)
-    prober.define_singleton_method name do |*_args|
+    prober.define_singleton_method(name) do |*_args|
       "hello from stubbed prober.#{name}"
     end
   end
