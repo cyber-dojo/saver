@@ -12,8 +12,8 @@ class IdentityTest < TestBase
   test '2C6', %w[
   the user running all the server tests has
   uid=19663(saver), gid=65533(nogroup) ] do
-    assert_equal %w( saver 19663 ), [user_name,uid]
-    assert_equal %w( nogroup 65533 ), [group_name,gid]
+    assert_equal %w( saver 19663 ), [user_name, uid]
+    assert_equal %w( nogroup 65533 ), [group_name, gid]
   end
 
   private

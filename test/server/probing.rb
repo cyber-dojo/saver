@@ -7,9 +7,6 @@ class ProbingTest < TestBase
     'AEA'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # sha
-
   test '190', %w( sha is sha of image's git commit ) do
     sha = prober.sha
     assert_equal 40, sha.size
@@ -18,16 +15,10 @@ class ProbingTest < TestBase
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # ready?
-
   test '602',
   %w( ready? is always true ) do
     assert prober.ready?
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # alive?
 
   test '603',
   %w( alive? is always true ) do

@@ -7,9 +7,7 @@ class RandomSampleTest < TestBase
     'aA8'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '340', %w( basic sanity check sample(N) returns 0 to N-1 inclusive ) do
+  test '340', %w[ basic sanity check sample(N) returns 0 to N-1 inclusive ] do
     size = 16
     counts = {}
     until counts.size == size

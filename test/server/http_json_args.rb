@@ -35,7 +35,7 @@ class HttpJsonArgsTest < TestBase
 
     command = dir_make_command(dirname)
     args = HttpJsonArgs.new({"command":command}.to_json)
-    expected = [disk,'run',{ command: command}]
+    expected = [ disk,'run',{ command: command} ]
     assert_equal expected, args.get('/run', externals)
 
     commands = [
@@ -43,7 +43,7 @@ class HttpJsonArgsTest < TestBase
         file_create_command(filename, content)
     ]
     args = HttpJsonArgs.new({"commands":commands}.to_json)
-    expected = [disk,'run_all',{ commands: commands }]
+    expected = [ disk,'run_all',{ commands: commands } ]
     assert_equal expected, args.get('/run_all', externals)
   end
 
@@ -110,28 +110,28 @@ class HttpJsonArgsTest < TestBase
 
   test 'C55',
   'command: get() raises when name is unknown' do
-    command = ['spey','ff']
+    command = [ 'spey', 'ff' ]
     error = assert_assert_raises(command)
     assert_equal 'malformed:command:Unknown (spey):', error.message
   end
 
   test 'C58',
   'command: get() raises when dir_make-command does not have one argument' do
-    command = ['dir_make']
+    command = [ 'dir_make' ]
     error = assert_assert_raises(command)
     assert_equal 'malformed:command:dir_make!0:', error.message
   end
 
   test 'C63',
   'command: get() raises when any 1st argument is not a string' do
-    command = ['file_read',42]
+    command = [ 'file_read', 42 ]
     error = assert_assert_raises(command)
     assert_equal 'malformed:command:file_read(filename!=String):', error.message
   end
 
   test 'C64',
   'command: get() raises when any 2nd argument is not a string' do
-    command = ['file_create','a/b/c',nil]
+    command = [ 'file_create', 'a/b/c', nil ]
     error = assert_assert_raises(command)
     assert_equal 'malformed:command:file_create(content!=String):', error.message
   end
@@ -155,70 +155,70 @@ class HttpJsonArgsTest < TestBase
 
   test 'B53',
   'commands[i]: get() raises when it is not an Array' do
-    commands = [['dir_exists?','a/b/c'],true]
+    commands = [ [ 'dir_exists?', 'a/b/c' ], true ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:!Array (TrueClass):', error.message
   end
 
   test 'B54',
   'commands[i]: get() raises when name is not a String' do
-    commands = [['dir_exists?','/d/e/f'],[4.2]]
+    commands = [ ['dir_exists?', '/d/e/f' ], [ 4.2 ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1][0]:!String (Float):', error.message
   end
 
   test 'B55',
   'commands[i]: get() raises when name is unknown' do
-    commands = [['dir_make','/t/45/readme.md'],['qwerty','ff']]
+    commands = [ [ 'dir_make', '/t/45/readme.md' ], [ 'qwerty', 'ff' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[1]:Unknown (qwerty):', error.message
   end
 
   test 'B58',
   'commands[i]: get() raises when dir_make-command does not have one argument' do
-    commands = [['dir_make']]
+    commands = [ [ 'dir_make' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:dir_make!0:', error.message
   end
 
   test 'B59',
   'commands[i]: get() raises when dir_exists-command does not have one argument' do
-    commands = [['dir_exists?','a','b','c']]
+    commands = [ [ 'dir_exists?', 'a', 'b', 'c' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:dir_exists?!3:', error.message
   end
 
   test 'B60',
   'commands[i]: get() raises when file_create-command does not have two arguments' do
-    commands = [['file_create','a','b','c','d']]
+    commands = [ ['file_create', 'a', 'b', 'c', 'd' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:file_create!4:', error.message
   end
 
   test 'B61',
   'commands[i]: get() raises when file_append-command does not have two arguments' do
-    commands = [['file_append','a']]
+    commands = [ [ 'file_append', 'a' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:file_append!1:', error.message
   end
 
   test 'B62',
   'commands[i]: get() raises when file_read-command does not have one argument' do
-    commands = [['file_read']]
+    commands = [ [ 'file_read' ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:file_read!0:', error.message
   end
 
   test 'B63',
   'commands[i]: get() raises when any 1st argument is not a string' do
-    commands = [['file_read',42]]
+    commands = [ [ 'file_read', 42 ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:file_read(filename!=String):', error.message
   end
 
   test 'B64',
   'commands[i]: get() raises when any 2nd argument is not a string' do
-    commands = [['file_create','a/b/c',nil]]
+    commands = [ [ 'file_create', 'a/b/c', nil ] ]
     error = assert_run_all_raises(commands)
     assert_equal 'malformed:commands[0]:file_create(content!=String):', error.message
   end

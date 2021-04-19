@@ -13,7 +13,7 @@ class DiskRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run_all
+  # run_all()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   disk_tests '314', %w(
@@ -36,7 +36,7 @@ class DiskRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run_until_false
+  # run_until_false()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   disk_tests '512', %w(
@@ -152,7 +152,7 @@ class DiskRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run_until_true
+  # run_until_true()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   disk_tests '712', %w(

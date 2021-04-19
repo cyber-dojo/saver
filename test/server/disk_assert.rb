@@ -7,9 +7,6 @@ class DiskAssertTest < TestBase
     'FA2'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # assert()
-
   disk_tests '538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'

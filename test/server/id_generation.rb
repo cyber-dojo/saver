@@ -10,9 +10,9 @@ class IdGenerationTest < TestBase
   end
 
   def hex_setup
-    externals.instance_exec {
+    externals.instance_exec do
       @disk = DiskFake.new(self)
-    }
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - -

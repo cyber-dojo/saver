@@ -8,7 +8,7 @@ class DiskRunTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # dir_exists? dir_make
+  # dir_exists?() dir_make()
 
   disk_tests '601',
   'dir_exists?(k) is false before dir_make(k) and true after' do
