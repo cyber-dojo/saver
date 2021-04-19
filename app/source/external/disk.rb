@@ -29,7 +29,7 @@ class Disk
   end
 
   def file_read_command(filename)
-    [FILE_READ_COMMAND_NAME,filename]
+    [FILE_READ_COMMAND_NAME, filename]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,7 +45,7 @@ class Disk
   end
 
   def run(command:)
-    name,*args = command
+    name, *args = command
     case name
     when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
     when DIR_MAKE_COMMAND_NAME    then dir_make(*args)
@@ -59,25 +59,25 @@ class Disk
   # batches
 
   def assert_all(commands:)
-    run_until(commands) {|r,index|
+    run_until(commands) do |r, index|
       if r
         false
       else
         raise "commands[#{index}] != true"
       end
-    }
+    end
   end
 
   def run_all(commands:)
-    run_until(commands) {|r| r === :never}
+    run_until(commands) { |r| r === :never }
   end
 
   def run_until_true(commands:)
-    run_until(commands) {|r| r}
+    run_until(commands) { |r| r }
   end
 
   def run_until_false(commands:)
-    run_until(commands) {|r| !r}
+    run_until(commands) { |r| !r }
   end
 
   private
@@ -93,10 +93,12 @@ class Disk
 
   def run_until(commands, &block)
     results = []
-    commands.each.with_index(0) do |command,index|
+    commands.each.with_index(0) do |command, index|
       result = run(command:command)
       results << result
-      break if block.call(result, index)
+      if block.call(result, index)
+        break
+      end
     end
     results
   end
@@ -127,9 +129,9 @@ class Disk
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::CREAT | File::EXCL
-    File.open(path_name(filename), mode) { |fd|
+    File.open(path_name(filename), mode) do |fd|
       fd.write(content)
-    }
+    end
     true
   rescue Errno::ENOENT, # dir does not exist
          Errno::EEXIST  # file already exists
@@ -142,10 +144,10 @@ class Disk
     # Errno::ENOSPC (no space left on device) will
     # be caught by RackDispatcher --> status=500
     mode = File::WRONLY | File::APPEND
-    File.open(path_name(filename), mode) { |fd|
+    File.open(path_name(filename), mode) do |fd|
       fd.flock(File::LOCK_EX)
       fd.write(content)
-    }
+    end
     true
   rescue Errno::EISDIR, # file is a dir!
          Errno::ENOENT  # file does not exist
@@ -156,10 +158,10 @@ class Disk
 
   def file_read(filename)
     mode = File::RDONLY
-    File.open(path_name(filename), mode) { |fd|
+    File.open(path_name(filename), mode) do |fd|
       fd.flock(File::LOCK_EX)
       fd.read
-    }
+    end
   rescue Errno::EISDIR, # file is a dir!,
          Errno::ENOENT  # file does not exist
     false

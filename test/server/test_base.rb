@@ -56,4 +56,20 @@ class TestBase < HexMiniTest
     disk.file_read_command(key)
   end
 
+  # - - - - - - - - - - - - - - - - -
+  # Disk and DiskFake dual-contract tests
+
+  def self.disk_tests(hex_suffix, *lines, &block)
+    test(hex_suffix+'0', *lines) do
+      disk = self.externals.disk
+      self.externals.instance_eval { @disk = disk }
+      self.instance_eval(&block)
+    end
+    test(hex_suffix+'1', *lines) do
+      disk = self.externals.disk
+      self.externals.instance_eval { @disk = DiskFake.new(disk) }
+      self.instance_eval(&block)
+    end
+  end
+
 end

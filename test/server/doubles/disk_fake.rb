@@ -45,7 +45,7 @@ class DiskFake
   end
 
   def run(command:)
-    name,*args = command
+    name, *args = command
     case name
     when 'dir_make'    then dir_make(*args)
     when 'dir_exists?' then dir_exists?(*args)
@@ -59,35 +59,37 @@ class DiskFake
   # batches
 
   def assert_all(commands:)
-    run_until(commands) {|r,index|
+    run_until(commands) do |r, index|
       if r
         false
       else
-        raise SaverService::Error, "commands[#{index}] != true"
+        raise "commands[#{index}] != true"
       end
-    }
+    end
   end
 
   def run_all(commands:)
-    run_until(commands) {|r| r === :never }
+    run_until(commands) { |r| r === :never }
   end
 
   def run_until_true(commands:)
-    run_until(commands) {|r| r}
+    run_until(commands) { |r| r }
   end
 
   def run_until_false(commands:)
-    run_until(commands) {|r| !r}
+    run_until(commands) { |r| !r }
   end
 
   private
 
   def run_until(commands, &block)
     results = []
-    commands.each.with_index(0) do |command,index|
+    commands.each.with_index(0) do |command, index|
       result = run(command:command)
       results << result
-      break if block.call(result,index)
+      if block.call(result, index)
+        break
+      end
     end
     results
   end
@@ -106,7 +108,7 @@ class DiskFake
     end
   end
 
-  def file_create(key,value)
+  def file_create(key, value)
     path = path_name(key)
     if dir?(File.dirname(path)) && !file?(path)
       @@files[path] = value

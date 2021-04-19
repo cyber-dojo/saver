@@ -10,7 +10,7 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_exists? dir_make
 
-  test '601',
+  disk_tests '601',
   'dir_exists?(k) is false before dir_make(k) and true after' do
     dirname = 'groups/34/f6/01'
     refute disk.run(command:dir_exists_command(dirname))
@@ -18,7 +18,7 @@ class DiskRunTest < TestBase
     assert disk.run(command:dir_exists_command(dirname))
   end
 
-  test '602',
+  disk_tests '602',
   'dir_make succeeds once and then fails' do
     dirname = 'groups/r5/s6/02'
     assert disk.run(command:dir_make_command(dirname))
@@ -28,7 +28,7 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_create()
 
-  test '603', %w(
+  disk_tests '603', %w(
     file_create() succeeds
     when its dir-name exists and its file-name does not exist
   ) do
@@ -40,7 +40,7 @@ class DiskRunTest < TestBase
     assert_equal content, disk.run(command:file_read_command(filename))
   end
 
-  test '604', %w(
+  disk_tests '604', %w(
     file_create() fails
     when its dir-name does not already exist
   ) do
@@ -51,7 +51,7 @@ class DiskRunTest < TestBase
     assert disk.run(command:file_read_command(filename)).is_a?(FalseClass)
   end
 
-  test '605', %w(
+  disk_tests '605', %w(
     file_create() fails
     when its file-name already exists
   ) do
@@ -67,7 +67,7 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_append()
 
-  test '606', %w(
+  disk_tests '606', %w(
     file_append() returns true and appends to the end of file-name
     when file-name already exists
   ) do
@@ -81,7 +81,7 @@ class DiskRunTest < TestBase
     assert_equal content+more, disk.run(command:file_read_command(filename))
   end
 
-  test '607', %w(
+  disk_tests '607', %w(
     file_append() returns false and does nothing
     when its dir-name does not already exist
   ) do
@@ -92,7 +92,7 @@ class DiskRunTest < TestBase
     assert disk.run(command:file_read_command(filename)).is_a?(FalseClass)
   end
 
-  test '608', %w(
+  disk_tests '608', %w(
     file_append() does nothing and returns false
     when its file-name does not already exist
   ) do
@@ -107,7 +107,7 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_read()
 
-  test '609',
+  disk_tests '609',
   'file_read() gives back what a successful file_create() accepts' do
     dirname = 'groups/FD/F6/09'
     filename = dirname + '/limerick.txt'
@@ -117,13 +117,13 @@ class DiskRunTest < TestBase
     assert_equal content, disk.run(command:file_read_command(filename))
   end
 
-  test '610',
+  disk_tests '610',
   'file_read() returns false given a non-existent file-name' do
     filename = 'groups/1z/26/10/not-there.txt'
     assert disk.run(command:file_read_command(filename)).is_a?(FalseClass)
   end
 
-  test '611',
+  disk_tests '611',
   'file_read() returns false given an existing dir-name' do
     dirname = 'groups/2f/76/11'
     disk.run(command:dir_make_command(dirname))

@@ -10,7 +10,7 @@ class DiskAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # assert()
 
-  test '538',
+  disk_tests '538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
     error = assert_raises(RuntimeError) {
@@ -20,7 +20,7 @@ class DiskAssertTest < TestBase
     refute disk.run(command:dir_exists_command(dirname))
   end
 
-  test '539',
+  disk_tests '539',
   'assert() returns command result when command is true' do
     dirname = 'groups/sw/EP/7K'
     filename = dirname + '/' + '3.events.json'
