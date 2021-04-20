@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_source 'external/disk_core'
+require_source 'external/disk_api'
 
 class DiskFake
 
@@ -8,7 +8,7 @@ class DiskFake
     @@files ||= {}
   end
 
-  include DiskCore
+  include DiskApi
 
   private
 

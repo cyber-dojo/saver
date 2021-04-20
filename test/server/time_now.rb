@@ -16,7 +16,7 @@ class TimeNowTest < TestBase
 
 end
 
-class TimeStubTest < TestBase
+class TimeNowStubTest < TestBase
 
   def self.hex_prefix
     'b5D'

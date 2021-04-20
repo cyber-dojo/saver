@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 
-module DiskCore # mixin
+module DiskApi # mixin
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # commands

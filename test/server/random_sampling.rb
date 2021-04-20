@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 require_relative 'test_base'
 
-class RandomSampleTest < TestBase
+class RandomSamplingTest < TestBase
 
   def self.hex_prefix
     'aA8'
   end
 
-  test '340', %w[ basic sanity check sample(N) returns 0 to N-1 inclusive ] do
+  test '340', %w[ basic sanity check sample(N) returns all of 0 to N-1 inclusive ] do
     size = 16
     counts = {}
     until counts.size == size

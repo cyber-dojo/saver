@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'open3'
-require_relative 'disk_core'
+require_relative 'disk_api'
 
 module External
 
@@ -10,7 +10,7 @@ module External
       @root_dir = root_dir
     end
 
-    include DiskCore
+    include DiskApi
 
     private
 
