@@ -12,7 +12,6 @@ services:
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
-    ports: [ "${CYBER_DOJO_SAVER_CLIENT_PORT}:${CYBER_DOJO_SAVER_CLIENT_PORT}" ]
     env_file: [ .env ]
     read_only: true
     restart: 'no'
