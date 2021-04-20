@@ -92,7 +92,8 @@ exit_non_zero_unless_healthy()
     fi
   done
   echo; echo "${SERVICE_NAME} not healthy after ${MAX_TRIES} tries."
-  echo_docker_log
+  local log=$(docker logs "${CONTAINER_NAME}" 2>&1)
+  echo_docker_log "${SERVICE_NAME}" "${log}"
   echo
   exit 42
 }

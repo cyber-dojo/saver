@@ -61,13 +61,10 @@ class TestBase < HexMiniTest
 
   def self.disk_tests(hex_suffix, *lines, &block)
     test(hex_suffix+'0', *lines) do
-      disk = self.externals.disk
-      self.externals.instance_eval { @disk = disk }
       self.instance_eval(&block)
     end
     test(hex_suffix+'1', *lines) do
-      disk = self.externals.disk
-      self.externals.instance_eval { @disk = DiskFake.new(disk) }
+      self.externals.instance_eval { @disk = DiskFake.new }
       self.instance_eval(&block)
     end
   end

@@ -7,7 +7,7 @@ require_relative 'external/time'
 class Externals
 
   def disk
-    @disk ||= External::Disk.new()
+    @disk ||= External::Disk.new
   end
 
   def prober
