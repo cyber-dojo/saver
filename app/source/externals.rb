@@ -11,15 +11,15 @@ class Externals
   end
 
   def prober
-    @prober ||= External::Prober.new(self)
+    @prober ||= External::Prober.new
   end
 
   def random
-    @random ||= External::Random.new(self)
+    @random ||= External::Random.new
   end
 
   def time
-    @time ||= External::Time.new(self)
+    @time ||= External::Time.new
   end
 
 end

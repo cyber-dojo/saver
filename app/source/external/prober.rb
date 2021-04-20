@@ -4,9 +4,6 @@ module External
 
   class Prober
 
-    def initialize(_)
-    end
-
     def sha
       ENV['SHA']
     end

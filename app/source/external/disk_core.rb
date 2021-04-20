@@ -83,8 +83,6 @@ module DiskCore # mixin
   FILE_APPEND_COMMAND_NAME = 'file_append'
   FILE_READ_COMMAND_NAME   = 'file_read'
 
-  # - - - - - - - - - - - - - - - - - - - - - - - -
-
   def run_until(commands, &block)
     results = []
     commands.each.with_index(0) do |command, index|
