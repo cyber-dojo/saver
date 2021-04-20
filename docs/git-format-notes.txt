@@ -1,0 +1,165 @@
+
+
+The decision to only offer a download of a kata (and not a group)
+means that in v2 the group can still be the same as v1. That is, not based on git.
+Only /cyber-dojo/katas/ needs to use git for v2.
+
+
+
+When git is actually being used in v2 then the directory structure 
+will need to be something like this:
+	/files/*
+	  - will hold all the text files the user sees in the browser.
+	    These are the files sent to runner and saved in runner's /sandbox dir.
+	/config/*
+	  - will hold the manifest.json file which never changes
+	    together with the files holding the state of the options
+		eg is prediction on/off, is theme light/dark
+	/events.json    
+	    This will be appended to for each test run. Useful cache for dashboard
+	/event.json     
+	    This will be the (current) individual test run info.
+      I could extract stdout/stderr/status from this and save them as files.
+      That would allow differ to have the option of diffing stdout, stderr, status.
+
+
+The incrementing-integer tag will come from the browser.
+This will be used for the tag after a commit.
+If there is a multi-browser out-of-sync error then the git-tag
+will fail because the tag already exists. This does no harm.
+Only files for integer-tags will ever be harvested (eg for differ)
+The failed tag could be caught and a fail-tag made with a given
+pattern, eg fail-tag-DATETIMESTAMP
+These could be retrieved via a special method.
+
+
+
+- How to implement v2 kata_event(id, index)
+  This will be needed by differ.
+
+  - $ git archive --format=tar treeish
+    The writes a tgz stream to stdout.
+    It should be possible to read the tgz file in memory, like runner does.
+    
+      tgz = shell.capture("cd #{repo_dir} && git archive --format=tar #{tag}")
+      unzipped = Gnu.unzip(tgz)
+      reader = TarFile::Reader.new(unzipped)
+      files = reader.files.each.with_object({}) do |(filename,content),memo|
+        memo[filename] = content
+      end
+      # Now files needs to be put into the correct format
+      #   - drop files/ prefix
+      #   - process stdout/stderr/status
+      # No need for an external `git ls-tree -r treeish` command
+
+
+
+Option change, eg prediction on -> off 
+??????
+o) process its file in config/ as per normal
+o) do NOT do a git commit+tag
+o) Now have to be very careful about next commit...
+
+Each test submission will need to
+o) delete everything in sandbox/
+o) save incoming files in sandbox/
+   - Do this as a dir rename to be atomic.
+o) do NOT replace config/
+o) append to events.json
+o) replace event.json
+o) replace stdout, stderr, status
+o) do a git add .
+        git commit
+        git tag
+
+
+
+It would be nice if v2 in git format would allow a diff to happen
+really fast as a saver service. Viz to allow differ to not need
+to get was_files and now_files and then do a diff.
+However it is not clear this is possible. The problem is, I think,
+that a git diff does not show output for files that are 
+o) renamed with no change 
+o) completely unchanged 
+And differ needs this info. Particularly unchanged files.
+So it may be that differ() will actually end up being a bit slower in v2.
+Viz the only real motivating case for v2 is downloading.
+So I want the files stored in the v2 git repo to be exactly as I want them.
+And a download will literally just tgz the whole git repo.
+
+
+
+- TODOS
+  1. Add model's API to saver.
+  2. All clients can now call saver rather than model (one less network hop)
+  3. Model can delegate to saver.
+  4. Saver renamed to model.
+  -
+  A. Decouple dashboard from saver so it uses only model?
+  -
+    i. Add v2 storage to saver that stores directly in git format.
+   ii. Add kata_git_diff() to saver and use in differ service.
+       It can do git diff directly      
+  iii. Add kata_git_repo_tgz() to saver and offer download option in UI
+       It can do tar directly
+   iv. Refactor kata_event(id, index)
+       It can use [git archive] to get tar file, pipe to untar, into /tmp
+	   To get names of files use [git ls-tree -r TAG]
+	   Then recreate the json response.
+
+- Don't offer download_group()
+  Instead, from a group allow selection of avatar from 8x8 grid (similar to joining)
+
+- Q96 test runs in ~0.3s
+  This shows that generating the git repo on-the-fly is not feasible. Too slow.
+  I need to extend model with v2 that saves directly in git format.
+  Then model can expose two new API methods
+     kata_git_repo_tgz(id)
+	   This is stateless. Just create a tgz file in /tmp
+	   It can only be offered (from UI) for version 2 katas initially.
+	   Later I can provide a migration for v0,v1 repos. 
+	   Migration will need to set dates in the past for git commits.
+	   See https://stackoverflow.com/questions/3895453/how-do-i-make-a-git-commit-in-the-past
+	   Env vars GIT_AUTHOR_DATE GIT_COMMITTER_DATE
+	   
+  	 kata_git_diff(id, was_index, now_index)
+	   This can be stateless too.
+	   I just need to use the same trick as differ, get massive context around
+	   the diffs so you get the entire files. Don't process the [git diff]
+	   output in model at all. Let the differ service do that.
+    
+- This might change the model API slightly.
+  Currently it offers...
+    kata_events(id)
+	   This will still be needed for dashboard and web.
+	   So /events.json will still need to be saved as meta data
+	   Confirms that a /sandbox dir for the users files.
+	kata_event(id, index)	
+	   I don't think this will be needed.
+	   Diff-summary can come from differ service which can use kata_git_diff().	   	   
+	
+- However, this repo could still be useful for simple client-side proof of concept.
+
+- Currently not running branch-coverage.
+  See test/coverage.rb
+  SimpleCov.start do
+    #enable_coverage :branch
+    ...
+  end
+ 
+- Do I want to save the manifest in the tgz?
+  Yes. But probably _unpopulated_.
+  It is needed if you want to create a start-point for example.
+
+- tgz filename needs to include the exercise (if there is one)
+
+- What should the directory be called?
+   individual: cyber-dojo-2021-03-14-DfH8sP-FizzBuzz
+   from-group: cyber-dojo-2021-03-14-SS67eJ-lion-FizzBuzz
+     - where FizzBuzz is optional as exercise may be unnamed.
+                
+- How to provide instructions on pushing the repo to a remote, eg github?
+  $ git remote add origin git@github.com:user/repo.git
+  $ git push origin main  
+
+
