@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'saver_service_fake'
-require_source 'saver_service'
 
 class SaverRunAllTest < TestBase
 
@@ -18,7 +16,7 @@ class SaverRunAllTest < TestBase
   # run_all()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '511',
+  test '511',
   'run_all() batches new commands' do
 
     dirname = 'client/run-all/e3/t6/A1'
@@ -44,7 +42,7 @@ class SaverRunAllTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # raises when malformed commands
 
-  multi_test '121', %w(
+  test '121', %w(
   |when commands is not an Array
   |raise
   ) do
@@ -57,7 +55,7 @@ class SaverRunAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '122', %w(
+  test '122', %w(
   |when commands entry is not an Array
   |raise
   ) do
@@ -70,7 +68,7 @@ class SaverRunAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '123', %w(
+  test '123', %w(
   |when commands entry is unknown
   |raise
   ) do
@@ -83,7 +81,7 @@ class SaverRunAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '124', %w(
+  test '124', %w(
   |when commands entry is incorrect arity
   |raises
   ) do
@@ -96,7 +94,7 @@ class SaverRunAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '125', %w(
+  test '125', %w(
   |when commands entry has non String parameter
   |raises
   ) do
@@ -116,14 +114,8 @@ class SaverRunAllTest < TestBase
 
   # - - - - - - - - - - - - - - - -
 
-  def assert_raises_SaverException(message,commands)
-    error = assert_raises(SaverService::Error) { yield }
-    json = JSON.parse!(error.message)
-    assert_equal '/run_all', json['path'], :path
-    expected_body = { 'commands'=>commands }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal message, json['message'], :message
+  def assert_raises_SaverException(message, commands)
+    assert_raises(::HttpJsonHash::ServiceError) { yield }
   end
 
 end

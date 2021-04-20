@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'saver_service_fake'
-require_source 'saver_service'
 
 class SaverRunUntilTrueTest < TestBase
 
@@ -16,7 +14,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '712', %w(
+  test '712', %w(
   |run_until_true()
   |completes all its commands
   }when nothing returns true
@@ -33,7 +31,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '713', %w(
+  test '713', %w(
   |run_until_true()
   |stops at dir_exists?() returning true
   |and does not execute subsequent commands
@@ -52,7 +50,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '714', %w(
+  test '714', %w(
   |run_until_true()
   |stops at dir_make() returning true
   |and does not execute subsequent commands
@@ -72,7 +70,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '715', %w(
+  test '715', %w(
   |run_until_true()
   |stops at file_create() returning true
   |and does not execute subsequent commands
@@ -94,7 +92,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '716', %w(
+  test '716', %w(
   |run_until_true()
   |stops at file_append() returning true
   |and does not execute subsequent commands
@@ -117,7 +115,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '717', %w(
+  test '717', %w(
   |run_until_true()
   |stops at file_read() a file that exists
   |and does not execute subsequent commands
@@ -145,7 +143,7 @@ class SaverRunUntilTrueTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # raises when malformed commands
 
-  multi_test '121', %w(
+  test '121', %w(
   |when commands is not an Array
   |raise
   ) do
@@ -158,7 +156,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '122', %w(
+  test '122', %w(
   |when commands entry is not an Array
   |raise
   ) do
@@ -171,7 +169,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '123', %w(
+  test '123', %w(
   |when commands entry is unknown
   |raise
   ) do
@@ -184,7 +182,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '124', %w(
+  test '124', %w(
   |when commands entry is incorrect arity
   |raises
   ) do
@@ -197,7 +195,7 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '125', %w(
+  test '125', %w(
   |when commands entry has non String parameter
   |raises
   ) do
@@ -236,14 +234,8 @@ class SaverRunUntilTrueTest < TestBase
 
   # - - - - - - - - - - - - - - - -
 
-  def assert_raises_SaverException(message,commands)
-    error = assert_raises(SaverService::Error) { yield }
-    json = JSON.parse!(error.message)
-    assert_equal '/run_until_true', json['path'], :path
-    expected_body = { 'commands'=>commands }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal message, json['message'], :message
+  def assert_raises_SaverException(message, commands)
+    assert_raises(::HttpJsonHash::ServiceError) { yield }
   end
 
 end

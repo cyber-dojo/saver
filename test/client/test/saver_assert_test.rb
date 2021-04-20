@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'saver_service_fake'
-require_source 'saver_service'
 
 class SaverAssertTest < TestBase
 
@@ -12,7 +10,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_exists?()
 
-  multi_test '431', %w(
+  test '431', %w(
   |dir_exists?(dirname) is true
   |when dirname is a String
   |and dirname exists as a dir
@@ -24,7 +22,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '432', %w(
+  test '432', %w(
   |dir_exists?(dirname) raises and does nothing
   |when dirname does not exist as a dir
   |and dirname does not exist as a file
@@ -39,7 +37,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '433', %w(
+  test '433', %w(
   |dir_exists?(dirname) raises and does nothing
   |when dirname exists as a file
   ) do
@@ -57,7 +55,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '434', %w(
+  test '434', %w(
   |dir_exists?(dirname) raises and does nothing
   |when dirname is not a String
   ) do
@@ -71,7 +69,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_make()
 
-  multi_test '568', %w(
+  test '568', %w(
   |dir_make(dirname) is true
   |when dirname is a String
   |and dirname does not exist as a dir
@@ -84,7 +82,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '569', %w(
+  test '569', %w(
   |dir_make(dirname) raises and does nothing
   |when dirname exists as a dir
   ) do
@@ -99,7 +97,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '570', %w(
+  test '570', %w(
   |dir_make(dirname) raises and does nothing
   |when dirname exists as a file
   ) do
@@ -117,7 +115,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '571', %w(
+  test '571', %w(
   |dir_make(dirname) raises
   |when dirname is not a String
   ) do
@@ -131,7 +129,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_create()
 
-  multi_test '2E8', %w(
+  test '2E8', %w(
   |file_create(filename,content) is true
   |when filename is a String naming a dir that exists
   |and filename is a String naming a file that does not exist
@@ -147,7 +145,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '2E9', %w(
+  test '2E9', %w(
   |file_create(filename,content) raises and does nothing
   |when dir of filename does not exist
   ) do
@@ -165,7 +163,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '2A0', %w(
+  test '2A0', %w(
   |file_create(filename,content) raises and does nothing
   |when filename aready exists as a file
   ) do
@@ -183,7 +181,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '2A1', %w(
+  test '2A1', %w(
   |file_create(filename,content) raises
   |when filename aready exists as a dir
   ) do
@@ -200,7 +198,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '2A2', %w(
+  test '2A2', %w(
   |file_create(filename,content) raises
   |when filename is not a String
   ) do
@@ -214,7 +212,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '2A3', %w(
+  test '2A3', %w(
   |file_create(filename,content) raises and does nothing
   |when content is not a String
   ) do
@@ -232,7 +230,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_append()
 
-  multi_test '840', %w(
+  test '840', %w(
   |file_append(filename,content) returns true
   |and appends to the end of filename
   |when filename already exists
@@ -248,7 +246,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '841', %w(
+  test '841', %w(
   |file_append(filename,content) raises and does nothing
   |when dir of filename does not already exist
   ) do
@@ -265,7 +263,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '842', %w(
+  test '842', %w(
   |file_append(filename,content) raises and does nothing
   |when dir of filename exists but filename does not exist
   ) do
@@ -282,7 +280,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '843', %w(
+  test '843', %w(
   |file_append(filename,content) raises and does nothing
   |when filename exists as a dir
   ) do
@@ -299,7 +297,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '844', %w(
+  test '844', %w(
   |file_append(filename,content) raises and does nothing
   |when filename is not a String
   ) do
@@ -313,7 +311,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '845', %w(
+  test '845', %w(
   |file_append(filename,content) raises and does nothing
   |when content is not a String
   ) do
@@ -329,7 +327,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_read()
 
-  multi_test '437', %w(
+  test '437', %w(
   |file_read(filename) reads
   |what a successful file_write(filename,content) wrote
   ) do
@@ -343,7 +341,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '438', %w(
+  test '438', %w(
   |file_read(filename) raises
   |when filename does not exist as a dir
   |and filename does not exist as a file
@@ -357,7 +355,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '439', %w(
+  test '439', %w(
   |file_read(filename) raises
   |when filename exists as a dir
   ) do
@@ -372,7 +370,7 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '440', %w(
+  test '440', %w(
   |file_read(filename) raises
   |when filename is not a String
   ) do
@@ -386,7 +384,7 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # malformed command
 
-  multi_test 'DE5', %w(
+  test 'DE5', %w(
   |when command not an Array
   |raise
   ) do
@@ -397,7 +395,7 @@ class SaverAssertTest < TestBase
     }
   end
 
-  multi_test 'DE6', %w(
+  test 'DE6', %w(
   |when command is unknown
   |raise
   ) do
@@ -408,7 +406,7 @@ class SaverAssertTest < TestBase
     }
   end
 
-  multi_test 'DE7', %w(
+  test 'DE7', %w(
   |when command has wrong number of arguments
   |raise
   ) do
@@ -419,7 +417,7 @@ class SaverAssertTest < TestBase
     }
   end
 
-  multi_test 'DE8', %w(
+  test 'DE8', %w(
   |when command has non String argument
   |raise
   ) do
@@ -454,14 +452,8 @@ class SaverAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def assert_raises_SaverException(message,command)
-    error = assert_raises(SaverService::Error) { yield }
-    json = JSON.parse!(error.message)
-    assert_equal '/assert', json['path'], :path
-    expected_body = { 'command'=>command }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal message, json['message'], :message
+  def assert_raises_SaverException(message, command)
+    assert_raises(::HttpJsonHash::ServiceError) { yield }
   end
 
 end

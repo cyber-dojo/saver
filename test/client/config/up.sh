@@ -1,12 +1,8 @@
-#!/bin/bash
-set -e
+#!/bin/bash -Eeu
 
-# Note that the --host is needed for IPv4 and IPv6 addresses
+readonly MY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly PORT="${CYBER_DOJO_SAVER_CLIENT_PORT}"
 
-rackup \
-  --warn \
-  --host 0.0.0.0 \
-  --port 4538 \
-  --server thin \
-  --env production \
-    /app/config/config.ru
+puma \
+  --port=${PORT} \
+  --config=${MY_DIR}/puma.rb

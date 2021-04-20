@@ -3,8 +3,8 @@ def require_source(required)
   require_relative "../source/#{required}"
 end
 
+require_source 'externals'
 require_relative 'hex_mini_test'
-require_source 'saver_service'
 
 class TestBase < HexMiniTest
 
@@ -14,28 +14,12 @@ class TestBase < HexMiniTest
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  REAL_TEST_MARK = '<real>'
-  FAKE_TEST_MARK = '<fake>'
-
-  def self.multi_test(hex_suffix, *lines, &block)
-    real_lines = [REAL_TEST_MARK] + lines
-    test(hex_suffix+'0', *real_lines, &block)
-    fake_lines = [FAKE_TEST_MARK] + lines
-    test(hex_suffix+'1', *fake_lines, &block)
+  def externals
+    @exernals ||= Externals.new
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def saver
-    if fake_test?
-      @saver ||= SaverServiceFake.new
-    else
-      @saver ||= SaverService.new
-    end
-  end
-
-  def fake_test?
-    test_name.start_with?(FAKE_TEST_MARK)
+    externals.saver
   end
 
   # - - - - - - - - - - - - - - - - - -

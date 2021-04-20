@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'saver_service_fake'
-require_source 'saver_service'
 
 class SaverRunTest < TestBase
 
@@ -12,7 +10,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_exists?()
 
-  multi_test '431', %w(
+  test '431', %w(
   |dir_exists?(dirname) is false
   |when dirname does not exist as a dir
   |and dirname does not exist as a file
@@ -23,7 +21,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '432', %w(
+  test '432', %w(
   |dir_exists?(dirname) is true
   |after dir_make(dirname)
   ) do
@@ -34,7 +32,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '433', %w(
+  test '433', %w(
   |dir_exists?(dirname) is false
   |when dirname is an existing filename
   ) do
@@ -48,7 +46,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '434', %w(
+  test '434', %w(
   |dir_exists?(dirname) raises
   |when dirname is not a String
   ) do
@@ -62,7 +60,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_make()
 
-  multi_test '5E0', %w(
+  test '5E0', %w(
   |dir_make(dirname) is true
   |when dirname is a String
   |and dirname does not exist as a dir
@@ -74,7 +72,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '5E1', %w(
+  test '5E1', %w(
   |dir_make(dirname) is false
   |when dirname is a String
   |and a dir with that name exists
@@ -86,7 +84,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '5E2', %w(
+  test '5E2', %w(
   |dir_make(dirname) is false
   |when dirname is a String
   |and a file with that name exists
@@ -101,7 +99,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '5E3', %w(
+  test '5E3', %w(
   |dir_make(dirname) raises
   |when dirname is not a String
   ) do
@@ -115,7 +113,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_create()
 
-  multi_test '640', %w(
+  test '640', %w(
   |file_create(filename,content) is true
   |when its dir exists
   |and its file does not exist
@@ -130,7 +128,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '641', %w(
+  test '641', %w(
   |file_create(filename,content) is false
   |when its dir does not already exist
   ) do
@@ -143,7 +141,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '642', %w(
+  test '642', %w(
   |file_create(filename,content) is false
   |when filename already exists
   ) do
@@ -158,7 +156,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '643', %w(
+  test '643', %w(
   |file_create(filename,content) is false
   |when filename is a dir
   ) do
@@ -170,7 +168,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '644', %w(
+  test '644', %w(
   |file_create(filename,content) raises
   |when filename is a not a String
   ) do
@@ -184,7 +182,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '645', %w(
+  test '645', %w(
   |file_create(filename,content) raises
   |when content is a not a String
   ) do
@@ -200,7 +198,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_append()
 
-  multi_test '840', %w(
+  test '840', %w(
   |file_append(filename,content) returns true
   |and appends to the end of filename
   |when filename is a String and already exists as a file
@@ -218,7 +216,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '841', %w(
+  test '841', %w(
   |file_append(filename,content) returns false
   |and does nothing
   |when filename already exists as a dir
@@ -232,7 +230,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '842', %w(
+  test '842', %w(
   |file_append(filename,content) returns false
   |and does nothing
   |when its dir does not already exist
@@ -246,7 +244,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '843', %w(
+  test '843', %w(
   |file_append(filename,content) does nothing
   |and returns false
   |when its dir exists and its file does not exist
@@ -261,7 +259,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '844', %w(
+  test '844', %w(
   |file_append(filename,content) raises
   |when filename is not a String
   ) do
@@ -275,7 +273,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '845', %w(
+  test '845', %w(
   |file_append(filename,content) raises
   |when content is not a String
   ) do
@@ -290,7 +288,7 @@ class SaverRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_read()
 
-  multi_test '437', %w(
+  test '437', %w(
   |file_read(filename) reads what a successful write(filename,content) writes
   ) do
     dirname = 'client/FD/F4/38'
@@ -303,7 +301,7 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  multi_test '438', %w(
+  test '438', %w(
   |file_read(filename) returns false
   |when filename is a String that does not exist as a file
   ) do
@@ -311,7 +309,7 @@ class SaverRunTest < TestBase
     assert file_read(filename).is_a?(FalseClass)
   end
 
-  multi_test '439', %w(
+  test '439', %w(
   |file_read(filename) returns false
   |when filename is a String that exists as a dir
   ) do
@@ -344,14 +342,8 @@ class SaverRunTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def assert_raises_SaverException(message,*command)
-    error = assert_raises(SaverService::Error) { yield }
-    json = JSON.parse!(error.message)
-    assert_equal '/run', json['path'], :path
-    expected_body = { 'command'=>command }
-    assert_equal expected_body, JSON.parse!(json['body']), :body
-    assert_equal 'SaverService', json['class'], :class
-    assert_equal message, json['message'], :message
+  def assert_raises_SaverException(message, *command)
+    assert_raises(::HttpJsonHash::ServiceError) { yield }
   end
 
 end

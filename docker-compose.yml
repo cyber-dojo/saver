@@ -1,4 +1,3 @@
-
 version: '3.7'
 
 volumes:
@@ -21,10 +20,6 @@ services:
     tmpfs: /tmp
     depends_on:
       - saver
-      - languages # for tests
-      - exercises # for tests
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   saver:
     build:
@@ -42,28 +37,4 @@ services:
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
       - /tmp:uid=19663,gid=65533
-    depends_on:
-      - languages # for tests
-      - exercises # for tests
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  languages:
-    user: nobody:nogroup
-    image: ${CYBER_DOJO_LANGUAGES_START_POINTS_IMAGE}:${CYBER_DOJO_LANGUAGES_START_POINTS_TAG}
-    container_name: test-saver-languages
-    ports: [ "${CYBER_DOJO_LANGUAGES_START_POINTS_PORT}:${CYBER_DOJO_LANGUAGES_START_POINTS_PORT}" ]
-    read_only: true
-    tmpfs: /tmp
-    restart: 'no'
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  exercises:
-    user: nobody:nogroup
-    image: ${CYBER_DOJO_EXERCISES_START_POINTS_IMAGE}:${CYBER_DOJO_EXERCISES_START_POINTS_TAG}
-    container_name: test-saver-exercises
-    ports: [ "${CYBER_DOJO_EXERCISES_START_POINTS_PORT}:${CYBER_DOJO_EXERCISES_START_POINTS_PORT}" ]
-    read_only: true
-    tmpfs: /tmp
-    restart: 'no'
