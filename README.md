@@ -8,17 +8,17 @@
 - An http service, offering a simple file-system API.
 
 - - - -
-* [POST assert(command)](docs/api.md#post-assertcommand)
-* [POST assert_all(commands)](docs/api.md#post-assert_allcommands)
+- [POST assert(command)](docs/api.md#post-assertcommand)
+- [POST assert_all(commands)](docs/api.md#post-assert_allcommands)
 
-* [POST run(command)](docs/api.md#post-runcommand)
-* [POST run_all](docs/api.md#post-run_allcommands)
-* [POST run_until_true](docs/api.md#post-run_until_truecommands)
-* [POST run_until_false](docs/api.md#post-run_until_falsecommands)
+- [POST run(command)](docs/api.md#post-runcommand)
+- [POST run_all](docs/api.md#post-run_allcommands)
+- [POST run_until_true](docs/api.md#post-run_until_truecommands)
+- [POST run_until_false](docs/api.md#post-run_until_falsecommands)
 
-* [GET ready?](docs/api.md#get-ready)
-* [GET alive?](docs/api.md#get-alive)  
-* [GET sha](docs/api.md#get-sha)
+- [GET ready?](docs/api.md#get-ready)
+- [GET alive?](docs/api.md#get-alive)  
+- [GET sha](docs/api.md#get-sha)
 
 - - - -
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
