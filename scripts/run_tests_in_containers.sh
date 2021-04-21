@@ -7,10 +7,9 @@ readonly my_name=saver
 
 run_tests()
 {
-  local coverage_root=/tmp/coverage
   local user="${1}"
   local type="${2}" # client|server
-  local test_dir="test/${type}"
+  local coverage_root="/tmp/${type}"
   local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
 
   echo
@@ -25,15 +24,17 @@ run_tests()
 
   local status=$?
 
+  local cov_dir="${root_dir}/coverage"
+  echo "Copying coverage files to ${cov_dir}/${type}"
   # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
   docker exec "${cid}" \
     tar Ccf \
       "$(dirname "${coverage_root}")" \
       - "$(basename "${coverage_root}")" \
-        | tar Cxf "${root_dir}/${test_dir}/" -
+        | tar Cxf "${cov_dir}/" -
 
-  echo "Coverage report copied to ${test_dir}/coverage/"
-  cat "${root_dir}/${test_dir}/coverage/done.txt"
+  cat "${cov_dir}/${type}/done.txt"
+
   return ${status}
 }
 
