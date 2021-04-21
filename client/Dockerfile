@@ -7,6 +7,9 @@ RUN chown -R nobody:nogroup /app
 # Note: The following does not (yet) work on circleci
 # COPY --chown=nobody:nogroup . /app
 
+ARG COMMIT_SHA
+ENV SHA=${COMMIT_SHA}
+
 USER nobody
 HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /app/config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]

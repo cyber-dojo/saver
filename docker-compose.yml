@@ -9,6 +9,7 @@ services:
   saver_client:
     build:
       context: client
+      args: [ COMMIT_SHA ]
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
