@@ -6,12 +6,6 @@ module External
 
   class Saver
 
-    #class Error < HttpJsonHash::ServiceError
-    #  def initialize(message)
-    #    super
-    #  end
-    #end
-
     def initialize(http)
       service = 'saver'
       port = ENV['CYBER_DOJO_SAVER_PORT'].to_i
