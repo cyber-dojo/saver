@@ -32,7 +32,7 @@ services:
     read_only: true
     restart: 'no'
     volumes:
-      - ./test:/app/test:ro
+      - ./app/test:/app/test:ro
       - one_k:/one_k
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
