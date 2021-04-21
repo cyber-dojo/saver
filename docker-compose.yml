@@ -8,7 +8,7 @@ services:
 
   saver_client:
     build:
-      context: test/client
+      context: client
     user: nobody:nogroup
     image: cyberdojo/saver-client
     container_name: test-saver-client
