@@ -453,7 +453,14 @@ class SaverAssertTest < TestBase
   # - - - - - - - - - - - - - - - - - - - -
 
   def assert_raises_SaverException(message, command)
-    assert_raises(::HttpJsonHash::ServiceError) { yield }
+    error = assert_raises(::HttpJsonHash::ServiceError) { yield }
+    expected_args = { command:command }
+    assert_equal expected_args, error.args
+
+    exception = JSON.parse!(error.body)['exception']
+    assert_equal message, exception['message'], :message
+    assert_equal 'SaverService', exception['class'], :class
+    assert_equal JSON.generate(expected_args), exception['body'], :body
   end
 
 end
