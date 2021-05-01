@@ -7,6 +7,7 @@ require_relative 'doubles/disk_fake'
 require_relative 'doubles/rack_request_stub'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
+require_relative 'external/custom_start_points'
 
 class TestBase < HexMiniTest
 
@@ -16,6 +17,10 @@ class TestBase < HexMiniTest
 
   def externals
     @externals ||= Externals.new
+  end
+
+  def custom_start_points
+    ExternalCustomStartPoints.new
   end
 
   def disk

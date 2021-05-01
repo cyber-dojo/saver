@@ -13,15 +13,17 @@ run_tests()
 
   echo
   echo '======================================'
-  echo "Testing: ${type}"
+  echo "Running ${type} tests"
+  echo '======================================'
 
+  set +e
   docker exec \
     --user "${user}" \
     --env COVERAGE_ROOT=${coverage_root} \
     "${cid}" \
       sh -c "/app/test/util/run.sh ${@:3}"
-
   local status=$?
+  set -e
 
   local cov_dir="${ROOT_DIR}/coverage"
   echo "Copying statement coverage files to ${cov_dir}/${type}"
@@ -69,8 +71,6 @@ run_tests_in_containers()
     run_server_tests "$@"
     run_client_tests "$@"
   fi
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   if [ "${server_status}" == "0" ] && [ "${client_status}" == "0" ]; then
     echo '------------------------------------------------------'
