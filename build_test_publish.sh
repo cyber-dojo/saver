@@ -39,6 +39,6 @@ exit_unless_clean  test-saver-server
 exit_non_zero_unless_healthy saver_client test-saver-client
 exit_unless_clean  test-saver-client
 
-run_tests_in_containers
+run_tests_in_containers "$@"
 containers_down
 on_ci_publish_tagged_images
