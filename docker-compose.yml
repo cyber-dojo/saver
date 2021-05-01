@@ -28,6 +28,8 @@ services:
     user: saver
     image: ${CYBER_DOJO_SAVER_IMAGE}
     container_name: test-saver-server
+    depends_on:
+      - custom-start-points
     env_file: [ .env ]
     read_only: true
     restart: 'no'

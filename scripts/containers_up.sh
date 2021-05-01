@@ -109,36 +109,12 @@ create_space_limited_volume()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
-
 service_up()
 {
   local -r service_name="${1}"
-  docker-compose \
-    --file "${ROOT_DIR}/docker-compose.yml" \
+  echo
+  augmented_docker_compose \
     up \
-    -d \
-    --force-recreate \
-      "${service_name}"
+    --detach \
+    "${service_name}"
 }
-
-# - - - - - - - - - - - - - - - - - - - -
-
-readonly ROOT_DIR="$( cd "$( dirname "${0}" )" && cd .. && pwd )"
-
-create_space_limited_volume
-
-service_up saver
-service_up saver_client
-
-#docker-compose \
-#  --file "${ROOT_DIR}/docker-compose.yml" \
-#  up \
-#  -d \
-#  --force-recreate
-
-exit_non_zero_unless_healthy saver test-saver-server
-exit_unless_clean  test-saver-server
-
-exit_non_zero_unless_healthy saver_client test-saver-client
-exit_unless_clean  test-saver-client
-

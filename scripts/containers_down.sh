@@ -1,10 +1,11 @@
 #!/bin/bash -Eeu
 
-readonly ROOT_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
+containers_down()
+{
+  echo
+  augmented_docker_compose \
+    down \
+    --remove-orphans \
+    --volumes
+}
 
-docker-compose \
-  --file "${ROOT_DIR}/docker-compose.yml" \
-  down \
-  --remove-orphans \
-
-docker volume rm one_k > /dev/null
