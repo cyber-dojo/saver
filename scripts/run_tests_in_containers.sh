@@ -59,10 +59,10 @@ run_client_tests()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if [ "$1" = server ]; then
+if [ "$1" == server ]; then
   shift
   run_server_tests "$@"
-elif [ "$1" = client ]; then
+elif [ "$1" == client ]; then
   shift
   run_client_tests "$@"
 else
@@ -72,7 +72,7 @@ fi
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-if [ "${server_status}" = "0" ] && [ "${client_status}" = "0" ]; then
+if [ "${server_status}" == "0" ] && [ "${client_status}" == "0" ]; then
   echo '------------------------------------------------------'
   echo 'All passed'
   echo
