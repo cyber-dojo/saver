@@ -24,7 +24,8 @@ run_tests()
   local status=$?
 
   local cov_dir="${ROOT_DIR}/coverage"
-  echo "Copying coverage files to ${cov_dir}/${type}"
+  echo "Copying statement coverage files to ${cov_dir}/${type}"
+  mkdir -p "${cov_dir}"
   # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
   docker exec "${cid}" \
     tar Ccf \
