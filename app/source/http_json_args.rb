@@ -78,7 +78,7 @@ class HttpJsonArgs
       fail malformed(arg_name, "!Array (#{command.class.name})")
     end
     fail_unless_well_formed_command(command,'')
-    { "command" => command }
+    { command: command }
   end
 
   # - - - - - - - - - - - - - - -
@@ -98,7 +98,7 @@ class HttpJsonArgs
       end
       fail_unless_well_formed_command(command,"s[#{index}]")
     end
-    { "commands" => commands }
+    { commands: commands }
   end
 
   # - - - - - - - - - - - - - - -
