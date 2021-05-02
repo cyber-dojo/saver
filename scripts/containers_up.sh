@@ -118,3 +118,23 @@ service_up()
     --detach \
     "${service_name}"
 }
+
+# - - - - - - - - - - - - - - - - - - - -
+containers_up()
+{
+  create_space_limited_volume
+
+  service_up custom-start-points
+  service_up saver
+  service_up saver_client
+
+  exit_non_zero_unless_healthy custom-start-points saver_custom-start-points_1
+  exit_unless_clean saver_custom-start-points_1
+
+  exit_non_zero_unless_healthy saver test-saver-server
+  exit_unless_clean test-saver-server
+
+  exit_non_zero_unless_healthy saver_client test-saver-client
+  exit_unless_clean test-saver-client
+}
+
