@@ -12,10 +12,10 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '166',
-  'dispatch returns 500 status when no space left on device' do
+  'dispatch has 500 status when no space left on device' do
     externals.instance_exec {
       # See docker-compose.yml
-      # See scripts/docker_containers_up.sh create_space_limited_volume()
+      # See scripts/containers_up.sh create_space_limited_volume()
       @disk = External::Disk.new('one_k')
     }
     dirname = '166'
@@ -31,7 +31,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '167',
-  'dispatch returns 500 status when assert_all raises' do
+  'dispatch has 500 status when assert_all raises' do
     message = 'commands[1] != true'
     dirname = '167'
     body = { "commands":[
@@ -45,7 +45,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'F1A',
-  'dispatch returns 500 status when implementation raises' do
+  'dispatch has 500 status when implementation raises' do
     def prober.sha
       raise ArgumentError, 'wibble'
     end
@@ -55,7 +55,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'F1B',
-  'dispatch returns 500 status when implementation has syntax error' do
+  'dispatch has 500 status when implementation has syntax error' do
     def prober.sha
       raise SyntaxError, 'fubar'
     end
@@ -67,7 +67,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2A',
-  'dispatch raises 400 when method name is unknown' do
+  'dispatch has 400 when method name is unknown' do
     assert_dispatch_raises('xyz',
       {}.to_json,
       400,
@@ -77,7 +77,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2B',
-  'dispatch returns 400 status when body is not JSON' do
+  'dispatch has 400 status when body is not JSON' do
     assert_dispatch_raises('xyz',
       'xxx',
       400,
@@ -87,7 +87,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2C',
-  'dispatch returns 400 status when body is not JSON Hash' do
+  'dispatch has 400 status when body is not JSON Hash' do
     assert_dispatch_raises('xyz',
       [].to_json,
       400,
@@ -97,7 +97,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'AC6',
-  'dispatch returns 400 status when commands is missing' do
+  'dispatch has 400 status when commands is missing' do
     assert_dispatch_raises('run_all',
       '{}',
       400,
@@ -106,7 +106,7 @@ class RackDispatchingTest < TestBase
   end
 
   test 'AC7',
-  'dispatch returns 400 status when commands are malformed' do
+  'dispatch has 400 status when commands are malformed' do
     [
       ['{"commands":42}', 'malformed:commands:!Array (Integer):'],
       ['{"commands":[42]}', 'malformed:commands[0]:!Array (Integer):'],
@@ -122,7 +122,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'AC8',
-  'dispatch returns 400 status when command is missing' do
+  'dispatch has 400 status when command is missing' do
     assert_dispatch_raises('assert',
       '{}',
       400,
@@ -131,7 +131,7 @@ class RackDispatchingTest < TestBase
   end
 
   test 'AC9',
-  'dispatch returns 400 status when command is malformed' do
+  'dispatch has 400 status when command is malformed' do
     [
       ['{"command":42}', 'malformed:command:!Array (Integer):'],
       ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],

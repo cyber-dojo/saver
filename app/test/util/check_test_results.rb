@@ -114,9 +114,9 @@ table =
 
     [ 'tests',                  test_count,     '>=', 120 ],
     [ 'coverage(code)[%]',      code_coverage,  '>=', 100 ],
-    [ 'coverage(test)[%]',      test_coverage,  '>=',  98 ],
+    [ 'coverage(test)[%]',      test_coverage,  '>=', 100 ],
     [ 'lines(test/code)',       f2(line_ratio), '>=', 3.2 ],
-    [ 'hits(code/test)',        f2(hits_ratio), '>=', 2.8 ],
+    [ 'hits(code/test)',        f2(hits_ratio), '>=', 2.4 ],
   ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -

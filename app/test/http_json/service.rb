@@ -6,7 +6,7 @@ module HttpJson
 
   def self.service(name, http, hostname, port)
     requester = Requester.new(http, hostname, port)
-    Unpacker.new(name, requester)
+    Unpacker.new(requester)
   end
 
 end

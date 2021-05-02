@@ -9,7 +9,7 @@ class IdGenerationTest < TestBase
     'A6D'
   end
 
-  def hex_setup
+  def id58_setup
     externals.instance_exec do
       @disk = DiskFake.new
     end
