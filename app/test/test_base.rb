@@ -20,7 +20,7 @@ class TestBase < HexMiniTest
   end
 
   def custom_start_points
-    ExternalCustomStartPoints.new
+    External::CustomStartPoints.new
   end
 
   def disk

@@ -50,10 +50,10 @@ exit_unless_clean()
 {
   local -r name="${1}"
   local log=$(docker logs "${name}" 2>&1)
-  if [ "${name}" == test-saver-client ]; then
-    local lines=6
-  else
+  if [ "${name}" == test-saver-server ]; then
     local lines=3
+  else
+    local lines=6
   fi
 
   local -r mismatched_indent_warning="application(.*): warning: mismatched indentations at 'rescue' with 'begin'"

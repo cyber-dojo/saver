@@ -12,7 +12,7 @@ augmented_docker_compose()
         --rm \
         --interactive \
         ${image} \
-           custom-start-points \
+           custom-start-points `# for testing` \
     | tee /tmp/augmented-docker-compose.saver.peek.yml \
     | docker-compose \
       --file -       \
