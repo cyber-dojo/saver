@@ -6,6 +6,8 @@
 # - - - - - - - - - - - - - - - - - - - - - -
 augmented_docker_compose()
 {
+  # The --project-name option is for the CI pipeline
+  # runs which have their own root directory name.
   local -r image=cyberdojo/service-yaml
   cd "${ROOT_DIR}" && cat "./docker-compose.yml" \
     | docker run \
@@ -15,6 +17,7 @@ augmented_docker_compose()
            custom-start-points `# for testing` \
     | tee /tmp/augmented-docker-compose.saver.peek.yml \
     | docker-compose \
+      --project-name saver \
       --file -       \
       "$@"
 }
