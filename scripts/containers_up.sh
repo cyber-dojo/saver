@@ -39,9 +39,9 @@ strip_known_warning()
   local -r pattern="${2}"
   local -r warning=$(printf "${log}" | grep --extended-regexp "${pattern}")
   local -r stripped=$(printf "${log}" | grep --invert-match --extended-regexp "${pattern}")
-  if [ "${log}" != "${stripped}" ]; then
-    >&2 echo "SERVICE START-UP WARNING: ${warning}"
-  fi
+  #if [ "${log}" != "${stripped}" ]; then
+  #  >&2 echo "SERVICE START-UP WARNING: ${warning}"
+  #fi
   echo "${stripped}"
 }
 
