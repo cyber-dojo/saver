@@ -3,7 +3,7 @@ require_source 'rack_dispatcher'
 
 class RackDispatchingTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'FF0'
   end
 

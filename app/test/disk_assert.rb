@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class DiskAssertTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'FA2'
   end
 

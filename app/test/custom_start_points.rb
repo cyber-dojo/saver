@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class CustomStartPointsTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '9F2'
   end
 

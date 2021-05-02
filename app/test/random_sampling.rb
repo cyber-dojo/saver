@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class RandomSamplingTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'aA8'
   end
 

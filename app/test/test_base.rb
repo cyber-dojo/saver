@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-
-require_relative 'hex_mini_test'
+require_relative 'id58_test_base'
 require_relative 'require_source'
 require_source 'externals'
 require_relative 'doubles/disk_fake'
@@ -9,7 +8,7 @@ require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'external/custom_start_points'
 
-class TestBase < HexMiniTest
+class TestBase < Id58TestBase
 
   def initialize(arg)
     super(arg)

@@ -5,7 +5,7 @@ require_source 'http_json/request_error'
 
 class HttpJsonArgsTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '0A1'
   end
 

@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class DiskRunTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'FA3'
   end
 

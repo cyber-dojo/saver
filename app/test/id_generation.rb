@@ -5,7 +5,7 @@ require 'tmpdir'
 
 class IdGenerationTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'A6D'
   end
 

@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class TimeNowTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'a7D'
   end
 
@@ -18,7 +18,7 @@ end
 
 class TimeNowStubTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'b5D'
   end
 
