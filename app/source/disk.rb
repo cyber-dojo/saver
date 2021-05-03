@@ -4,7 +4,7 @@ require_relative 'disk_api'
 
 class Disk
 
-  def initialize(root_dir = 'cyber-dojo')
+  def initialize(_externals, root_dir = 'cyber-dojo')
     @root_dir = root_dir
   end
 

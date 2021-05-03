@@ -7,7 +7,7 @@ require_relative 'prober'
 class Externals
 
   def disk
-    @disk ||= Disk.new
+    @disk ||= Disk.new(self)
   end
 
   def prober

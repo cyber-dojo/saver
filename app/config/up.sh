@@ -52,19 +52,18 @@ fi
 
 export RUBYOPT='-W2'
 
-rackup             \
-  --warn           \
-  --host 0.0.0.0   \
-  --port 4537      \
-  --server thin    \
-  --env production \
-    /app/config/config.ru
-
+#rackup             \
+#  --warn           \
+#  --host 0.0.0.0   \
+#  --port 4537      \
+#  --server thin    \
+#  --env production \
+#    /app/config/config.ru
 
 #readonly PORT="${CYBER_DOJO_K8S_PORT:-${CYBER_DOJO_SAVER_PORT}}"
-#readonly PORT="${CYBER_DOJO_SAVER_PORT}"
+readonly PORT="${CYBER_DOJO_SAVER_PORT}"
 
-#puma \
-#  --port=${PORT} \
-#  --config=${MY_DIR}/puma.rb
+puma \
+  --port=${PORT} \
+  --config=${MY_DIR}/puma.rb
 

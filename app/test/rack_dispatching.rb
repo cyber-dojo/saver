@@ -16,16 +16,16 @@ class RackDispatchingTest < TestBase
     externals.instance_exec {
       # See docker-compose.yml
       # See scripts/containers_up.sh create_space_limited_volume()
-      @disk = Disk.new('one_k')
+      @disk = Disk.new(nil, 'one_k')
     }
     dirname = '166'
     filename = '166/file'
     content = 'x'*1024
     disk.assert(command:dir_make_command(dirname))
-    disk.assert(command:file_create_command(filename,content))
+    disk.assert(command:file_create_command(filename, content))
     message = "No space left on device @ io_write - /one_k/#{filename}"
-    body = { "command": file_append_command(filename, content*16) }.to_json
-    assert_dispatch_raises('run', body, 500, message)
+    body = { "command": file_append_command(filename, content*16) }
+    assert_post_raises('run', body, 500, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,18 +38,19 @@ class RackDispatchingTest < TestBase
       dir_make_command(dirname),
       dir_make_command(dirname) # repeat
     ]}.to_json
-    assert_dispatch_raises('assert_all', body, 500, message)
+    assert_post_raises('assert_all', body, 500, message)
     disk.assert(command:dir_exists_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test 'F1A',
   'dispatch has 500 status when implementation raises' do
     def prober.sha
       raise ArgumentError, 'wibble'
     end
-    assert_dispatch_raises('sha', {}.to_json, 500, 'wibble')
+    assert_get_raises('sha', {}.to_json, 500, 'wibble')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,26 +60,27 @@ class RackDispatchingTest < TestBase
     def prober.sha
       raise SyntaxError, 'fubar'
     end
-    assert_dispatch_raises('sha', {}.to_json, 500, 'fubar')
+    assert_get_raises('sha', {}.to_json, 500, 'fubar')
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2A',
-  'dispatch has 400 when method name is unknown' do
-    assert_dispatch_raises('xyz',
-      {}.to_json,
-      400,
-      'unknown path')
-  end
+  #test 'E2A',
+  #'dispatch has 400 when method name is unknown' do
+  #  assert_post_raises('xyz',
+  #    {}.to_json,
+  #    400,
+  #    'unknown path')
+  #end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2B',
   'dispatch has 400 status when body is not JSON' do
-    assert_dispatch_raises('xyz',
+    assert_post_raises('run',
       'xxx',
       400,
       'body is not JSON')
@@ -88,7 +90,7 @@ class RackDispatchingTest < TestBase
 
   test 'E2C',
   'dispatch has 400 status when body is not JSON Hash' do
-    assert_dispatch_raises('xyz',
+    assert_post_raises('run',
       [].to_json,
       400,
       'body is not JSON Hash')
@@ -98,7 +100,7 @@ class RackDispatchingTest < TestBase
 
   test 'AC6',
   'dispatch has 400 status when commands is missing' do
-    assert_dispatch_raises('run_all',
+    assert_post_raises('run_all',
       '{}',
       400,
       'missing:commands:'
@@ -115,7 +117,7 @@ class RackDispatchingTest < TestBase
       ['{"commands":[["file_read",1,2,3]]}', 'malformed:commands[0]:file_read!3:'],
       ['{"commands":[["file_read",2.9]]}', 'malformed:commands[0]:file_read(filename!=String):']
     ].each do |json, error_message|
-      assert_dispatch_raises('run_all', json, 400, error_message)
+      assert_post_raises('run_all', json, 400, error_message)
     end
   end
 
@@ -123,7 +125,7 @@ class RackDispatchingTest < TestBase
 
   test 'AC8',
   'dispatch has 400 status when command is missing' do
-    assert_dispatch_raises('assert',
+    assert_post_raises('assert',
       '{}',
       400,
       'missing:command:'
@@ -139,7 +141,7 @@ class RackDispatchingTest < TestBase
       ['{"command":["file_read",1,2,3]}', 'malformed:command:file_read!3:'],
       ['{"command":["file_read",2.9]}', 'malformed:command:file_read(filename!=String):']
     ].each do |json, error_message|
-      assert_dispatch_raises('assert', json, 400, error_message)
+      assert_post_raises('assert', json, 400, error_message)
     end
   end
 
@@ -147,6 +149,7 @@ class RackDispatchingTest < TestBase
   # 200 probes
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   test 'E39',
   'dispatches to alive' do
     def prober.alive?
@@ -170,6 +173,7 @@ class RackDispatchingTest < TestBase
     end
     assert_dispatch('sha', {}.to_json, 'hello from sha')
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200 batches
@@ -280,7 +284,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_dispatch_raises(name, args, status, message)
+  def XXX_assert_dispatch_raises(name, args, status, message)
     response,stderr = with_captured_stderr { rack_call(name, args) }
     assert_equal status, response[0], "message:#{message},stderr:#{stderr}"
     assert_equal({ 'Content-Type' => 'application/json' }, response[1])
@@ -288,14 +292,31 @@ class RackDispatchingTest < TestBase
     assert_exception(stderr,         name, args, message)
   end
 
+  def assert_post_raises(name, body, expected_status, expected_message)
+    response,stdout,stderr = with_captured_ss {
+      json_post '/'+name, body
+    }
+    assert_equal '', stdout, :stdout_is_empty
+    refute_equal '', stderr, :stderr_is_not_empty
+
+    actual_type = response.headers["Content-Type"]
+    actual_status = response.status
+    actual_body = response.body
+
+    assert_equal 'application/json', actual_type, :type
+    assert_equal expected_status, actual_status, :status
+
+    assert_exception(response.body, name, expected_message)
+    assert_exception(stderr,        name, expected_message)
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception(s, name, body, message)
+  def assert_exception(s, name, message)
     json = JSON.parse!(s)
     exception = json['exception']
     refute_nil exception
     assert_equal '/'+name, exception['path'], "path:#{__LINE__}"
-    assert_equal body, exception['body'], "body:#{__LINE__}"
     assert_equal 'SaverService', exception['class'], "exception['class']:#{__LINE__}"
     assert_equal message, exception['message'], "exception['message']:#{__LINE__}"
     assert_equal 'Array', exception['backtrace'].class.name, "exception['backtrace'].class.name:#{__LINE__}"
@@ -327,13 +348,16 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def with_captured_stderr
+  def with_captured_ss
+    old_stdout = $stdout
     old_stderr = $stderr
+    $stdout = StringIO.new('', 'w')
     $stderr = StringIO.new('', 'w')
     response = yield
-    return [ response, $stderr.string ]
+    return [ response, $stderr.string, $stdout.string ]
   ensure
     $stderr = old_stderr
+    $stdout = old_stdout
   end
 
 end

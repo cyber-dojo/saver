@@ -6,13 +6,37 @@ require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'external/custom_start_points'
 require_relative 'require_source'
+require_source 'app'
 require_source 'externals'
+require 'json'
 
 class TestBase < Id58TestBase
 
   def initialize(arg)
     super(arg)
   end
+
+  include Rack::Test::Methods # post
+
+  def app
+    @app ||= App.new(externals)
+  end
+
+  def json_post(path, data)
+    post path, data.to_json, JSON_REQUEST_HEADERS
+    last_response
+  end
+
+  def json_response
+    JSON.parse(last_response.body)
+  end
+
+  JSON_REQUEST_HEADERS = {
+    'CONTENT_TYPE' => 'application/json', # sent request
+    'HTTP_ACCEPT' => 'application/json'   # received response
+  }
+
+  # - - - - - - - - - - - - - - - - -
 
   def externals
     @externals ||= Externals.new
@@ -68,7 +92,7 @@ class TestBase < Id58TestBase
       self.instance_eval(&block)
     end
     test(hex_suffix+'1', *lines) do
-      self.externals.instance_eval { @disk = DiskFake.new }
+      self.externals.instance_eval { @disk = DiskFake.new(nil) }
       self.instance_eval(&block)
     end
   end
