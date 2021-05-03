@@ -149,26 +149,26 @@ class RackDispatchingTest < TestBase
 
   test 'E39',
   'dispatches to alive' do
-    prober_stub('alive?')
-    assert_dispatch('alive', {}.to_json,
-      'hello from stubbed prober.alive?'
-    )
+    def prober.alive?
+      'hello from alive?'
+    end
+    assert_dispatch('alive', {}.to_json, 'hello from alive?')
   end
 
   test 'E40',
   'dispatches to ready' do
-    prober_stub('ready?')
-    assert_dispatch('ready', {}.to_json,
-      'hello from stubbed prober.ready?'
-    )
+    def prober.ready?
+      'hello from ready?'
+    end
+    assert_dispatch('ready', {}.to_json, 'hello from ready?')
   end
 
   test 'E41',
   'dispatches to sha' do
-    prober_stub('sha')
-    assert_dispatch('sha', {}.to_json,
-      'hello from stubbed prober.sha'
-    )
+    def prober.sha
+      'hello from sha'
+    end
+    assert_dispatch('sha', {}.to_json, 'hello from sha')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -244,12 +244,6 @@ class RackDispatchingTest < TestBase
   def disk_stub(name)
     disk.define_singleton_method(name) do |*_args|
       "hello from stubbed disk.#{name}"
-    end
-  end
-
-  def prober_stub(name)
-    prober.define_singleton_method(name) do |*_args|
-      "hello from stubbed prober.#{name}"
     end
   end
 

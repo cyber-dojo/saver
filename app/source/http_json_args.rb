@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative 'lib/json_adapter'
+require_relative 'prober'
 
 class HttpJsonArgs
 
