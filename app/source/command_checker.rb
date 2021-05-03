@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require_relative 'http_json/request_error'
+require_relative 'request_error'
 
 module CommandChecker
 
@@ -68,11 +68,11 @@ module CommandChecker
   # - - - - - - - - - - - - - - - -
 
   def missing(arg_name)
-    HttpJson::RequestError.new("missing:#{arg_name}:")
+    RequestError.new("missing:#{arg_name}:")
   end
 
   def malformed(arg_name, message)
-    HttpJson::RequestError.new("malformed:#{arg_name}:#{message}:")
+    RequestError.new("malformed:#{arg_name}:#{message}:")
   end
 
 end

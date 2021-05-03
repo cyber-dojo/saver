@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require_relative 'lib/json_adapter'
 require_relative 'prober'
+require_relative 'request_error'
 
 class HttpJsonArgs
 
@@ -10,11 +11,11 @@ class HttpJsonArgs
     end
     @args = json_parse(body)
     unless @args.is_a?(Hash)
-      fail HttpJson::RequestError, 'body is not JSON Hash'
+      fail RequestError, 'body is not JSON Hash'
     end
   rescue JSON::ParserError
   #rescue Oj::ParseError
-    fail HttpJson::RequestError, 'body is not JSON'
+    fail RequestError, 'body is not JSON'
   end
 
   # - - - - - - - - - - - - - - - -
@@ -36,7 +37,7 @@ class HttpJsonArgs
     when '/run_until_false' then [disk,'run_until_false',commands]
 
     else
-      fail HttpJson::RequestError, 'unknown path'
+      fail RequestError, 'unknown path'
     end
 
     target = args.shift
