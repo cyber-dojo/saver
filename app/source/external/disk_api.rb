@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative 'command_checker'
 
 module DiskApi # mixin
 
@@ -38,6 +39,7 @@ module DiskApi # mixin
   end
 
   def run(command:)
+    assert_well_formed_command(command)
     name, *args = command
     case name
     when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
@@ -75,6 +77,8 @@ module DiskApi # mixin
 
   private
 
+  include CommandChecker
+
   DIR_EXISTS_COMMAND_NAME = 'dir_exists?'
   DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
@@ -83,6 +87,7 @@ module DiskApi # mixin
   FILE_READ_COMMAND_NAME   = 'file_read'
 
   def run_until(commands, &block)
+    assert_well_formed_commands(commands)
     results = []
     commands.each.with_index(0) do |command, index|
       result = run(command:command)
