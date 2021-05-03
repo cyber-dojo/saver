@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_source 'external/command_checker'
+require_source 'command_checker'
 
 class CommandCheckerTest < TestBase
 
