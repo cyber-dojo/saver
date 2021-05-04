@@ -246,7 +246,7 @@ class RackDispatchingTest < TestBase
 
   def disk_stub(name)
     disk.define_singleton_method(name) do |*_args|
-      "hello from stubbed disk.#{name}"
+      '"' + "hello from stubbed disk.#{name}" + '"'
     end
   end
 
