@@ -69,10 +69,16 @@ class RackDispatchingTest < TestBase
 
   test 'E2A',
   'dispatch has 400 when method name is unknown' do
-    assert_post_raises('xyz',
-      {}.to_json,
-      400,
-      'unknown path')
+    response,_stdout,_stderr = with_captured_ss do
+      post_json '/xyz', '{}'
+    end
+    #diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
+    #p(diagnostic)
+    assert_equal 404, response.status
+    #assert_post_raises('xyz',
+    #  {}.to_json,
+    #  400,
+    #  'unknown path')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
