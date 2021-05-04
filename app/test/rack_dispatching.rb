@@ -23,7 +23,7 @@ class RackDispatchingTest < TestBase
     disk.assert(command:dir_make_command(dirname))
     disk.assert(command:file_create_command(filename, content))
     message = "No space left on device @ io_write - /one_k/#{filename}"
-    body = { "command": file_append_command(filename, content*16) }
+    body = { "command": file_append_command(filename, content*16) }.to_json
     assert_post_raises('run', body, 500, message)
   end
 
@@ -90,7 +90,7 @@ class RackDispatchingTest < TestBase
   test 'E2C',
   'dispatch has 400 status when body is not JSON Hash' do
     assert_post_raises('run',
-      [].to_json,
+      '[]',
       400,
       'body is not JSON Hash')
   end
@@ -305,8 +305,8 @@ class RackDispatchingTest < TestBase
     assert_equal 'application/json', actual_type, :type
     assert_equal expected_status, actual_status, :status
 
-    assert_exception(response.body, name, expected_message)
-    assert_exception(stderr,        name, expected_message)
+    assert_exception(actual_body, name, expected_message)
+    assert_exception(stderr,      name, expected_message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

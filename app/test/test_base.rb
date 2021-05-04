@@ -23,7 +23,7 @@ class TestBase < Id58TestBase
   end
 
   def json_post(path, data)
-    post path, data.to_json, JSON_REQUEST_HEADERS
+    post path, data, JSON_REQUEST_HEADERS
     last_response
   end
 
