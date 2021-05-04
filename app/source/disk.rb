@@ -80,4 +80,3 @@ class Disk
   end
 
 end
-

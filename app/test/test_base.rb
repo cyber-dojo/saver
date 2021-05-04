@@ -22,14 +22,14 @@ class TestBase < Id58TestBase
     @app ||= App.new(externals)
   end
 
-  def json_post(path, data)
+  def post_json(path, data)
     post path, data, JSON_REQUEST_HEADERS
     last_response
   end
 
-  def json_response
-    JSON.parse(last_response.body)
-  end
+  #def json_response
+  #  JSON.parse(last_response.body)
+  #end
 
   JSON_REQUEST_HEADERS = {
     'CONTENT_TYPE' => 'application/json', # sent request

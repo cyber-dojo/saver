@@ -293,7 +293,7 @@ class RackDispatchingTest < TestBase
 
   def assert_post_raises(name, body, expected_status, expected_message)
     response,stdout,stderr = with_captured_ss {
-      json_post '/'+name, body
+      post_json '/'+name, body
     }
     assert_equal '', stdout, :stdout_is_empty
     refute_equal '', stderr, :stderr_is_not_empty

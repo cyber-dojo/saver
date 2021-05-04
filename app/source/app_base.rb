@@ -3,6 +3,7 @@ require_relative 'silently'
 require 'sinatra/base'
 silently { require 'sinatra/contrib' } # N x "warning: method redefined"
 require_relative 'lib/json_adapter'
+require_relative 'request_error'
 require 'json'
 
 class AppBase < Sinatra::Base
@@ -64,11 +65,11 @@ class AppBase < Sinatra::Base
     end
     json = json_parse(body)
     unless json.instance_of?(Hash)
-      fail 'body is not JSON Hash'
+      fail RequestError, 'body is not JSON Hash'
     end
     json
   rescue JSON::ParserError
-    fail 'body is not JSON'
+    fail RequestError, 'body is not JSON'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -77,7 +78,11 @@ class AppBase < Sinatra::Base
 
   error do
     error = $!
-    status(500)
+    if error.is_a?(RequestError)
+      status(400)
+    else
+      status(500)
+    end
     content_type('application/json')
     info = {
       exception: {
