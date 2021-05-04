@@ -29,7 +29,7 @@ module DiskApi # mixin
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # primitives
 
-  def assert(command:)
+  def assert(command:nil)
     result = run(command:command)
     if result
       result
@@ -38,7 +38,7 @@ module DiskApi # mixin
     end
   end
 
-  def run(command:)
+  def run(command:nil)
     assert_well_formed_command(command)
     name, *args = command
     case name
@@ -53,7 +53,7 @@ module DiskApi # mixin
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
-  def assert_all(commands:)
+  def assert_all(commands:nil)
     run_until(commands) do |r, index|
       if r
         false
@@ -63,15 +63,15 @@ module DiskApi # mixin
     end
   end
 
-  def run_all(commands:)
+  def run_all(commands:nil)
     run_until(commands) { |r| r === :never }
   end
 
-  def run_until_true(commands:)
+  def run_until_true(commands:nil)
     run_until(commands) { |r| r }
   end
 
-  def run_until_false(commands:)
+  def run_until_false(commands:nil)
     run_until(commands) { |r| !r }
   end
 
