@@ -27,10 +27,6 @@ class TestBase < Id58TestBase
     last_response
   end
 
-  #def json_response
-  #  JSON.parse(last_response.body)
-  #end
-
   JSON_REQUEST_HEADERS = {
     'CONTENT_TYPE' => 'application/json', # sent request
     'HTTP_ACCEPT' => 'application/json'   # received response
