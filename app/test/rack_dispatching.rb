@@ -101,7 +101,7 @@ class RackDispatchingTest < TestBase
   'dispatch has 400 status when commands is missing' do
     assert_post_raises('run_all',
       '{}',
-      400,
+      400, # 500
       'missing:commands:'
     )
   end
@@ -126,7 +126,7 @@ class RackDispatchingTest < TestBase
   'dispatch has 400 status when command is missing' do
     assert_post_raises('assert',
       '{}',
-      400,
+      400, # 500
       'missing:command:'
     )
   end
@@ -294,16 +294,17 @@ class RackDispatchingTest < TestBase
     response,stdout,stderr = with_captured_ss do
       post_json '/'+name, body
     end
+    diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
 
-    assert_equal '', stdout, :stdout_is_empty
-    refute_equal '', stderr, :stderr_is_not_empty
+    assert_equal '', stdout, diagnostic
+    refute_equal '', stderr, diagnostic
 
     actual_type = response.headers["Content-Type"]
     actual_status = response.status
     actual_body = response.body
 
-    assert_equal 'application/json', actual_type, :type
-    assert_equal expected_status, actual_status, :status
+    assert_equal 'application/json', actual_type, diagnostic
+    assert_equal expected_status, actual_status, diagnostic
 
     assert_exception(actual_body, name, expected_body)
     assert_exception(stderr,      name, expected_body)
