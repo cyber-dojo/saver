@@ -67,13 +67,13 @@ class RackDispatchingTest < TestBase
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  #test 'E2A',
-  #'dispatch has 400 when method name is unknown' do
-  #  assert_post_raises('xyz',
-  #    {}.to_json,
-  #    400,
-  #    'unknown path')
-  #end
+  test 'E2A',
+  'dispatch has 400 when method name is unknown' do
+    assert_post_raises('xyz',
+      {}.to_json,
+      400,
+      'unknown path')
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -154,7 +154,7 @@ class RackDispatchingTest < TestBase
     def prober.alive?
       'hello from alive?'
     end
-    assert_dispatch('alive', {}.to_json, 'hello from alive?')
+    assert_get('alive', {}.to_json, 'hello from alive?')
   end
 
   test 'E40',
@@ -162,7 +162,7 @@ class RackDispatchingTest < TestBase
     def prober.ready?
       'hello from ready?'
     end
-    assert_dispatch('ready', {}.to_json, 'hello from ready?')
+    assert_get('ready', {}.to_json, 'hello from ready?')
   end
 
   test 'E41',
@@ -170,7 +170,7 @@ class RackDispatchingTest < TestBase
     def prober.sha
       'hello from sha'
     end
-    assert_dispatch('sha', {}.to_json, 'hello from sha')
+    assert_get('sha', {}.to_json, 'hello from sha')
   end
 =end
 
@@ -181,7 +181,7 @@ class RackDispatchingTest < TestBase
   test 'E48',
   'dispatches to assert_all' do
     disk_stub('assert_all')
-    assert_dispatch('assert_all',
+    assert_post('assert_all',
       { commands: well_formed_commands }.to_json,
       'hello from stubbed disk.assert_all'
     )
@@ -192,7 +192,7 @@ class RackDispatchingTest < TestBase
   test 'E51',
   'dispatches to assert' do
     disk_stub('assert')
-    assert_dispatch('assert',
+    assert_post('assert',
       { command: well_formed_command }.to_json,
       'hello from stubbed disk.assert'
     )
@@ -203,7 +203,7 @@ class RackDispatchingTest < TestBase
   test 'E52',
   'dispatches to run' do
     disk_stub('run')
-    assert_dispatch('run',
+    assert_post('run',
       { command: well_formed_command }.to_json,
       'hello from stubbed disk.run'
     )
@@ -214,7 +214,7 @@ class RackDispatchingTest < TestBase
   test 'E47',
   'dispatches to run_all' do
     disk_stub('run_all')
-    assert_dispatch('run_all',
+    assert_post('run_all',
       { commands: well_formed_commands }.to_json,
       'hello from stubbed disk.run_all'
     )
@@ -225,7 +225,7 @@ class RackDispatchingTest < TestBase
   test 'E49',
   'dispatches to run_until_true' do
     disk_stub('run_until_true')
-    assert_dispatch('run_until_true',
+    assert_post('run_until_true',
       { commands: well_formed_commands }.to_json,
       'hello from stubbed disk.run_until_true'
     )
@@ -236,7 +236,7 @@ class RackDispatchingTest < TestBase
   test 'E50',
   'dispatches to run_until_false' do
     disk_stub('run_until_false')
-    assert_dispatch('run_until_false',
+    assert_post('run_until_false',
       { commands: well_formed_commands }.to_json,
       'hello from stubbed disk.run_until_false'
     )
@@ -266,16 +266,23 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_dispatch(name, args, stubbed)
-    if query?(name)
-      qname = name + '?'
-    else
-      qname = name
-    end
-    assert_rack_call(name, args, { qname => stubbed })
+  def assert_post(name, body, expected_body)
+    response = post_json(name, body)
+    assert_equal 200, response.status
+    assert_equal 'application/json', response.headers['Content-Type']
+    expected = { queryfied(name) => expected_body }.to_json
+    assert_equal expected, response.body, body
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def queryfied(name)
+    if query?(name)
+      name + '?'
+    else
+      name
+    end
+  end
 
   def query?(name)
     %w( alive ready exists group_exists kata_exists ).include?(name)
@@ -283,18 +290,11 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def XXX_assert_dispatch_raises(name, args, status, message)
-    response,stderr = with_captured_stderr { rack_call(name, args) }
-    assert_equal status, response[0], "message:#{message},stderr:#{stderr}"
-    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_exception(response[2][0], name, args, message)
-    assert_exception(stderr,         name, args, message)
-  end
-
-  def assert_post_raises(name, body, expected_status, expected_message)
-    response,stdout,stderr = with_captured_ss {
+  def assert_post_raises(name, body, expected_status, expected_body)
+    response,stdout,stderr = with_captured_ss do
       post_json '/'+name, body
-    }
+    end
+
     assert_equal '', stdout, :stdout_is_empty
     refute_equal '', stderr, :stderr_is_not_empty
 
@@ -305,8 +305,8 @@ class RackDispatchingTest < TestBase
     assert_equal 'application/json', actual_type, :type
     assert_equal expected_status, actual_status, :status
 
-    assert_exception(actual_body, name, expected_message)
-    assert_exception(stderr,      name, expected_message)
+    assert_exception(actual_body, name, expected_body)
+    assert_exception(stderr,      name, expected_body)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -324,29 +324,6 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_rack_call(name, args, expected)
-    response = rack_call(name, args)
-    assert_equal 200, response[0]
-    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_equal [to_json(expected)], response[2], args
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def rack_call(name, args)
-    rack = RackDispatcher.new(externals, RackRequestStub)
-    env = { path_info:name, body:args }
-    rack.call(env)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def to_json(body)
-    JSON.generate(body)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   def with_captured_ss
     old_stdout = $stdout
     old_stderr = $stderr
@@ -357,6 +334,47 @@ class RackDispatchingTest < TestBase
   ensure
     $stderr = old_stderr
     $stdout = old_stdout
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def XXX_assert_rack_call(name, args, expected)
+    response = rack_call(name, args)
+    assert_equal 200, response[0]
+    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
+    assert_equal [to_json(expected)], response[2], args
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def XXX_rack_call(name, args)
+    rack = RackDispatcher.new(externals, RackRequestStub)
+    env = { path_info:name, body:args }
+    rack.call(env)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def XXX_assert_dispatch_raises(name, args, status, message)
+    response,stderr = with_captured_stderr { rack_call(name, args) }
+    assert_equal status, response[0], "message:#{message},stderr:#{stderr}"
+    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
+    assert_exception(response[2][0], name, args, message)
+    assert_exception(stderr,         name, args, message)
+  end
+
+  def XXX_assert_dispatch(name, args, stubbed)
+    if query?(name)
+      qname = name + '?'
+    else
+      qname = name
+    end
+    assert_rack_call(name, args, { qname => stubbed })
+  end
+
+  def XXX_to_json(body)
+    JSON.generate(body)
   end
 
 end

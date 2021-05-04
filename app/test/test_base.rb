@@ -27,6 +27,11 @@ class TestBase < Id58TestBase
     last_response
   end
 
+  def get_json(path, data)
+    get path, data, JSON_REQUEST_HEADERS
+    last_response
+  end
+
   JSON_REQUEST_HEADERS = {
     'CONTENT_TYPE' => 'application/json', # sent request
     'HTTP_ACCEPT' => 'application/json'   # received response
