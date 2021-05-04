@@ -3,7 +3,7 @@ require_source 'disk_api'
 
 class DiskFake
 
-  def initialize(_externals)
+  def initialize(_externals = nil)
     @@dirs ||= {}
     @@files ||= {}
   end
