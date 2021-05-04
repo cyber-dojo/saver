@@ -1,5 +1,4 @@
 require_relative 'test_base'
-require_source 'rack_dispatcher'
 
 class RackDispatchingTest < TestBase
 
