@@ -25,7 +25,7 @@ class AppBase < Sinatra::Base
           target = @externals.public_send(klass_name)
           result = target.public_send(name, **named_args)
           result = quote_if_string(result)          
-          content_type :json
+          content_type(:json)
           "{\"#{name}\":#{result}}"
         }
       end
@@ -41,7 +41,7 @@ class AppBase < Sinatra::Base
           target = @externals.public_send(klass_name)
           result = target.public_send(name, **named_args)
           result = quote_if_string(result)
-          content_type :json
+          content_type(:json)
           "{\"#{name}\":#{result}}"
         }
       end
@@ -53,18 +53,16 @@ class AppBase < Sinatra::Base
   include JsonAdapter
 
   def named_args
-    if params.empty?
-      args = json_hash_parse(request.body.read)
+    body = request.body.read
+    if body === '' || body === '{}'
+      args = {}
     else
-      args = params
+      args = json_hash_parse(body)
     end
     Hash[args.map{ |key,value| [key.to_sym, value] }]
   end
 
   def json_hash_parse(body)
-    if body === ''
-      body = '{}'
-    end
     json = json_parse(body)
     unless json.instance_of?(Hash)
       fail RequestError, 'body is not JSON Hash'
@@ -73,6 +71,8 @@ class AppBase < Sinatra::Base
   rescue JSON::ParserError
     fail RequestError, 'body is not JSON'
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def quote_if_string(result)
     if result.is_a?(String)

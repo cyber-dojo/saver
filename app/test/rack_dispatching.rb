@@ -68,17 +68,11 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2A',
-  'dispatch has 400 when method name is unknown' do
-    response,_stdout,_stderr = with_captured_ss do
+  'dispatch has 404 when method name is not found' do
+    response,_stdout,_stderr = with_captured_stdout_stderr do
       post_json '/xyz', '{}'
     end
-    #diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
-    #p(diagnostic)
     assert_equal 404, response.status
-    #assert_post_raises('xyz',
-    #  {}.to_json,
-    #  400,
-    #  'unknown path')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -154,13 +148,15 @@ class RackDispatchingTest < TestBase
   # 200 probes
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   test 'E39',
   'dispatches to alive' do
     def prober.alive?
       'hello from alive?'
     end
-    assert_get('alive', {}.to_json, 'hello from alive?')
+    assert_get('alive' , ''  , prober.alive?)
+    assert_get('alive?', ''  , prober.alive?)
+    assert_get('alive' , '{}', prober.alive?)
+    assert_get('alive?', '{}', prober.alive?)
   end
 
   test 'E40',
@@ -168,7 +164,10 @@ class RackDispatchingTest < TestBase
     def prober.ready?
       'hello from ready?'
     end
-    assert_get('ready', {}.to_json, 'hello from ready?')
+    assert_get('ready' , ''  , prober.ready?)
+    assert_get('ready?', ''  , prober.ready?)
+    assert_get('ready' , '{}', prober.ready?)
+    assert_get('ready?', '{}', prober.ready?)
   end
 
   test 'E41',
@@ -176,9 +175,9 @@ class RackDispatchingTest < TestBase
     def prober.sha
       'hello from sha'
     end
-    assert_get('sha', {}.to_json, 'hello from sha')
+    assert_get('sha', ''  , prober.sha)
+    assert_get('sha', '{}', prober.sha)
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200 batches
@@ -272,11 +271,19 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def assert_get(name, body, expected_body)
+    response = get_json(name, body)
+    assert_equal 200, response.status
+    assert_equal 'application/json', response.headers['Content-Type']
+    expected = { queryfied(name) => expected_body }.to_json
+    assert_equal expected, response.body, body
+  end
+
   def assert_post(name, body, expected_body)
     response = post_json(name, body)
     assert_equal 200, response.status
     assert_equal 'application/json', response.headers['Content-Type']
-    expected = { queryfied(name) => expected_body }.to_json
+    expected = { name => expected_body }.to_json
     assert_equal expected, response.body, body
   end
 
@@ -297,7 +304,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_post_raises(name, body, expected_status, expected_body)
-    response,stdout,stderr = with_captured_ss do
+    response,stdout,stderr = with_captured_stdout_stderr do
       post_json '/'+name, body
     end
     diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
@@ -331,7 +338,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def with_captured_ss
+  def with_captured_stdout_stderr
     old_stdout = $stdout
     old_stderr = $stderr
     $stdout = StringIO.new('', 'w')
