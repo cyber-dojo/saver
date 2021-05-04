@@ -101,7 +101,7 @@ class RackDispatchingTest < TestBase
   'dispatch has 400 status when commands is missing' do
     assert_post_raises('run_all',
       '{}',
-      400, # 500
+      400,
       'missing:commands:'
     )
   end
@@ -126,7 +126,7 @@ class RackDispatchingTest < TestBase
   'dispatch has 400 status when command is missing' do
     assert_post_raises('assert',
       '{}',
-      400, # 500
+      400,
       'missing:command:'
     )
   end
