@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 require_relative 'id58_test_base'
 require_relative 'doubles/disk_fake'
-require_relative 'doubles/rack_request_stub'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'external/custom_start_points'

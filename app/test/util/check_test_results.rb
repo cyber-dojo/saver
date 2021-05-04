@@ -113,7 +113,7 @@ table =
     [ 'duration(test)[s]',      test_duration,  '<=',   5 ],
 
     [ 'tests',                  test_count,     '>=', 110 ],
-    [ 'coverage(code)[%]',      code_coverage,  '>=',  97 ],
+    [ 'coverage(code)[%]',      code_coverage,  '>=',  96 ],
     [ 'coverage(test)[%]',      test_coverage,  '>=',  97 ],
     [ 'lines(test/code)',       f2(line_ratio), '>=', 2.0 ],
     [ 'hits(code/test)',        f2(hits_ratio), '>=', 2.4 ],

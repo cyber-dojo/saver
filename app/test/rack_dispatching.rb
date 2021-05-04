@@ -252,7 +252,7 @@ class RackDispatchingTest < TestBase
 
   def disk_stub(name)
     disk.define_singleton_method(name) do |*_args|
-      '"' + "hello from stubbed disk.#{name}" + '"'
+      "hello from stubbed disk.#{name}"
     end
   end
 
@@ -341,47 +341,6 @@ class RackDispatchingTest < TestBase
   ensure
     $stderr = old_stderr
     $stdout = old_stdout
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def XXX_assert_rack_call(name, args, expected)
-    response = rack_call(name, args)
-    assert_equal 200, response[0]
-    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_equal [to_json(expected)], response[2], args
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def XXX_rack_call(name, args)
-    rack = RackDispatcher.new(externals, RackRequestStub)
-    env = { path_info:name, body:args }
-    rack.call(env)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def XXX_assert_dispatch_raises(name, args, status, message)
-    response,stderr = with_captured_stderr { rack_call(name, args) }
-    assert_equal status, response[0], "message:#{message},stderr:#{stderr}"
-    assert_equal({ 'Content-Type' => 'application/json' }, response[1])
-    assert_exception(response[2][0], name, args, message)
-    assert_exception(stderr,         name, args, message)
-  end
-
-  def XXX_assert_dispatch(name, args, stubbed)
-    if query?(name)
-      qname = name + '?'
-    else
-      qname = name
-    end
-    assert_rack_call(name, args, { qname => stubbed })
-  end
-
-  def XXX_to_json(body)
-    JSON.generate(body)
   end
 
 end

@@ -24,6 +24,7 @@ class AppBase < Sinatra::Base
         format.json {
           target = @externals.public_send(klass_name)
           result = target.public_send(name, **named_args)
+          result = quote_if_string(result)          
           content_type :json
           "{\"#{name}\":#{result}}"
         }
@@ -39,6 +40,7 @@ class AppBase < Sinatra::Base
         format.json {
           target = @externals.public_send(klass_name)
           result = target.public_send(name, **named_args)
+          result = quote_if_string(result)
           content_type :json
           "{\"#{name}\":#{result}}"
         }
@@ -70,6 +72,14 @@ class AppBase < Sinatra::Base
     json
   rescue JSON::ParserError
     fail RequestError, 'body is not JSON'
+  end
+
+  def quote_if_string(result)
+    if result.is_a?(String)
+      result.inspect
+    else
+      result
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
