@@ -242,7 +242,7 @@ class SaverRunUntilTrueTest < TestBase
     exception = JSON.parse!(error.body)['exception']
     assert_equal message, exception['message'], :message
     assert_equal 'SaverService', exception['class'], :class
-    #assert_equal JSON.generate(expected_args), exception['body'], :body
+    assert_equal JSON.generate(expected_args), exception['body'], :body
   end
 
 end
