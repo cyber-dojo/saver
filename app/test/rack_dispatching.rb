@@ -148,30 +148,24 @@ class RackDispatchingTest < TestBase
 
   test 'E39',
   'dispatches to alive' do
-    def prober.alive?
-      'hello from alive?'
-    end
-    assert_get('alive' , ''  , prober.alive?)
-    assert_get('alive?', ''  , prober.alive?)
-    assert_get('alive' , '{}', prober.alive?)
-    assert_get('alive?', '{}', prober.alive?)
+    assert_get('alive' , ''  , true)
+    assert_get('alive?', ''  , true)
+    assert_get('alive' , '{}', true)
+    assert_get('alive?', '{}', true)
   end
 
   test 'E40',
   'dispatches to ready' do
-    def prober.ready?
-      'hello from ready?'
-    end
-    assert_get('ready' , ''  , prober.ready?)
-    assert_get('ready?', ''  , prober.ready?)
-    assert_get('ready' , '{}', prober.ready?)
-    assert_get('ready?', '{}', prober.ready?)
+    assert_get('ready' , ''  , true)
+    assert_get('ready?', ''  , true)
+    assert_get('ready' , '{}', true)
+    assert_get('ready?', '{}', true)
   end
 
   test 'E41',
   'dispatches to sha' do
     def prober.sha
-      'hello from sha'
+      '80206798f1c1e0b403f17ceb1e7510edea8d8e51'
     end
     assert_get('sha', ''  , prober.sha)
     assert_get('sha', '{}', prober.sha)
