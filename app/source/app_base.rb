@@ -18,15 +18,15 @@ class AppBase < Sinatra::Base
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.get_json(name, klass_name)
-    get "/#{name}", provides:[:json] do
+  def self.get_json(klass_name, method_name)
+    get "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json {
           target = @externals.public_send(klass_name)
-          result = target.public_send(name, **named_args)
+          result = target.public_send(method_name, **named_args)
           result = quote_if_string(result)
           content_type(:json)
-          "{\"#{name}\":#{result}}"
+          "{\"#{method_name}\":#{result}}"
         }
       end
     end
@@ -34,15 +34,15 @@ class AppBase < Sinatra::Base
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.post_json(name, klass_name)
-    post "/#{name}", provides:[:json] do
+  def self.post_json(klass_name, method_name)
+    post "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json {
           target = @externals.public_send(klass_name)
-          result = target.public_send(name, **named_args)
+          result = target.public_send(method_name, **named_args)
           result = quote_if_string(result)
           content_type(:json)
-          "{\"#{name}\":#{result}}"
+          "{\"#{method_name}\":#{result}}"
         }
       end
     end

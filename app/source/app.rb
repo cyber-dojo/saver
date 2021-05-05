@@ -7,15 +7,15 @@ class App < AppBase
     super(externals)
   end
 
-  get_json(:sha,    'prober')
-  get_json(:alive?, 'prober')
-  get_json(:ready?, 'prober')
+  get_json(:prober, :sha)
+  get_json(:prober, :alive?)
+  get_json(:prober, :ready?)
 
-  post_json(:assert,          'disk')
-  post_json(:run,             'disk')
-  post_json(:assert_all,      'disk')
-  post_json(:run_all,         'disk')
-  post_json(:run_until_true,  'disk')
-  post_json(:run_until_false, 'disk')
+  post_json(:disk, :assert)
+  post_json(:disk, :run)
+  post_json(:disk, :assert_all)
+  post_json(:disk, :run_all)
+  post_json(:disk, :run_until_true)
+  post_json(:disk, :run_until_false)
 
 end
