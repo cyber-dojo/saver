@@ -3,10 +3,12 @@ require 'json'
 
 module JsonAdapter # mix-in
 
+  # :nocov:
   def json_plain(obj)
     #Oj.dump(obj, { :mode => :strict })
     JSON.generate(obj)
   end
+  # :nocov:
 
   def json_pretty(obj)
     #Oj.generate(obj, OJ_PRETTY_OPTIONS)
