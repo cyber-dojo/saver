@@ -15,7 +15,7 @@ class RackDispatchingTest < TestBase
     externals.instance_exec {
       # See docker-compose.yml
       # See scripts/containers_up.sh create_space_limited_volume()
-      @disk = Disk.new(nil, 'one_k')
+      @disk = External::Disk.new(nil, 'one_k')
     }
     dirname = '166'
     filename = '166/file'

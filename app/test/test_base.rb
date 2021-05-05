@@ -15,7 +15,10 @@ class TestBase < Id58TestBase
     super(arg)
   end
 
-  include Rack::Test::Methods # post
+  # - - - - - - - - - - - - - - - - -
+  # http helpers
+
+  include Rack::Test::Methods
 
   def app
     @app ||= App.new(externals)
@@ -32,11 +35,12 @@ class TestBase < Id58TestBase
   end
 
   JSON_REQUEST_HEADERS = {
-    'CONTENT_TYPE' => 'application/json', # sent request
-    'HTTP_ACCEPT' => 'application/json'   # received response
+    'CONTENT_TYPE' => 'application/json', # sent
+    'HTTP_ACCEPT' => 'application/json'   # want
   }
 
   # - - - - - - - - - - - - - - - - -
+  # externals helpers
 
   def externals
     @externals ||= Externals.new
@@ -63,6 +67,7 @@ class TestBase < Id58TestBase
   end
 
   # - - - - - - - - - - - - - - - - -
+  # Disk helpers
 
   def dir_exists_command(key)
     disk.dir_exists_command(key)
@@ -83,9 +88,6 @@ class TestBase < Id58TestBase
   def file_read_command(key)
     disk.file_read_command(key)
   end
-
-  # - - - - - - - - - - - - - - - - -
-  # Disk and DiskFake dual-contract tests
 
   def self.disk_tests(hex_suffix, *lines, &block)
     test(hex_suffix+'0', *lines) do
