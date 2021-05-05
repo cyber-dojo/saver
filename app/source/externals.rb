@@ -7,11 +7,11 @@ require_relative 'prober'
 class Externals
 
   def disk
-    @disk ||= External::Disk.new(self)
+    @disk ||= External::Disk.new('cyber-dojo')
   end
 
   def prober
-    @prober ||= Prober.new(self)
+    @prober ||= Prober.new
   end
 
   def random

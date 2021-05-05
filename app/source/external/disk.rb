@@ -6,7 +6,7 @@ module External
 
   class Disk
 
-    def initialize(_externals, root_dir = 'cyber-dojo')
+    def initialize(root_dir)
       @root_dir = root_dir
     end
 

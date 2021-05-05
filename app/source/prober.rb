@@ -2,9 +2,6 @@
 
 class Prober
 
-  def initialize(_externals)
-  end
-
   def sha
     ENV['SHA']
   end
