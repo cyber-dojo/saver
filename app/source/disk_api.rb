@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require_relative 'command_checker'
 
-module DiskApi # mixin
+module DiskApi
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # commands
@@ -98,5 +98,5 @@ module DiskApi # mixin
     end
     results
   end
-  
+
 end

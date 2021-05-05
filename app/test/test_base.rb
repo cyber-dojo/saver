@@ -94,7 +94,7 @@ class TestBase < Id58TestBase
       self.instance_eval(&block)
     end
     test(hex_suffix+'1', *lines) do
-      self.externals.instance_eval { @disk = DiskFake.new(nil) }
+      self.externals.instance_eval { @disk = DiskFake.new }
       self.instance_eval(&block)
     end
   end
