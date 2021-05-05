@@ -43,13 +43,12 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
   test 'F1A',
   'dispatch has 500 status when implementation raises' do
     def prober.sha
       raise ArgumentError, 'wibble'
     end
-    assert_get_raises('sha', {}.to_json, 500, 'wibble')
+    assert_get_raises('sha', '{}', 500, 'wibble')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,9 +58,8 @@ class RackDispatchingTest < TestBase
     def prober.sha
       raise SyntaxError, 'fubar'
     end
-    assert_get_raises('sha', {}.to_json, 500, 'fubar')
+    assert_get_raises('sha', '{}', 500, 'fubar')
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 400
@@ -303,9 +301,23 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  def assert_get_raises(name, body, expected_status, expected_body)
+    assert_raises(name, expected_status, expected_body) do
+      get_json '/'+name, body
+    end
+  end
+
   def assert_post_raises(name, body, expected_status, expected_body)
-    response,stdout,stderr = with_captured_stdout_stderr do
+    assert_raises(name, expected_status, expected_body) do
       post_json '/'+name, body
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def assert_raises(name, expected_status, expected_body)
+    response,stdout,stderr = with_captured_stdout_stderr do
+      yield
     end
     diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
 
@@ -319,13 +331,13 @@ class RackDispatchingTest < TestBase
     assert_equal 'application/json', actual_type, diagnostic
     assert_equal expected_status, actual_status, diagnostic
 
-    assert_exception(actual_body, name, expected_body)
-    assert_exception(stderr,      name, expected_body)
+    assert_exception_content(actual_body, name, expected_body)
+    assert_exception_content(stderr,      name, expected_body)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception(s, name, message)
+  def assert_exception_content(s, name, message)
     json = JSON.parse!(s)
     exception = json['exception']
     refute_nil exception
