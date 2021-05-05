@@ -1,0 +1,19 @@
+
+Thinking about using a bare repo for v2 storage...
+
+This is excellent...
+http://git-scm.com/book/en/v2/Git-Internals-Git-Objects
+
+It shows how to create a blob object using plumbing commands.
+It even shows how to do it in raw Ruby code.
+
+Next step is how do you give the blob its filename?
+This is done in the tree.
+
+This SO post gives a good explanation of the format for storing the trees
+https://stackoverflow.com/questions/14790681/what-is-the-internal-format-of-a-git-tree-object
+
+Note the comment in this SO post from Ross Feller
+"If you're interested in creating the git tree object manually from its contents, it's important to note that the [Entries having references to other trees and blobs] needs to be sorted alphabetically by [file/folder name] (aka path)."
+
+
