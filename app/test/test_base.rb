@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 require_relative 'id58_test_base'
-require_relative 'doubles/disk_fake'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
-require_relative 'external/custom_start_points'
-require_relative 'require_source'
-require_source 'app'
-require_source 'externals'
+require_relative 'helpers/disk'
+require_relative 'helpers/externals'
+require_relative 'helpers/rack'
 require 'json'
 
 class TestBase < Id58TestBase
@@ -15,79 +13,9 @@ class TestBase < Id58TestBase
     super(arg)
   end
 
-  # - - - - - - - - - - - - - - - - -
-  # http helpers
-
-  include Rack::Test::Methods
-
-  def app
-    @app ||= App.new(externals)
-  end
-
-  def post_json(path, data)
-    post path, data, JSON_REQUEST_HEADERS
-    last_response
-  end
-
-  def get_json(path, data)
-    get path, data, JSON_REQUEST_HEADERS
-    last_response
-  end
-
-  JSON_REQUEST_HEADERS = {
-    'CONTENT_TYPE' => 'application/json', # sent
-    'HTTP_ACCEPT' => 'application/json'   # want
-  }
-
-  # - - - - - - - - - - - - - - - - -
-  # externals helpers
-
-  def externals
-    @externals ||= Externals.new
-  end
-
-  def custom_start_points
-    External::CustomStartPoints.new
-  end
-
-  def disk
-    externals.disk
-  end
-
-  def prober
-    externals.prober
-  end
-
-  def random
-    externals.random
-  end
-
-  def time
-    externals.time
-  end
-
-  # - - - - - - - - - - - - - - - - -
-  # Disk helpers
-
-  def dir_exists_command(key)
-    disk.dir_exists_command(key)
-  end
-
-  def dir_make_command(key)
-    disk.dir_make_command(key)
-  end
-
-  def file_create_command(key, value)
-    disk.file_create_command(key, value)
-  end
-
-  def file_append_command(key, value)
-    disk.file_append_command(key, value)
-  end
-
-  def file_read_command(key)
-    disk.file_read_command(key)
-  end
+  include TestHelpersDisk
+  include TestHelpersExternals
+  include TestHelpersRack
 
   def self.disk_tests(hex_suffix, *lines, &block)
     test(hex_suffix+'0', *lines) do
