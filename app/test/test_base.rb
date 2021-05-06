@@ -4,6 +4,7 @@ require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'helpers/disk'
 require_relative 'helpers/externals'
+require_relative 'helpers/model'
 require_relative 'helpers/rack'
 require 'json'
 
@@ -15,7 +16,10 @@ class TestBase < Id58TestBase
 
   include TestHelpersDisk
   include TestHelpersExternals
+  include TestHelpersModel
   include TestHelpersRack
+
+  # TODO: there are commented out tests in id_generation.rb
 
   def self.disk_tests(hex_suffix, *lines, &block)
     test(hex_suffix+'0', *lines) do
