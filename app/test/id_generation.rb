@@ -160,8 +160,6 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-=begin
-
   test '13b', %w(
   group-id does not exist before generation, does after
   ) do
@@ -183,8 +181,6 @@ class IdGenerationTest < TestBase
     assert_equal id, id_generator.kata_id
     assert kata_exists?(id), "!kata_exists?(#{id}) !!"
   end
-
-=end
 
   private
 

@@ -94,11 +94,11 @@ class Model
   end
 
   def kata_option_get(id:, name:)
-    kata(1).option_get(id, name)
+    kata(CURRENT_VERSION).option_get(id, name)
   end
 
   def kata_option_set(id:, name:, value:)
-    kata(1).option_set(id, name, value)
+    kata(CURRENT_VERSION).option_set(id, name, value)
   end
 
   private
@@ -125,18 +125,17 @@ class Model
   end
 
   def version_path(path)
-    manifest_src = saver.assert(saver.file_read_command(path))
+    manifest_src = disk.assert(command:disk.file_read_command(path))
     manifest = json_parse(manifest_src)
-    # if manifest['version'].nil?
-    # then nil.to_i ==> 0 which is what we want
-    manifest['version'].to_i
+    manifest['version'].to_i # nil.to_i == 0
   end
 
-  def saver
-    @externals.saver
+  def disk
+    @externals.disk
   end
 
   CURRENT_VERSION = 1
+
   GROUPS = [ Group_v0, Group_v1 ]
   KATAS = [ Kata_v0, Kata_v1 ]
 

@@ -11,14 +11,8 @@ class App < AppBase
   get_json(:prober, :alive?)
   get_json(:prober, :ready?)
 
-  post_json(:disk, :assert)
-  post_json(:disk, :run)
-  post_json(:disk, :assert_all)
-  post_json(:disk, :run_all)
-  post_json(:disk, :run_until_true)
-  post_json(:disk, :run_until_false)
+  # - - - - - - - - - - - - - - - - -
 
-=begin
   post_json(:model, :group_create)
    get_json(:model, :group_exists?)
    get_json(:model, :group_manifest)
@@ -40,6 +34,15 @@ class App < AppBase
 
    get_json(:model, :kata_option_get)
   post_json(:model, :kata_option_set)
-=end
+
+  # - - - - - - - - - - - - - - - - -
+  # disk methods: Deprecated
+
+  post_json(:disk, :assert)
+  post_json(:disk, :run)
+  post_json(:disk, :assert_all)
+  post_json(:disk, :run_all)
+  post_json(:disk, :run_until_true)
+  post_json(:disk, :run_until_false)
 
 end

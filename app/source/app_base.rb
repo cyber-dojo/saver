@@ -72,12 +72,6 @@ class AppBase < Sinatra::Base
     fail RequestError, 'body is not JSON'
   end
 
-  def request_body
-    body = request.body.read
-    request.body.rewind # Make available to error handler below
-    body
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def quote_if_string(result)
@@ -102,17 +96,34 @@ class AppBase < Sinatra::Base
     content_type('application/json')
     info = {
       exception: {
-        path: request.path,
-        body: request.body.read,
+        path: ut8_clean(request.path),
+        body: ut8_clean(request_body),
         class: 'SaverService',
         backtrace: error.backtrace,
-        message: error.message,
+        message: ut8_clean(error.message),
         time: Time.now
       }
     }
     diagnostic = json_pretty(info)
     puts(diagnostic)
     body(diagnostic)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def request_body
+    body = request.body.read
+    request.body.rewind # For idempotence
+    body
+  end
+
+  def ut8_clean(s)
+    # force an encoding change
+    # if encoding is already utf-8 then encoding
+    # to utf-8 is a no-op and invalid byte sequences
+    # are not detected.
+    s = s.encode('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
+    s = s.encode('UTF-8', 'UTF-16')
   end
 
 end

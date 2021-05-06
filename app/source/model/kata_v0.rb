@@ -27,7 +27,7 @@ class Kata_v0
       'event' => 'created',
       'time' => manifest['created']
     }
-    disk.assert_all([
+    disk.assert_all(commands:[
       dir_make_command(id, 0),
       manifest_file_create_command(id, json_plain(manifest)),
       event_file_create_command(id, 0, json_plain(lined({ 'files' => files }))),
@@ -39,7 +39,7 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-     manifest_src,event0_src = disk.assert_all([
+     manifest_src,event0_src = disk.assert_all(commands:[
       manifest_file_read_command(id),
       event_file_read_command(id, 0)
     ])
@@ -53,7 +53,7 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    result = disk.assert(events_file_read_command(id))
+    result = disk.assert(command:events_file_read_command(id))
     json = json_parse('[' + result.lines.join(',') + ']')
     polyfill_events(json)
     json_plain(json)
@@ -67,7 +67,7 @@ class Kata_v0
       all = json_parse(events(id))
       index = all[index]['index']
     end
-    results = disk.assert_all([
+    results = disk.assert_all(commands:[
       events_file_read_command(id),
       event_file_read_command(id, index)
     ])
@@ -89,7 +89,7 @@ class Kata_v0
       commands << events_file_read_command(id)
       commands << event_file_read_command(id, index)
     end
-    results = disk.assert_all(commands)
+    results = disk.assert_all(commands:commands)
 
     (0...ids.size).each do |i|
       events = json_parse('[' + results[i*2].lines.join(',') + ']')
@@ -143,7 +143,7 @@ class Kata_v0
       'stderr' => stderr,
       'status' => status
     }
-    result = disk.assert_all([
+    result = disk.assert_all(commands:[
       # A failing make_command() ensures the append_command() is not run.
       dir_exists_command(id),
       dir_make_command(id, index),

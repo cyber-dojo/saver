@@ -27,7 +27,7 @@ class Group_v1
     manifest['version'] = 1
     manifest['created'] = time.now
     id = manifest['id'] = IdGenerator.new(@externals).group_id
-    disk.assert_all([
+    disk.assert_all(commands:[
       manifest_create_command(id, json_plain(manifest)),
       katas_create_command(id, '')
     ])
@@ -42,13 +42,13 @@ class Group_v1
     end
     dir_name = group_id_path(id)
     command = disk.dir_exists_command(dir_name)
-    disk.run(command)
+    disk.run(command:command)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    manifest_src = disk.assert(manifest_read_command(id))
+    manifest_src = disk.assert(command:manifest_read_command(id))
     manifest = json_parse(manifest_src)
     polyfill_manifest_defaults(manifest)
     json_plain(manifest)
@@ -61,7 +61,7 @@ class Group_v1
     manifest.delete('id')
     manifest['group_id'] = id
     commands = indexes.map{ |index| dir_make_command(id, index) }
-    results = disk.run_until_true(commands)
+    results = disk.run_until_true(commands:commands)
     result_index = results.find_index(true)
     if result_index.nil?
       'null' # full
@@ -69,7 +69,7 @@ class Group_v1
       index = indexes[result_index]
       manifest['group_index'] = index
       kata_id = @kata.create(manifest, {})
-      disk.assert(katas_append_command(id, "#{unquoted(kata_id)} #{index}\n"))
+      disk.assert(command:katas_append_command(id, "#{unquoted(kata_id)} #{index}\n"))
       kata_id # already quoted
     end
   end
@@ -84,7 +84,7 @@ class Group_v1
       # eg reads file /cyber-dojo/katas/k5/ZT/k0/events.json
       @kata.send(:events_file_read_command, kata_id)
     end
-    katas_events = disk.assert_all(read_events_files_commands)
+    katas_events = disk.assert_all(commands:read_events_files_commands)
     indexes.each.with_index(0) do |(group_index,kata_id),index|
       result[group_index] = {
         'id' => kata_id,
@@ -113,7 +113,7 @@ class Group_v1
   end
 
   def katas_indexes(id)
-    katas_src = disk.assert(katas_read_command(id))
+    katas_src = disk.assert(command:katas_read_command(id))
     # G2ws77 15
     # w34rd5 2
     # ...

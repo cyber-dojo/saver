@@ -18,3 +18,7 @@ Note the comment in this SO post from Ross Feller
 
 This is excellent too.
 https://jwiegley.github.io/git-from-the-bottom-up/1-Repository/1-directory-content-tracking.html
+
+This looks to be the Ruby library to use
+https://github.com/libgit2/rugged
+Does not install. Problems with SSL.

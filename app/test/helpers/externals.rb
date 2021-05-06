@@ -17,6 +17,10 @@ module TestHelpersExternals
     externals.disk
   end
 
+  def model
+    externals.model
+  end
+
   def prober
     externals.prober
   end
