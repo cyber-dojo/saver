@@ -16,4 +16,5 @@ https://stackoverflow.com/questions/14790681/what-is-the-internal-format-of-a-gi
 Note the comment in this SO post from Ross Feller
 "If you're interested in creating the git tree object manually from its contents, it's important to note that the [Entries having references to other trees and blobs] needs to be sorted alphabetically by [file/folder name] (aka path)."
 
-
+This is excellent too.
+https://jwiegley.github.io/git-from-the-bottom-up/1-Repository/1-directory-content-tracking.html
