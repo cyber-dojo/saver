@@ -71,19 +71,31 @@ If the tag fails
 The branch will need to be emptied before files are added to it.
 $ git checkout -b <uniqueBranchName>
 $ git rm -rf .
-$ # add-all-files (Note, events.json will have last line with index=TAG)
+$ # add all files/
+$ # add stdout,stderr,status
+$ # add event.json
+$ git checkout master:config/
+$ git checkout master:manifest.json
+$ git checkout master:events.json
+$ # append new last line to events.json with index=TAG
 $ git add .
 $ git commit "${TAG} predicted red got green"
-$ git tag "${TAG}" # could fail
-$ git checkout master/main
+$ git tag "${TAG}" # could fail, but if not...
+$ git checkout master
 $ git merge --ff-only ${TAG}
 $ git branch -d <uniqueBranchName>
 
 The branch need to be created off HEAD so that history
 is linear as it appears in [git log] and [git tag]
 
+Now every event from the browser can cause an new integer tag 
+plus appended event in events.json.
+The events.json file can be read to tell you what each tag is.
+Is the initial commit? Is it a test event? Is it a file rename? etc
+
 Might be possible to create an empty branch (and avoid the need for git rm -rf .)
-by using plumbing commands. See https://stackoverflow.com/questions/645450
+by using plumbing commands for a speed up.
+See https://stackoverflow.com/questions/645450
 
 Only files for integer-tags will ever be harvested
 eg for differ and browser re-enter/refresh
