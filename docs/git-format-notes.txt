@@ -68,16 +68,22 @@ If the tag fails
   - the branch is NOT deleted
   - the commit can be given a unique-fail-tag 
 
-The branch will need to be wiped completely clean before files are added to it.
-Maybe an orphan branch? No. Those cannot be merged back.
+The branch will need to be emptied before files are added to it.
 $ git checkout -b <uniqueBranchName>
 $ git rm -rf .
-$ add-all-files events.json will have last line with index=TAG
+$ # add-all-files (Note, events.json will have last line with index=TAG)
+$ git add .
 $ git commit "${TAG} predicted red got green"
 $ git tag "${TAG}" # could fail
 $ git checkout master/main
-$ git merge --ff-only <branchName>
+$ git merge --ff-only ${TAG}
+$ git branch -d <uniqueBranchName>
 
+The branch need to be created off HEAD so that history
+is linear as it appears in [git log] and [git tag]
+
+Might be possible to create an empty branch (and avoid the need for git rm -rf .)
+by using plumbing commands. See https://stackoverflow.com/questions/645450
 
 Only files for integer-tags will ever be harvested
 eg for differ and browser re-enter/refresh
