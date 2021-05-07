@@ -2,28 +2,32 @@
 Currently no git repos...
 
   /cyber-dojo/groups/12/34/56/manifest.json
-  /cyber-dojo/groups/12/34/56/32/kata.id == 5rTJv5
+  /cyber-dojo/groups/12/34/56/katas.txt == 2 lines
+    rUqcey 26
+    38w9NC 27
+
 
   /cyber-dojo/katas/5r/TJ/v5/manifest.json
   /cyber-dojo/katas/5r/TJ/v5/events.json
-  /cyber-dojo/katas/5r/TJ/v5/1/event.json
+  /cyber-dojo/katas/5r/TJ/v5/1.event.json
+  /cyber-dojo/katas/5r/TJ/v5/2.event.json
 
 
 
 The decision to only offer a download of a kata (and not a group)
 means that in v2 the group could still be the same as v1. That is, not based on git.
-Only /cyber-dojo/katas/ _needs to_ use git for v2.
+Only /cyber-dojo/katas/ _needs_ to use git for v2.
 
 
 When git is actually being used in v2 then the kata directory structure 
 will need to be something like this:
 
 	/files/*
-	  - will hold all the text files the user sees in the browser.
-	    These are the files sent to runner and saved in runner's /sandbox dir.
+	  - holds all the text files the user sees in the browser.
+	    The files sent to runner and saved in runner's /sandbox dir.
       
   /manifest.json
-    - this never changes. Holds eg the docker image name.
+    - never changes. Holds eg, the docker image name.
     
 	/config/*
 	  - the files holding the state of the options, eg
@@ -33,16 +37,15 @@ will need to be something like this:
       
 	/events.json    
       This is the events SUMMARY file. Used by dashboard.
-      The info stored in this file is currently only stored here.
-         viz: colour,time,prediction,duration
+         viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
+      Note index is not necessarily 1-1-1 incrementing.
+      There could be saver outages.
       
   /event.json
-      Currently holds {files,stdout,stderr,status}
-      This will become the contents of the last line of events.json, eg
-         {"colour":"green","time":[2019,1,19,12,45,30,656924],"duration":1.072198}      
-      Viz, the {colour,time,prediction,duration} for the HEAD commit event.
-      Will allow faster re-enter/refresh on browser.
+      Summary info as above {colour,time,prediction,duration,index}
+      Allows faster re-enter/refresh on browser.
+      Currently stored as N.event.json
       
   /stdout
   /stderr
@@ -52,15 +55,32 @@ will need to be something like this:
 
 
 The incrementing-integer tag will come from the browser.
-This will be used for the tag after a commit.
+This will be used for the commit+tag.
 If there is a multi-user/browser out-of-sync error then the git-tag
-command will fail because the tag will already exist. This does no harm.
-Only files for integer-tags will ever be harvested (eg for differ)
+command will fail because the tag will already exist. 
+But the commit will already have happened.
+So the commit+tag needs to happen on a branch.
+If the tag succeeds
+  - the branch needs to be merged (--ff-only) back onto main/master
+  - the branch can be deleted
+If the tag fails
+  - the branch is NOT merged back onto master
+  - the branch is NOT deleted
+  - the commit can be given a unique-fail-tag 
 
-Idea: A failed tag could be caught and a fail-tag made with a given
-pattern, eg fail-tag-DATETIMESTAMP
-These could be retrieved via a special method.
+The branch will need to be wiped completely clean before files are added to it.
+Maybe an orphan branch? No. Those cannot be merged back.
+$ git checkout -b <uniqueBranchName>
+$ git rm -rf .
+$ add-all-files events.json will have last line with index=TAG
+$ git commit "${TAG} predicted red got green"
+$ git tag "${TAG}" # could fail
+$ git checkout master/main
+$ git merge --ff-only <branchName>
 
+
+Only files for integer-tags will ever be harvested
+eg for differ and browser re-enter/refresh
 
 
 - How to implement v2 kata_event(id, index)
@@ -88,33 +108,19 @@ o) process its file in config/ as per normal
 o) do NOT do a git commit+tag
 o) Now have to be very careful about next commit...
 
-Each test submission will need to
-o) delete everything in sandbox/
-o) save incoming files in sandbox/
-   - Do this as a dir rename to be atomic.
-o) do NOT replace config/
-o) append to events.json
-o) replace event.json
-o) replace stdout, stderr, status
-o) do a git add .
-        git commit
-        git tag
-
 
 
 It would be nice if v2 in git format would allow a diff to happen
 really fast as a saver service. Viz to allow differ to not need
 to get was_files and now_files and then do a diff.
-However it is not clear this is possible. The problem is, I think,
-that a git diff does not show output for files that are 
+However note that a git diff does not show output for files that are 
 o) renamed with no change at all.
 o) completely unchanged 
 And differ needs this info. Particularly unchanged files.
-
-So perhaps saver could offer a kata_diff(id,was,now) method
-in its API and differ would then need to call two API methods
-- saver.kata_event(id,was_index)
-- saver.kata_diff(id,was_index,now_index)
+So saver could offer a kata_diff(id,was,now) method
+in its API which would return two chunks of information
+- 1. saver.kata_event(id,was_index)
+- 2. The raw diff of {id,was_index,now_index}
 
 
 I want the files stored in the v2 git repo to be exactly as I want them.
