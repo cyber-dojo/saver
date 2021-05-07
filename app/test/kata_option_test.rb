@@ -120,7 +120,7 @@ class KataOptionTest < TestBase
   test '762', %w(
   kata_option_set('revert', not-on-not-off) raises
   ) do
-    assert_raises { kata_option_set(id, 'revert_red', 'maybe') }
+    assert_raises { kata_option_set(id, 'revert_red'  , 'maybe') }
     assert_raises { kata_option_set(id, 'revert_amber', 'maybe') }
     assert_raises { kata_option_set(id, 'revert_green', 'maybe') }
   end
@@ -128,14 +128,14 @@ class KataOptionTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '860', %w(
-  kata_option_get(unknown) raises
+  kata_option_get(unknown key) raises
   ) do
     assert_raises { kata_option_get(id, 'salmon') }
     assert_raises { kata_option_get(id, 'revert_blue') }
   end
 
   test '861', %w(
-  kata_option_set(unknown) raises
+  kata_option_set(unknown key) raises
   ) do
     assert_raises { kata_option_set(id, 'salmon', 'atlantic') }
     assert_raises { kata_option_set(id, 'revert_blue', 'atlantic') }

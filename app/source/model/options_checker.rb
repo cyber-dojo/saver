@@ -23,10 +23,8 @@ module OptionsChecker
   def known_option_value?(key, value)
     if key === "theme"
       ["dark","light"].include?(value)
-    elsif KNOWN_KEYS.include?(key)
-      ["on","off"].include?(value)
     else
-      false
+      ["on","off"].include?(value)
     end
   end
 
