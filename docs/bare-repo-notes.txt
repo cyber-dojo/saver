@@ -1,5 +1,5 @@
 
-Thinking about using a bare repo for v2 storage...
+Notes on using a bare repo for v2 storage...(decided not to do this)
 
 This is excellent...
 http://git-scm.com/book/en/v2/Git-Internals-Git-Objects
@@ -22,3 +22,25 @@ https://jwiegley.github.io/git-from-the-bottom-up/1-Repository/1-directory-conte
 This looks to be the Ruby library to use
 https://github.com/libgit2/rugged
 Does not install. Problems with SSL.
+
+Do I really want bare repos?
+1. Makes viewing the data directly at the file-system a bit trickier.
+   You would probably have to create a non-bare repo copy in /tmp
+   and then look at the working tree.
+2. If people want to download their session in a git session tgz file
+   then they will inevitably want to then push it to eg github.
+   So this would also require the downloaded git repo to be non-bare.
+   
+It is possible to clone a bare repo into a normal repo.
+$ git clone /bare/repo/foo.git /normal/repo/foo
+See https://stackoverflow.com/questions/12450245
+
+If I store the git repo in a normal format then
+o) each git commit will be a bit slower.
+   However, the [test] time is dominated by how long runner takes.
+   And the saver store could even be async.
+o) a tgz download will be fast (no need for a temporary clone)
+o) it will use more disk space.
+
+Decision: Use normal repos.
+
