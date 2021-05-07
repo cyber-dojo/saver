@@ -1,5 +1,5 @@
 
-Notes on using a bare repo for v2 storage...(decided not to do this)
+Notes on using a bare repo for v2 storage...(not doing this)
 
 This is excellent...
 http://git-scm.com/book/en/v2/Git-Internals-Git-Objects
@@ -41,6 +41,9 @@ o) each git commit will be a bit slower.
    And the saver store could even be async.
 o) a tgz download will be fast (no need for a temporary clone)
 o) it will use more disk space.
+
+However, the model/group code assumes it can read the events.json summary cache.
+So I really have to use normal non-bare repos.
 
 Decision: Use normal repos.
 
