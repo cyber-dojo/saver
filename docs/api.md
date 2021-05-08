@@ -13,8 +13,9 @@ Creates a new group exercise from `manifests[0]`, and returns its id.
 - returns 
   * the `id` of the created group.
 - notes
-  * At present only `manifests[0]` is used.
-    The array is for planned feature where a single group can have more than one exercise.
+  * At present only `manifests[0]` is used and `options` is used.
+    The array will allow a group to have more than one exercise.
+    The options will allow settings such as theme (light|dark) and colour-syntax (on|off) to be defaulted at creation.
 
 - - - -
 ## GET group_exists?(id:)
