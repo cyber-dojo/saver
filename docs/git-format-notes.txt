@@ -147,12 +147,14 @@ And a download will literally just tgz the whole git repo.
 
 
 - TODOS
-  1. Add model's API to saver. DONE.
-  2. All clients can now call saver rather than model (one less network hop)
-  3. Model can delegate to saver.
-  4. Saver renamed to model.
-  -
-  A. Decouple dashboard from saver so it uses only model?
+  o) Add model's API to saver. DONE.
+  o) Add model's server tests to saver. DONE.
+  o) Add model's docs to saver.
+  o) Add model's client tests to saver.
+  o) Switch a model's kata_option_get|set methods to delegate direct to saver.
+  o) Switch all model's methods to delegate to saver.
+  o) Switch clients from model to saver.
+  o) Drop model.
   -
     i. Add v2 storage to saver that stores directly in git format.
    ii. Add kata_git_diff() to saver and use in differ service.
@@ -160,8 +162,8 @@ And a download will literally just tgz the whole git repo.
   iii. Add kata_git_repo_tgz() to saver and offer download option in UI
        It can do tar directly
 
-- Don't offer download_group()
-  Instead, from a group allow selection of avatar from 8x8 grid (similar to joining)
+- Don't offer group_download_tgz()
+  Only offer kata_download_tgz()
 
 - Q96 test runs in ~0.3s
   This shows that generating the git repo on-the-fly is not feasible. Too slow.
