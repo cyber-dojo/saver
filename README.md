@@ -5,7 +5,7 @@
 
 - The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
-- An http service, offering a simple file-system API.
+- An http service, offering a group/kata API.
 
 API
 - - - -
@@ -33,6 +33,7 @@ API
 - [GET alive?](docs/api.md#get-alive)  
 - [GET sha](docs/api.md#get-sha)
 - - - -
+deprecated
 - [POST assert(command)](docs/api.md#post-assertcommand)
 - [POST assert_all(commands)](docs/api.md#post-assert_allcommands)
 - - - -
