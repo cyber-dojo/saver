@@ -19,17 +19,13 @@ API
 * [GET kata_exists?(id)](docs/api.md#get-kata_existsid)
 * [GET kata_events(id)](docs/api.md#get-kata_eventsid)
 * [GET kata_event(id,index)](docs/api.md#get-kata_eventidindex)
-* [GET kata_manifest(id)](docs/api.md#get-kata_manifestid)
 * [GET katas_events(ids,indexs)](docs/api.md#get-katas_eventsidsindexes)
-
-
+* [GET kata_manifest(id)](docs/api.md#get-kata_manifestid)
 * [PUT kata_ran_tests(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_ran_testsidindexfilesstdoutstderrstatussummary)
 * [PUT kata_predicted_right(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_predicted_rightidindexfilesstdoutstderrstatussummary)
 * [PUT kata_predicted_wrong(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_predicted_wrongidindexfilesstdoutstderrstatussummary)
 * [PUT kata_reverted(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_revertedidindexfilesstdoutstderrstatussummary)
 * [PUT kata_checked_out(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_checked_outidindexfilesstdoutstderrstatussummary)
-
-
 * [GET kata_option_get(id,name)](docs/api.md#get-kata_option_getidname)
 * [PUT kata_option_set(id,name,value)](docs/api.md#post-kata_option_setidnamevalue)
 - - - -
