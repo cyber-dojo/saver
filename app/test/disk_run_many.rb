@@ -10,6 +10,9 @@ class DiskRunManyTest < TestBase
   def id58_setup
     @expected = []
     @commands = []
+    externals.instance_exec {
+      @disk = External::Disk.new('tmp/cyber-dojo')
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

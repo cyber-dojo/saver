@@ -12,9 +12,7 @@ run_tests()
   local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
 
   echo
-  echo '======================================'
   echo "Running ${type} tests"
-  echo '======================================'
 
   set +e
   docker exec \

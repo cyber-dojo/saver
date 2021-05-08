@@ -3,7 +3,7 @@
 readonly IMAGE=cyberdojo/saver
 export COMMIT_SHA=$(cd "${ROOT_DIR}" && git rev-parse HEAD)
 
-build_service_images()
+build_docker_images()
 {
   echo
   augmented_docker_compose \

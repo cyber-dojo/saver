@@ -78,7 +78,7 @@ module External
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
     def path_name(s)
-      File.join('', @root_dir, s)
+      File.join('', @root_dir, s) # an /absolute/path
     end
 
   end

@@ -7,6 +7,12 @@ class DiskAssertTest < TestBase
     'FA2'
   end
 
+  def id58_setup
+    externals.instance_exec {
+      @disk = External::Disk.new('tmp/cyber-dojo')
+    }
+  end
+
   disk_tests '538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'

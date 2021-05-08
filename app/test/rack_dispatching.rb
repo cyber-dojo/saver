@@ -31,6 +31,9 @@ class RackDispatchingTest < TestBase
 
   test '167',
   'dispatch has 500 status when assert_all raises' do
+    externals.instance_exec {
+      @disk = External::Disk.new('tmp/cyber-dojo')
+    }
     message = 'commands[1] != true'
     dirname = '167'
     body = { "commands":[

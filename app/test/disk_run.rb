@@ -7,6 +7,12 @@ class DiskRunTest < TestBase
     'FA3'
   end
 
+  def id58_setup
+    externals.instance_exec {
+      @disk = External::Disk.new('tmp/cyber-dojo')
+    }
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_exists?() dir_make()
 
