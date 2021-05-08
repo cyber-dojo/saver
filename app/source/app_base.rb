@@ -21,29 +21,9 @@ class AppBase < Sinatra::Base
   def self.get_json(klass_name, method_name)
     get "/#{method_name}", provides:[:json] do
       respond_to do |format|
-        format.json {
-          target = @externals.public_send(klass_name)
-          result = target.public_send(method_name, **named_args)
-          result = quote_if_string(result)
-          content_type(:json)
-          "{\"#{method_name}\":#{result}}"
-        }
-      end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def self.post_json(klass_name, method_name)
-    post "/#{method_name}", provides:[:json] do
-      respond_to do |format|
-        format.json {
-          target = @externals.public_send(klass_name)
-          result = target.public_send(method_name, **named_args)
-          result = quote_if_string(result)
-          content_type(:json)
-          "{\"#{method_name}\":#{result}}"
-        }
+        format.json do
+          json_result(klass_name, method_name)
+        end
       end
     end
   end
@@ -53,13 +33,21 @@ class AppBase < Sinatra::Base
   def self.put_json(klass_name, method_name)
     put "/#{method_name}", provides:[:json] do
       respond_to do |format|
-        format.json {
-          target = @externals.public_send(klass_name)
-          result = target.public_send(method_name, **named_args)
-          result = quote_if_string(result)
-          content_type(:json)
-          "{\"#{method_name}\":#{result}}"
-        }
+        format.json do
+          json_result(klass_name, method_name)
+        end
+      end
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def self.post_json(klass_name, method_name)
+    post "/#{method_name}", provides:[:json] do
+      respond_to do |format|
+        format.json do
+          json_result(klass_name, method_name)
+        end
       end
     end
   end
@@ -68,9 +56,16 @@ class AppBase < Sinatra::Base
 
   include JsonAdapter
 
+  def json_result(klass_name, method_name)
+    target = @externals.public_send(klass_name)
+    result = target.public_send(method_name, **named_args)
+    content_type(:json)
+    "{#{quoted(method_name)}:#{result.inspect}}"
+  end
+
   def named_args
     body = request_body
-    if body === '' || body === '{}'
+    if body === ''
       args = {}
     else
       args = json_hash_parse(body)
@@ -88,14 +83,8 @@ class AppBase < Sinatra::Base
     fail RequestError, 'body is not JSON'
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def quote_if_string(result)
-    if result.is_a?(String)
-      result.inspect
-    else
-      result
-    end
+  def quoted(arg)
+    '"' + arg.to_s + '"'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -134,10 +123,9 @@ class AppBase < Sinatra::Base
   end
 
   def ut8_clean(s)
-    # force an encoding change
-    # if encoding is already utf-8 then encoding
-    # to utf-8 is a no-op and invalid byte sequences
-    # are not detected.
+    # If encoding is already utf-8 then encoding to utf-8 is a
+    # no-op and invalid byte sequences are not detected.
+    # Forcing an encoding change detects invalid byte sequences.
     s = s.encode('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
     s = s.encode('UTF-8', 'UTF-16')
   end
