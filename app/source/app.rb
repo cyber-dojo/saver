@@ -13,27 +13,27 @@ class App < AppBase
 
   # - - - - - - - - - - - - - - - - -
 
-  post_json(:model, :group_create)
-   get_json(:model, :group_exists?)
-   get_json(:model, :group_manifest)
-  post_json(:model, :group_join)
-   get_json(:model, :group_joined)
+  put_json(:model, :group_create)
+  get_json(:model, :group_exists?)
+  get_json(:model, :group_manifest)
+  put_json(:model, :group_join)
+  get_json(:model, :group_joined)
 
-  post_json(:model, :kata_create)
-   get_json(:model, :kata_exists?)
-   get_json(:model, :kata_manifest)
-   get_json(:model, :kata_events)
-   get_json(:model, :kata_event)
-   get_json(:model, :katas_events)
+  put_json(:model, :kata_create)
+  get_json(:model, :kata_exists?)
+  get_json(:model, :kata_manifest)
+  get_json(:model, :kata_events)
+  get_json(:model, :kata_event)
+  get_json(:model, :katas_events)
 
-  post_json(:model, :kata_ran_tests)
-  post_json(:model, :kata_predicted_right)
-  post_json(:model, :kata_predicted_wrong)
-  post_json(:model, :kata_reverted)
-  post_json(:model, :kata_checked_out)
+  put_json(:model, :kata_ran_tests)
+  put_json(:model, :kata_predicted_right)
+  put_json(:model, :kata_predicted_wrong)
+  put_json(:model, :kata_reverted)
+  put_json(:model, :kata_checked_out)
 
-   get_json(:model, :kata_option_get)
-  post_json(:model, :kata_option_set)
+  get_json(:model, :kata_option_get)
+  put_json(:model, :kata_option_set)
 
   # - - - - - - - - - - - - - - - - -
   # disk methods: Deprecated

@@ -10,13 +10,18 @@ module TestHelpersRack
     @app ||= App.new(externals)
   end
 
-  def post_json(path, data)
-    post path, data, JSON_REQUEST_HEADERS
+  def get_json(path, data)
+    get path, data, JSON_REQUEST_HEADERS
     last_response
   end
 
-  def get_json(path, data)
-    get path, data, JSON_REQUEST_HEADERS
+  def put_json(path, data)
+    put path, data, JSON_REQUEST_HEADERS
+    last_response
+  end
+
+  def post_json(path, data)
+    post path, data, JSON_REQUEST_HEADERS
     last_response
   end
 

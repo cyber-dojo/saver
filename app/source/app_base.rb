@@ -48,6 +48,22 @@ class AppBase < Sinatra::Base
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def self.put_json(klass_name, method_name)
+    put "/#{method_name}", provides:[:json] do
+      respond_to do |format|
+        format.json {
+          target = @externals.public_send(klass_name)
+          result = target.public_send(method_name, **named_args)
+          result = quote_if_string(result)
+          content_type(:json)
+          "{\"#{method_name}\":#{result}}"
+        }
+      end
+    end
+  end
+
   private
 
   include JsonAdapter

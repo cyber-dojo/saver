@@ -155,9 +155,9 @@ module TestHelpersModel
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def assert_json_post_200(path, body, &block)
+  def assert_json_put_200(path, body, &block)
     stdout,stderr = capture_stdout_stderr {
-      post_json '/'+path, body
+      put_json '/'+path, body
     }
     assert_status 200, stdout, stderr
     assert_equal '', stderr, :stderr
@@ -165,9 +165,9 @@ module TestHelpersModel
     block.call(json_response_body)
   end
 
-  def assert_json_post_500(path, body)
+  def assert_json_put_500(path, body)
     stdout,stderr = capture_stdout_stderr {
-      post_json '/'+path, body
+      put_json '/'+path, body
     }
     assert_status 500, stdout, stderr
     assert_equal '', stderr, :stderr

@@ -17,7 +17,7 @@ class GroupCreateTest < TestBase
   attr_reader :display_name, :custom_manifest
 
   v_tests [1], 'q31', %w(
-  |POST /group_create(manifest)
+  |PUT /group_create(manifest)
   |with empty options
   |has status 200
   |returns the id: of a new group
@@ -31,7 +31,7 @@ class GroupCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'q32', %w(
-  |POST /group_create(manifest)
+  |PUT /group_create(manifest)
   |with good options
   |has status 200
   |returns the id: of a new group
@@ -57,7 +57,7 @@ class GroupCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x32', %w(
-  |POST /group_create(manifest,options)
+  |PUT /group_create(manifest,options)
   |with options not a Hash
   |has status 500
   ) do
@@ -69,7 +69,7 @@ class GroupCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x33', %w(
-  |POST /group_create(manifest,options)
+  |PUT /group_create(manifest,options)
   |with unknown option key
   |has status 500
   ) do
@@ -79,7 +79,7 @@ class GroupCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x34', %w(
-  |POST /group_create(manifest,options)
+  |PUT /group_create(manifest,options)
   |with unknown option value
   |has status 500
   ) do
@@ -89,7 +89,7 @@ class GroupCreateTest < TestBase
   private
 
   def assert_group_create_200(options)
-    assert_json_post_200(
+    assert_json_put_200(
       path = 'group_create', {
         manifests: [custom_manifest],
         options: options
@@ -105,7 +105,7 @@ class GroupCreateTest < TestBase
   end
 
   def assert_group_create_500_exception(options, message)
-    assert_json_post_500(
+    assert_json_put_500(
       path='group_create', {
        manifests: [custom_manifest],
        options: options
