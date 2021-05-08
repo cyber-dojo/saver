@@ -1,15 +1,8 @@
 #!/bin/bash -Ee
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
-on_ci_publish_tagged_images()
+push_image()
 {
-  echo
-  if ! on_ci; then
-    echo 'not on CI so not publishing tagged images'
-    echo
-    return
-  fi
-  echo 'on CI so publishing tagged images'
   echo
   local -r image="$(image_name)"
   local -r sha="$(image_sha)"
@@ -19,12 +12,6 @@ on_ci_publish_tagged_images()
   docker push ${image}:latest
   docker push ${image}:${tag}
   docker logout
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - -
-on_ci()
-{
-  [ -n "${CIRCLECI:-}" ]
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - -

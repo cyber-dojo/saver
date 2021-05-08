@@ -7,7 +7,12 @@ jobs:
       - checkout
       - run:
           name: Build, test, tag, publish docker image
-          command: ./build_test_publish.sh
+          command: |
+            ./build.sh
+            ./up.sh
+            ./wait.sh
+            ./test.sh
+            ./push.sh
 
   deploy-to-beta:
     docker:
