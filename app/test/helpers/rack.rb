@@ -11,17 +11,17 @@ module TestHelpersRack
   end
 
   def get_json(path, data)
-    get path, data, JSON_REQUEST_HEADERS
+    get(path, data, JSON_REQUEST_HEADERS)
     last_response
   end
 
   def put_json(path, data)
-    put path, data, JSON_REQUEST_HEADERS
+    put(path, data, JSON_REQUEST_HEADERS)
     last_response
   end
 
   def post_json(path, data)
-    post path, data, JSON_REQUEST_HEADERS
+    post(path, data, JSON_REQUEST_HEADERS)
     last_response
   end
 
