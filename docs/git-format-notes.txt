@@ -149,7 +149,7 @@ And a download will literally just tgz the whole git repo.
 - TODOS
   o) Add model's API to saver. DONE.
   o) Add model's server tests to saver. DONE.
-  o) Add model's docs to saver.
+  o) Add model's docs to saver. DONE.
   o) Add model's client tests to saver.
   o) Switch a model's kata_option_get|set methods to delegate direct to saver.
   o) Switch all model's methods to delegate to saver.
