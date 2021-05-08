@@ -9,6 +9,5 @@ source "${SCRIPTS_DIR}/containers_up.sh"
 source "${SCRIPTS_DIR}/versioner_env_vars.sh"
 export $(versioner_env_vars)
 
-#- - - - - - - - - - - - - - - - - - - - - - - -
 containers_down
 containers_up "$@"

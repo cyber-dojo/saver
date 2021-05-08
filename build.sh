@@ -10,7 +10,6 @@ source "${SCRIPTS_DIR}/tag_image.sh"
 source "${SCRIPTS_DIR}/versioner_env_vars.sh"
 export $(versioner_env_vars)
 
-#- - - - - - - - - - - - - - - - - - - - - - - -
 build_docker_images
 check_env_var
 tag_image

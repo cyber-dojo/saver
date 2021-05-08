@@ -8,7 +8,6 @@ source "${SCRIPTS_DIR}/run_tests_in_containers.sh"
 source "${SCRIPTS_DIR}/versioner_env_vars.sh"
 export $(versioner_env_vars)
 
-#- - - - - - - - - - - - - - - - - - - - - - - -
 reset_dirs_inside_containers
 copy_in_saver_test_data
 run_tests_in_containers "$@"

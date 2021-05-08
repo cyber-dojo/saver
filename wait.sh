@@ -7,5 +7,4 @@ source "${SCRIPTS_DIR}/containers_wait.sh"
 source "${SCRIPTS_DIR}/versioner_env_vars.sh"
 export $(versioner_env_vars)
 
-#- - - - - - - - - - - - - - - - - - - - - - - -
 containers_wait
