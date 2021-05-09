@@ -19,5 +19,7 @@ It would be better if /cyber-dojo was volume-mounted to
 a dir off ${ROOT_DIR} (which would be added to .gitignore and .dockerignore).
 Then a test cycle could simple reset this dir before each run.
 
+Done for server. Not for client.
+
 The same could be done for the coverage files which are 
 currently tar-piped out of the /tmp dir inside the container.

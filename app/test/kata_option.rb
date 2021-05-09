@@ -20,7 +20,7 @@ class KataOptionTest < TestBase
   test '460', %w(
   |kata_option_get('theme') defaults to 'light' as that is better on projectors
   ) do
-    assert_equal quoted(:light), kata_option_get(id, 'theme')
+    assert_equal 'light', kata_option_get(id, 'theme')
   end
 
   test '461', %w(
@@ -28,9 +28,9 @@ class KataOptionTest < TestBase
   |kata_option_get('theme') gets the theme option
   ) do
     kata_option_set(id, 'theme', 'dark')
-    assert_equal quoted(:dark), kata_option_get(id, 'theme')
+    assert_equal 'dark', kata_option_get(id, 'theme')
     kata_option_set(id, 'theme', 'light')
-    assert_equal quoted(:light), kata_option_get(id, 'theme')
+    assert_equal 'light', kata_option_get(id, 'theme')
   end
 
   test '462', %w(
@@ -44,7 +44,7 @@ class KataOptionTest < TestBase
   test '560', %w(
   |kata_option_get('colour') defaults to 'on'
   ) do
-    assert_equal quoted(:on), kata_option_get(id, 'colour')
+    assert_equal 'on', kata_option_get(id, 'colour')
   end
 
   test '561', %w(
@@ -52,9 +52,9 @@ class KataOptionTest < TestBase
   |kata_option_get('colour') gets the colour option
   ) do
     kata_option_set(id, 'colour', 'on')
-    assert_equal quoted(:on), kata_option_get(id, 'colour')
+    assert_equal 'on', kata_option_get(id, 'colour')
     kata_option_set(id, 'colour', 'off')
-    assert_equal quoted(:off), kata_option_get(id, 'colour')
+    assert_equal 'off', kata_option_get(id, 'colour')
   end
 
   test '562', %w(
@@ -68,7 +68,7 @@ class KataOptionTest < TestBase
   test '660', %w(
   |kata_option_get('predict') defaults to 'off'
   ) do
-    assert_equal quoted(:off), kata_option_get(id, 'predict')
+    assert_equal 'off', kata_option_get(id, 'predict')
   end
 
   test '661', %w(
@@ -76,9 +76,9 @@ class KataOptionTest < TestBase
   |kata_option_get('predict') gets the predict option
   ) do
     kata_option_set(id, 'predict', 'on')
-    assert_equal quoted(:on), kata_option_get(id, 'predict')
+    assert_equal 'on', kata_option_get(id, 'predict')
     kata_option_set(id, 'predict', 'off')
-    assert_equal quoted(:off), kata_option_get(id, 'predict')
+    assert_equal 'off', kata_option_get(id, 'predict')
   end
 
   test '662', %w(
@@ -92,9 +92,9 @@ class KataOptionTest < TestBase
   test '760', %w(
   |kata_option_get('revert') defaults to 'off'
   ) do
-    assert_equal quoted(:off), kata_option_get(id, 'revert_red')
-    assert_equal quoted(:off), kata_option_get(id, 'revert_amber')
-    assert_equal quoted(:off), kata_option_get(id, 'revert_green')
+    assert_equal 'off', kata_option_get(id, 'revert_red')
+    assert_equal 'off', kata_option_get(id, 'revert_amber')
+    assert_equal 'off', kata_option_get(id, 'revert_green')
   end
 
   test '761', %w(
@@ -102,19 +102,19 @@ class KataOptionTest < TestBase
   |kata_option_get('revert') gets the revert option
   ) do
     kata_option_set(id, 'revert_red', 'on')
-    assert_equal quoted(:on), kata_option_get(id, 'revert_red')
+    assert_equal 'on', kata_option_get(id, 'revert_red')
     kata_option_set(id, 'revert_red', 'off')
-    assert_equal quoted(:off), kata_option_get(id, 'revert_red')
+    assert_equal 'off', kata_option_get(id, 'revert_red')
 
     kata_option_set(id, 'revert_amber', 'on')
-    assert_equal quoted(:on), kata_option_get(id, 'revert_amber')
+    assert_equal 'on', kata_option_get(id, 'revert_amber')
     kata_option_set(id, 'revert_amber', 'off')
-    assert_equal quoted(:off), kata_option_get(id, 'revert_amber')
+    assert_equal 'off', kata_option_get(id, 'revert_amber')
 
     kata_option_set(id, 'revert_green', 'on')
-    assert_equal quoted(:on), kata_option_get(id, 'revert_green')
+    assert_equal 'on', kata_option_get(id, 'revert_green')
     kata_option_set(id, 'revert_green', 'off')
-    assert_equal quoted(:off), kata_option_get(id, 'revert_green')
+    assert_equal 'off', kata_option_get(id, 'revert_green')
   end
 
   test '762', %w(
@@ -139,12 +139,6 @@ class KataOptionTest < TestBase
   ) do
     assert_raises { kata_option_set(id, 'salmon', 'atlantic') }
     assert_raises { kata_option_set(id, 'revert_blue', 'atlantic') }
-  end
-
-  private
-
-  def quoted(o)
-    '"' + o.to_s + '"'
   end
 
 end

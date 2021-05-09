@@ -4,7 +4,6 @@ require_relative 'id_pather'
 require_relative 'liner_v0'
 require_relative 'options_checker'
 require_relative 'poly_filler'
-require_relative 'quoter'
 require_relative '../lib/json_adapter'
 
 class Kata_v0
@@ -33,7 +32,7 @@ class Kata_v0
       event_file_create_command(id, 0, json_plain(lined({ 'files' => files }))),
       events_file_create_command(id, json_plain(event0) + "\n")
     ])
-    '"' + id + '"'
+    id
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -133,7 +132,6 @@ class Kata_v0
   include Liner_v0
   include OptionsChecker
   include PolyFiller
-  include Quoter
 
   def universal_append(id, index, files, stdout, stderr, status, summary)
     summary['time'] = time.now

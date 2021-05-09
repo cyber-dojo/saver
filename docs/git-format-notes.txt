@@ -150,7 +150,7 @@ And a download will literally just tgz the whole git repo.
   o) Add model's API to saver. DONE.
   o) Add model's server tests to saver. DONE.
   o) Add model's docs to saver. DONE.
-  o) Add model's client tests to saver.
+  o) Add model's client tests to saver. kata_event() "files" is coming back as a string.
   o) Switch a model's kata_option_get|set methods to delegate direct to saver.
   o) Switch all model's methods to delegate to saver.
   o) Switch clients from model to saver.

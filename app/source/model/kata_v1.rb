@@ -3,7 +3,6 @@ require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options_checker'
 require_relative 'poly_filler'
-require_relative 'quoter'
 require_relative '../lib/json_adapter'
 
 # 1. Manifest now has explicit version (1)
@@ -65,7 +64,7 @@ class Kata_v1
       events_file_create_command(id, json_plain(event_summary)),
       event_file_create_command(id, 0, json_plain(event0.merge(event_summary)))
     ])
-    quoted(id)
+    id
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -147,7 +146,7 @@ class Kata_v1
     filename = kata_id_path(id, name)
     result = disk.run(command:disk.file_read_command(filename))
     if result
-      quoted(result.lines.last)
+      result.lines.last
     else
       default = case name
       when 'theme'        then 'light'
@@ -157,7 +156,7 @@ class Kata_v1
       when 'revert_amber' then 'off'
       when 'revert_green' then 'off'
       end
-      quoted(default)
+      default
     end
   end
 
@@ -181,7 +180,6 @@ class Kata_v1
   include JsonAdapter
   include OptionsChecker
   include PolyFiller
-  include Quoter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

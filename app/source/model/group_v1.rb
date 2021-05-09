@@ -4,7 +4,6 @@ require_relative 'id_pather'
 require_relative 'kata_v1'
 require_relative 'options_checker'
 require_relative 'poly_filler'
-require_relative 'quoter'
 require_relative '../lib/json_adapter'
 
 # 1. Manifest now has explicit version (1)
@@ -31,7 +30,7 @@ class Group_v1
       manifest_create_command(id, json_plain(manifest)),
       katas_create_command(id, '')
     ])
-    quoted(id)
+    id
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -64,13 +63,13 @@ class Group_v1
     results = disk.run_until_true(commands:commands)
     result_index = results.find_index(true)
     if result_index.nil?
-      'null' # full
+      nil # full
     else
       index = indexes[result_index]
       manifest['group_index'] = index
       kata_id = @kata.create(manifest, {})
-      disk.assert(command:katas_append_command(id, "#{unquoted(kata_id)} #{index}\n"))
-      kata_id # already quoted
+      disk.assert(command:katas_append_command(id, "#{kata_id} #{index}\n"))
+      kata_id
     end
   end
 
@@ -91,7 +90,7 @@ class Group_v1
         'events' => json_parse('[' + katas_events[index] + ']')
       }
     end
-    json_plain(result) # TODO: build json directly?
+    json_plain(result)
   end
 
   private
@@ -100,7 +99,6 @@ class Group_v1
   include JsonAdapter
   include OptionsChecker
   include PolyFiller
-  include Quoter
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

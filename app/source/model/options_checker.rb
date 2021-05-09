@@ -28,6 +28,10 @@ module OptionsChecker
     end
   end
 
+  def quoted(s)
+    '"' + s + '"'
+  end
+
   KNOWN_KEYS = [
     "theme",
     "fork_button",

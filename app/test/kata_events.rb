@@ -128,7 +128,7 @@ class KataEventsTest < TestBase
       manifest:manifest,
       options:default_options
     }.to_json
-    id = unquoted(json_response_body['kata_create'])
+    id = json_response_body['kata_create']
     last = kata_event(id, 0)
     actual = kata_event(id, -1)
     assert_equal last, actual
@@ -165,11 +165,10 @@ class KataEventsTest < TestBase
       manifest:manifest,
       options:default_options
     }.to_json
-    id = unquoted(json_response_body['kata_create'])
+    id = json_response_body['kata_create']
     last = kata_event(id, 0)
     actual = kata_event(id, -1)
     assert_equal last, actual
   end
-
 
 end

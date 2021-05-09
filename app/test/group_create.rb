@@ -96,7 +96,7 @@ class GroupCreateTest < TestBase
       }.to_json
     ) do |response|
       assert_equal [path], response.keys.sort, :keys
-      id = unquoted(response[path])
+      id = response[path]
       assert_group_exists(id, display_name)
       @manifest = group_manifest(id)
       assert_equal version, @manifest['version']

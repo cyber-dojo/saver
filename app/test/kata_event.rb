@@ -34,6 +34,16 @@ class KataEventTest < TestBase
     assert_equal expected, actual
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Qs3', %w( v0 example via HTTP GET ) do
+    args = {"id":V0_KATA_ID, "index":2 }
+    expected = kata_event_k5ZTk0_2
+    assert_json_get_200('kata_event', args) do |actual|
+      assert_equal expected, actual
+    end
+  end
+
   private
 
   include KataTestData

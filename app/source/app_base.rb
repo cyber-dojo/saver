@@ -60,7 +60,22 @@ class AppBase < Sinatra::Base
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
     content_type(:json)
-    "{#{quoted(method_name)}:#{result.inspect}}"
+
+    # For format v2 (git) I would like to read json direct from git
+    # and embed it directly into the response.body
+    # v0,v1 currently return json_plain(obj) which _IS_ a string
+    # for create() methods, the id is already quoted.
+    # { method_name.to_s => result }.to_json
+
+    if result.is_a?(String) && !'[{'.include?(result[0])
+      result = quoted(result)
+    end
+
+    "{#{quoted(method_name)}:#{result}}"
+  end
+
+  def quoted(arg)
+    '"' + arg.to_s + '"'
   end
 
   def named_args
@@ -81,10 +96,6 @@ class AppBase < Sinatra::Base
     json
   rescue JSON::ParserError
     fail RequestError, 'body is not JSON'
-  end
-
-  def quoted(arg)
-    '"' + arg.to_s + '"'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

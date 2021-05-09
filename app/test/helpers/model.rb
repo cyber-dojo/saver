@@ -3,8 +3,7 @@
 module TestHelpersModel
 
   def group_create(manifest, options)
-    id = model.group_create(manifests:[manifest], options:options)
-    unquoted(id)
+    model.group_create(manifests:[manifest], options:options)
   end
 
   def group_exists?(id)
@@ -18,8 +17,7 @@ module TestHelpersModel
   AVATAR_INDEXES = (0..63).to_a
 
   def group_join(id, indexes=AVATAR_INDEXES.shuffle)
-    id = model.group_join(id:id, indexes:indexes)
-    id === 'null' ? nil : unquoted(id)
+    model.group_join(id:id, indexes:indexes)
   end
 
   def group_joined(id)
@@ -33,8 +31,7 @@ module TestHelpersModel
   # - - - - - - - - - - - - - - -
 
   def kata_create(manifest, options)
-    id = model.kata_create(manifest:manifest, options:options)
-    unquoted(id)
+    model.kata_create(manifest:manifest, options:options)
   end
 
   def kata_exists?(id)
@@ -145,52 +142,6 @@ module TestHelpersModel
 
   def v_test?(n)
     name58.start_with?("<version=#{n}>")
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  def unquoted(id)
-    id[1..-2]
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  def assert_json_put_200(path, body, &block)
-    stdout,stderr = capture_stdout_stderr {
-      put_json '/'+path, body
-    }
-    assert_status 200, stdout, stderr
-    assert_equal '', stderr, :stderr
-    assert_equal '', stdout, :stdout
-    block.call(json_response_body)
-  end
-
-  def assert_json_put_500(path, body)
-    stdout,stderr = capture_stdout_stderr {
-      put_json '/'+path, body
-    }
-    assert_status 500, stdout, stderr
-    assert_equal '', stderr, :stderr
-    assert_equal stdout, last_response.body+"\n", :stdout
-    if block_given?
-      yield json_response_body
-    end
-  end
-
-  def assert_status(expected, stdout, stderr)
-    diagnostic = JSON.pretty_generate({
-      stdout:stdout,
-      stderr:stderr,
-      'last_response.status': last_response.status
-    })
-    actual = last_response.status
-    assert_equal expected, actual, diagnostic
-  end
-
-
-  def json_response_body
-    assert_equal 'application/json', last_response.headers['Content-Type']
-    JSON.parse(last_response.body)
   end
 
 end
