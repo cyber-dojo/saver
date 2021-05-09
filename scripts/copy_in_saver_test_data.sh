@@ -17,8 +17,7 @@ reset_dirs_inside_containers()
   # See docker-compose.yml for tmpfs and external volume
   local DIRS=''
   # /cyber-dojo is a tmpfs
-  DIRS="${DIRS} /cyber-dojo/groups/*"
-  DIRS="${DIRS} /cyber-dojo/katas/*"
+  DIRS="${DIRS} /cyber-dojo/*"
   # /one_k is an external volume
   # See create_space_limited_volume() in scripts/containers_up.sh
   DIRS="${DIRS} /one_k/*"

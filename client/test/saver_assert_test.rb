@@ -137,10 +137,10 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/E8'
     filename = dirname + '/events.json'
-    content = '{"time":[3,4,5,6,7,8]}'
+    data = { "time" => [3,4,5,6,7,8] }
     dir_make(dirname)
-    assert file_create(filename,content)
-    assert_equal content, file_read(filename)
+    assert file_create(filename, data.to_json)
+    assert_equal data, file_read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -151,7 +151,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/E9'
     filename = dirname + '/events.json'
-    content = '{"time":[3,4,5,6,7,8]}'
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     # no dir_make(dirname)
     message = 'command != true'
     assert_raises_SaverException(message,['file_create',filename,content]) {
@@ -169,14 +169,15 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/A0'
     filename = dirname + '/events.json'
-    content = '{"time":[3,4,5,6,7,8]}'
+    data = { "time" => [3,4,5,6,7,8] }
+    content = data.to_json
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
     assert_raises_SaverException(message,['file_create',filename,content*2]) {
       file_create(filename,content*2)
     }
-    assert_equal content, file_read(filename), :did_nothing
+    assert_equal data, file_read(filename), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -187,7 +188,7 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/A1'
     filename = dirname + '/events.json'
-    content = '{"time":[3,4,5,6,7,8]}'
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     dir_make(filename)
     message = 'command != true'
     assert_raises_SaverException(message,['file_create',filename,content]) {
@@ -203,7 +204,7 @@ class SaverAssertTest < TestBase
   |when filename is not a String
   ) do
     filename = 42
-    content = '{"time":[3,4,5,6,7,8]}'
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     message = 'malformed:command:file_create(filename!=String):'
     assert_raises_SaverException(message,['file_create',filename,content]) {
       file_create(filename,content)
