@@ -60,36 +60,31 @@ class AppBase < Sinatra::Base
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
     content_type(:json)
-
-    # For format v2 (git) I would like to read json direct from git
-    # and embed it directly into the response.body
-    # v0,v1 currently return json_plain(obj) which _IS_ a string
-    # for create() methods, the id is already quoted.
-    # { method_name.to_s => result }.to_json
-
-    if result.is_a?(String) && !'[{'.include?(result[0])
-      result = quoted(result)
+    method_name = method_name.to_s
+    if result.is_a?(String) && '[{'.include?(result[0])
+      # Optimization: if we've read aggregate json
+      # then embed it directly into the response
+      "{#{quoted(method_name)}:#{result}}"
+    else
+      { method_name => result }.to_json
     end
-
-    "{#{quoted(method_name)}:#{result}}"
   end
 
-  def quoted(arg)
-    '"' + arg.to_s + '"'
+  def quoted(s)
+    '"' + s + '"'
   end
 
   def named_args
-    body = request_body
-    if body === ''
-      args = {}
-    else
-      args = json_hash_parse(body)
-    end
+    args = json_hash_parse(request_body)
     Hash[args.map{ |key,value| [key.to_sym, value] }]
   end
 
   def json_hash_parse(body)
-    json = json_parse(body)
+    if body == ''
+      json = {}
+    else
+      json = json_parse(body)
+    end
     unless json.instance_of?(Hash)
       fail RequestError, 'body is not JSON Hash'
     end
