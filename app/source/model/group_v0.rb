@@ -42,11 +42,6 @@ class Group_v0
     manifest = self.json_manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
-    # TODO: The code below was is when model was a separate service
-    # and disk calls were made via http to saver. With model now
-    # embedded inside saver this could probably be speeded up a lot
-    # by doing a scandir() to filter the indexes that already have
-    # a dir created.
     commands = indexes.map{ |index| dir_make_command(id, index) }
     results = disk.run_until_true(commands:commands)
     result_index = results.find_index(true)
