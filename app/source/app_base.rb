@@ -16,8 +16,6 @@ class AppBase < Sinatra::Base
     super(nil)
   end
 
-  # before { content_type(:json) }
-
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def self.get_json(klass_name, method_name)
@@ -68,10 +66,7 @@ class AppBase < Sinatra::Base
       # Careful to leave disk.file_read() as a string
       "{#{quoted(method_name)}:#{result.inspect}}"
     else
-      {
-        method_name => result,
-        "aaaa" => result.class.name,
-      }.to_json
+      { method_name => result }.to_json
     end
   end
 
