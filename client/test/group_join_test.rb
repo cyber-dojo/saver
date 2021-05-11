@@ -63,7 +63,7 @@ class GroupJoinTest < TestBase
   v_tests [0,1], '6A6', %w(
   you can join 64 times and then the group is full
   ) do
-    externals.instance_exec { @disk = DiskFake.new }
+    #externals.instance_exec { @disk = DiskFake.new }
     manifest = custom_manifest
     group_id = group_create(manifest, default_options)
     expected_ids = []
@@ -85,7 +85,7 @@ class GroupJoinTest < TestBase
   private
 
   def joined(id)
-    group_events(id).map{|group_index,v| [group_index,{"id"=>v["id"]}]}.to_h
+    group_joined(id).map{|group_index,v| [group_index,{"id"=>v["id"]}]}.to_h
   end
 
 end

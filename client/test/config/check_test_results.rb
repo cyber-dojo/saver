@@ -110,7 +110,7 @@ table =
     [ 'errors',                 error_count,    '<=',   0 ],
     [ 'warnings',               warning_count,  '<=',   0 ],
     [ 'skips',                  skip_count,     '<=',   0 ],
-    [ 'duration(test)[s]',      test_duration,  '<=',  10 ],
+    [ 'duration(test)[s]',      test_duration,  '<=',  30 ],
 
     [ 'tests',                  test_count,     '>=', 100 ],
     [ 'coverage(code)[%]',      code_coverage,  '>=', 100 ],

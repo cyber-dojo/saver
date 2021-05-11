@@ -1,26 +1,10 @@
 
-Currently no git repos...
-
-  /cyber-dojo/groups/12/34/56/manifest.json
-  /cyber-dojo/groups/12/34/56/katas.txt == 2 lines
-    rUqcey 26
-    38w9NC 27
-
-
-  /cyber-dojo/katas/5r/TJ/v5/manifest.json
-  /cyber-dojo/katas/5r/TJ/v5/events.json
-  /cyber-dojo/katas/5r/TJ/v5/1.event.json
-  /cyber-dojo/katas/5r/TJ/v5/2.event.json
-
-
-
 The decision to only offer a download of a kata (and not a group)
 means that in v2 the group could still be the same as v1. That is, not based on git.
-Only /cyber-dojo/katas/ _needs_ to use git for v2.
+Only /cyber-dojo/katas/ needs to use git for v2.
 
 
-When git is actually being used in v2 then the kata directory structure 
-will need to be something like this:
+The git v2 kata directory structure will need to be like this:
 
 	/files/*
 	  - holds all the text files the user sees in the browser.
@@ -68,12 +52,8 @@ If the tag fails
   - the branch is NOT deleted
   - the commit can be given a unique-fail-tag 
 
-The branch will need to be emptied before files are added to it.
-Will a unique branchName be enough for atomicity?
-What if two [test] events come in from two avatars with the same ID?
-v1 does not have this problem because it tries to create N.event.json
-(which contains all the data) as its 1st command.
-Use a unique worktree.
+
+Use a unique worktree to avoid needing to empty the index
 
 $ git checkout -b <uniqueName>
 $ git worktree add <uniqueName> <uniqueName> 
@@ -230,5 +210,22 @@ And a download will literally just tgz the whole git repo.
 - How to provide instructions on pushing the repo to a remote, eg github?
   $ git remote add origin git@github.com:user/repo.git
   $ git push origin main  
+
+
+
+Currently no git repos...
+
+  /cyber-dojo/groups/12/34/56/manifest.json
+  /cyber-dojo/groups/12/34/56/katas.txt == 2 lines
+    rUqcey 26
+    38w9NC 27
+
+
+  /cyber-dojo/katas/5r/TJ/v5/manifest.json
+  /cyber-dojo/katas/5r/TJ/v5/events.json
+  /cyber-dojo/katas/5r/TJ/v5/1.event.json
+  /cyber-dojo/katas/5r/TJ/v5/2.event.json
+
+
 
 

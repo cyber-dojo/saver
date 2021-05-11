@@ -45,7 +45,7 @@ class TestBase < Id58TestBase
     saver.group_manifest(id)
   end
 
-  def group_join(id, indexes)
+  def group_join(id, indexes=(0..63).to_a.shuffle)
     saver.group_join(id, indexes)
   end
 
@@ -67,17 +67,17 @@ class TestBase < Id58TestBase
     saver.kata_manifest(id)
   end
 
-  def kata_events(id)
-    saver.kata_events(id)
-  end
+  #def kata_events(id)
+  #  saver.kata_events(id)
+  #end
 
   def kata_event(id, index)
     saver.kata_event(id, index)
   end
 
-  def katas_events(ids, indexes)
-    saver.katas_events(ids, indexes)
-  end
+  #def katas_events(ids, indexes)
+  #  saver.katas_events(ids, indexes)
+  #end
 
   def kata_option_get(name)
     saver.kata_option_get(id, name)

@@ -29,6 +29,10 @@ module External
       @http.get(__method__, {id:id})
     end
 
+    def group_join(id, indexes)
+      @http.put(__method__, {id:id, indexes:indexes})
+    end
+
     def group_joined(id)
       @http.get(__method__, {id:id})
     end
