@@ -10,7 +10,7 @@ class KataOptionTest < TestBase
   def id58_setup
     display_name = custom_start_points.display_names.sample
     manifest = custom_start_points.manifest(display_name)
-    @id = saver.kata_create(manifest, default_options)
+    @id = kata_create(manifest, default_options)
   end
 
   attr_reader :id
@@ -159,16 +159,6 @@ class KataOptionTest < TestBase
     capture_stdout_stderr {
       assert_raises { kata_option_set('revert_blue', 'off') }
     }
-  end
-
-  private
-
-  def kata_option_get(name)
-    saver.kata_option_get(id, name)
-  end
-
-  def kata_option_set(name, value)
-    saver.kata_option_set(id, name, value)
   end
 
 end

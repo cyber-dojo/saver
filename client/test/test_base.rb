@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 require_relative 'id58_test_base'
 require_relative 'capture_stdout_stderr'
+require_relative 'kata_test_data'
 require_source 'externals'
 
 class TestBase < Id58TestBase
 
   include CaptureStdoutStderr
+  include KataTestData
 
   def initialize(arg)
     super(arg)
@@ -31,6 +33,62 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
+  def group_create(manifests, options)
+    saver.group_create(manifests, options)
+  end
+
+  def group_exists?(id)
+    saver.group_exists?(id)
+  end
+
+  def group_manifest(id)
+    saver.group_manifest(id)
+  end
+
+  def group_join(id, indexes)
+    saver.group_join(id, indexes)
+  end
+
+  def group_joined(id)
+    saver.group_joined(id)
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
+  def kata_create(manifest, options)
+    saver.kata_create(manifest, options)
+  end
+
+  def kata_exists?(id)
+    saver.kata_exists?(id)
+  end
+
+  def kata_manifest(id)
+    saver.kata_manifest(id)
+  end
+
+  def kata_events(id)
+    saver.kata_events(id)
+  end
+
+  def kata_event(id, index)
+    saver.kata_event(id, index)
+  end
+
+  def katas_events(ids, indexes)
+    saver.katas_events(ids, indexes)
+  end
+
+  def kata_option_get(name)
+    saver.kata_option_get(id, name)
+  end
+
+  def kata_option_set(name, value)
+    saver.kata_option_set(id, name, value)
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
   def dir_make_command(dirname)
     saver.dir_make_command(dirname)
   end
@@ -49,6 +107,28 @@ class TestBase < Id58TestBase
 
   def file_read_command(filename)
     saver.file_read_command(filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
+  def self.v_tests(versions, id58_suffix, *lines, &test_block)
+    versions.each do |version|
+      v_lines = ["<version=#{version}>"] + lines
+      test(id58_suffix + version.to_s, *v_lines, &test_block)
+    end
+  end
+
+  def version
+    if v_test?(0)
+      return 0
+    end
+    if v_test?(1)
+      return 1
+    end
+  end
+
+  def v_test?(n)
+    name58.start_with?("<version=#{n}>")
   end
 
   # - - - - - - - - - - - - - - - - - -

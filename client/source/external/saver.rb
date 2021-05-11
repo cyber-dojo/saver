@@ -29,6 +29,10 @@ module External
       @http.get(__method__, {id:id})
     end
 
+    def group_joined(id)
+      @http.get(__method__, {id:id})
+    end
+
     # - - - - - - - - - - - - - - - - - - -
 
     def kata_create(manifest, options)
@@ -41,6 +45,10 @@ module External
 
     def kata_manifest(id)
       @http.get(__method__, {id:id})
+    end
+
+    def kata_event(id, index)
+      @http.get(__method__, {id:id, index:index})
     end
 
     def katas_events(ids, indexes)
