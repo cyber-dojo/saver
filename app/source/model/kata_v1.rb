@@ -73,13 +73,13 @@ class Kata_v1
     manifest_src = disk.assert(command:manifest_file_read_command(id))
     manifest = json_parse(manifest_src)
     polyfill_manifest_defaults(manifest)
-    json_plain(manifest)
+    manifest
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    '[' + disk.assert(command:events_file_read_command(id)) + ']'
+    json_parse('[' + disk.assert(command:events_file_read_command(id)) + ']')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -87,10 +87,10 @@ class Kata_v1
   def event(id, index)
     index = index.to_i
     if index < 0
-      all = json_parse(events(id))
+      all = events(id)
       index = all[index]['index']
     end
-    disk.assert(command:event_file_read_command(id, index))
+    json_parse(disk.assert(command:event_file_read_command(id, index)))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -114,7 +114,7 @@ class Kata_v1
       json[id][index.to_s] = j
     end
 
-    json_plain(json)
+    json
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -171,7 +171,7 @@ class Kata_v1
       disk.file_create_command(filename, "\n"+value),
       disk.file_append_command(filename, "\n"+value)
     ])
-    json_plain(result)
+    result
   end
 
   private
@@ -197,7 +197,7 @@ class Kata_v1
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
       events_file_append_command(id, ",\n" + json_plain(summary))
     ])
-    json_plain(result)
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

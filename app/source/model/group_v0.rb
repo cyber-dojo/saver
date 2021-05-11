@@ -33,13 +33,13 @@ class Group_v0
   def manifest(id)
     manifest = json_manifest(id)
     polyfill_manifest_defaults(manifest)
-    json_plain(manifest)
+    manifest
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
-    manifest = self.json_manifest(id)
+    manifest = json_manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
     commands = indexes.map{ |index| dir_make_command(id, index) }
@@ -68,12 +68,12 @@ class Group_v0
     end
     katas_events = disk.assert_all(commands:read_events_files_commands)
     indexes.each.with_index(0) do |(group_index,kata_id),index|
-      results[group_index] = {
+      results[group_index.to_s] = {
         'id' => kata_id,
         'events' => polyfill_events(events_parse(katas_events[index]))
       }
     end
-    json_plain(results)
+    results
   end
 
   private

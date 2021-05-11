@@ -77,8 +77,7 @@ class KataEventsTest < TestBase
   retrieve already existing individual kata_event() {test-data copied into saver}
   ) do
     actual = kata_event(id='H8NAvN', index=0)
-
-    assert actual.is_a?(Hash)
+    assert actual.is_a?(Hash), actual.class.name
     assert_equal ['files','index','time','event'].sort, actual.keys.sort, :keys
     assert_equal 0, actual['index'], :index
     assert_equal [2020,10,19,12,15,38,644198], actual['time'], :time

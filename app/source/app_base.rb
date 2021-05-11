@@ -16,6 +16,8 @@ class AppBase < Sinatra::Base
     super(nil)
   end
 
+  # before { content_type(:json) }
+
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def self.get_json(klass_name, method_name)
@@ -65,13 +67,11 @@ class AppBase < Sinatra::Base
     if klass_name == :disk && result.is_a?(String)
       # Careful to leave disk.file_read() as a string
       "{#{quoted(method_name)}:#{result.inspect}}"
-    elsif result.is_a?(String) && '[{'.include?(result[0])
-      # Optimization:
-      # We're not doing a disk operation and we've read aggregate json
-      # Embed it directly into the response
-      "{#{quoted(method_name)}:#{result}}"
     else
-      { method_name => result }.to_json
+      {
+        method_name => result,
+        "aaaa" => result.class.name,
+      }.to_json
     end
   end
 
