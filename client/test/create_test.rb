@@ -23,11 +23,10 @@ class CreateTest < TestBase
   |that exists in saver
   |whose manifest matches the display_name
   ) do
-    manifests = [custom_manifest]
-    options = default_options
-    id = saver.group_create(manifests, options)
-    assert saver.group_exists?(id), :group_exists?
-    m = saver.group_manifest(id)
+    id = group_create(custom_manifest, default_options)
+    assert group_exists?(id), :group_exists?
+    m = group_manifest(id)
+    assert_equal id, m['id'], :id
     assert_equal display_name, m['display_name'], :display_name
   end
 
@@ -40,11 +39,10 @@ class CreateTest < TestBase
   |that exists in saver
   |whose manifest matches the display_name
   ) do
-    manifest = custom_manifest
-    options = default_options
-    id = saver.kata_create(manifest, options)
-    assert saver.kata_exists?(id), :group_exists?
-    m = saver.kata_manifest(id)
+    id = kata_create(custom_manifest, default_options)
+    assert kata_exists?(id), :group_exists?
+    m = kata_manifest(id)
+    assert_equal id, m['id'], :id
     assert_equal display_name, m['display_name'], :display_name
   end
 

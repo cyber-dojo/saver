@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'kata_test_data'
 
 class KatasEventsTest < TestBase
 
@@ -9,7 +8,7 @@ class KatasEventsTest < TestBase
   end
 
   test '2R6', %w( v0 example ) do
-    actual = saver.katas_events([V0_KATA_ID,V0_KATA_ID], [2,3])
+    actual = katas_events([V0_KATA_ID,V0_KATA_ID], [2,3])
     expected = {
       V0_KATA_ID => {
         "2" => kata_event_k5ZTk0_2,
@@ -20,7 +19,7 @@ class KatasEventsTest < TestBase
   end
 
   test '1P3', %w( v1 example ) do
-    actual = saver.katas_events([V1_KATA_ID,V1_KATA_ID], [1,2])
+    actual = katas_events([V1_KATA_ID,V1_KATA_ID], [1,2])
     expected = {
       V1_KATA_ID => {
         "1" => kata_event_rUqcey_1,
@@ -29,9 +28,5 @@ class KatasEventsTest < TestBase
     }
     assert_equal expected, actual
   end
-
-  private
-
-  include KataTestData
 
 end
