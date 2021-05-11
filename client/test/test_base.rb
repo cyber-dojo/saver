@@ -33,8 +33,8 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  def group_create(manifests, options)
-    saver.group_create(manifests, options)
+  def group_create(manifest, options)
+    saver.group_create([manifest], options)
   end
 
   def group_exists?(id)
