@@ -120,10 +120,11 @@ class SaverRunTest < TestBase
   ) do
     dirname = 'client/32/fg/9j'
     filename = dirname + '/' + 'events.json'
-    data = { "time" => [3,4,5,6,7,8] }
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     dir_make(dirname)
-    assert file_create(filename, data.to_json)
-    assert_equal data, file_read(filename)
+    assert file_create(filename, content)
+    actual = file_read(filename)
+    assert_equal content, actual
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

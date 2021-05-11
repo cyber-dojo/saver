@@ -61,9 +61,14 @@ class AppBase < Sinatra::Base
     result = target.public_send(method_name, **named_args)
     content_type(:json)
     method_name = method_name.to_s
-    if result.is_a?(String) && '[{'.include?(result[0])
-      # Optimization: if we've read aggregate json
-      # then embed it directly into the response
+
+    if klass_name == :disk && result.is_a?(String)
+      # Careful to leave disk.file_read() as a string
+      "{#{quoted(method_name)}:#{result.inspect}}"
+    elsif result.is_a?(String) && '[{'.include?(result[0])
+      # Optimization:
+      # We're not doing a disk operation and we've read aggregate json
+      # Embed it directly into the response
       "{#{quoted(method_name)}:#{result}}"
     else
       { method_name => result }.to_json

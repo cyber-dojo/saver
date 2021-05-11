@@ -7,8 +7,9 @@ tag_image()
   local -r sha="$(image_sha)"
   local -r tag="${sha:0:7}"
   docker tag ${image}:latest "${image}:${tag}"
-  echo "${sha}"
-  echo "${tag}"
+  echo
+  echo "echo CYBER_DOJO_SAVER_SHA=${sha}"
+  echo "echo CYBER_DOJO_SAVER_TAG=${tag}"
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - -

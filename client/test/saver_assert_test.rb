@@ -137,10 +137,10 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/E8'
     filename = dirname + '/events.json'
-    data = { "time" => [3,4,5,6,7,8] }
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     dir_make(dirname)
-    assert file_create(filename, data.to_json)
-    assert_equal data, file_read(filename)
+    assert file_create(filename, content)
+    assert_equal content, file_read(filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -169,15 +169,14 @@ class SaverAssertTest < TestBase
   ) do
     dirname = 'client/N5/s2/A0'
     filename = dirname + '/events.json'
-    data = { "time" => [3,4,5,6,7,8] }
-    content = data.to_json
+    content = { "time" => [3,4,5,6,7,8] }.to_json
     dir_make(dirname)
     file_create(filename, content)
     message = 'command != true'
     assert_raises_SaverException(message,['file_create',filename,content*2]) {
       file_create(filename,content*2)
     }
-    assert_equal data, file_read(filename), :did_nothing
+    assert_equal content, file_read(filename), :did_nothing
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
