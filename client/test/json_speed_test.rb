@@ -4,7 +4,7 @@ require 'oj'
 
 class JsonSpeedTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '60E'
   end
 

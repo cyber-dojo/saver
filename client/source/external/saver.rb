@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative '../http_json_hash/service'
-require_relative '../http_json_hash/service_error'
 
 module External
 
@@ -14,6 +13,46 @@ module External
 
     def ready?
       @http.get(__method__, {})
+    end
+
+    # - - - - - - - - - - - - - - - - - - -
+
+    def group_create(manifests, options)
+      @http.put(__method__, {manifests:manifests, options:options})
+    end
+
+    def group_exists?(id)
+      @http.get(__method__, {id:id})
+    end
+
+    def group_manifest(id)
+      @http.get(__method__, {id:id})
+    end
+
+    # - - - - - - - - - - - - - - - - - - -
+
+    def kata_create(manifest, options)
+      @http.put(__method__, {manifest:manifest, options:options})
+    end
+
+    def kata_exists?(id)
+      @http.get(__method__, {id:id})
+    end
+
+    def kata_manifest(id)
+      @http.get(__method__, {id:id})
+    end
+
+    def katas_events(ids, indexes)
+      @http.get(__method__, {ids:ids, indexes:indexes})
+    end
+
+    def kata_option_get(id, name)
+      @http.get(__method__, {id:id, name:name})
+    end
+
+    def kata_option_set(id, name, value)
+      @http.put(__method__, {id:id, name:name, value:value})
     end
 
     # - - - - - - - - - - - - - - - - - - -

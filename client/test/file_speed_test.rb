@@ -4,7 +4,7 @@ require 'tempfile'
 
 class FileSpeedTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '34E'
   end
 

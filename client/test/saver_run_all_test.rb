@@ -3,11 +3,11 @@ require_relative 'test_base'
 
 class SaverRunAllTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '8EA'
   end
 
-  def hex_setup
+  def id58_setup
     @expected = []
     @commands = []
   end

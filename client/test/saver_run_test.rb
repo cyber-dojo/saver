@@ -3,7 +3,7 @@ require_relative 'test_base'
 
 class SaverRunTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '6AA'
   end
 

@@ -4,7 +4,7 @@ require_source 'prober'
 
 class SaverProbeTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '6E3'
   end
 
@@ -23,7 +23,7 @@ class SaverProbeTest < TestBase
   end
 
   test '603',
-  %w( ready? is true iff saver is ready ) do
+  %w( ready? is always true ) do
     assert prober.ready?
   end
 

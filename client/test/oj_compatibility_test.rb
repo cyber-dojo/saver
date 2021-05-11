@@ -5,7 +5,7 @@ require 'oj'
 
 class OjCompatibilityTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     '93C'
   end
 

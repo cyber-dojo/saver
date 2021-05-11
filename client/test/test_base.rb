@@ -1,12 +1,11 @@
 # frozen_string_literal: true
-def require_source(required)
-  require_relative "../source/#{required}"
-end
-
+require_relative 'id58_test_base'
+require_relative 'capture_stdout_stderr'
 require_source 'externals'
-require_relative 'hex_mini_test'
 
-class TestBase < HexMiniTest
+class TestBase < Id58TestBase
+
+  include CaptureStdoutStderr
 
   def initialize(arg)
     super(arg)
@@ -18,8 +17,16 @@ class TestBase < HexMiniTest
     @exernals ||= Externals.new
   end
 
+  def custom_start_points
+    externals.custom_start_points
+  end
+
   def saver
     externals.saver
+  end
+
+  def default_options
+    {}
   end
 
   # - - - - - - - - - - - - - - - - - -

@@ -3,11 +3,11 @@ require_relative 'test_base'
 
 class SaverRunUntilTrueTest < TestBase
 
-  def self.hex_prefix
+  def self.id58_prefix
     'A4E'
   end
 
-  def hex_setup
+  def id58_setup
     @expected = []
     @commands = []
   end
