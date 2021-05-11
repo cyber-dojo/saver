@@ -16,9 +16,12 @@ services:
     env_file: [ .env ]
     read_only: true
     restart: 'no'
-    volumes: []
+    volumes:
+      - ./client/source:/app/source:ro
+      - ./client/test:/app/test:ro
     tmpfs: /tmp
     depends_on:
+      - custom-start-points
       - saver
 
   saver:
