@@ -5,7 +5,7 @@
 
 - The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
-- An http service, offering a group/kata API.
+- An http service, offering a group/kata model+persistence API.
 
 Development
 -----------
@@ -24,7 +24,7 @@ After a commit you need to build/up/wait again.
 
 
 API
-- - - -
+---
 * [PUT group_create(manifests,options)](docs/api.md#post-group_createmanifestsoptions)
 * [GET group_exists?(id)](docs/api.md#get-group_existsid)
 * [PUT group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
