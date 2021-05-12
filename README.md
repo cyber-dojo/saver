@@ -7,6 +7,22 @@
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
 - An http service, offering a group/kata API.
 
+Development
+-----------
+To build the images and run the containers:
+```bash
+$ ./build.sh && ./up.sh && ./wait.sh
+````
+
+To run the tests:
+```bash
+$ ./test
+```
+
+After a commit you need to build/up/wait again.
+
+
+
 API
 - - - -
 * [PUT group_create(manifests,options)](docs/api.md#post-group_createmanifestsoptions)
