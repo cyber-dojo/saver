@@ -16,7 +16,7 @@ $ ./build.sh && ./up.sh && ./wait.sh
 
 To run the tests:
 ```bash
-$ ./test
+$ ./test.up
 ```
 
 After a commit you need to build/up/wait again.
@@ -46,7 +46,10 @@ Kata API
 * [POST kata_checked_out(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_checked_outidindexfilesstdoutstderrstatussummary)
 * [GET kata_option_get(id,name)](docs/api.md#get-kata_option_getidname)
 * [POST kata_option_set(id,name,value)](docs/api.md#post-kata_option_setidnamevalue)
-- - - -
+
+
+Probe API
+---------
 - [GET alive?](docs/api.md#get-alive)  
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
