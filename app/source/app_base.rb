@@ -57,29 +57,15 @@ class AppBase < Sinatra::Base
   include JsonAdapter
 
   def json_result(klass_name, method_name)
+    args = to_json_object(request_body)
+    named_args = Hash[args.map{ |key,value| [key.to_sym, value] }]
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
     content_type(:json)
-    method_name = method_name.to_s
-
-    if klass_name == :disk && result.is_a?(String)
-      # Careful to leave disk.file_read() as a string
-      "{#{quoted(method_name)}:#{result.inspect}}"
-    else
-      { method_name => result }.to_json
-    end
+    { method_name.to_s => result }.to_json
   end
 
-  def quoted(s)
-    '"' + s + '"'
-  end
-
-  def named_args
-    args = json_hash_parse(request_body)
-    Hash[args.map{ |key,value| [key.to_sym, value] }]
-  end
-
-  def json_hash_parse(body)
+  def to_json_object(body)
     if body == ''
       json = {}
     else
