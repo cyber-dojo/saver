@@ -335,25 +335,31 @@ A Batch-Method for kata_event(id,index).
 
 - - - -
 ## POST kata_ran_tests(id:,index:,files:,stdout:,stderr:,status:,summary:)
+Record a test event with no prediction.
 
 - - - -
 ## POST kata_predicted_right(id:,index:,files:,stdout:,stderr:,status:,summary:)
+Record a test event with a correct prediction.
 
 - - - -
 ## POST kata_predicted_wrong(id:,index:,files:,stdout:,stderr:,status:,summary:)
+Record a test event with an incorrect prediction.
 
 - - - -
 ## POST kata_reverted(id:,index:,files:,stdout:,stderr:,status:,summary:)
+Revert back to a previous traffic-light.
 
 - - - -
 ## POST kata_checked_out(id:,index:,files:,stdout:,stderr:,status:,summary:)
+Checkout a traffic-light from a different avatar.
 
 - - - -
 ## GET kata_option_get(id:,name:)
+Get a theme (dark/light) or colour (on/off) option.
 
 - - - -
 ## POST kata_option_set(id:,name:,value:)
-
+Set a theme (dark/light) or colour (on/off) option.
 
 - - - -
 ## GET alive?
