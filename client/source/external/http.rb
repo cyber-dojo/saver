@@ -9,10 +9,6 @@ module External
       KLASS::Get.new(uri)
     end
 
-    def put(uri)
-      KLASS::Put.new(uri)
-    end
-
     def post(uri)
       KLASS::Post.new(uri)
     end

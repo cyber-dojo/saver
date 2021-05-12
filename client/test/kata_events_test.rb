@@ -124,11 +124,6 @@ class KataEventsTest < TestBase
     display_name = custom_start_points.display_names.sample
     manifest = custom_start_points.manifest(display_name)
     manifest['version'] = version
-    #put_json '/kata_create', {
-    #  manifest:manifest,
-    #  options:default_options
-    #}.to_json
-    #id = json_response_body['kata_create']
     id = kata_create(manifest, default_options)
     last = kata_event(id, 0)
     actual = kata_event(id, -1)
@@ -162,11 +157,6 @@ class KataEventsTest < TestBase
     display_name = custom_start_points.display_names.sample
     manifest = custom_start_points.manifest(display_name)
     manifest['version'] = version
-    #put_json '/kata_create', {
-    #  manifest:manifest,
-    #  options:default_options
-    #}.to_json
-    #id = json_response_body['kata_create']
     id = kata_create(manifest, default_options)
     last = kata_event(id, 0)
     actual = kata_event(id, -1)

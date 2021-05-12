@@ -15,11 +15,6 @@ module TestHelpersRack
     last_response
   end
 
-  def put_json(path, data)
-    put(path, data, JSON_REQUEST_HEADERS)
-    last_response
-  end
-
   def post_json(path, data)
     post(path, data, JSON_REQUEST_HEADERS)
     last_response
@@ -52,9 +47,9 @@ module TestHelpersRack
     end
   end
 
-  def assert_json_put_200(path, body, &block)
+  def assert_json_post_200(path, body, &block)
     stdout,stderr = capture_stdout_stderr {
-      put_json '/'+path, body
+      post_json '/'+path, body
     }
     assert_status 200, stdout, stderr
     assert_equal '', stderr, :stderr
@@ -62,9 +57,9 @@ module TestHelpersRack
     block.call(json_response_body)
   end
 
-  def assert_json_put_500(path, body)
+  def assert_json_post_500(path, body)
     stdout,stderr = capture_stdout_stderr {
-      put_json '/'+path, body
+      post_json '/'+path, body
     }
     assert_status 500, stdout, stderr
     assert_equal '', stderr, :stderr

@@ -17,7 +17,7 @@ class KataCreateTest < TestBase
   attr_reader :display_name, :custom_manifest
 
   v_tests [0,1], 'q32', %w(
-  |PUT /kata_create(manifest)
+  |POST /kata_create(manifest)
   |with empty options
   |has status 200
   |returns the id: of a new kata
@@ -31,7 +31,7 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'q33', %w(
-  |PUT /kata_create(manifest)
+  |POST /kata_create(manifest)
   |with good options
   |has status 200
   |returns the id: of a new kata
@@ -57,7 +57,7 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x32', %w(
-  |PUT /kata_create(manifest,options)
+  |POST /kata_create(manifest,options)
   |with options not a Hash
   |has status 500
   ) do
@@ -69,7 +69,7 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x33', %w(
-  |PUT /kata_create(manifest,options)
+  |POST /kata_create(manifest,options)
   |with unknown option key
   |has status 500
   ) do
@@ -79,7 +79,7 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   v_tests [1], 'x34', %w(
-  |PUT /kata_create(manifest,options)
+  |POST /kata_create(manifest,options)
   |with unknown option value
   |has status 500
   ) do
@@ -89,7 +89,7 @@ class KataCreateTest < TestBase
   private
 
   def assert_kata_create_200(options)
-    assert_json_put_200(
+    assert_json_post_200(
       path = 'kata_create', {
         manifest: custom_manifest,
         options: options
@@ -107,7 +107,7 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   def assert_kata_create_500_exception(options, message)
-    assert_json_put_500(
+    assert_json_post_500(
       path='kata_create', {
        manifest: custom_manifest,
        options: options

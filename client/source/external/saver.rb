@@ -18,7 +18,7 @@ module External
     # - - - - - - - - - - - - - - - - - - -
 
     def group_create(manifests, options)
-      @http.put(__method__, {manifests:manifests, options:options})
+      @http.post(__method__, {manifests:manifests, options:options})
     end
 
     def group_exists?(id)
@@ -30,7 +30,7 @@ module External
     end
 
     def group_join(id, indexes)
-      @http.put(__method__, {id:id, indexes:indexes})
+      @http.post(__method__, {id:id, indexes:indexes})
     end
 
     def group_joined(id)
@@ -40,7 +40,7 @@ module External
     # - - - - - - - - - - - - - - - - - - -
 
     def kata_create(manifest, options)
-      @http.put(__method__, {manifest:manifest, options:options})
+      @http.post(__method__, {manifest:manifest, options:options})
     end
 
     def kata_exists?(id)
@@ -68,7 +68,7 @@ module External
     end
 
     def kata_option_set(id, name, value)
-      @http.put(__method__, {id:id, name:name, value:value})
+      @http.post(__method__, {id:id, name:name, value:value})
     end
 
     # - - - - - - - - - - - - - - - - - - -

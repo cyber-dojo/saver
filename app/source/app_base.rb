@@ -30,18 +30,6 @@ class AppBase < Sinatra::Base
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.put_json(klass_name, method_name)
-    put "/#{method_name}", provides:[:json] do
-      respond_to do |format|
-        format.json do
-          json_result(klass_name, method_name)
-        end
-      end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def self.post_json(klass_name, method_name)
     post "/#{method_name}", provides:[:json] do
       respond_to do |format|
@@ -93,11 +81,11 @@ class AppBase < Sinatra::Base
     content_type('application/json')
     info = {
       exception: {
-        path: ut8_clean(request.path),
-        body: ut8_clean(request_body),
+        path: utf8_clean(request.path),
+        body: utf8_clean(request_body),
         class: 'SaverService',
         backtrace: error.backtrace,
-        message: ut8_clean(error.message),
+        message: utf8_clean(error.message),
         time: Time.now
       }
     }
@@ -114,7 +102,7 @@ class AppBase < Sinatra::Base
     body
   end
 
-  def ut8_clean(s)
+  def utf8_clean(s)
     # If encoding is already utf-8 then encoding to utf-8 is a
     # no-op and invalid byte sequences are not detected.
     # Forcing an encoding change detects invalid byte sequences.

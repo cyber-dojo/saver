@@ -17,7 +17,7 @@ class CreateTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'q31', %w(
-  |PUT /group_create(manifest)
+  |POST /group_create(manifest)
   |has status 200
   |returns the id: of a new group
   |that exists in saver
@@ -33,7 +33,7 @@ class CreateTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'q32', %w(
-  |PUT /kata_create(manifest)
+  |POST /kata_create(manifest)
   |has status 200
   |returns the id: of a new kata
   |that exists in saver

@@ -18,11 +18,6 @@ module HttpJsonHash
       unpacked(response.body, path.to_s, args)
     end
 
-    def put(path, args)
-      response = @requester.put(path, args)
-      unpacked(response.body, path.to_s, args)
-    end
-
     def post(path, args)
       response = @requester.post(path, args)
       unpacked(response.body, path.to_s, args)
