@@ -16,7 +16,7 @@ $ ./build.sh && ./up.sh && ./wait.sh
 
 To run the tests:
 ```bash
-$ ./test.up
+$ ./test.up --help
 ```
 
 After a commit you need to build/up/wait again.
