@@ -24,7 +24,7 @@ The git v2 kata directory structure will need to be like this:
          viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
       Note index is not necessarily 1-1-1 incrementing.
-      There could be saver outages.
+      There could be saver outages. See saver-outage-gaps.txt
       
   /event.json
       Summary info as above {colour,time,prediction,duration,index}
@@ -70,6 +70,7 @@ $ git commit "${TAG} predicted red got green"
 $ git tag "${TAG}" # could fail
 
 # If not failed
+$ ....fill in missing tags from saver-outages... See saver-outage-gaps.txt
 $ git checkout master
 $ git merge --ff-only ${TAG}
 
