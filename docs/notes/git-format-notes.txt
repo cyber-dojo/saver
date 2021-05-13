@@ -64,19 +64,23 @@ $ # add event.json
 $ git checkout master:config/
 $ git checkout master:manifest.json
 $ git checkout master:events.json
+
 $ # append new last line to events.json with index=TAG
+$ #    Fill in missing tags from saver-outages. [1]
+  #    See saver-outage-gaps.txt
+
 $ git add .
 $ git commit "${TAG} predicted red got green"
 $ git tag "${TAG}" # could fail
 
-# If not failed
-$ ....fill in missing tags from saver-outages... See saver-outage-gaps.txt
-$ git checkout master
-$ git merge --ff-only ${TAG}
+# If tag does not fail
+$     # [1] Do git tags for missing tags... 
+$     git checkout master
+$     git merge --ff-only ${TAG}
 
 # Always
-$ git branch -d <uniqueName>
-$ git worktree remove <uniqueName>
+$     git branch -d <uniqueName>
+$     git worktree remove <uniqueName>
 
 
 
