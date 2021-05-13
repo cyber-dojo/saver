@@ -39,7 +39,8 @@ service_up()
 # - - - - - - - - - - - - - - - - - - - -
 containers_up()
 {
-  create_space_limited_volume
+  create_space_limited_volume # volume-mounted in docker-compose.yml
+  mkdir -p "${ROOT_DIR}/tmp"  # volume-mounted in docker-compose.yml
 
   service_up custom-start-points
   service_up saver
