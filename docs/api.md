@@ -10,7 +10,7 @@ Creates a new group exercise from `manifests[0]`, and returns its id.
   * **manifests:[Hash,...]**.
   For example, a [custom-start-points](https://github.com/cyber-dojo/custom-start-points) manifest.  
   * **options:Hash**.
-  Currently unused (and defaulted). For a planned feature.
+  Currently unused (and defaulted). 
 - returns 
   * the `id` of the created group.
 - notes
@@ -19,7 +19,7 @@ Creates a new group exercise from `manifests[0]`, and returns its id.
     The options will allow settings such as theme (light|dark) and colour-syntax (on|off) to be defaulted at creation.
 
 - - - -
-## GET group_exists?(id:)
+## GET group_exists?(id)
 Determines if a group exercise with the given `id` exists.
 - parameters 
   * **id:String**.
@@ -28,11 +28,11 @@ Determines if a group exercise with the given `id` exists.
 - example
   ```bash
   $ curl \
-    --data '{"id:"dFg8Us"}' \
+    --data '{"id":"dFg8Us"}' \
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/group_exists?
+      http://${DOMAIN}:${PORT}/group_exists?
 
   {"group_exists?":true}
   ```
