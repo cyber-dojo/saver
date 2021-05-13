@@ -23,10 +23,23 @@ run_tests()
   local status=$?
   set -e
 
+  # - - - - - - - - - - - - - - - - - - - - - - - -
+  # I would like to do this in docker-compose.yml
+  #
+  # saver:
+  #  volume:
+  #    ./tmp:/app/tmp:rw
+  #
+  # and write the coverage off /app/tmp thus avoiding
+  # copying the coverage out of the container.
+  # This works locally, but not on the CircleCI pipeline.
+  # So I'm using a tmpfs: /tmp
+  # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
+
   local cov_dir="${ROOT_DIR}/coverage"
   echo "Copying statement coverage files to ${cov_dir}/${type}"
   mkdir -p "${cov_dir}"
-  # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
+
   docker exec "${cid}" \
     tar Ccf \
       "$(dirname "${coverage_root}")" \
