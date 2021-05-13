@@ -1,22 +1,23 @@
 # API 
-- [(JSON-in)](#json-in) All methods pass their argument in a json hash in the http request body.
-- [(JSON-out)](#json-out) All methods return a json hash in the http response body.
-- Paths on *not* RESTful, GET is used for queries, POST is used for modifiers.
+- [(JSON-in)](#json-in) All methods pass their argument in a json hash in the HTTP request body.
+- [(JSON-out)](#json-out) All methods return a json hash in the HTTP response body.
+- Paths on *not* REST-ful, GET is used for queries, POST is used for modifiers.
 
 - - - -
-## POST group_create(manifests:,options:)
+## POST group_create(manifests,options)
 Creates a new group exercise from `manifests[0]`, and returns its id.
 - parameters 
   * **manifests:[Hash,...]**.
   For example, a [custom-start-points](https://github.com/cyber-dojo/custom-start-points) manifest.  
   * **options:Hash**.
-  Currently unused (and defaulted). 
 - returns 
   * the `id` of the created group.
 - notes
-  * At present only `manifests[0]` is used and `options` is used.
-    The array will allow a group to have more than one exercise.
-    The options will allow settings such as theme (light|dark) and colour-syntax (on|off) to be defaulted at creation.
+  * manifests - At present only `[0]` is used.
+    Will allow a group to have more than one exercise.
+  * options - At present unused and defaulted to {}.
+    Will allow settings such as theme (light|dark) and colour-syntax (on|off) 
+    to be defaulted at creation.
 
 - - - -
 ## GET group_exists?(id)
@@ -29,6 +30,7 @@ Determines if a group exercise with the given `id` exists.
   ```bash
   $ curl \
     --data '{"id":"dFg8Us"}' \
+    --fail \
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
@@ -38,7 +40,7 @@ Determines if a group exercise with the given `id` exists.
   ```
 
 - - - -
-## GET group_manifest(id:)
+## GET group_manifest(id)
 Gets the manifest used to create the group exercise with the given `id`.
 - parameters
   * **id:String**.
@@ -47,11 +49,12 @@ Gets the manifest used to create the group exercise with the given `id`.
 - example
   ```bash
   $ curl \
-    --data '{"id:"dFg8Us"}' \
+    --data '{"id":"dFg8Us"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/group_manifest | jq
+      http://${DOMAIN}:${PORT}/group_manifest | jq .
 
   {
     "group_manifest": {
@@ -80,7 +83,7 @@ Gets the manifest used to create the group exercise with the given `id`.
   ```
 
 - - - -
-## POST group_join(id:,indexes:)
+## POST group_join(id,indexes)
 Creates a new kata in the group with the given `id` and returns the kata's id.
 - parameters 
   * **id:String**.
@@ -91,17 +94,18 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
 - example
   ```bash
   $ curl \
-    --data '{"id:"dFg8Us"}' \
+    --data '{"id":"dFg8Us"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${IP_ADDRESS}:${PORT}/group_join
+      http://${DOMAIN}:${PORT}/group_join
 
   {"group_join":"a8gVRN"}
   ```
 
 - - - -
-## GET group_joined(id:)
+## GET group_joined(id)
 Returns the kata-id and kata-events keyed against the kata's avatar-index (0-63)
 for the katas that have joined a group. The group can be specified with the group's `id`
 **or** with the `id` of any kata in the group.
@@ -112,11 +116,12 @@ for the katas that have joined a group. The group can be specified with the grou
 - example
   ```bash
   $ curl \
-    --data '{"id:"dFg8Us"}' \
+    --data '{"id":"dFg8Us"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/group_joined | jq
+      http://${DOMAIN}:${PORT}/group_joined | jq .
 
   {
     "group_joined": {
@@ -134,7 +139,7 @@ for the katas that have joined a group. The group can be specified with the grou
   ```
 
 - - - -
-## POST kata_create(manifest:,options:)
+## POST kata_create(manifest,options)
 Creates a new kata exercise from `manifest`, and returns its id.
 - parameters 
   * **manifest:Hash**.
@@ -145,7 +150,7 @@ Creates a new kata exercise from `manifest`, and returns its id.
   * the `id` of the created kata.
 
 - - - -
-## GET kata_exists?(id:)
+## GET kata_exists?(id)
 Determines if a kata exercise with the given `id` exists.
 - parameters 
   * **id:String**.
@@ -154,17 +159,18 @@ Determines if a kata exercise with the given `id` exists.
 - example
   ```bash
   $ curl \
-    --data '{"id:"4ScKVJ"}' \
+    --data '{"id":"4ScKVJ"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/kata_exists?
+      http://${DOMAIN}:${PORT}/kata_exists?
 
   {"kata_exists?":false}
   ```
 
 - - - -
-## GET kata_manifest(id:)
+## GET kata_manifest(id)
 Gets the manifest used to create the kata exercise with the given `id`.
 - parameters 
   * **id:String**.
@@ -173,11 +179,12 @@ Gets the manifest used to create the kata exercise with the given `id`.
 - example
   ```bash
   $ curl \
-    --data '{"id:"4ScKVJ"}' \
+    --data '{"id":"4ScKVJ"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/kata_manifest | jq
+      http://${DOMAIN}:${PORT}/kata_manifest | jq .
 
   {
     "kata_manifest": {
@@ -207,7 +214,7 @@ Gets the manifest used to create the kata exercise with the given `id`.
 
 
 - - - -
-## GET kata_events(id:)
+## GET kata_events(id)
 Gets the summary of all current events for the kata with the given `id`.
 - parameters 
   * **id:String**.
@@ -216,11 +223,12 @@ Gets the summary of all current events for the kata with the given `id`.
 - example
   ```bash
   $ curl \
-    --data '{"id:"4ScKVJ"}' \
+    --data '{"id":"4ScKVJ"}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/kata_events | jq
+      http://${DOMAIN}:${PORT}/kata_events | jq .
 
   {
     "kata_events": [
@@ -252,7 +260,7 @@ Gets the summary of all current events for the kata with the given `id`.
 
 
 - - - -
-## GET kata_event(id:,index:)
+## GET kata_event(id,index)
 Gets the full details for the kata event whose kata has the given `id` whose event has the given `index`.
 - parameters 
   * **id:String**.
@@ -262,11 +270,12 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
 - example
   ```bash
   $ curl \
-    --data '{"id:"4ScKVJ","index":2}' \
+    --data '{"id":"4ScKVJ","index":2}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/kata_event | jq
+      http://${DOMAIN}:${PORT}/kata_event | jq .
 
   {
      "kata_event": {
@@ -296,7 +305,7 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
    ```
 
 - - - -
-## GET katas_events(ids:,indexes:)
+## GET katas_events(ids,indexes)
 Gets the full details for the kata events with the given `ids` and `indexes`.
 A Batch-Method for kata_event(id,index).
 - parameters 
@@ -307,11 +316,12 @@ A Batch-Method for kata_event(id,index).
 - example
   ```bash
   $ curl \
-    --data '{"ids:["4ScKVJ","De87Aa"],"indexes":[23,45]}' \
+    --data '{"ids":["4ScKVJ","De87Aa"],"indexes":[23,45]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${IP_ADDRESS}:${PORT}/katas_events | jq
+      http://${DOMAIN}:${PORT}/katas_events | jq .
 
   {
      "katas_events": {
@@ -335,31 +345,31 @@ A Batch-Method for kata_event(id,index).
 
 
 - - - -
-## POST kata_ran_tests(id:,index:,files:,stdout:,stderr:,status:,summary:)
+## POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)
 Record a test event with no prediction.
 
 - - - -
-## POST kata_predicted_right(id:,index:,files:,stdout:,stderr:,status:,summary:)
+## POST kata_predicted_right(id,index,files,stdout,stderr,status,summary)
 Record a test event with a correct prediction.
 
 - - - -
-## POST kata_predicted_wrong(id:,index:,files:,stdout:,stderr:,status:,summary:)
+## POST kata_predicted_wrong(id,index,files,stdout,stderr,status,summary)
 Record a test event with an incorrect prediction.
 
 - - - -
-## POST kata_reverted(id:,index:,files:,stdout:,stderr:,status:,summary:)
+## POST kata_reverted(id,index,files,stdout,stderr,status,summary)
 Revert back to a previous traffic-light.
 
 - - - -
-## POST kata_checked_out(id:,index:,files:,stdout:,stderr:,status:,summary:)
+## POST kata_checked_out(id,index,files,stdout,stderr,status,summary)
 Checkout a traffic-light from a different avatar.
 
 - - - -
-## GET kata_option_get(id:,name:)
+## GET kata_option_get(id,name)
 Get a theme (dark/light) or colour (on/off) option.
 
 - - - -
-## POST kata_option_set(id:,name:,value:)
+## POST kata_option_set(id,name,value)
 Set a theme (dark/light) or colour (on/off) option.
 
 - - - -
@@ -372,7 +382,7 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
   * **true**
 - example
   ```bash     
-  $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/alive?
+  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/alive?
 
   {"alive?":true}
   ```
@@ -388,7 +398,7 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
   * **false** when the service is not ready
 - example
   ```bash     
-  $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/ready?
+  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/ready?
 
   {"ready?":false}
   ```
@@ -402,7 +412,7 @@ The git commit sha used to create the Docker image.
   * the 40 character commit sha string.
 - example
   ```bash     
-  $ curl --silent -X GET http://${IP_ADDRESS}:${PORT}/sha
+  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/sha
 
   {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
   ```
@@ -418,10 +428,11 @@ Runs a single [command](#command).
   $ DIRNAME=/cyber-dojo/katas/12/34/56
   $ curl \
     --data '{"command":["dir_make","${DIRNAME}"]}' \
+    --fail \
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/assert
+    --request POST \
+      http://${DOMAIN}:${PORT}/assert
 
   {"assert":true}
   ```
@@ -436,10 +447,11 @@ Runs a single [command](#command).
   $ DIRNAME=/cyber-dojo/katas/34/E3/R6
   $ curl \
     --data '{"command":["dir_make","${DIRNAME}"]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/run
+    --request POST \
+      http://${DOMAIN}:${PORT}/run
 
   {"run":true}
   ```
@@ -455,10 +467,11 @@ Runs all [commands](#commands).
   $ DIRNAME=/cyber-dojo/groups/45/Pe/6N
   $ curl \
     --data '{"commands":[["dir_make","${DIRNAME}"],["dir_exists?","${DIRNAME}"]]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/assert_all
+    --request POST \
+      http://${DOMAIN}:${PORT}/assert_all
 
   {"assert_all":[true,true]}
   ```
@@ -473,10 +486,11 @@ Runs all [commands](#commands).
   $ DIRNAME=/cyber-dojo/groups/2P/45/6E
   $ curl \
     --data '{"commands":[["dir_make","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/run_all
+    --fail POST \
+      http://${DOMAIN}:${PORT}/run_all
 
   {"run_all":[true,false]}
   ```
@@ -491,10 +505,11 @@ Runs [commands](#commands) until one is **true**.
   $ DIRNAME=/cyber-dojo/groups/12/5Q/6E
   $ curl \
     --data '{"commands":[["dir_exists?","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/run_until_true
+    --request POST \
+      http://${DOMAIN}:${PORT}/run_until_true
 
   {"run_until_true":[false,true]}
   ```
@@ -509,10 +524,11 @@ Runs [commands](#commands) until one is **false**.
   $ DIRNAME=/cyber-dojo/groups/1q/K4/d9
   $ curl \
     --data '{"commands":[["dir_make","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
+    --fail \    
     --header 'Content-type: application/json' \
     --silent \
-    -X POST \
-      http://${IP_ADDRESS}:${PORT}/run_until_false
+    --request POST \
+      http://${DOMAIN}:${PORT}/run_until_false
 
   {"run_until_false":[true,false]}
   ```
@@ -621,14 +637,14 @@ Reads the contents of an _existing_ file called **FILENAME**.
 - All methods return a json hash in the http response body.
   * If the method does not raise, a string key equals the method's name. eg
     ```bash
-    $ curl --silent -X GET http://${HOST}:${PORT}/ready?
+    $ curl --silent -X GET http://${DOMAIN}:${PORT}/ready?
 
     {"ready?":true}
     ```
   * If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
     ```bash
-    $ curl --data 'not-json-hash' --silent -X GET http://${HOST}:${PORT}/run | jq      
+    $ curl --data 'not-json-hash' --silent -X GET http://${DOMAIN}:${PORT}/run | jq      
 
     {
       "exception": {
