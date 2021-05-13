@@ -54,16 +54,5 @@ Probe API
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
 
-
-Deprecated
-- - - - - 
-- [POST assert(command)](docs/api.md#post-assertcommand)
-- [POST assert_all(commands)](docs/api.md#post-assert_allcommands)
-- - - -
-- [POST run(command)](docs/api.md#post-runcommand)
-- [POST run_all](docs/api.md#post-run_allcommands)
-- [POST run_until_false](docs/api.md#post-run_until_falsecommands)
-- [POST run_until_true](docs/api.md#post-run_until_truecommands)
-
 - - - -
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
