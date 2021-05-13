@@ -35,7 +35,8 @@ Determines if a group exercise with the given `id` exists.
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/group_exists?
-
+  ```
+  ```bash
   {"group_exists?":true}
   ```
 
@@ -55,7 +56,8 @@ Gets the manifest used to create the group exercise with the given `id`.
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/group_manifest | jq .
-
+  ```
+  ```bash
   {
     "group_manifest": {
       "display_name": "Bash, bats",
