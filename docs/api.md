@@ -102,7 +102,8 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/group_join
-
+  ```
+  ```bash
   {"group_join":"a8gVRN"}
   ```
 
@@ -124,7 +125,8 @@ for the katas that have joined a group. The group can be specified with the grou
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/group_joined | jq .
-
+  ```
+  ```bash
   {
     "group_joined": {
       "7": {
@@ -167,7 +169,8 @@ Determines if a kata exercise with the given `id` exists.
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/kata_exists?
-
+  ```
+  ```bash
   {"kata_exists?":false}
   ```
 
@@ -187,7 +190,8 @@ Gets the manifest used to create the kata exercise with the given `id`.
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/kata_manifest | jq .
-
+  ```
+  ```bash
   {
     "kata_manifest": {
       "display_name": "Bash, bats",
@@ -231,7 +235,8 @@ Gets the summary of all current events for the kata with the given `id`.
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/kata_events | jq .
-
+  ```
+  ```bash
   {
     "kata_events": [
       { "index": 0,
@@ -278,7 +283,8 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/kata_event | jq .
-
+  ```
+  ```bash
   {
      "kata_event": {
        "files": {
@@ -324,7 +330,8 @@ A Batch-Method for kata_event(id,index).
     --silent \
     --request GET \
       http://${DOMAIN}:${PORT}/katas_events | jq .
-
+  ```
+  ```bash
   {
      "katas_events": {
        "4ScKVJ": {
@@ -385,7 +392,8 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
 - example
   ```bash     
   $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/alive?
-
+  ```
+  ```bash
   {"alive?":true}
   ```
 
@@ -401,7 +409,8 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
 - example
   ```bash     
   $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/ready?
-
+  ```
+  ```bash
   {"ready?":false}
   ```
 
@@ -415,7 +424,8 @@ The git commit sha used to create the Docker image.
 - example
   ```bash     
   $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/sha
-
+  ```
+  ```bash
   {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
   ```
 
@@ -435,7 +445,8 @@ Runs a single [command](#command).
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/assert
-
+  ```
+  ```bash
   {"assert":true}
   ```
 
@@ -454,7 +465,8 @@ Runs a single [command](#command).
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/run
-
+  ```
+  ```bash
   {"run":true}
   ```
 
@@ -474,7 +486,8 @@ Runs all [commands](#commands).
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/assert_all
-
+  ```
+  ```bash
   {"assert_all":[true,true]}
   ```
 
@@ -493,7 +506,8 @@ Runs all [commands](#commands).
     --silent \
     --fail POST \
       http://${DOMAIN}:${PORT}/run_all
-
+  ```
+  ```bash
   {"run_all":[true,false]}
   ```
 
@@ -512,7 +526,8 @@ Runs [commands](#commands) until one is **true**.
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/run_until_true
-
+  ```
+  ```bash
   {"run_until_true":[false,true]}
   ```
 
@@ -531,7 +546,8 @@ Runs [commands](#commands) until one is **false**.
     --silent \
     --request POST \
       http://${DOMAIN}:${PORT}/run_until_false
-
+  ```
+  ```bash
   {"run_until_false":[true,false]}
   ```
 
@@ -640,14 +656,16 @@ Reads the contents of an _existing_ file called **FILENAME**.
   * If the method does not raise, a string key equals the method's name. eg
     ```bash
     $ curl --silent -X GET http://${DOMAIN}:${PORT}/ready?
-
+    ```
+    ```bash
     {"ready?":true}
     ```
   * If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
     ```bash
     $ curl --data 'not-json-hash' --silent -X GET http://${DOMAIN}:${PORT}/run | jq      
-
+    ```
+    ```bash
     {
       "exception": {
         "path": "/run",
