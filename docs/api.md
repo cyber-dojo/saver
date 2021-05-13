@@ -1,6 +1,7 @@
 # API 
 - [(JSON-in)](#json-in) All methods pass their argument in a json hash in the http request body.
 - [(JSON-out)](#json-out) All methods return a json hash in the http response body.
+- Paths on *not* RESTful, GET is used for queries, POST is used for modifiers.
 
 - - - -
 ## POST group_create(manifests:,options:)
