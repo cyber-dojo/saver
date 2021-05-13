@@ -14,6 +14,11 @@
 #
 # but CircleCI does not support this yet.
 # It currently supports up to 3.2
+# So it is done like this:
+#
+# saver:
+#   volumes:
+#    - one_k:/one_k:rw
 
 create_space_limited_volume()
 {

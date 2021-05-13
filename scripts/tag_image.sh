@@ -10,6 +10,7 @@ tag_image()
   echo
   echo "echo CYBER_DOJO_SAVER_SHA=${sha}"
   echo "echo CYBER_DOJO_SAVER_TAG=${tag}"
+  echo
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - -
