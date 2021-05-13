@@ -9,14 +9,14 @@
 
 Development
 -----------
-To build the images and run the containers:
+To build the images, bring up the containers, and wait till they are alive and healthy:
 ```bash
 $ ./build.sh && ./up.sh && ./wait.sh
 ````
 
 To run the tests:
 ```bash
-$ ./test.up --help
+$ ./test.sh [--help]
 ```
 
 After a commit you need to build/up/wait again.
