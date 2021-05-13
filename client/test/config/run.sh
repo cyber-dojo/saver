@@ -7,8 +7,10 @@ readonly TEST_ARGS=(${*})
 
 readonly SCRIPT="([ '${MY_DIR}/coverage.rb' ] + %w(${TEST_FILES[*]})).each{ |file| require file }"
 
-export RUBYOPT='-W2'
 mkdir -p ${COVERAGE_ROOT}
+rm -rf ${COVERAGE_ROOT}/*
+
+export RUBYOPT='-W2'
 ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${TEST_LOG}
 
 ruby ${MY_DIR}/check_test_results.rb \

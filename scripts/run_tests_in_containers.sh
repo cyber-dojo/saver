@@ -6,34 +6,31 @@ readonly my_name=saver
 
 run_tests()
 {
-  local user="${1}"
-  local type="${2}" # client|server
-  local coverage_root="/tmp/${type}"
-  local cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
+  local -r user="${1}"
+  local -r type="${2}" # client|server
+  local -r container_coverage_root="/app/tmp/coverage/${type}"
+  local -r cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
 
   echo
   echo "Running ${type} tests"
+  echo
 
   set +e
   docker exec \
     --user "${user}" \
-    --env COVERAGE_ROOT=${coverage_root} \
+    --env COVERAGE_ROOT=${container_coverage_root} \
     "${cid}" \
       sh -c "/app/test/config/run.sh ${@:3}"
   local status=$?
   set -e
 
-  local cov_dir="${ROOT_DIR}/coverage"
-  echo "Copying statement coverage files to ${cov_dir}/${type}"
-  mkdir -p "${cov_dir}"
-  # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
-  docker exec "${cid}" \
-    tar Ccf \
-      "$(dirname "${coverage_root}")" \
-      - "$(basename "${coverage_root}")" \
-        | tar Cxf "${cov_dir}/" -
-
-  cat "${cov_dir}/${type}/done.txt"
+  # done.txt exists if tests finish (^C can exit early)
+  local -r host_coverage_root="${ROOT_DIR}/tmp/coverage/${type}"
+  local -r done_txt="${host_coverage_root}/done.txt"
+  if [ -e "${done_txt}" ]; then
+    echo "Coverage dir: ${host_coverage_root}"
+    cat "${host_coverage_root}/done.txt"
+  fi
 
   return ${status}
 }

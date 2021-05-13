@@ -19,6 +19,7 @@ services:
     volumes:
       - ./client/source:/app/source:ro
       - ./client/test:/app/test:ro
+      - ./tmp:/app/tmp:rw
     tmpfs: /tmp
     depends_on:
       - custom-start-points
@@ -39,6 +40,7 @@ services:
     volumes:
       - ./app/source:/app/source:ro
       - ./app/test:/app/test:ro
+      - ./tmp:/app/tmp:rw
       - one_k:/one_k:rw
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
