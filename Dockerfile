@@ -1,6 +1,8 @@
 FROM cyberdojo/sinatra-base:0fcdde3
 LABEL maintainer=jon@jaggersoft.com
 
+RUN apk add git
+
 RUN adduser                        \
   -D               `# no password` \
   -G nogroup       `# no group`    \

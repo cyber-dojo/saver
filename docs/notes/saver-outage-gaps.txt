@@ -31,12 +31,25 @@ but because there is already an index entry in events.json for 47.
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-$ events_src = `git show master:events.json`
+
+$ git init 
+$ git config user.email "...."
+$ git config user.name "...."
+$ # Add initial files, eg events.json
+$ git add .
+$ git commit -m "0"
+$ git tag 0 
+$ git branch -m master main
+
+
+How to do an atomic commit...
+
+$ events_src = `git show main:events.json`
 $ events = JSON.parse('[' + events_src + ']')
 $   # Check TAG is not already present as an index in events.json
 $   # If it is, raise an exception
 
-$ git worktree add <uniqueName> /tmp/<uniqueName> 
+$ git worktree add /tmp/<uniqueName> 
 $ cd /tmp/<uniqueName>
 $ git rm -rf .
 
@@ -44,8 +57,8 @@ $ # Append any outage tags to events.json, from current index, to TAG-1
 $ # Append new last line to events.json with index=TAG
 $ # Save updated events.json
 
-$ git checkout master config/
-$ git checkout master manifest.json
+$ git checkout main config/
+$ git checkout main manifest.json
 
 $ # add all files/
 $ # add stdout,stderr,status
@@ -67,4 +80,19 @@ $ git tag "${TAG}"
 $ git worktree remove <uniqueName>
 $ git branch -d <uniqueName>
 $ rm -rf /tmp/<uniqueName>
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+It might be possible to somehow create an empty worktree
+rather than creating a full one and then `git rm -rf .`
+
+empty_tree=$(git hash-object -t tree /dev/null)
+id=$(git commit-tree ${empty_tree} < /dev/null)
+git checkout ${id}
+
+
+https://stackoverflow.com/questions/54367011/git-bare-repositories-worktrees-and-tracking-branches
+
+
+ 
 
