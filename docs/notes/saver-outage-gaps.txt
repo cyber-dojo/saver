@@ -28,20 +28,43 @@ This means events.json has to become...
 
 and when hippo tries to do 47 it must fail not because there is no tag 47
 but because there is already an index entry in events.json for 47.
-This will be relatively easy to check for since the number of lines in
-events.json is the number of events.
 
-This still has a race.
-lion could be trying to tag 47,48,49
-hippo could also be trying to tag 47,48,49
-If they interleave then we could end up in an inconsistent state.
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Simplest option is to use a kata-level lock.
+$ events_src = `git show master:events.json`
+$ events = JSON.parse('[' + events_src + ']')
+$   # Check TAG is not already present as an index in events.json
+$   # If it is, raise an exception
 
+$ git worktree add <uniqueName> /tmp/<uniqueName> 
+$ cd /tmp/<uniqueName>
+$ git rm -rf .
 
+$ # Append any outage tags to events.json, from current index, to TAG-1
+$ # Append new last line to events.json with index=TAG
+$ # Save updated events.json
 
+$ git checkout master config/
+$ git checkout master manifest.json
 
+$ # add all files/
+$ # add stdout,stderr,status
+$ # add event.json containing summary
 
+$ git add .
+$ git commit -m "${TAG} predicted green got red"
 
+$ cd BACK-TO-ORIGINAL kata's dir
 
+$ git merge --ff-only <uniqueName>
+
+#  Aim is that this merge fails if there is a parallel operation
+#  It is crucial that the event.json entry has a "time" value using nanoseconds
+
+$ git tag "${TAG}" 
+# Add tags for saver-outage indexes
+
+$ git worktree remove <uniqueName>
+$ git branch -d <uniqueName>
+$ rm -rf /tmp/<uniqueName>
 

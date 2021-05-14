@@ -38,59 +38,6 @@ The git v2 kata directory structure will need to be like this:
   
       
 
-
-The incrementing-integer tag will come from the browser.
-This will be used for the commit+tag.
-If there is a multi-user/browser out-of-sync error then the git-tag
-command will fail because the tag will already exist. 
-But the commit will already have happened.
-So the commit+tag needs to happen on a branch.
-If the tag succeeds
-  - the branch needs to be merged (--ff-only) back onto main/master
-  - the branch can be deleted
-If the tag fails
-  - the branch is NOT merged back onto master
-  - the branch is NOT deleted
-  - the commit can be given a unique-fail-tag 
-
-
-Use a unique worktree to avoid needing to empty the index
-
-$ git checkout -b <uniqueName>
-$ git worktree add <uniqueName> <uniqueName> 
-$ git rm -rf .
-$ # add all files/
-$ # add stdout,stderr,status
-$ # add event.json
-$ git checkout master:config/
-$ git checkout master:manifest.json
-$ git checkout master:events.json
-
-$ # append any outage tags to events.json, from current index, to TAG-1
-$ #    This can fail. There is a race. See saver-outage-gaps.txt
-$ # append new last line to events.json with index=TAG
-
-$ git add .
-$ git commit "${TAG} predicted red got green"
-$ git tag "${TAG}" # could fail due to race condition
-
-# If tag does not fail
-$     git checkout master
-$     git merge --ff-only ${TAG}
-$     # [1] Do git tags for missing tags... 
-
-# Always
-$     git branch -d <uniqueName>
-$     git worktree remove <uniqueName>
-
-
-
-The branch needs to be created off HEAD so that history
-is linear as it appears in [git log] and [git tag]
-
-Now every event from the browser can cause an new integer tag 
-plus appended event in events.json.
-
 events.json
 -----------
 Only files for integer-tags will ever be harvested
