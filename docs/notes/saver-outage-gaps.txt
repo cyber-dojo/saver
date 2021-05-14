@@ -33,8 +33,8 @@ but because there is already an index entry in events.json for 47.
 
 
 $ git init 
-$ git config user.email "...."
-$ git config user.name "...."
+$ git config user.email "#{id}"
+$ git config user.name "#{id}"
 $ # Add initial files, eg events.json
 $ git add .
 $ git commit -m "0"
