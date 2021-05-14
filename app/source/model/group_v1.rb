@@ -56,6 +56,8 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
+    taken = katas_indexes(id).map{ |index,_| index }
+    indexes -= taken
     manifest = self.manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id

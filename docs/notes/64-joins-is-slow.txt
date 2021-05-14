@@ -1,0 +1,9 @@
+
+Currently: group_join(id, indexes=(0..63).to_a.shuffle)
+
+It would be better if the indexes were passed to group_create()
+and then every group_join() used the same shuffled order which
+could be reduced in size by one for each successful join.
+
+Would also make all the group methods (except create) take
+a single id argument.
