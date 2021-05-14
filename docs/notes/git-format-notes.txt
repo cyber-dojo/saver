@@ -25,6 +25,7 @@ The git v2 kata directory structure will need to be like this:
 	    This is appended to for each test run. 
       Note index is not necessarily 1-1-1 incrementing.
       There could be saver outages. See saver-outage-gaps.txt
+      But these outages can be back-filled once saver is back online.
       
   /event.json
       Summary info as above {colour,time,prediction,duration,index}
@@ -65,18 +66,18 @@ $ git checkout master:config/
 $ git checkout master:manifest.json
 $ git checkout master:events.json
 
+$ # append any outage tags to events.json, from current index, to TAG-1
+$ #    This can fail. There is a race. See saver-outage-gaps.txt
 $ # append new last line to events.json with index=TAG
-$ #    Fill in missing tags from saver-outages. [1]
-  #    See saver-outage-gaps.txt
 
 $ git add .
 $ git commit "${TAG} predicted red got green"
-$ git tag "${TAG}" # could fail
+$ git tag "${TAG}" # could fail due to race condition
 
 # If tag does not fail
-$     # [1] Do git tags for missing tags... 
 $     git checkout master
 $     git merge --ff-only ${TAG}
+$     # [1] Do git tags for missing tags... 
 
 # Always
 $     git branch -d <uniqueName>
@@ -155,11 +156,10 @@ And a download will literally just tgz the whole git repo.
   o) Add model's API to saver. DONE.
   o) Add model's server tests to saver. DONE.
   o) Add model's docs to saver. DONE.
-  o) Add model's client tests to saver. kata_event() "files" is coming back as a string.
-  o) Switch a model's kata_option_get|set methods to delegate direct to saver.
-  o) Switch all model's methods to delegate to saver.
-  o) Switch clients from model to saver.
-  o) Drop model.
+  o) Add model's client tests to saver. DONE.
+  o) Add model's code to saver. DONE.
+  o) Drop model's code from model (delegates directly to saver). DONE.
+
   -
     i. Add v2 storage to saver that stores directly in git format.
    ii. Add kata_git_diff() to saver and use in differ service.

@@ -3,9 +3,45 @@ Suppose there are two laptops both running as the same avatar.
   lion, hippo, both on 46
 
 Now lion tries to make two commits 47,48, but there is a saver outage,
-  and only on the third commit, 49 does it get through.
+  and only on the third commit, 49 does it get through to saver.
 
-Then hippo makes a commit, 46 and it works because lion missed it.
-So what this means is that when 49 gets through it has to fill in
-'blanks' for 47 and 48. It can do this as tags; tag 46,47,48 will
-all be for the same commit.
+Then hippo makes a commit, 47 and it works because lion missed 47 (and 48).
+
+This means is that when lion's 49 gets through it has to fill in
+'blanks' for 47 and 48. 
+
+Can it do this as tags; tag 46,47,48 will all be for the same commit.
+But this tagging still has a potential race.
+
+I think appending to events.json has to be done very carefully.
+Eg suppose it looks like this:
+
+{"index":46, "type":"test", ...},
+
+And lion misses 47,48, but then does 49
+This means events.json has to become...
+
+{"index":46, "type":"test", ...},
+{"index":47, "type":"outage", ...},
+{"index":48, "type":"outage", ...},
+{"index":49, "type":"test", ...},
+
+and when hippo tries to do 47 it must fail not because there is no tag 47
+but because there is already an index entry in events.json for 47.
+This will be relatively easy to check for since the number of lines in
+events.json is the number of events.
+
+This still has a race.
+lion could be trying to tag 47,48,49
+hippo could also be trying to tag 47,48,49
+If they interleave then we could end up in an inconsistent state.
+
+Simplest option is to use a kata-level lock.
+
+
+
+
+
+
+
+
