@@ -74,7 +74,7 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '066', %w(
-  no kata-id duplicates in 1000 repeats
+  no kata-id duplicates in 1000
   ) do
     id_generator = IdGenerator.new(externals)
     ids = {}
@@ -88,7 +88,7 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '067', %w(
-  no group-id duplicates in 1000 repeats
+  no group-id duplicates in 1000
   ) do
     id_generator = IdGenerator.new(externals)
     ids = {}
@@ -166,9 +166,6 @@ class IdGenerationTest < TestBase
 
   test '13e', %w(
   kata-id generation tries 42 times and then gives up and returns nil
-  and you either have the worst random-number generator ever
-  or you are the unluckiest person ever
-  or both
   ) do
     id_generator = stubbed_id_generator(saver_offline_id*42)
     assert_nil id_generator.kata_id
@@ -178,9 +175,6 @@ class IdGenerationTest < TestBase
 
   test '13f', %w(
   group-id generation tries 42 times and then gives up and returns nil
-  and you either have the worst random-number generator ever
-  or you are the unluckiest person ever
-  or both
   ) do
     id_generator = stubbed_id_generator(saver_offline_id*42)
     assert_nil id_generator.group_id
@@ -189,7 +183,7 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '13b', %w(
-  group-id does not exist before generation, does after
+  group-id does not exist before generation but does after
   ) do
     id =  'sD92wM'
     refute group_exists?(id), "group_exists?(#{id}) !!"
@@ -201,7 +195,7 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '13c', %w(
-  kata-id does not exist before generation, does after
+  kata-id does not exist before generation but does after
   ) do
     id =  '7w3RPx'
     refute kata_exists?(id), "kata_exists?(#{id}) !!"
