@@ -9,7 +9,7 @@ exit_zero_if_show_help()
     echo "Use: ${MY_NAME} [$(server_name)|$(client_name)] [ID...]"
     echo "Use: ${MY_NAME} -h|--help"
     echo 'Options:'
-    echo "   $(server_name)       run the tests from inside the $(server_name) container"
+    echo "   $(server_name)      run the tests from inside the $(server_name) container"
     echo "   $(client_name)      run the tests from inside the $(client_name) container"
     echo '   ID...       only run the tests matching these identifiers'
     echo '   -h|--help   show this help'
@@ -18,6 +18,3 @@ exit_zero_if_show_help()
     exit 0
   fi
 }
-
-server_name() { echo "saver"; }
-client_name() { echo "client"; }

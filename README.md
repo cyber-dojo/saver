@@ -16,14 +16,24 @@ $ ./build.sh && ./up.sh && ./wait.sh
 
 To run the tests:
 ```bash
-$ ./test.sh [--help]
+$ ./test.sh --help
+```
+```
+Use: ./test.sh [server|client] [ID...]
+Use: ./test.sh -h|--help
+Options:
+   server      run the tests from inside the server container
+   client      run the tests from inside the client container
+   ID...       only run the tests matching these identifiers
+   -h|--help   show this help
+               no options will run all server tests, then all client tests
 ```
 
 * The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
 * In [docker-compose.yml](docker-compose.yml), the source and tests dirs are volume-mounted over their image counterparts.
 * These overlays keeps the dev-cycle fast by reducing the need to build/up/wait.
 * You need to build/up/wait when:
-  * You change the [Dockerfile](Dockerfile)
+  * You change a Dockerfile
   * You change a web server's config (there is no auto-reloading)
 
 
