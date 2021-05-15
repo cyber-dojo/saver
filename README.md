@@ -19,12 +19,12 @@ To run the tests:
 $ ./test.sh [--help]
 ```
 
-* The `build.sh` script recreates `docker-compose.yml`
+* The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
 * In [docker-compose.yml](docker-compose.yml), the source and tests dirs are volume-mounted over their image counterparts.
 * These overlays keeps the dev-cycle fast by reducing the need to build/up/wait.
 * You need to build/up/wait when:
   * You change the [Dockerfile](Dockerfile)
-  * You change the web server config (there is no auto-reloading)
+  * You change a web server's config (there is no auto-reloading)
 
 
 Group API
