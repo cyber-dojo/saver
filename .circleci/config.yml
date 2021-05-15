@@ -5,7 +5,7 @@ jobs:
   build-test-push:
     machine:
       image: ubuntu-2004:202008-01
-      docker_layer_caching: true
+      #docker_layer_caching: true
     steps:
       - checkout
       - run:
@@ -23,8 +23,8 @@ jobs:
       - image: cyberdojo/gcloud-kubectl-helm
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      #- setup_remote_docker:
+      #    docker_layer_caching: true
       - run:
           name: Authenticate with gcloud, deploy to beta with helm
           command: ./.circleci/deploy_to_namespace.sh beta
@@ -35,8 +35,8 @@ jobs:
       - image: cyberdojo/gcloud-kubectl-helm
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      #- setup_remote_docker:
+      #    docker_layer_caching: true
       - run:
           name: Authenticate with gcloud, deploy to prod with helm
           command: ./.circleci/deploy_to_namespace.sh prod
@@ -45,7 +45,7 @@ jobs:
   push-latest:
     machine:
       image: ubuntu-2004:202008-01
-      docker_layer_caching: true
+      #docker_layer_caching: true
     steps:
       - checkout
       - run:
