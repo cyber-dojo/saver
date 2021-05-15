@@ -1,6 +1,25 @@
 #!/bin/bash -Eeu
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
+copy_in_saver_test_data()
+{
+  reset_dirs_inside_containers
+
+  local -r TEST_DATA_DIR="${ROOT_DIR}/app/test/data"
+
+  # You cannot docker cp to a tmpfs, so tar-piping...
+  cd "${TEST_DATA_DIR}/cyber-dojo" \
+    && tar -c . \
+    | docker exec -i "$(server_cid)" tar x -C /cyber-dojo
+
+  cat "${TEST_DATA_DIR}/almost_full_group.v0.kYJVbK.tgz" \
+    | docker exec -i "$(server_cid)" tar -zxf - -C /
+
+  cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" \
+    | docker exec -i "$(server_cid)" tar -zxf - -C /
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - -
 reset_dirs_inside_containers()
 {
   # See docker-compose.yml for tmpfs and external volume
@@ -14,23 +33,6 @@ reset_dirs_inside_containers()
   DIRS="${DIRS} /tmp/cyber-dojo/*"
   docker exec "$(server_cid)" bash -c "rm -rf ${DIRS}"
   docker exec "$(client_cid)" bash -c "rm -rf /tmp/*"
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - -
-copy_in_saver_test_data()
-{
-  local -r TEST_DATA_DIR="${ROOT_DIR}/app/test/data"
-
-  # You cannot docker cp to a tmpfs, so tar-piping...
-  cd "${ROOT_DIR}/app/test/data/cyber-dojo" \
-    && tar -c . \
-    | docker exec -i "$(server_cid)" tar x -C /cyber-dojo
-
-  cat "${TEST_DATA_DIR}/almost_full_group.v0.kYJVbK.tgz" \
-    | docker exec -i "$(server_cid)" tar -zxf - -C /
-
-  cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" \
-    | docker exec -i "$(server_cid)" tar -zxf - -C /
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -

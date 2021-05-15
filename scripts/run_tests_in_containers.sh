@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "${SCRIPTS_DIR}/copy_in_saver_test_data.sh"
+
 readonly my_name=saver
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -31,6 +33,8 @@ run_tests()
   local -r type="${2}" # client|server
   local -r container_coverage_root_dir="/tmp/${type}"
   local -r cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
+
+  copy_in_saver_test_data
 
   echo
   echo "Running ${type} tests"
