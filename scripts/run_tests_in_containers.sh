@@ -29,12 +29,17 @@ run_tests()
   # and docker-compose.yml has a tmpfs: /tmp
   # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
 
+  copy_in_saver_test_data
+
   local -r user="${1}"
   local -r type="${2}" # client|server
   local -r container_coverage_root_dir="/tmp/${type}"
-  local -r cid=$(docker ps --all --quiet --filter "name=test-${my_name}-${type}")
-
-  copy_in_saver_test_data
+  if [ "${type}" == server ]; then
+    local -r cid=$(server_container)
+  fi
+  if [ "${type}" == client ]; then
+    local -r cid=$(client_container)
+  fi
 
   echo
   echo "Running ${type} tests"
@@ -49,9 +54,13 @@ run_tests()
   local status=$?
   set -e
 
+  if [ "${status}" == 255 ]; then
+    exit 42 # ^C
+  fi
+
   local host_coverage_root_dir="${ROOT_DIR}/tmp/coverage"
-  echo "Copying statement coverage files to ${host_coverage_root_dir}/${type}"
   mkdir -p "${host_coverage_root_dir}"
+  rm -rf "${host_coverage_root_dir}/*"
 
   docker exec "${cid}" \
     tar Ccf \
@@ -59,12 +68,9 @@ run_tests()
       - "$(basename "${container_coverage_root_dir}")" \
         | tar Cxf "${host_coverage_root_dir}/" -
 
-  # done.txt exists if tests finish (^C can exit early)
-  local -r done_txt="${host_coverage_root_dir}/${type}/done.txt"
-  if [ -e "${done_txt}" ]; then
-    echo "Coverage dir: ${host_coverage_root_dir}"
-    cat "${host_coverage_root_dir}/${type}/done.txt"
-  fi
+  echo "Copied statement coverage files to ${host_coverage_root_dir}/${type}"
+  cat "${host_coverage_root_dir}/${type}/done.txt"
+  echo
 
   return ${status}
 }
@@ -108,8 +114,8 @@ run_tests_in_containers()
     return 0
   else
     echo
-    echo "test-${my_name}-server: status = ${server_status}"
-    echo "test-${my_name}-client: status = ${client_status}"
+    echo "$(server_container): status = ${server_status}"
+    echo "$(client_container): status = ${client_status}"
     echo
     return 1
   fi

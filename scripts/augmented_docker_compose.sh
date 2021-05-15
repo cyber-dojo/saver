@@ -13,9 +13,9 @@ augmented_docker_compose()
     | docker run \
         --rm \
         --interactive \
-        ${image} \
+        "${image}" \
            custom-start-points `# for testing` \
-    | tee /tmp/augmented-docker-compose.saver.peek.yml \
+    | tee ${ROOT_DIR}/tmp/docker-compose.yml \
     | docker-compose \
       --project-name saver \
       --file -       \

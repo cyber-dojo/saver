@@ -47,7 +47,7 @@ containers_up()
   create_space_limited_volume
 
   service_up custom-start-points
-  service_up saver
-  service_up saver_client
+  service_up $(server_name)
+  service_up $(client_name)
 }
 

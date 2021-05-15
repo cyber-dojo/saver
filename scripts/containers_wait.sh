@@ -85,10 +85,10 @@ containers_wait()
   exit_non_zero_unless_healthy custom-start-points saver_custom-start-points_1
   exit_unless_clean saver_custom-start-points_1
 
-  exit_non_zero_unless_healthy saver test-saver-server
-  exit_unless_clean test-saver-server
+  exit_non_zero_unless_healthy $(server_name) $(server_container)
+  exit_unless_clean $(server_container)
 
-  exit_non_zero_unless_healthy saver_client test-saver-client
-  exit_unless_clean test-saver-client
+  exit_non_zero_unless_healthy $(client_name) $(client_container)
+  exit_unless_clean $(client_container)
 }
 
