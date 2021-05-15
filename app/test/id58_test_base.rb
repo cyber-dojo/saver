@@ -16,6 +16,7 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  # :nocov:
   def self.test(id58_suffix, *lines, &test_block)
     source = test_block.source_location
     source_file = File.basename(source[0])
@@ -54,7 +55,6 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # :nocov:
   ObjectSpace.define_finalizer(self, proc {
     slow = @@timings.select{ |_name,secs| secs > 0.000 }
     sorted = slow.sort_by{ |name,secs| -secs }.to_h
@@ -67,7 +67,6 @@ class Id58TestBase < MiniTest::Test
     }
     puts
   })
-  # :nocov:
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
@@ -116,13 +115,10 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # :nocov:
   def id58
     @id58
   end
-  # :nocov:
 
-  # :nocov:
   def name58
     @name58
   end

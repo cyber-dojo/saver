@@ -10,14 +10,14 @@ class RandomSamplingTest < TestBase
   test '340', %w[ basic sanity check sample(N) returns all of 0 to N-1 inclusive ] do
     size = 16
     counts = {}
-    until counts.size == size
+    500.times do
       i = random.sample(size)
       assert_equal Integer, i.class
       assert i >= 0, i
       assert i < size, i
-      counts[i] ||= 0
-      counts[i] += 1
+      counts[i] = true
     end
+    assert_equal size, counts.size
   end
 
 end

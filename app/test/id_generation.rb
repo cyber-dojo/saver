@@ -30,7 +30,7 @@ class IdGenerationTest < TestBase
   ) do
     id_generator = IdGenerator.new(externals)
     counts = {}
-    until counts.size === 58 do
+    500.times do
       id_generator.group_id.each_char do |ch|
         counts[ch] = true
       end
@@ -45,7 +45,7 @@ class IdGenerationTest < TestBase
   ) do
     id_generator = IdGenerator.new(externals)
     counts = {}
-    until counts.size === 58 do
+    500.times do
       id_generator.kata_id.each_char do |ch|
         counts[ch] = true
       end

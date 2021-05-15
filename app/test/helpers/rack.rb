@@ -35,16 +35,14 @@ module TestHelpersRack
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def assert_json_get_200(method, args)
+  def assert_json_get_200(method, args, &block)
     stdout,stderr = capture_stdout_stderr {
       get_json '/'+method, args.to_json
     }
     assert_status 200, stdout, stderr
     assert_equal '', stderr, :stderr
     assert_equal '', stdout, :stdout
-    if block_given?
-      yield json_response_body[method]
-    end
+    block.call(json_response_body[method])
   end
 
   def assert_json_post_200(path, body, &block)
@@ -57,16 +55,14 @@ module TestHelpersRack
     block.call(json_response_body)
   end
 
-  def assert_json_post_500(path, body)
+  def assert_json_post_500(path, body, &block)
     stdout,stderr = capture_stdout_stderr {
       post_json '/'+path, body
     }
     assert_status 500, stdout, stderr
     assert_equal '', stderr, :stderr
     assert_equal stdout, last_response.body+"\n", :stdout
-    if block_given?
-      yield json_response_body
-    end
+    block.call(json_response_body)
   end
 
   def assert_status(expected, stdout, stderr)
