@@ -46,6 +46,7 @@ jobs:
           name: Push image to dockerhub (latest)
           command: ./push.sh latest
 
+
 workflows:
 
   version: 2
