@@ -19,7 +19,11 @@ To run the tests:
 $ ./test.sh [--help]
 ```
 
-After a commit you need to build/up/wait again.
+* The source and tests are volume-mounted over their counterparts in each image.
+* This is to keep the dev-cycle fast by reducing the need to build/up/wait.
+* You need to repeat the build/up/wait step:
+  * after a local commit
+  * after a web server (sinatra) config change; there is no auto-reloading
 
 
 Group API
