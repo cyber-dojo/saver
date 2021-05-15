@@ -7,7 +7,7 @@ push_image()
   echo
   # DOCKER_USER, DOCKER_PASS are in the ci context
   echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
-  if [ "${tag}" == '' ];
+  if [ "${tag}" == '' ]; then
     docker push $(server_image):$(image_tag)
   fi
   if [ "${tag}" == latest ]; then
