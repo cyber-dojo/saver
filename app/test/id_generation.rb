@@ -74,11 +74,11 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '066', %w(
-  no kata-id duplicates in 5000 repeats
+  no kata-id duplicates in 1000 repeats
   ) do
     id_generator = IdGenerator.new(externals)
     ids = {}
-    repeats = 5000
+    repeats = 1000
     repeats.times do
       ids[id_generator.kata_id] = true
     end
@@ -88,11 +88,11 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '067', %w(
-  no group-id duplicates in 5000 repeats
+  no group-id duplicates in 1000 repeats
   ) do
     id_generator = IdGenerator.new(externals)
     ids = {}
-    repeats = 5000
+    repeats = 1000
     repeats.times do
       ids[id_generator.group_id] = true
     end
