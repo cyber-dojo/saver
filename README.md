@@ -3,9 +3,9 @@
 
 # cyberdojo/saver docker image
 
-- The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
+- The [Ruby](https://www.ruby-lang.org) source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
-- An http service, offering a group/kata model+persistence API.
+- An HTTP web service ([Sinatra](http://sinatrarb.com/)), offering a Group/Kata model+persistence API.
 
 Development
 -----------
@@ -19,11 +19,12 @@ To run the tests:
 $ ./test.sh [--help]
 ```
 
-* The source and tests are volume-mounted over their counterparts in each image.
-* This is to keep the dev-cycle fast by reducing the need to build/up/wait.
-* You need to repeat the build/up/wait step:
-  * after a local commit
-  * after a web server (sinatra) config change; there is no auto-reloading
+* The `build.sh` script recreates `docker-compose.yml`
+* In [docker-compose.yml](docker-compose.yml), the source and tests dirs are volume-mounted over their image counterparts.
+* These overlays keeps the dev-cycle fast by reducing the need to build/up/wait.
+* You need to build/up/wait when:
+  * You change the [Dockerfile](Dockerfile)
+  * You change the web server config (there is no auto-reloading)
 
 
 Group API
