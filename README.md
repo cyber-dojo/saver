@@ -20,13 +20,14 @@ $ ./test.sh --help
 ```
 ```
 Use: ./test.sh [server|client] [ID...]
-Use: ./test.sh -h|--help
+
+No options runs all server tests, then all client tests
+
 Options:
    server      run the tests from inside the server container
    client      run the tests from inside the client container
-   ID...       only run the tests matching these identifiers
+   ID...       only run the tests matching the given identifiers
    -h|--help   show this help
-               no options will run all server tests, then all client tests
 ```
 
 * The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
