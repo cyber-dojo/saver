@@ -110,13 +110,13 @@ table =
     [ 'errors',                 error_count,    '<=',   0 ],
     [ 'warnings',               warning_count,  '<=',   0 ],
     [ 'skips',                  skip_count,     '<=',   0 ],
-    [ 'duration(test)[s]',      test_duration,  '<=',  30 ],
+    [ 'duration(test)[s]',      test_duration,  '<=',  10 ],
 
-    [ 'tests',                  test_count,     '>=', 100 ],
+    [ 'tests',                  test_count,     '>=', 150 ],
     [ 'coverage(code)[%]',      code_coverage,  '>=', 100 ],
     [ 'coverage(test)[%]',      test_coverage,  '>=', 100 ],
-    [ 'lines(test/code)',       f2(line_ratio), '>=',   7 ],
-    [ 'hits(code/test)',        f2(hits_ratio), '>=', 0.2 ],
+    [ 'lines(test/code)',       f2(line_ratio), '>=',   8 ],
+    [ 'hits(code/test)',        f2(hits_ratio), '>=',   4 ],
   ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -

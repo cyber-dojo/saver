@@ -61,25 +61,26 @@ class GroupJoinTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   v_tests [0,1], '6A6', %w(
-  you can join 64 times and then the group is full
+    when 64 avatars have joined the group is full
   ) do
-    # This is a slow test...
-    manifest = custom_manifest
-    group_id = group_create(manifest, default_options)
-    expected_ids = []
-    64.times do
-      kata_id = group_join(group_id)
-      refute_nil kata_id, :not_full
-      expected_ids << kata_id
-    end
-    kata_id = group_join(group_id)
-    assert_nil kata_id, :full
+    # Precreated almost full groups.
+    # See scripts/create_almost_full_group.sh
+    # See app/test/data/almost_full_group.V?.*.tgz
+    gids = {
+      0 => 'kYJVbK',
+      1 => 'X9UunP'
+    }
+    gid = gids[version]
+
+    last = group_join(gid)
+    refute_nil last, :not_full
+
+    full = group_join(gid)
+    assert_nil full, :full
 
     expected_indexes = (0..63).to_a
-    actual_indexes = joined(group_id).keys.map{|key| key.to_i}
-    actual_ids = joined(group_id).values.map{|value| value["id"]}
+    actual_indexes = joined(gid).keys.map{ |key| key.to_i }
     assert_equal expected_indexes, actual_indexes.sort
-    assert_equal expected_ids.sort, actual_ids.sort
   end
 
   private

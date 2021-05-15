@@ -112,11 +112,11 @@ table =
     [ 'skips',                  skip_count,     '<=',   0 ],
     [ 'duration(test)[s]',      test_duration,  '<=',  10 ],
 
-    [ 'tests',                  test_count,     '>=', 150 ],
+    [ 'tests',                  test_count,     '>=', 200 ],
     [ 'coverage(code)[%]',      code_coverage,  '>=', 100 ],
     [ 'coverage(test)[%]',      test_coverage,  '>=', 100 ],
     [ 'lines(test/code)',       f2(line_ratio), '>=', 1.7 ],
-    [ 'hits(code/test)',        f2(hits_ratio), '>=',  15 ],
+    [ 'hits(code/test)',        f2(hits_ratio), '>=',  10 ],
   ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -
