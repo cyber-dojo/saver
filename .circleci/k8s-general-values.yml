@@ -38,9 +38,7 @@ containers:
     env:
       CYBER_DOJO_PROMETHEUS: "true"
       CYBER_DOJO_SAVER_PORT: "4537"
-    #livenessProbe:
-    #  path: /alive?
-    #  port: 4537
-    #readinessProbe:
-    #  path: /ready?
-    #  port: 4537
+    livenessProbe:
+      path: /alive
+    readinessProbe:
+      path: /ready

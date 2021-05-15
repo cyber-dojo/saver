@@ -9,7 +9,7 @@ readonly CYBER_DOJO_SAVER_TAG="${CIRCLE_SHA1:0:7}"
 
 gcloud_init
 helm_init
-helm_upgrade_probe_no_prometheus_yes \
+helm_upgrade_probe_yes_prometheus_yes \
    "${NAMESPACE}" "saver" \
    "${CYBER_DOJO_SAVER_IMAGE}" \
    "${CYBER_DOJO_SAVER_TAG}" \
