@@ -4,6 +4,7 @@ require 'oj'
 
 class JsonSpeedTest < TestBase
 
+=begin
   def self.id58_prefix
     '60E'
   end
@@ -27,10 +28,11 @@ class JsonSpeedTest < TestBase
     diagnostic = ''
     diagnostic += "\n#{'%.5f' % t0}:one_large_load"
     diagnostic += "\n#{'%.5f' % t1}:many_small_loads"
-    #puts diagnostic
+    puts diagnostic
     #0.43737:one_large_load
     #0.67263:many_small_loads
     assert t0 < t1, diagnostic
   end
+=end
 
 end
