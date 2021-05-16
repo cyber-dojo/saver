@@ -1,5 +1,7 @@
 #!/bin/bash -Eeu
 
+# See comment in tag_images_to_latest.sh
+
 check_sha_env_var_in_images()
 {
   check_sha_env_var server "$(server_image)"

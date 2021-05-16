@@ -29,7 +29,7 @@ Options:
 ```
 
 * The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
-* In [docker-compose.yml](docker-compose.yml), the source and tests dirs are volume-mounted over their image counterparts.
+* In [docker-compose.yml](docker-compose.yml), the source and test dirs are volume-mounted over their image counterparts.
 * These overlays keeps the dev-cycle fast by reducing the need to down/build/up/wait.
 * You need to down/build/up/wait when:
   * You change a Dockerfile

@@ -1,5 +1,15 @@
 #!/bin/bash -Eeu
 
+# Tagging images from the commit-sha can build up
+# a very large amount of images over time. Their
+# sheer number can slow things down: eg
+#   o) filtering a [docker image ls]
+#   o) occasional [docker ps -aq | xargs docker image rm]
+# I prefer to remove old images Continuously.
+#
+# Removing old images and not busting the image layer
+# cache requires the latest image is tagged to :latest
+
 # - - - - - - - - - - - - - - - - - - - - - -
 remove_old_images()
 {
