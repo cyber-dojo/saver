@@ -143,38 +143,40 @@ warning_count = log_stats[:warning_count]
 skip_count    = log_stats[:skip_count]
 test_duration = log_stats[:time].to_f
 
+test_stats = get_index_stats(coverage_test_tab_name)
+code_stats = get_index_stats(coverage_code_tab_name)
+
 table = [
-  [ 'test:count',       test_count,     '>=',                 0 ],
+  [ 'test:count',       test_count,     '>=',                 1 ],
+  [ nil ],
   [ 'test:failures',    failure_count,  '<=',  MAX[:failures  ] ],
   [ 'test:errors',      error_count,    '<=',  MAX[:errors    ] ],
   [ 'test:warnings',    warning_count,  '<=',  MAX[:warnings  ] ],
   [ 'test:skips',       skip_count,     '<=',  MAX[:skips     ] ],
   [ 'test:duration(s)', test_duration,  '<=',  MAX[:duration  ] ],
-]
-
-test_stats = get_index_stats(coverage_test_tab_name)
-code_stats = get_index_stats(coverage_code_tab_name)
-
-table += [
-  [ 'app:lines:total',      code_stats['lines'   ]['total' ], '<=', MAX[:code][:lines   ][:total ] ],
-  [ 'app:lines:missed',     code_stats['lines'   ]['missed'], '<=', MAX[:code][:lines   ][:missed] ],
-  [ 'app:branches:total',   code_stats['branches']['total' ], '<=', MAX[:code][:branches][:total ] ],
-  [ 'app:branches:missed',  code_stats['branches']['missed'], '<=', MAX[:code][:branches][:missed] ],
-
+  [ nil ],
   [ 'test:lines:total',     test_stats['lines'   ]['total' ], '<=', MAX[:test][:lines   ][:total  ] ],
   [ 'test:lines:missed',    test_stats['lines'   ]['missed'], '<=', MAX[:test][:lines   ][:missed ] ],
   [ 'test:branches:total',  test_stats['branches']['total' ], '<=', MAX[:test][:branches][:total  ] ],
   [ 'test:branches:missed', test_stats['branches']['missed'], '<=', MAX[:test][:branches][:missed ] ],
+  [ nil ],
+  [ 'app:lines:total',      code_stats['lines'   ]['total' ], '<=', MAX[:code][:lines   ][:total ] ],
+  [ 'app:lines:missed',     code_stats['lines'   ]['missed'], '<=', MAX[:code][:lines   ][:missed] ],
+  [ 'app:branches:total',   code_stats['branches']['total' ], '<=', MAX[:code][:branches][:total ] ],
+  [ 'app:branches:missed',  code_stats['branches']['missed'], '<=', MAX[:code][:branches][:missed] ],
 ]
 
 # - - - - - - - - - - - - - - - - - - - - - - -
 done = []
-puts
 table.each do |name,value,op,limit|
+  if name.nil?
+    puts
+    next
+  end
   #puts "name=#{name}, value=#{value}, op=#{op}, limit=#{limit}"
   result = eval("#{value} #{op} #{limit}")
   puts "%s | %s %s %s | %s" % [
-    name.rjust(25), value.to_s.rjust(7), "  #{op}", limit.to_s.rjust(5), coloured(result)
+    name.rjust(25), value.to_s.rjust(5), "  #{op}", limit.to_s.rjust(5), coloured(result)
   ]
   done << result
 end
