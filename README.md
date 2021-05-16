@@ -3,9 +3,9 @@
 
 # cyberdojo/saver docker image
 
-- The [Ruby](https://www.ruby-lang.org) source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
+- The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
-- An HTTP web service ([Sinatra](http://sinatrarb.com/)), offering a Group/Kata model+persistence API.
+- An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
 
 Development
 -----------
