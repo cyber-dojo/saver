@@ -71,56 +71,6 @@ module External
       @http.post(__method__, {id:id, name:name, value:value})
     end
 
-    # - - - - - - - - - - - - - - - - - - -
-
-    def dir_make_command(dirname)
-      [ 'dir_make', dirname ]
-    end
-
-    def dir_exists_command(dirname)
-      [ 'dir_exists?', dirname ]
-    end
-
-    def file_create_command(filename, content)
-      [ 'file_create', filename, content ]
-    end
-
-    def file_append_command(filename, content)
-      [ 'file_append', filename, content ]
-    end
-
-    def file_read_command(filename)
-      [ 'file_read', filename ]
-    end
-
-    # - - - - - - - - - - - - - - - - - - -
-
-    def assert(command)
-      @http.post(__method__, { command:command })
-    end
-
-    def assert_all(commands)
-      @http.post(__method__, { commands:commands })
-    end
-
-    # - - - - - - - - - - - - - - - - - - -
-
-    def run(command)
-      @http.post(__method__, { command:command })
-    end
-
-    def run_all(commands)
-      @http.post(__method__, { commands:commands })
-    end
-
-    def run_until_true(commands)
-      @http.post(__method__, { commands:commands })
-    end
-
-    def run_until_false(commands)
-      @http.post(__method__, { commands:commands })
-    end
-
   end
 
 end
