@@ -48,9 +48,8 @@ class IdGenerator
         next
       end
       dir_make_command = disk.dir_make_command(method(pather).call(id))
-      if disk.run(command:dir_make_command)
-        break id
-      end
+      disk.assert(command:dir_make_command)
+      return id
     end
   end
 
