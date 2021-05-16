@@ -132,43 +132,44 @@ def safe_divide(nom, denom, name)
 end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
-check_version
+def table_data
+  log_stats = get_test_log_stats
 
-log_stats = get_test_log_stats
+  test_count    = log_stats[:test_count]
+  failure_count = log_stats[:failure_count]
+  error_count   = log_stats[:error_count]
+  warning_count = log_stats[:warning_count]
+  skip_count    = log_stats[:skip_count]
+  test_duration = log_stats[:time].to_f
 
-test_count    = log_stats[:test_count]
-failure_count = log_stats[:failure_count]
-error_count   = log_stats[:error_count]
-warning_count = log_stats[:warning_count]
-skip_count    = log_stats[:skip_count]
-test_duration = log_stats[:time].to_f
+  test_stats = get_index_stats(coverage_test_tab_name)
+  code_stats = get_index_stats(coverage_code_tab_name)
 
-test_stats = get_index_stats(coverage_test_tab_name)
-code_stats = get_index_stats(coverage_code_tab_name)
-
-table = [
-  [ 'test:count',       test_count,     '>=',                 1 ],
-  [ nil ],
-  [ 'test:failures',    failure_count,  '<=',  MAX[:failures  ] ],
-  [ 'test:errors',      error_count,    '<=',  MAX[:errors    ] ],
-  [ 'test:warnings',    warning_count,  '<=',  MAX[:warnings  ] ],
-  [ 'test:skips',       skip_count,     '<=',  MAX[:skips     ] ],
-  [ 'test:duration(s)', test_duration,  '<=',  MAX[:duration  ] ],
-  [ nil ],
-  [ 'test:lines:total',     test_stats['lines'   ]['total' ], '<=', MAX[:test][:lines   ][:total  ] ],
-  [ 'test:lines:missed',    test_stats['lines'   ]['missed'], '<=', MAX[:test][:lines   ][:missed ] ],
-  [ 'test:branches:total',  test_stats['branches']['total' ], '<=', MAX[:test][:branches][:total  ] ],
-  [ 'test:branches:missed', test_stats['branches']['missed'], '<=', MAX[:test][:branches][:missed ] ],
-  [ nil ],
-  [ 'app:lines:total',      code_stats['lines'   ]['total' ], '<=', MAX[:code][:lines   ][:total ] ],
-  [ 'app:lines:missed',     code_stats['lines'   ]['missed'], '<=', MAX[:code][:lines   ][:missed] ],
-  [ 'app:branches:total',   code_stats['branches']['total' ], '<=', MAX[:code][:branches][:total ] ],
-  [ 'app:branches:missed',  code_stats['branches']['missed'], '<=', MAX[:code][:branches][:missed] ],
-]
+  [
+    [ 'test:count',       test_count,     '>=',                 1 ],
+    [ nil ],
+    [ 'test:failures',    failure_count,  '<=',  MAX[:failures  ] ],
+    [ 'test:errors',      error_count,    '<=',  MAX[:errors    ] ],
+    [ 'test:warnings',    warning_count,  '<=',  MAX[:warnings  ] ],
+    [ 'test:skips',       skip_count,     '<=',  MAX[:skips     ] ],
+    [ 'test:duration(s)', test_duration,  '<=',  MAX[:duration  ] ],
+    [ nil ],
+    [ 'test:lines:total',     test_stats['lines'   ]['total' ], '<=', MAX[:test][:lines   ][:total  ] ],
+    [ 'test:lines:missed',    test_stats['lines'   ]['missed'], '<=', MAX[:test][:lines   ][:missed ] ],
+    [ 'test:branches:total',  test_stats['branches']['total' ], '<=', MAX[:test][:branches][:total  ] ],
+    [ 'test:branches:missed', test_stats['branches']['missed'], '<=', MAX[:test][:branches][:missed ] ],
+    [ nil ],
+    [ 'app:lines:total',      code_stats['lines'   ]['total' ], '<=', MAX[:code][:lines   ][:total ] ],
+    [ 'app:lines:missed',     code_stats['lines'   ]['missed'], '<=', MAX[:code][:lines   ][:missed] ],
+    [ 'app:branches:total',   code_stats['branches']['total' ], '<=', MAX[:code][:branches][:total ] ],
+    [ 'app:branches:missed',  code_stats['branches']['missed'], '<=', MAX[:code][:branches][:missed] ],
+  ]
+end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
+check_version
 done = []
-table.each do |name,value,op,limit|
+table_data.each do |name,value,op,limit|
   if name.nil?
     puts
     next
