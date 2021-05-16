@@ -10,42 +10,6 @@ class RackDispatchingTest < TestBase
   # 500
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '166',
-  'dispatch has 500 status when no space left on device' do
-    externals.instance_exec {
-      # See docker-compose.yml
-      # See scripts/containers_up.sh create_space_limited_volume()
-      @disk = External::Disk.new('one_k')
-    }
-    dirname = '166'
-    filename = '166/file'
-    content = 'x'*1024
-    disk.assert(command:dir_make_command(dirname))
-    disk.assert(command:file_create_command(filename, content))
-    message = "No space left on device @ io_write - /one_k/#{filename}"
-    body = { "command": file_append_command(filename, content*16) }.to_json
-    assert_post_raises('run', body, 500, message)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test '167',
-  'dispatch has 500 status when assert_all raises' do
-    externals.instance_exec {
-      @disk = External::Disk.new('tmp/cyber-dojo')
-    }
-    message = 'commands[1] != true'
-    dirname = '167'
-    body = { "commands":[
-      dir_make_command(dirname),
-      dir_make_command(dirname) # repeat
-    ]}.to_json
-    assert_post_raises('assert_all', body, 500, message)
-    disk.assert(command:dir_exists_command(dirname))
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'F1A',
   'dispatch has 500 status when implementation raises' do
     def prober.sha
@@ -80,73 +44,24 @@ class RackDispatchingTest < TestBase
 
   test 'E2B',
   'dispatch has 400 status when body is not JSON' do
-    assert_post_raises('run',
-      'xxx',
-      400,
-      'body is not JSON')
+    response,_stdout,_stderr = with_captured_stdout_stderr do
+      get_json '/sha', 'abc'
+    end
+    assert_equal 400, response.status
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2C',
   'dispatch has 400 status when body is not JSON Hash' do
-    assert_post_raises('run',
-      '[]',
-      400,
-      'body is not JSON Hash')
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'AC6',
-  'dispatch has 400 status when commands is missing' do
-    assert_post_raises('run_all',
-      '{}',
-      400,
-      'missing:commands:'
-    )
-  end
-
-  test 'AC7',
-  'dispatch has 400 status when commands are malformed' do
-    [
-      ['{"commands":42}', 'malformed:commands:!Array (Integer):'],
-      ['{"commands":[42]}', 'malformed:commands[0]:!Array (Integer):'],
-      ['{"commands":[[true]]}', 'malformed:commands[0][0]:!String (TrueClass):'],
-      ['{"commands":[["xxx"]]}', 'malformed:commands[0]:Unknown (xxx):'],
-      ['{"commands":[["file_read",1,2,3]]}', 'malformed:commands[0]:file_read!3:'],
-      ['{"commands":[["file_read",2.9]]}', 'malformed:commands[0]:file_read(filename!=String):']
-    ].each do |json, error_message|
-      assert_post_raises('run_all', json, 400, error_message)
+    response,_stdout,_stderr = with_captured_stdout_stderr do
+      get_json '/sha', '[]'
     end
+    assert_equal 400, response.status
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'AC8',
-  'dispatch has 400 status when command is missing' do
-    assert_post_raises('assert',
-      '{}',
-      400,
-      'missing:command:'
-    )
-  end
-
-  test 'AC9',
-  'dispatch has 400 status when command is malformed' do
-    [
-      ['{"command":42}', 'malformed:command:!Array (Integer):'],
-      ['{"command":[true]}', 'malformed:command[0]:!String (TrueClass):'],
-      ['{"command":["xxx"]}', 'malformed:command:Unknown (xxx):'],
-      ['{"command":["file_read",1,2,3]}', 'malformed:command:file_read!3:'],
-      ['{"command":["file_read",2.9]}', 'malformed:command:file_read(filename!=String):']
-    ].each do |json, error_message|
-      assert_post_raises('assert', json, 400, error_message)
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200 probes
+  # 200
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E39',
@@ -174,111 +89,13 @@ class RackDispatchingTest < TestBase
     assert_get('sha', '{}', prober.sha)
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200 batches
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E48',
-  'dispatches to assert_all' do
-    disk_stub('assert_all')
-    assert_post('assert_all',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed disk.assert_all'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E51',
-  'dispatches to assert' do
-    disk_stub('assert')
-    assert_post('assert',
-      { command: well_formed_command }.to_json,
-      'hello from stubbed disk.assert'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E52',
-  'dispatches to run' do
-    disk_stub('run')
-    assert_post('run',
-      { command: well_formed_command }.to_json,
-      'hello from stubbed disk.run'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E47',
-  'dispatches to run_all' do
-    disk_stub('run_all')
-    assert_post('run_all',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed disk.run_all'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E49',
-  'dispatches to run_until_true' do
-    disk_stub('run_until_true')
-    assert_post('run_until_true',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed disk.run_until_true'
-    )
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'E50',
-  'dispatches to run_until_false' do
-    disk_stub('run_until_false')
-    assert_post('run_until_false',
-      { commands: well_formed_commands }.to_json,
-      'hello from stubbed disk.run_until_false'
-    )
-  end
-
   private
-
-  def disk_stub(name)
-    disk.define_singleton_method(name) do |*_args|
-      "hello from stubbed disk.#{name}"
-    end
-  end
-
-  # - - - - - - -
-
-  def well_formed_command
-    [ 'dir_make',  '/cyber-dojo/katas/12/34/45' ]
-  end
-
-  def well_formed_commands
-    [
-      [ 'dir_make',    '/cyber-dojo/katas/12/34/45' ],
-      [ 'dir_exists?', '/cyber-dojo/katas/12/34/45' ],
-      [ 'file_create', '/cyber-dojo/katas/12/34/45/manifest.json', {"a"=>[1,2,3]}.to_json ],
-    ]
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_get(name, body, expected_body)
     response = get_json(name, body)
     assert_equal 200, response.status
     assert_equal 'application/json', response.headers['Content-Type']
     expected = { queryfied(name) => expected_body }.to_json
-    assert_equal expected, response.body, body
-  end
-
-  def assert_post(name, body, expected_body)
-    response = post_json(name, body)
-    assert_equal 200, response.status
-    assert_equal 'application/json', response.headers['Content-Type']
-    expected = { name => expected_body }.to_json
     assert_equal expected, response.body, body
   end
 
@@ -299,20 +116,14 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_get_raises(name, body, expected_status, expected_body)
-    assert_raises(name, expected_status, expected_body) do
+    assert_dispatch_raises(name, expected_status, expected_body) do
       get_json '/'+name, body
-    end
-  end
-
-  def assert_post_raises(name, body, expected_status, expected_body)
-    assert_raises(name, expected_status, expected_body) do
-      post_json '/'+name, body
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_raises(name, expected_status, expected_body)
+  def assert_dispatch_raises(name, expected_status, expected_body)
     response,stdout,stderr = with_captured_stdout_stderr do
       yield
     end

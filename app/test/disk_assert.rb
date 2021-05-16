@@ -13,6 +13,8 @@ class DiskAssertTest < TestBase
     }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
   disk_tests '538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
@@ -23,6 +25,8 @@ class DiskAssertTest < TestBase
     refute disk.run(command:dir_exists_command(dirname))
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
   disk_tests '539',
   'assert() returns command result when command is true' do
     dirname = 'groups/sw/EP/7K'
@@ -32,6 +36,27 @@ class DiskAssertTest < TestBase
     disk.assert(command:file_create_command(filename, content))
     read = disk.assert(command:file_read_command(filename))
     assert_equal content, read
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  test '166',
+  'raises when no space left on device' do
+    externals.instance_exec {
+      # See docker-compose.yml
+      # See scripts/containers_up.sh create_space_limited_volume()
+      @disk = External::Disk.new('one_k')
+    }
+    dirname = '166'
+    filename = '166/file'
+    content = 'x'*1024
+    disk.assert(command:dir_make_command(dirname))
+    disk.assert(command:file_create_command(filename, content))
+    error = assert_raises(Errno::ENOSPC) {
+      disk.assert(command:file_append_command(filename, content*16))
+    }
+    message = "No space left on device @ io_write - /one_k/#{filename}"
+    assert_equal message, error.message
   end
 
 end

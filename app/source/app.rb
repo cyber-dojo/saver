@@ -35,14 +35,4 @@ class App < AppBase
    get_json(:model, :kata_option_get)
   post_json(:model, :kata_option_set)
 
-  # - - - - - - - - - - - - - - - - -
-  # disk methods: Deprecated
-
-  post_json(:disk, :assert)
-  post_json(:disk, :run)
-  post_json(:disk, :assert_all)
-  post_json(:disk, :run_all)
-  post_json(:disk, :run_until_true)
-  post_json(:disk, :run_until_false)
-
 end
