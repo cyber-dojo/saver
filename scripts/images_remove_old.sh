@@ -11,7 +11,7 @@
 # cache requires the latest image is tagged to :latest
 
 # - - - - - - - - - - - - - - - - - - - - - -
-remove_old_images()
+images_remove_old()
 {
   echo Removing old images
   local -r dils=$(docker image ls --format "{{.Repository}}:{{.Tag}}")

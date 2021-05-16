@@ -1,7 +1,7 @@
 #!/bin/bash -Eeu
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
-push_image()
+images_push()
 {
   local -r tag="${1:-}"
   echo

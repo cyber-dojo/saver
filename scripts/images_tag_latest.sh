@@ -10,7 +10,7 @@
 # Removing old images and not busting the image layer
 # cache requires the latest image is tagged to :latest
 
-tag_images_to_latest()
+images_tag_latest()
 {
   docker tag "$(server_image):$(image_tag)" "$(server_image):latest"
   docker tag "$(client_image):$(image_tag)" "$(client_image):latest"

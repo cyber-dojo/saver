@@ -3,7 +3,7 @@
 source "${SCRIPTS_DIR}/copy_in_saver_test_data.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
-run_tests_in_containers()
+containers_run_tests()
 {
   if [ "${1:-}" == server ]; then
     shift
@@ -105,7 +105,11 @@ run_tests()
         | tar Cxf "${HOST_COVERAGE_DIR}/" -
 
   echo "Coverage dir: ${HOST_COVERAGE_DIR}/${type}"
-  echo "Test status: ${status}"
+  if [ "${status}" == 0 ]; then
+    echo "Test status: PASSED"
+  else
+    echo "Test status: FAILED"
+  fi
   echo
 
   return ${status}

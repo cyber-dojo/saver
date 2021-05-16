@@ -1,6 +1,6 @@
 #!/bin/bash -Eeu
 
-build_docker_images()
+images_build()
 {
   echo
   augmented_docker_compose \
