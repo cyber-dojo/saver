@@ -1,6 +1,7 @@
 
-# max values used by cyberdojo/check-test-results image
-# which is called from scripts/run_tests_in_containers.sh
+# Max code/test metrics values.
+# Used by check_test_metrics.rb
+# Called from run.sh
 
 MAX = {
   failures:0,
@@ -10,7 +11,7 @@ MAX = {
 
   duration:10,
 
-  app: {
+  code: {
     lines: {
        total:900,
       missed:0,

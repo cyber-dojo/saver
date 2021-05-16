@@ -1,5 +1,5 @@
 require 'simplecov'
-require_relative 'simplecov-json'
+require_relative 'simplecov-formatter-json'
 
 SimpleCov.start do
   enable_coverage :branch
