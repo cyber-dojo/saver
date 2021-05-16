@@ -78,6 +78,7 @@ run_tests()
     --env COVERAGE_ROOT=${CONTAINER_COVERAGE_DIR} \
     --env COVERAGE_CODE_TAB_NAME=${COVERAGE_CODE_TAB_NAME} \
     --env COVERAGE_TEST_TAB_NAME=${COVERAGE_TEST_TAB_NAME} \
+    -it \
     --user "${user}" \
     "${cid}" \
       sh -c "/app/test/config/run.sh ${TEST_LOG} ${*:4}"

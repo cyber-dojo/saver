@@ -1,0 +1,19 @@
+
+Add this line to Dockerfile
+
+    RUN gem install 'pry'
+
+Add this to top of test file
+
+    require 'pry'
+
+Add this to test method
+
+    binding.pry
+
+Now run tests.
+You get an interactive pry session.
+But >help
+fails because I'm in a read-only file-system.
+
+
