@@ -41,13 +41,13 @@ module DiskApi
   def run(command:nil)
     assert_well_formed_command(command)
     name, *args = command
-    case name
-    when DIR_EXISTS_COMMAND_NAME  then dir_exists?(*args)
-    when DIR_MAKE_COMMAND_NAME    then dir_make(*args)
-    when FILE_CREATE_COMMAND_NAME then file_create(*args)
-    when FILE_APPEND_COMMAND_NAME then file_append(*args)
-    when FILE_READ_COMMAND_NAME   then file_read(*args)
-    end
+    {
+      DIR_EXISTS_COMMAND_NAME  => -> { dir_exists?(*args) },
+      DIR_MAKE_COMMAND_NAME    => -> { dir_make(*args) },
+      FILE_CREATE_COMMAND_NAME => -> { file_create(*args) },
+      FILE_APPEND_COMMAND_NAME => -> { file_append(*args) },
+      FILE_READ_COMMAND_NAME   => -> { file_read(*args) },
+    }[name].call()
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -
