@@ -29,8 +29,8 @@ module DiskApi
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # primitives
 
-  def assert(command:nil)
-    result = run(command:command)
+  def assert(command)
+    result = run(command)
     if result
       result
     else
@@ -38,7 +38,7 @@ module DiskApi
     end
   end
 
-  def run(command:nil)
+  def run(command)
     assert_well_formed_command(command)
     name, *args = command
     {
@@ -53,7 +53,7 @@ module DiskApi
   # - - - - - - - - - - - - - - - - - - - - - - - -
   # batches
 
-  def assert_all(commands:nil)
+  def assert_all(commands)
     run_until(commands) do |r, index|
       if r
         false
@@ -63,15 +63,15 @@ module DiskApi
     end
   end
 
-  def run_all(commands:nil)
+  def run_all(commands)
     run_until(commands) { |r| r === :never }
   end
 
-  def run_until_true(commands:nil)
+  def run_until_true(commands)
     run_until(commands) { |r| r }
   end
 
-  def run_until_false(commands:nil)
+  def run_until_false(commands)
     run_until(commands) { |r| !r }
   end
 
@@ -90,7 +90,7 @@ module DiskApi
     assert_well_formed_commands(commands)
     results = []
     commands.each.with_index(0) do |command, index|
-      result = run(command:command)
+      result = run(command)
       results << result
       if block.call(result, index)
         break

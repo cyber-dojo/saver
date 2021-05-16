@@ -24,7 +24,7 @@ class Group_v0
     manifest['created'] = time.now
     id = manifest['id'] = IdGenerator.new(@externals).group_id
     manifest['visible_files'] = lined_files(manifest['visible_files'])
-    disk.assert(command:manifest_create_command(id, json_plain(manifest)))
+    disk.assert(manifest_create_command(id, json_plain(manifest)))
     id
   end
 
@@ -43,7 +43,7 @@ class Group_v0
     manifest.delete('id')
     manifest['group_id'] = id
     commands = indexes.map{ |index| dir_make_command(id, index) }
-    results = disk.run_until_true(commands:commands)
+    results = disk.run_until_true(commands)
     result_index = results.find_index(true)
     if result_index.nil?
       nil # full
@@ -51,7 +51,7 @@ class Group_v0
       index = indexes[result_index]
       manifest['group_index'] = index
       kata_id = @kata.create(manifest, {})
-      disk.assert(command:disk.file_create_command(kata_id_filename(id, index), kata_id))
+      disk.assert(disk.file_create_command(kata_id_filename(id, index), kata_id))
       kata_id
     end
   end
@@ -66,7 +66,7 @@ class Group_v0
       # eg reads file /cyber-dojo/katas/k5/ZT/k0/events.json
       @kata.send(:events_file_read_command, kata_id)
     end
-    katas_events = disk.assert_all(commands:read_events_files_commands)
+    katas_events = disk.assert_all(read_events_files_commands)
     indexes.each.with_index(0) do |(group_index,kata_id),index|
       results[group_index.to_s] = {
         'id' => kata_id,
@@ -86,7 +86,7 @@ class Group_v0
   # - - - - - - - - - - - - - - - - - - -
 
   def json_manifest(id)
-    manifest_src = disk.assert(command:manifest_read_command(id))
+    manifest_src = disk.assert(manifest_read_command(id))
     manifest = json_parse(manifest_src)
     manifest['visible_files'] = unlined_files(manifest['visible_files'])
     manifest
@@ -101,7 +101,7 @@ class Group_v0
     read_commands = (0..63).map do |index|
       disk.file_read_command(kata_id_filename(id, index))
     end
-    kata_ids = disk.run_all(commands:read_commands)
+    kata_ids = disk.run_all(read_commands)
     # kata_ids is an array of entries, eg
     # [
     #    nil,      # 0

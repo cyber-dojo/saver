@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require_relative '../doubles/disk_fake'
 
 module TestHelpersDisk
 

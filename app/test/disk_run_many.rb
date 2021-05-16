@@ -34,7 +34,7 @@ class DiskRunManyTest < TestBase
     command(true, file_append_command(there_yes, content.reverse))
     command(content+content.reverse, file_read_command(there_yes))
     command(false, file_read_command(there_no))
-    result = disk.run_all(commands:@commands)
+    result = disk.run_all(@commands)
     assert_equal @expected, result
   end
 
@@ -181,7 +181,7 @@ class DiskRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/13'
-    disk.assert(command:dir_make_command(dirname))
+    disk.assert(dir_make_command(dirname))
 
     command(false, dir_exists_command(dirname+'1'))
     command(false, dir_exists_command(dirname+'2'))
@@ -201,7 +201,7 @@ class DiskRunManyTest < TestBase
   |and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/14'
-    disk.assert(command:dir_make_command(dirname))
+    disk.assert(dir_make_command(dirname))
 
     command(false, dir_make_command(dirname))
     command(false, dir_make_command(dirname))
@@ -224,7 +224,7 @@ class DiskRunManyTest < TestBase
     dirname = 'batch-run-until-true/x3/t7/15'
     filename = dirname + '/stop-at-write-true'
     content = 'xxxxxx'
-    disk.assert_all(commands:[
+    disk.assert_all([
       dir_make_command(dirname),
       file_create_command(filename, content)
     ])
@@ -247,7 +247,7 @@ class DiskRunManyTest < TestBase
     filename = dirname + '/stop-at-append-true'
     content = 'X'
 
-    disk.assert_all(commands:[
+    disk.assert_all([
       dir_make_command(dirname),
       file_create_command(filename, content)
     ])
@@ -270,7 +270,7 @@ class DiskRunManyTest < TestBase
     event_3 = dirname + '/3.event.json'
     content = '{"colour":"red"}'
 
-    disk.assert_all(commands:[
+    disk.assert_all([
       dir_make_command(dirname),
       file_create_command(event_3,content)
     ])
@@ -300,23 +300,23 @@ class DiskRunManyTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   def assert_run_until_false
-    result = disk.run_until_false(commands:@commands)
+    result = disk.run_until_false(@commands)
     assert_equal @expected, result
   end
 
   def assert_run_until_true
-    result = disk.run_until_true(commands:@commands)
+    result = disk.run_until_true(@commands)
     assert_equal @expected, result
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   def dir_exists?(dirname)
-    disk.run(command:dir_exists_command(dirname))
+    disk.run(dir_exists_command(dirname))
   end
 
   def file_read(filename)
-    disk.run(command:file_read_command(filename))
+    disk.run(file_read_command(filename))
   end
 
 end

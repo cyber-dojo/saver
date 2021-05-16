@@ -19,10 +19,10 @@ class DiskAssertTest < TestBase
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
     error = assert_raises(RuntimeError) {
-      disk.assert(command:dir_exists_command(dirname))
+      disk.assert(dir_exists_command(dirname))
     }
     assert_equal 'command != true', error.message
-    refute disk.run(command:dir_exists_command(dirname))
+    refute disk.run(dir_exists_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
@@ -32,9 +32,9 @@ class DiskAssertTest < TestBase
     dirname = 'groups/sw/EP/7K'
     filename = dirname + '/' + '3.events.json'
     content = '{"colour":"red"}'
-    disk.assert(command:dir_make_command(dirname))
-    disk.assert(command:file_create_command(filename, content))
-    read = disk.assert(command:file_read_command(filename))
+    disk.assert(dir_make_command(dirname))
+    disk.assert(file_create_command(filename, content))
+    read = disk.assert(file_read_command(filename))
     assert_equal content, read
   end
 
@@ -50,10 +50,10 @@ class DiskAssertTest < TestBase
     dirname = '166'
     filename = '166/file'
     content = 'x'*1024
-    disk.assert(command:dir_make_command(dirname))
-    disk.assert(command:file_create_command(filename, content))
+    disk.assert(dir_make_command(dirname))
+    disk.assert(file_create_command(filename, content))
     error = assert_raises(Errno::ENOSPC) {
-      disk.assert(command:file_append_command(filename, content*16))
+      disk.assert(file_append_command(filename, content*16))
     }
     message = "No space left on device @ io_write - /one_k/#{filename}"
     assert_equal message, error.message

@@ -125,7 +125,7 @@ class Model
   end
 
   def version_path(path)
-    manifest_src = disk.assert(command:disk.file_read_command(path))
+    manifest_src = disk.assert(disk.file_read_command(path))
     manifest = json_parse(manifest_src)
     manifest['version'].to_i # nil.to_i == 0
   end

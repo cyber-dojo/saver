@@ -44,11 +44,11 @@ class IdGenerator
         next
       end
       dir_exists_command = disk.dir_exists_command(method(not_pather).call(id))
-      if disk.run(command:dir_exists_command)
+      if disk.run(dir_exists_command)
         next
       end
       dir_make_command = disk.dir_make_command(method(pather).call(id))
-      disk.assert(command:dir_make_command)
+      disk.assert(dir_make_command)
       return id
     end
   end

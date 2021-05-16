@@ -40,7 +40,7 @@ class Kata_v1
     end
     dir_name = kata_id_path(id)
     command = disk.dir_exists_command(dir_name)
-    disk.run(command:command)
+    disk.run(command)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -59,7 +59,7 @@ class Kata_v1
     event0 = {
       'files' => manifest['visible_files']
     }
-    disk.assert_all(commands:[
+    disk.assert_all([
       manifest_file_create_command(id, json_plain(manifest)),
       events_file_create_command(id, json_plain(event_summary)),
       event_file_create_command(id, 0, json_plain(event0.merge(event_summary)))
@@ -70,7 +70,7 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    manifest_src = disk.assert(command:manifest_file_read_command(id))
+    manifest_src = disk.assert(manifest_file_read_command(id))
     manifest = json_parse(manifest_src)
     polyfill_manifest_defaults(manifest)
     manifest
@@ -79,7 +79,7 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse('[' + disk.assert(command:events_file_read_command(id)) + ']')
+    json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -90,7 +90,7 @@ class Kata_v1
       all = events(id)
       index = all[index]['index']
     end
-    json_parse(disk.assert(command:event_file_read_command(id, index)))
+    json_parse(disk.assert(event_file_read_command(id, index)))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -104,7 +104,7 @@ class Kata_v1
       index = indexes[i]
       commands << event_file_read_command(id, index)
     end
-    results = disk.assert_all(commands:commands)
+    results = disk.assert_all(commands)
 
     (0...ids.size).each do |i|
       j = json_parse(results[i])
@@ -144,7 +144,7 @@ class Kata_v1
   def option_get(id, name)
     fail_unless_known_option(name)
     filename = kata_id_path(id, name)
-    result = disk.run(command:disk.file_read_command(filename))
+    result = disk.run(disk.file_read_command(filename))
     if result
       result.lines.last
     else
@@ -166,7 +166,7 @@ class Kata_v1
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
     filename = kata_id_path(id, name)
-    result = disk.run_all(commands:[
+    result = disk.run_all([
       disk.file_create_command(filename, "\n"+value),
       disk.file_append_command(filename, "\n"+value)
     ])
@@ -191,7 +191,7 @@ class Kata_v1
       'stderr' => stderr,
       'status' => status
     }
-    result = disk.assert_all(commands:[
+    result = disk.assert_all([
       # A failing create_command() ensures the append_command() is not run.
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
       events_file_append_command(id, ",\n" + json_plain(summary))

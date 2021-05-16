@@ -115,7 +115,7 @@ class IdGenerationTest < TestBase
   kata-id generator will skip id that already exists as a group
   ) do
     group_id = 'chy6BJ'
-    disk.assert(command:disk.dir_make_command(group_id_path(group_id)))
+    disk.assert(disk.dir_make_command(group_id_path(group_id)))
     id = 'x67WpA'
     id_generator = stubbed_id_generator(group_id + id)
     assert_equal id, id_generator.kata_id
@@ -127,7 +127,7 @@ class IdGenerationTest < TestBase
   group-id generator will skip id that already exists as a kata
   ) do
     kata_id = '5rTJv5'
-    disk.assert(command:disk.dir_make_command(kata_id_path(kata_id)))
+    disk.assert(disk.dir_make_command(kata_id_path(kata_id)))
     id = 'hY86s3'
     id_generator = stubbed_id_generator(kata_id + id)
     assert_equal id, id_generator.group_id
