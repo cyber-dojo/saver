@@ -1,19 +1,25 @@
-#!/bin/bash
+#!/bin/bash -Eeu
 
-readonly MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-readonly TEST_FILES=(${MY_DIR}/../*_test.rb)
-readonly TEST_LOG=${COVERAGE_ROOT}/test.log
+readonly MY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly TEST_LOG="${1}"    # test.log
+shift
+
+readonly TEST_FILES=(${MY_DIR}/../*.rb)
 readonly TEST_ARGS=(${*})
 
-readonly SCRIPT="([ '${MY_DIR}/coverage.rb' ] + %w(${TEST_FILES[*]})).each{ |file| require file }"
+readonly SCRIPT="
+require '${MY_DIR}/coverage.rb'
+%w(${TEST_FILES[*]}).shuffle.each{ |file|
+  require file
+}"
 
 mkdir -p ${COVERAGE_ROOT}
 rm -rf ${COVERAGE_ROOT}/*
 
 export RUBYOPT='-W2'
-ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${TEST_LOG}
 
-ruby ${MY_DIR}/check_test_results.rb \
-  ${TEST_LOG} \
-  ${COVERAGE_ROOT}/index.html \
-    > ${COVERAGE_ROOT}/done.txt
+set +e
+ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${COVERAGE_ROOT}/${TEST_LOG}
+set -e
+
+ruby "${MY_DIR}/check_test_metrics.rb" "${TEST_LOG}"
