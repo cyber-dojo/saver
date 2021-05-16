@@ -9,6 +9,8 @@ augmented_docker_compose()
   # The --project-name option is for the CI pipeline
   # runs which have their own root directory name.
   local -r image=cyberdojo/service-yaml
+  mkdir -p ${ROOT_DIR}/tmp
+
   cd "${ROOT_DIR}" && cat "./docker-compose.yml" \
     | docker run \
         --rm \
