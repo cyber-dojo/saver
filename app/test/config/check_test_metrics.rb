@@ -53,7 +53,7 @@ end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
 def check_version
-  if !index_html.include?("v0.19.1")
+  if !index_html.include?("v0.21.2")
     fatal_error("Unknown simplecov version (look at bottom of index.html)")
   end
 end

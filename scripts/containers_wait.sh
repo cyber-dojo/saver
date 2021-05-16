@@ -50,10 +50,15 @@ exit_unless_clean()
 {
   local -r name="${1}"
   local log=$(docker logs "${name}" 2>&1)
-  local -r lines=6
 
-  local -r mismatched_indent_warning="application(.*): warning: mismatched indentations at 'rescue' with 'begin'"
-  log=$(strip_known_warning "${log}" "${mismatched_indent_warning}")
+  if [ "${name}" == saver_custom-start-points_1 ]; then
+    local -r lines=6
+  else
+    local -r lines=8
+  fi
+
+  #local -r mismatched_indent_warning="application(.*): warning: mismatched indentations at 'rescue' with 'begin'"
+  #log=$(strip_known_warning "${log}" "${mismatched_indent_warning}")
 
   local -r line_count=$(echo -n "${log}" | grep -c '^')
   echo -n "Checking ${name} started cleanly..."

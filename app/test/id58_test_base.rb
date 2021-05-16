@@ -55,7 +55,7 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  ObjectSpace.define_finalizer(self, proc {
+  MiniTest.after_run do
     slow = @@timings.select{ |_name,secs| secs > 0.000 }
     sorted = slow.sort_by{ |name,secs| -secs }.to_h
     size = sorted.size < 5 ? sorted.size : 5
@@ -66,7 +66,7 @@ class Id58TestBase < MiniTest::Test
       break if index === size
     }
     puts
-  })
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
