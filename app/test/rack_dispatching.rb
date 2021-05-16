@@ -7,25 +7,32 @@ class RackDispatchingTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 500
+  # 200
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F1A',
-  'dispatch has 500 status when implementation raises' do
-    def prober.sha
-      raise ArgumentError, 'wibble'
-    end
-    assert_get_raises('sha', '{}', 500, 'wibble')
+  test 'E39',
+  'dispatches to alive' do
+    assert_get('alive' , ''  , true)
+    assert_get('alive?', ''  , true)
+    assert_get('alive' , '{}', true)
+    assert_get('alive?', '{}', true)
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+  test 'E40',
+  'dispatches to ready' do
+    assert_get('ready' , ''  , true)
+    assert_get('ready?', ''  , true)
+    assert_get('ready' , '{}', true)
+    assert_get('ready?', '{}', true)
+  end
 
-  test 'F1B',
-  'dispatch has 500 status when implementation has syntax error' do
+  test 'E41',
+  'dispatches to sha' do
     def prober.sha
-      raise SyntaxError, 'fubar'
+      '80206798f1c1e0b403f17ceb1e7510edea8d8e51'
     end
-    assert_get_raises('sha', '{}', 500, 'fubar')
+    assert_get('sha', ''  , prober.sha)
+    assert_get('sha', '{}', prober.sha)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,32 +68,25 @@ class RackDispatchingTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # 200
+  # 500
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E39',
-  'dispatches to alive' do
-    assert_get('alive' , ''  , true)
-    assert_get('alive?', ''  , true)
-    assert_get('alive' , '{}', true)
-    assert_get('alive?', '{}', true)
-  end
-
-  test 'E40',
-  'dispatches to ready' do
-    assert_get('ready' , ''  , true)
-    assert_get('ready?', ''  , true)
-    assert_get('ready' , '{}', true)
-    assert_get('ready?', '{}', true)
-  end
-
-  test 'E41',
-  'dispatches to sha' do
+  test 'F1A',
+  'dispatch has 500 status when implementation raises' do
     def prober.sha
-      '80206798f1c1e0b403f17ceb1e7510edea8d8e51'
+      raise ArgumentError, 'wibble'
     end
-    assert_get('sha', ''  , prober.sha)
-    assert_get('sha', '{}', prober.sha)
+    assert_get_raises('sha', '{}', 500, 'wibble')
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'F1B',
+  'dispatch has 500 status when implementation has syntax error' do
+    def prober.sha
+      raise SyntaxError, 'fubar'
+    end
+    assert_get_raises('sha', '{}', 500, 'fubar')
   end
 
   private
