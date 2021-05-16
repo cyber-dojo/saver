@@ -148,15 +148,14 @@ class Kata_v1
     if result
       result.lines.last
     else
-      default = case name
-      when 'theme'        then 'light'
-      when 'colour'       then 'on'
-      when 'predict'      then 'off'
-      when 'revert_red'   then 'off'
-      when 'revert_amber' then 'off'
-      when 'revert_green' then 'off'
-      end
-      default
+      {
+        'theme' => 'light',
+        'colour' => 'on',
+        'predict' => 'off',
+        'revert_red' => 'off',
+        'revert_amber' => 'off',
+        'revert_green' => 'off',
+        }[name]
     end
   end
 
