@@ -14,6 +14,10 @@ Add this to test method
 Now run tests.
 You get an interactive pry session.
 But >help
-fails because I'm in a read-only file-system.
+fails because I'm in on an Alpine image without a full less.
 
+$ apk install --no-cache less
+
+Is supposed to fix this
+See https://github.com/pry/pry/issues/1494
 
