@@ -38,8 +38,8 @@ Options:
   * You change a web server's config (there is no auto-reloading)
 
 
-Group API
----------
+Group
+-----
 * [POST group_create(manifests,options)](docs/api.md#post-group_createmanifestsoptions)
 * [GET group_exists?(id)](docs/api.md#get-group_existsid)
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
@@ -47,8 +47,8 @@ Group API
 * [GET group_manifest(id)](docs/api.md#get-group_manifestid)
 
 
-Kata API
---------
+Kata
+----
 * [POST kata_create(manifest,options)](docs/api.md#post-kata_createmanifestoptions)
 * [GET kata_exists?(id)](docs/api.md#get-kata_existsid)
 * [GET kata_events(id)](docs/api.md#get-kata_eventsid)
@@ -64,8 +64,8 @@ Kata API
 * [POST kata_option_set(id,name,value)](docs/api.md#post-kata_option_setidnamevalue)
 
 
-Probe API
----------
+Probe
+-----
 - [GET alive?](docs/api.md#get-alive)  
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
