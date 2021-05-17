@@ -11,17 +11,6 @@ MAX = {
 
   duration:5,
 
-  code: {
-    lines: {
-       total:900,
-      missed:0,
-    },
-    branches: {
-       total:98,
-      missed:1,
-    }
-  },
-
   test: {
     lines: {
        total:1700,
@@ -32,4 +21,15 @@ MAX = {
       missed:0,
     }
   }
+
+  code: {
+    lines: {
+       total:900,
+      missed:0,
+    },
+    branches: {
+       total:98,
+      missed:0,
+    }
+  },
 }

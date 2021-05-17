@@ -16,6 +16,7 @@ version = ARGV[0].to_i
 custom = External::CustomStartPoints.new
 name = custom.display_names[0]
 manifest = custom.manifest(name)
+manifest["version"] = version
 model = Model.new(Externals.new)
 manifests = [manifest]
 options = {}

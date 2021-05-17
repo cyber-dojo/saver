@@ -12,7 +12,7 @@ copy_in_saver_test_data()
     && tar -c . \
     | docker exec -i "$(server_container)" tar x -C /cyber-dojo
 
-  cat "${TEST_DATA_DIR}/almost_full_group.v0.kYJVbK.tgz" \
+  cat "${TEST_DATA_DIR}/almost_full_group.v0.AWCQdE.tgz" \
     | docker exec -i "$(server_container)" tar -zxf - -C /
 
   cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" \
