@@ -12,18 +12,18 @@ class RackDispatchingTest < TestBase
 
   test 'E39',
   'dispatches to alive' do
-    assert_get('alive' , ''  , true)
-    assert_get('alive?', ''  , true)
-    assert_get('alive' , '{}', true)
-    assert_get('alive?', '{}', true)
+    assert_get('alive' , ''  , 'alive?', true)
+    assert_get('alive?', ''  , 'alive?', true)
+    assert_get('alive' , '{}', 'alive?', true)
+    assert_get('alive?', '{}', 'alive?', true)
   end
 
   test 'E40',
   'dispatches to ready' do
-    assert_get('ready' , ''  , true)
-    assert_get('ready?', ''  , true)
-    assert_get('ready' , '{}', true)
-    assert_get('ready?', '{}', true)
+    assert_get('ready' , ''  , 'ready?', true)
+    assert_get('ready?', ''  , 'ready?', true)
+    assert_get('ready' , '{}', 'ready?', true)
+    assert_get('ready?', '{}', 'ready?', true)
   end
 
   test 'E41',
@@ -31,8 +31,8 @@ class RackDispatchingTest < TestBase
     def prober.sha
       '80206798f1c1e0b403f17ceb1e7510edea8d8e51'
     end
-    assert_get('sha', ''  , prober.sha)
-    assert_get('sha', '{}', prober.sha)
+    assert_get('sha', ''  , 'sha', prober.sha)
+    assert_get('sha', '{}', 'sha', prober.sha)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,26 +91,12 @@ class RackDispatchingTest < TestBase
 
   private
 
-  def assert_get(name, body, expected_body)
+  def assert_get(name, body, expected_name, expected_body)
     response = get_json(name, body)
     assert_equal 200, response.status
     assert_equal 'application/json', response.headers['Content-Type']
-    expected = { queryfied(name) => expected_body }.to_json
+    expected = { expected_name => expected_body }.to_json
     assert_equal expected, response.body, body
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  def queryfied(name)
-    if query?(name)
-      name + '?'
-    else
-      name
-    end
-  end
-
-  def query?(name)
-    %w( alive ready exists group_exists kata_exists ).include?(name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
