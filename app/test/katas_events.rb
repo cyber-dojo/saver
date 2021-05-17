@@ -9,7 +9,7 @@ class KatasEventsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '2R6', %w( v0 example ) do
+  version_tests [0], '2R6', %w( v0 example ) do
     actual = katas_events([V0_KATA_ID,V0_KATA_ID], [2,3])
     expected = {
       V0_KATA_ID => {
@@ -22,7 +22,7 @@ class KatasEventsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '1P3', %w( v1 example ) do
+  version_tests [1], '1P3', %w( v1 example ) do
     actual = katas_events([V1_KATA_ID,V1_KATA_ID], [1,2])
     expected = {
       V1_KATA_ID => {
