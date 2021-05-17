@@ -7,15 +7,6 @@ class GroupManifestTest < TestBase
     '5Zt'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   v_tests [0], '472', %w(
@@ -49,10 +40,10 @@ class GroupManifestTest < TestBase
       @time = TimeStub.new(now)
     }
     manifest = custom_manifest
-    id = group_create(manifest, default_options)
+    id = group_create([manifest], default_options)
     saved = group_manifest(id)
     manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key],  key
+      assert_equal manifest[key], saved[key], key
     end
     assert saved.keys.include?('created'), :created_key
     assert_equal now, saved['created'], :created

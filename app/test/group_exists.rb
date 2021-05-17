@@ -7,15 +7,6 @@ class GroupExistsTest < TestBase
     'Ws6'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '860', %w(
@@ -31,7 +22,7 @@ class GroupExistsTest < TestBase
   |group_exists? is true,
   |for a well-formed id from previous group_create
   ) do
-    id = group_create(custom_manifest, default_options)
+    id = group_create([custom_manifest], default_options)
     assert group_exists?(id), :created_in_test
   end
 

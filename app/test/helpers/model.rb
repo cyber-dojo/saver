@@ -2,8 +2,8 @@
 
 module TestHelpersModel
 
-  def group_create(manifest, options)
-    model.group_create(manifests:[manifest], options:options)
+  def group_create(manifests, options)
+    model.group_create(manifests:manifests, options:options)
   end
 
   def group_exists?(id)
@@ -103,7 +103,7 @@ module TestHelpersModel
   end
 
   def default_options
-    {}
+    {} # For group_create() and kata_create()
   end
 
   # - - - - - - - - - - - - - - -
@@ -125,23 +125,6 @@ module TestHelpersModel
     manifest = kata_manifest(id)
     assert_equal display_name, manifest['display_name'], manifest.keys.sort
     assert_equal exercise_name, manifest['exercise'], :exercise
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  def version
-    if v_test?(0)
-      return 0
-    end
-    if v_test?(1)
-      return 1
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  def v_test?(n)
-    name58.start_with?("<version=#{n}>")
   end
 
 end

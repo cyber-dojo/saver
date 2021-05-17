@@ -22,7 +22,7 @@ class GroupJoinTest < TestBase
   group is initially empty
   ) do
     manifest = custom_manifest
-    id = group_create(manifest, default_options)
+    id = group_create([manifest], default_options)
     assert_equal({}, joined(id))
   end
 
@@ -33,7 +33,7 @@ class GroupJoinTest < TestBase
   and are a member of the group
   ) do
     manifest = custom_manifest
-    group_id = group_create(manifest, default_options)
+    group_id = group_create([manifest], default_options)
 
     indexes = [15,4] + ((0..63).to_a - [15,4]).shuffle
     kata_1_id = group_join(group_id, indexes)

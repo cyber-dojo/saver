@@ -17,7 +17,7 @@ MAX = {
       missed:0,
     },
     branches: {
-       total:12,
+       total:8,
       missed:0,
     }
   },
@@ -28,7 +28,7 @@ MAX = {
       missed:0,
     },
     branches: {
-       total:98,
+       total:102,
       missed:0,
     }
   }

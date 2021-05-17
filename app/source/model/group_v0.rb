@@ -16,6 +16,17 @@ class Group_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def exists?(id)
+    unless IdGenerator::id?(id)
+      return false
+    end
+    dir_name = group_id_path(id)
+    command = disk.dir_exists_command(dir_name)
+    disk.run(command)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def create(manifest, options)
     # Groups created in cyber-dojo are now always version 1.
     # The ability to create version 0 groups is retained for testing.

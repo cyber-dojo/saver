@@ -22,21 +22,38 @@ class TestBase < Id58TestBase
   include TestHelpersModel
   include TestHelpersRack
 
-  def self.disk_tests(hex_suffix, *lines, &block)
-    test(hex_suffix+'0', *lines) do
+  # - - - - - - - - - - - - - - - - - - -
+
+  def self.disk_tests(id58_suffix, *lines, &block)
+    test(id58_suffix+'0', *lines) do
       self.instance_eval(&block)
     end
-    test(hex_suffix+'1', *lines) do
+    test(id58_suffix+'1', *lines) do
       self.externals.instance_eval { @disk = DiskFake.new }
       self.instance_eval(&block)
     end
   end
 
-  def self.v_tests(versions, id58_suffix, *lines, &test_block)
+  # - - - - - - - - - - - - - - - - - - -
+
+  def self.v_tests(versions, id58_suffix, *lines, &block)
     versions.each do |version|
-      v_lines = ["<version=#{version}>"] + lines
-      test(id58_suffix + version.to_s, *v_lines, &test_block)
+      test(id58_suffix + version.to_s, *lines) do
+        self.externals.instance_eval { @version = version }
+        self.instance_eval(&block)
+      end
     end
+  end
+
+  def version
+    self.externals.version
+  end
+
+  def custom_manifest
+    @display_name = custom_start_points.display_names.sample
+    manifest = custom_start_points.manifest(@display_name)
+    manifest['version'] = version
+    manifest
   end
 
 end

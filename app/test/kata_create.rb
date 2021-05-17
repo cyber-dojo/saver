@@ -7,14 +7,7 @@ class KataCreateTest < TestBase
     'f26'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
+  # - - - - - - - - - - - - - - - - - - - - - - -
 
   v_tests [0,1], 'q32', %w(
   |POST /kata_create(manifest)
@@ -97,9 +90,9 @@ class KataCreateTest < TestBase
     ) do |response|
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
-      assert_kata_exists(id, display_name)
+      assert_kata_exists(id, @display_name)
       @manifest = kata_manifest(id)
-      assert_equal version, @manifest['version']
+      assert_equal version, @manifest['version'], :version
     end
     @manifest
   end

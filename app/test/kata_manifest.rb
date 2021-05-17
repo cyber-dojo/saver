@@ -7,15 +7,6 @@ class KataManifestTest < TestBase
     '5Ks'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   v_tests [0], '473', %w(
@@ -75,7 +66,7 @@ class KataManifestTest < TestBase
     id = kata_create(manifest, default_options)
     saved = kata_manifest(id)
     manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key],  key
+      assert_equal manifest[key], saved[key], key
     end
     assert saved.keys.include?('created'), :created_key
     assert_equal now, saved['created'], :created
