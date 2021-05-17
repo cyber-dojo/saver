@@ -14,26 +14,26 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
+  def group_create(manifests:, options:)
+    manifest = manifests[0]
+    version = from_manifest(manifest)
+    group(version).create(manifest, options)
+  end
+
   def group_exists?(id:)
-    unless IdGenerator::id?(id)
+    unless id?(id)
       return false
     end
     dir_name = group_id_path(id)
     disk.run(disk.dir_exists_command(dir_name))
   end
 
-  def group_create(manifests:, options:)
-    manifest = manifests[0]
-    version = (manifest['version'] || CURRENT_VERSION).to_i
-    group(version).create(manifest, options)
-  end
-
   def group_manifest(id:)
-    group(version_group(id)).manifest(id)
+    group(id).manifest(id)
   end
 
   def group_join(id:, indexes:AVATAR_INDEXES.shuffle)
-    group(version_group(id)).join(id, indexes)
+    group(id).join(id, indexes)
   end
 
   def group_joined(id:)
@@ -46,59 +46,59 @@ class Model
         id = group_id
       end
     end
-    group(version_group(id)).joined(id)
+    group(id).joined(id)
   end
 
   #- - - - - - - - - - - - - - - - - -
 
+  def kata_create(manifest:, options:)
+    version = from_manifest(manifest)
+    kata(version).create(manifest, options)
+  end
+
   def kata_exists?(id:)
-    unless IdGenerator::id?(id)
+    unless id?(id)
       return false
     end
     dir_name = kata_id_path(id)
     disk.run(disk.dir_exists_command(dir_name))
   end
 
-  def kata_create(manifest:, options:)
-    version = (manifest['version'] || CURRENT_VERSION).to_i
-    kata(version).create(manifest, options)
-  end
-
   def kata_manifest(id:)
-    kata(version_kata(id)).manifest(id)
+    kata(id).manifest(id)
   end
 
   def kata_events(id:)
-    kata(version_kata(id)).events(id)
+    kata(id).events(id)
   end
 
   def kata_event(id:, index:)
-    kata(version_kata(id)).event(id, index)
+    kata(id).event(id, index)
   end
 
   def katas_events(ids:, indexes:)
     id = ids[0]
-    kata(version_kata(id)).event_batch(ids, indexes)
+    kata(id).event_batch(ids, indexes)
   end
 
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(version_kata(id)).ran_tests(id, index, files, stdout, stderr, status, summary)
+    kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_predicted_right(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(version_kata(id)).predicted_right(id, index, files, stdout, stderr, status, summary)
+    kata(id).predicted_right(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(version_kata(id)).predicted_wrong(id, index, files, stdout, stderr, status, summary)
+    kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(version_kata(id)).reverted(id, index, files, stdout, stderr, status, summary)
+    kata(id).reverted(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_checked_out(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(version_kata(id)).checked_out(id, index, files, stdout, stderr, status, summary)
+    kata(id).checked_out(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_option_get(id:, name:)
@@ -116,26 +116,36 @@ class Model
   include IdPather
   include JsonAdapter
 
-  def group(version)
+  def group(id)
+    if id?(id)
+      version = from_path(group_id_path(id, 'manifest.json'))
+    else
+      version = id
+    end
     GROUPS[version].new(@externals)
   end
 
-  def kata(version)
+  def kata(id)
+    if id?(id)
+      version = from_path(kata_id_path(id, 'manifest.json'))
+    else
+      version = id
+    end
     KATAS[version].new(@externals)
   end
 
-  def version_group(id)
-    version_path(group_id_path(id, 'manifest.json'))
-  end
-
-  def version_kata(id)
-    version_path(kata_id_path(id, 'manifest.json'))
-  end
-
-  def version_path(path)
-    manifest_src = disk.assert(disk.file_read_command(path))
-    manifest = json_parse(manifest_src)
+  def from_path(path)
+    content = disk.assert(disk.file_read_command(path))
+    manifest = json_parse(content)
     manifest['version'].to_i # nil.to_i == 0
+  end
+
+  def from_manifest(manifest)
+    (manifest['version'] || CURRENT_VERSION).to_i
+  end
+
+  def id?(id)
+    IdGenerator::id?(id)
   end
 
   def disk
