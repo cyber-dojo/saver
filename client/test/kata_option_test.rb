@@ -8,22 +8,20 @@ class KataOptionTest < TestBase
   end
 
   def id58_setup
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    @id = kata_create(manifest, default_options)
+    @id = kata_create(custom_manifest, default_options)
   end
 
   attr_reader :id
 
   # - - - - - - - - - - - - - - - - -
 
-  test '460', %w(
+  version_tests [0,1], '460', %w(
   |kata_option_get('theme') defaults to 'light' as that is better on projectors
   ) do
     assert_equal 'light', kata_option_get('theme')
   end
 
-  test '461', %w(
+  version_tests [0,1], '461', %w(
   |kata_option_set('theme', dark|light) sets the theme option
   |kata_option_get('theme') gets the theme option
   ) do
@@ -33,7 +31,7 @@ class KataOptionTest < TestBase
     assert_equal 'light', kata_option_get('theme')
   end
 
-  test '462', %w(
+  version_tests [0,1], '462', %w(
   kata_option_set('theme', not-dark-not-light) raises
   ) do
     capture_stdout_stderr {
@@ -43,13 +41,13 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '560', %w(
+  version_tests [0,1], '560', %w(
   |kata_option_get('colour') defaults to 'on'
   ) do
     assert_equal 'on', kata_option_get('colour')
   end
 
-  test '561', %w(
+  version_tests [0,1], '561', %w(
   |kata_option_set('colour', on|off) sets the colour option
   |kata_option_get('colour') gets the colour option
   ) do
@@ -59,7 +57,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('colour')
   end
 
-  test '562', %w(
+  version_tests [0,1], '562', %w(
   kata_option_set('colour', not-on-not-off) raises
   ) do
     capture_stdout_stderr {
@@ -69,13 +67,13 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '660', %w(
+  version_tests [0,1], '660', %w(
   |kata_option_get('predict') defaults to 'off'
   ) do
     assert_equal 'off', kata_option_get('predict')
   end
 
-  test '661', %w(
+  version_tests [0,1], '661', %w(
   |kata_option_set('predict', on|off) sets the predict option
   |kata_option_get('predict') gets the predict option
   ) do
@@ -85,7 +83,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('predict')
   end
 
-  test '662', %w(
+  version_tests [0,1], '662', %w(
   kata_option_set('predict', not-on-not-off) raises
   ) do
     capture_stdout_stderr {
@@ -95,7 +93,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '760', %w(
+  version_tests [0,1], '760', %w(
   |kata_option_get('revert') defaults to 'off'
   ) do
     assert_equal 'off', kata_option_get('revert_red')
@@ -103,7 +101,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('revert_green')
   end
 
-  test '761', %w(
+  version_tests [0,1], '761', %w(
   |kata_option_set('revert', on|off) sets the revert option
   |kata_option_get('revert') gets the revert option
   ) do
@@ -123,7 +121,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('revert_green')
   end
 
-  test '762', %w(
+  version_tests [0,1], '762', %w(
   kata_option_set('revert', not-on-not-off) raises
   ) do
     capture_stdout_stderr {
@@ -139,7 +137,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '860', %w(
+  version_tests [0,1], '860', %w(
   kata_option_get(unknown) raises
   ) do
     capture_stdout_stderr {
@@ -150,7 +148,7 @@ class KataOptionTest < TestBase
     }
   end
 
-  test '861', %w(
+  version_tests [0,1], '861', %w(
   kata_option_set(unknown) raises
   ) do
     capture_stdout_stderr {

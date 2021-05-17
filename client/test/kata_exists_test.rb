@@ -9,7 +9,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '760', %w(
+  version_tests [0,1], '760', %w(
   |kata_exists? is false,
   |for a well-formed id that does not exist
   ) do
@@ -44,7 +44,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '764', %w(
+  version_tests [0,1], '764', %w(
   |kata_exists? is true
   |for id from original kata
   |when there was no explicit version in the manifest

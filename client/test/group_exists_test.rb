@@ -9,7 +9,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '860', %w(
+  version_tests [0,1], '860', %w(
   |group_exists? is false,
   |for a well-formed id that does not exist
   ) do
@@ -44,7 +44,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '864', %w(
+  version_tests [0,1], '864', %w(
   |group_exists? is true
   |for id from original group
   |when there was no explicit version in the manifest

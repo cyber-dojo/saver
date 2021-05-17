@@ -7,16 +7,9 @@ class CreateTest < TestBase
     'f26'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    @custom_manifest = custom_start_points.manifest(display_name)
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   # - - - - - - - - - - - - - - - - -
 
-  test 'q31', %w(
+  version_tests [0,1], 'q31', %w(
   |POST /group_create(manifest)
   |has status 200
   |returns the id: of a new group
@@ -32,7 +25,7 @@ class CreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'q32', %w(
+  version_tests [0,1], 'q32', %w(
   |POST /kata_create(manifest)
   |has status 200
   |returns the id: of a new kata

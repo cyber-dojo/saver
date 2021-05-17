@@ -19,17 +19,6 @@ class TestBase < Id58TestBase
     @exernals ||= Externals.new
   end
 
-  def custom_start_points
-    externals.custom_start_points
-  end
-
-  def custom_manifest
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    manifest
-  end
-
   def saver
     externals.saver
   end
@@ -105,8 +94,23 @@ class TestBase < Id58TestBase
     end
   end
 
+  def custom_manifest
+    @display_name = custom_start_points.display_names.sample
+    manifest = custom_start_points.manifest(display_name)
+    manifest['version'] = version
+    manifest
+  end
+
+  def custom_start_points
+    externals.custom_start_points
+  end
+
   def version
     @version
+  end
+
+  def display_name
+    @display_name
   end
 
   # - - - - - - - - - - - - - - - - - -
