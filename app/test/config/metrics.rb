@@ -20,7 +20,7 @@ MAX = {
        total:12,
       missed:0,
     }
-  }
+  },
 
   code: {
     lines: {
@@ -31,5 +31,5 @@ MAX = {
        total:98,
       missed:0,
     }
-  },
+  }
 }
