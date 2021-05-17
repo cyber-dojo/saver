@@ -18,7 +18,7 @@ class UniversalAppendTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], 'Dk1', %w(
+  version_tests [0,1], 'Dk1', %w(
   |kata_ran_tests gives same results in both versions
   ) do
     universal_append { |id, index, files, stdout, stderr, status, summary|
@@ -26,7 +26,7 @@ class UniversalAppendTest < TestBase
     }
   end
 
-  v_tests [0,1], 'Dk2', %w(
+  version_tests [0,1], 'Dk2', %w(
   |kata_predicted_right gives same results in both versions
   ) do
     universal_append { |id, index, files, stdout, stderr, status, summary|
@@ -34,7 +34,7 @@ class UniversalAppendTest < TestBase
     }
   end
 
-  v_tests [0,1], 'Dk3', %w(
+  version_tests [0,1], 'Dk3', %w(
   |kata_predicted_wrong gives same results in both versions
   ) do
     universal_append { |id, index, files, stdout, stderr, status, summary|
@@ -42,7 +42,7 @@ class UniversalAppendTest < TestBase
     }
   end
 
-  v_tests [0,1], 'Dk7', %w(
+  version_tests [0,1], 'Dk7', %w(
   |kata_reverted gives same results in both versions
   ) do
     universal_append { |id, index, files, stdout, stderr, status, summary|
@@ -50,7 +50,7 @@ class UniversalAppendTest < TestBase
     }
   end
 
-  v_tests [0,1], 'Dk6', %w(
+  version_tests [0,1], 'Dk6', %w(
   |kata_checked_out gives same results in both versions
   ) do
     universal_append { |id, index, files, stdout, stderr, status, summary|

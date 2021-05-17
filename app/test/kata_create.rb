@@ -9,7 +9,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], 'q32', %w(
+  version_tests [0,1], 'q32', %w(
   |POST /kata_create(manifest)
   |with empty options
   |has status 200
@@ -23,7 +23,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [1], 'q33', %w(
+  version_tests [1], 'q33', %w(
   |POST /kata_create(manifest)
   |with good options
   |has status 200
@@ -49,7 +49,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  v_tests [1], 'x32', %w(
+  version_tests [1], 'x32', %w(
   |POST /kata_create(manifest,options)
   |with options not a Hash
   |has status 500
@@ -61,7 +61,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  v_tests [1], 'x33', %w(
+  version_tests [1], 'x33', %w(
   |POST /kata_create(manifest,options)
   |with unknown option key
   |has status 500
@@ -71,7 +71,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  v_tests [1], 'x34', %w(
+  version_tests [1], 'x34', %w(
   |POST /kata_create(manifest,options)
   |with unknown option value
   |has status 500

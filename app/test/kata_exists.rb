@@ -27,7 +27,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '761', %w(
+  version_tests [0,1], '761', %w(
   |kata_exists? is true,
   |for a well-formed id that exists
   ) do
@@ -37,7 +37,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '762', %w(
+  version_tests [0,1], '762', %w(
   |kata_exists? is false,
   |for a malformed id
   ) do
@@ -53,7 +53,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '763', %w(
+  version_tests [0,1], '763', %w(
   |kata_exists? raises,
   |when id is well-formed,
   |and saver is offline

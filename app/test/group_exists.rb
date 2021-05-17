@@ -18,7 +18,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '861', %w(
+  version_tests [0,1], '861', %w(
   |group_exists? is true,
   |for a well-formed id from previous group_create
   ) do
@@ -28,7 +28,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '862', %w(
+  version_tests [0,1], '862', %w(
   |group_exists? is false,
   |for a malformed id
   ) do
@@ -44,7 +44,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '863', %w(
+  version_tests [0,1], '863', %w(
   |group_exists? raises,
   |when id is well-formed,
   |and saver is offline
