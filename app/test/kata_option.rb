@@ -8,9 +8,7 @@ class KataOptionTest < TestBase
   end
 
   def id58_setup
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    @id = kata_create(manifest, default_options)
+    @id = kata_create(custom_manifest, default_options)
   end
 
   attr_reader :id

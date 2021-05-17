@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'data/kata_test_data'
 
 class KataEventTest < TestBase
 
@@ -43,9 +42,5 @@ class KataEventTest < TestBase
       assert_equal expected, actual
     end
   end
-
-  private
-
-  include KataTestData
 
 end

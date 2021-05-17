@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 require_relative 'id58_test_base'
+require_relative 'capture_stdout_stderr'
+require_relative 'data/kata_test_data'
 require_relative 'doubles/disk_fake'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
@@ -7,7 +9,6 @@ require_relative 'helpers/disk'
 require_relative 'helpers/externals'
 require_relative 'helpers/model'
 require_relative 'helpers/rack'
-require_relative 'capture_stdout_stderr'
 require 'json'
 
 class TestBase < Id58TestBase
@@ -17,10 +18,12 @@ class TestBase < Id58TestBase
   end
 
   include CaptureStdoutStderr
+  include KataTestData
   include TestHelpersDisk
   include TestHelpersExternals
   include TestHelpersModel
   include TestHelpersRack
+
 
   # - - - - - - - - - - - - - - - - - - -
 
@@ -47,13 +50,6 @@ class TestBase < Id58TestBase
 
   def version
     @version
-  end
-
-  def custom_manifest
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(@display_name)
-    manifest['version'] = version
-    manifest
   end
 
 end

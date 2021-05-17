@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require_relative 'test_base'
-require_relative 'data/kata_test_data'
 
 class KatasEventsTest < TestBase
 
@@ -21,6 +20,8 @@ class KatasEventsTest < TestBase
     assert_equal expected, actual
   end
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test '1P3', %w( v1 example ) do
     actual = katas_events([V1_KATA_ID,V1_KATA_ID], [1,2])
     expected = {
@@ -31,9 +32,5 @@ class KatasEventsTest < TestBase
     }
     assert_equal expected, actual
   end
-
-  private
-
-  include KataTestData
 
 end

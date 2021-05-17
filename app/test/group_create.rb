@@ -7,15 +7,6 @@ class GroupCreateTest < TestBase
     'f27'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   version_tests [1], 'q31', %w(
   |POST /group_create(manifest)
   |with empty options
@@ -97,7 +88,7 @@ class GroupCreateTest < TestBase
     ) do |response|
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
-      assert_group_exists(id, display_name)
+      assert_group_exists(id, @display_name)
       @manifest = group_manifest(id)
       assert_equal version, @manifest['version']
     end
