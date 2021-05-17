@@ -7,12 +7,6 @@ require_relative 'metrics'
 require 'json'
 
 # - - - - - - - - - - - - - - - - - - - - - - -
-def fatal_error(message)
-  puts message
-  exit(42)
-end
-
-# - - - - - - - - - - - - - - - - - - - - - - -
 def coverage_root_dir
   ENV['COVERAGE_ROOT']
 end
@@ -52,9 +46,10 @@ def coverage_json
 end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
-def check_version
+def fail_unless_expected_version
   unless index_html.include?("v0.21.2")
-    fatal_error("Unknown simplecov version (look at bottom of index.html)")
+    puts("ERROR: Unknown simplecov version (look at bottom of index.html)")
+    exit(42)
   end
 end
 
@@ -121,17 +116,6 @@ def get_test_log_stats
 end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
-def safe_divide(nom, denom, name)
-  upper = nom[name]
-  lower = denom[name]
-  if lower === 0
-    fail "ERROR (#{name})==0"
-  else
-    upper.to_f / lower.to_f
-  end
-end
-
-# - - - - - - - - - - - - - - - - - - - - - - -
 def table_data
   log_stats = get_test_log_stats
 
@@ -167,7 +151,7 @@ def table_data
 end
 
 # - - - - - - - - - - - - - - - - - - - - - - -
-check_version
+fail_unless_expected_version
 done = []
 table_data.each do |name,value,op,limit|
   if name.nil?
