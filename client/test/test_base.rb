@@ -23,6 +23,13 @@ class TestBase < Id58TestBase
     externals.custom_start_points
   end
 
+  def custom_manifest
+    display_name = custom_start_points.display_names.sample
+    manifest = custom_start_points.manifest(display_name)
+    manifest['version'] = version
+    manifest
+  end
+
   def saver
     externals.saver
   end
@@ -89,24 +96,17 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  def self.v_tests(versions, id58_suffix, *lines, &test_block)
+  def self.version_tests(versions, id58_suffix, *lines, &block)
     versions.each do |version|
-      v_lines = ["<version=#{version}>"] + lines
-      test(id58_suffix + version.to_s, *v_lines, &test_block)
+      test(id58_suffix + version.to_s, *lines) do
+        @version = version
+        self.instance_eval(&block)
+      end
     end
   end
 
   def version
-    if v_test?(0)
-      return 0
-    end
-    if v_test?(1)
-      return 1
-    end
-  end
-
-  def v_test?(n)
-    name58.start_with?("<version=#{n}>")
+    @version
   end
 
   # - - - - - - - - - - - - - - - - - -

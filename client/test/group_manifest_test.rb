@@ -7,18 +7,9 @@ class GroupManifestTest < TestBase
     '5Zt'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0], '472', %w(
+  version_tests [0], '472', %w(
   already existing group_manifest {test-data copied into saver}
   ) do
     manifest = group_manifest(id='chy6BJ')
@@ -41,7 +32,7 @@ class GroupManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], 'Q61', %w(
+  version_tests [0,1], 'Q61', %w(
   retrieved group_manifest matches saved group_manifest
   ) do
     manifest = custom_manifest

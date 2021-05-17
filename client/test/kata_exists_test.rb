@@ -7,15 +7,6 @@ class KataExistsTest < TestBase
     'Ws5'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '760', %w(
@@ -27,7 +18,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '761', %w(
+  version_tests [0,1], '761', %w(
   |kata_exists? is true,
   |for a well-formed id that exists
   ) do
@@ -37,7 +28,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '762', %w(
+  version_tests [0,1], '762', %w(
   |kata_exists? is false,
   |for a malformed id
   ) do

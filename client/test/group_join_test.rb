@@ -7,18 +7,9 @@ class GroupJoinTest < TestBase
     'Gw4'
   end
 
-  def id58_setup
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    @custom_manifest = manifest
-  end
-
-  attr_reader :display_name, :custom_manifest
-
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '1s9', %w(
+  version_tests [0,1], '1s9', %w(
   group is initially empty
   ) do
     manifest = custom_manifest
@@ -28,7 +19,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '6A5', %w(
+  version_tests [0,1], '6A5', %w(
   when you join a group you increase its size by one,
   and are a member of the group
   ) do
@@ -60,7 +51,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  v_tests [0,1], '6A6', %w(
+  version_tests [0,1], '6A6', %w(
     when 64 avatars have joined the group is full
   ) do
     # Precreated almost full groups.
