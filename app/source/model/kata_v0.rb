@@ -14,17 +14,6 @@ class Kata_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def exists?(id)
-    unless IdGenerator::id?(id)
-      return false
-    end
-    dir_name = kata_id_path(id)
-    command = disk.dir_exists_command(dir_name)
-    disk.run(command)
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def create(manifest, options)
     manifest = manifest.clone
     fail_unless_known_options(options)

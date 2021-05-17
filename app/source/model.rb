@@ -16,12 +16,12 @@ class Model
 
   def group_create(manifests:, options:)
     manifest = manifests[0]
-    version = (manifest['version'] || current_version).to_i
+    version = (manifest['version'] || CURRENT_VERSION).to_i
     group(version).create(manifest, options)
   end
 
   def group_exists?(id:)
-    group(current_version).exists?(id)
+    group(CURRENT_VERSION).exists?(id)
   end
 
   def group_manifest(id:)
@@ -48,12 +48,12 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:, options:)
-    version = (manifest['version'] || current_version).to_i
+    version = (manifest['version'] || CURRENT_VERSION).to_i
     kata(version).create(manifest, options)
   end
 
   def kata_exists?(id:)
-    kata(current_version).exists?(id)
+    kata(CURRENT_VERSION).exists?(id)
   end
 
   def kata_manifest(id:)
@@ -94,11 +94,11 @@ class Model
   end
 
   def kata_option_get(id:, name:)
-    kata(current_version).option_get(id, name)
+    kata(CURRENT_VERSION).option_get(id, name)
   end
 
   def kata_option_set(id:, name:, value:)
-    kata(current_version).option_set(id, name, value)
+    kata(CURRENT_VERSION).option_set(id, name, value)
   end
 
   private
@@ -134,9 +134,7 @@ class Model
     @externals.disk
   end
 
-  def current_version
-    @externals.version
-  end
+  CURRENT_VERSION = 1
 
   GROUPS = [ Group_v0, Group_v1 ]
   KATAS = [ Kata_v0, Kata_v1 ]

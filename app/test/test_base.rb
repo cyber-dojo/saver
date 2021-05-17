@@ -39,14 +39,14 @@ class TestBase < Id58TestBase
   def self.v_tests(versions, id58_suffix, *lines, &block)
     versions.each do |version|
       test(id58_suffix + version.to_s, *lines) do
-        self.externals.instance_eval { @version = version }
+        @version = version
         self.instance_eval(&block)
       end
     end
   end
 
   def version
-    self.externals.version
+    @version
   end
 
   def custom_manifest

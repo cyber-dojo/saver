@@ -27,8 +27,4 @@ class Externals
     @time ||= External::Time.new
   end
 
-  def version
-    @version ||= 1
-  end
-
 end
