@@ -14,14 +14,18 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
+  def group_exists?(id:)
+    unless IdGenerator::id?(id)
+      return false
+    end
+    dir_name = group_id_path(id)
+    disk.run(disk.dir_exists_command(dir_name))
+  end
+
   def group_create(manifests:, options:)
     manifest = manifests[0]
     version = (manifest['version'] || CURRENT_VERSION).to_i
     group(version).create(manifest, options)
-  end
-
-  def group_exists?(id:)
-    group(CURRENT_VERSION).exists?(id)
   end
 
   def group_manifest(id:)
@@ -47,13 +51,17 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
+  def kata_exists?(id:)
+    unless IdGenerator::id?(id)
+      return false
+    end
+    dir_name = kata_id_path(id)
+    disk.run(disk.dir_exists_command(dir_name))
+  end
+
   def kata_create(manifest:, options:)
     version = (manifest['version'] || CURRENT_VERSION).to_i
     kata(version).create(manifest, options)
-  end
-
-  def kata_exists?(id:)
-    kata(CURRENT_VERSION).exists?(id)
   end
 
   def kata_manifest(id:)

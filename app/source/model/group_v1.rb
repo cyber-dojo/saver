@@ -35,17 +35,6 @@ class Group_v1
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def exists?(id)
-    unless IdGenerator::id?(id)
-      return false
-    end
-    dir_name = group_id_path(id)
-    command = disk.dir_exists_command(dir_name)
-    disk.run(command)
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
   def manifest(id)
     manifest_src = disk.assert(manifest_read_command(id))
     manifest = json_parse(manifest_src)
