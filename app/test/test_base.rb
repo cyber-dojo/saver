@@ -2,7 +2,7 @@
 require_relative 'id58_test_base'
 require_relative 'capture_stdout_stderr'
 require_relative 'data/kata_test_data'
-require_relative 'doubles/disk_fake'
+#require_relative 'doubles/disk_fake'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'helpers/disk'
@@ -31,10 +31,12 @@ class TestBase < Id58TestBase
     test(id58_suffix, ["<disk:Real>"]+lines) do
       self.instance_eval(&block)
     end
+=begin
     test(id58_suffix, ["<disk:Fake>"]+lines) do
       self.externals.instance_eval { @disk = DiskFake.new }
       self.instance_eval(&block)
     end
+=end
   end
 
   # - - - - - - - - - - - - - - - - - - -
