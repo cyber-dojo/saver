@@ -22,9 +22,9 @@ Use: ./test.sh [server|client] [ID...]
 No options runs all server tests, then all client tests
 
 Options:
-   server      run the tests from inside the server container
-   client      run the tests from inside the client container
-   ID...       only run the tests matching the given identifiers
+   server      run from inside the server container (unit tests)
+   client      run from inside the client container (integration tests)
+   ID...       run only the tests matching the given IDs
    -h|--help   show this help
 ```
 
