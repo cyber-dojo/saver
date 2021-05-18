@@ -9,7 +9,7 @@ Development
 -----------
 To build the images, bring up the containers, and wait till they are alive and healthy:
 ```bash
-$ ./down.sh && ./build.sh && ./up.sh && ./wait.sh
+$ ./build.sh && ./down.sh && ./up.sh && ./wait.sh
 ````
 
 To run the tests:
@@ -30,8 +30,8 @@ Options:
 
 * The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
 * In [docker-compose.yml](docker-compose.yml), the source and test dirs are volume-mounted over their image counterparts.
-* These overlays keeps the dev-cycle fast by reducing the need to down/build/up/wait.
-* You need to down/build/up/wait when:
+* These overlays keeps the dev-cycle fast by reducing the need to build/down/up/wait.
+* You need to build/down/up/wait when:
   * You change a Dockerfile
   * You change a web server's config (there is no auto-reloading)
 
