@@ -9,7 +9,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '860', %w(
+  versions_test '860', %w(
   |group_exists? is false,
   |for a well-formed id that does not exist
   ) do
@@ -18,7 +18,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '861', %w(
+  versions_test '861', %w(
   |group_exists? is true,
   |for a well-formed id from previous group_create
   ) do
@@ -28,7 +28,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '862', %w(
+  versions_test '862', %w(
   |group_exists? is false,
   |for a malformed id
   ) do
@@ -44,7 +44,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '863', %w(
+  versions_test '863', %w(
   |group_exists? raises,
   |when id is well-formed,
   |and saver is offline
@@ -59,7 +59,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '864', %w(
+  versions_test '864', %w(
   |group_exists? is true
   |for id from original group
   |when there was no explicit version in the manifest

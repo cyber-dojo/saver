@@ -7,7 +7,7 @@ class GroupCreateTest < TestBase
     'f27'
   end
 
-  version_tests [1], 'q31', %w(
+  version_test 1, 'q31', %w(
   |POST /group_create(manifest)
   |with empty options
   |has status 200
@@ -21,7 +21,7 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_tests [1], 'q32', %w(
+  version_test 1, 'q32', %w(
   |POST /group_create(manifest)
   |with good options
   |has status 200
@@ -47,7 +47,7 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_tests [1], 'x32', %w(
+  version_test 1, 'x32', %w(
   |POST /group_create(manifest,options)
   |with options not a Hash
   |has status 500
@@ -59,7 +59,7 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_tests [1], 'x33', %w(
+  version_test 1, 'x33', %w(
   |POST /group_create(manifest,options)
   |with unknown option key
   |has status 500
@@ -69,7 +69,7 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_tests [1], 'x34', %w(
+  version_test 1, 'x34', %w(
   |POST /group_create(manifest,options)
   |with unknown option value
   |has status 500

@@ -109,6 +109,8 @@ class Model
     kata(CURRENT_VERSION).option_set(id, name, value)
   end
 
+  CURRENT_VERSION = 1
+
   private
 
   AVATAR_INDEXES = (0..63).to_a
@@ -151,8 +153,6 @@ class Model
   def disk
     @externals.disk
   end
-
-  CURRENT_VERSION = 1
 
   GROUPS = [ Group_v0, Group_v1 ]
   KATAS = [ Kata_v0, Kata_v1 ]

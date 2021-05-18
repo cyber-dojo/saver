@@ -9,7 +9,7 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0], '473', %w(
+  version_test 0, '473', %w(
   already existing kata_manifest {test-data copied into saver}
   is "polyfilled" to make it look like version=1
   ) do
@@ -37,7 +37,7 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '5s2', %w(
+  versions_test '5s2', %w(
   optional entries are polyfilled ) do
     m = custom_manifest
     m.delete('tab_size')
@@ -55,7 +55,7 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], 'Q62', %w(
+  versions_test 'Q62', %w(
   retrieved kata_manifest matches saved kata_manifest
   ) do
     now = [2018,11,30, 9,34,56,6453]

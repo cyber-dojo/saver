@@ -39,12 +39,17 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  def self.version_tests(versions, id58_suffix, *lines, &block)
+  def self.versions_test(id58_suffix, *lines, &block)
+    versions = (0..Model::CURRENT_VERSION)
     versions.each do |version|
-      test(id58_suffix + version.to_s, *lines) do
-        @version = version
-        self.instance_eval(&block)
-      end
+      version_test(version, id58_suffix, *lines, &block)
+    end
+  end
+
+  def self.version_test(version, id58_suffix, *lines, &block)
+    test(id58_suffix + version.to_s, *lines) do
+      @version = version
+      self.instance_eval(&block)
     end
   end
 
