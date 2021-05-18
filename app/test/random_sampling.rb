@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative 'test_base'
+require_source 'model/id_generator'
 
 class RandomSamplingTest < TestBase
 
@@ -19,5 +20,19 @@ class RandomSamplingTest < TestBase
     end
     assert_equal size, counts.size
   end
+
+  test '341', %w(
+  no id duplicates in 2000
+  ) do
+    repeats = 1000
+    ids = {}
+    repeats.times do
+      id = 6.times.map { random.sample(ALPHABET_SIZE) }
+      ids[id] = true
+    end
+    assert_equal repeats, ids.size
+  end
+
+  ALPHABET_SIZE = IdGenerator::ALPHABET.size
 
 end
