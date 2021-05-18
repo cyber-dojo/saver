@@ -8,8 +8,10 @@ class RandomSamplingTest < TestBase
     'aA8'
   end
 
-  test '340', %w[ basic sanity check sample(N) returns all of 0 to N-1 inclusive ] do
-    size = 16
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '340', %w[ sample(N) returns all of 0 to N-1 inclusive ] do
+    size = ALPHABET_SIZE
     counts = {}
     500.times do
       i = random.sample(size)
@@ -21,10 +23,12 @@ class RandomSamplingTest < TestBase
     assert_equal size, counts.size
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test '341', %w(
   no id duplicates in 2000
   ) do
-    repeats = 1000
+    repeats = 2000
     ids = {}
     repeats.times do
       id = 6.times.map { random.sample(ALPHABET_SIZE) }

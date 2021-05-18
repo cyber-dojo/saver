@@ -9,48 +9,12 @@ class IdGenerationTest < TestBase
     'A6D'
   end
 
-  def id58_setup
-    externals.instance_exec do
-      @disk = DiskFake.new
-    end
-  end
-
   # - - - - - - - - - - - - - - - - - - -
 
   test '062', %w(
   alphabet has 58 characters
   ) do
     assert_equal 58, alphabet.size
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test '063', %w(
-  entire alphabet is used in group ids
-  ) do
-    id_generator = IdGenerator.new(externals)
-    counts = {}
-    500.times do
-      id_generator.group_id.each_char do |ch|
-        counts[ch] = true
-      end
-    end
-    assert_equal alphabet.chars.sort, counts.keys.sort
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test '064', %w(
-  entire alphabet is used in kata ids
-  ) do
-    id_generator = IdGenerator.new(externals)
-    counts = {}
-    500.times do
-      id_generator.kata_id.each_char do |ch|
-        counts[ch] = true
-      end
-    end
-    assert_equal alphabet.chars.sort, counts.keys.sort
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -86,8 +50,7 @@ class IdGenerationTest < TestBase
   test '14a', %w(
   kata-id generator will skip id that already exists as a group
   ) do
-    group_id = 'chy6BJ'
-    disk.assert(disk.dir_make_command(group_id_path(group_id)))
+    group_id = group_create([custom_manifest], default_options)
     id = 'x67WpA'
     id_generator = stubbed_id_generator(group_id + id)
     assert_equal id, id_generator.kata_id
@@ -98,8 +61,7 @@ class IdGenerationTest < TestBase
   test '14b', %w(
   group-id generator will skip id that already exists as a kata
   ) do
-    kata_id = '5rTJv5'
-    disk.assert(disk.dir_make_command(kata_id_path(kata_id)))
+    kata_id = kata_create(custom_manifest, default_options)
     id = 'hY86s3'
     id_generator = stubbed_id_generator(kata_id + id)
     assert_equal id, id_generator.group_id
