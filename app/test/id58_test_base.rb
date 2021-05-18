@@ -63,7 +63,9 @@ class Id58TestBase < MiniTest::Test
     max_shown = 5
     size = sorted.size < max_shown ? sorted.size : max_shown
     puts
-    puts "Slowest #{size} tests are..." if size != 0
+    if size != 0
+      puts "Slowest #{size} tests are..."
+    end
     sorted.each_with_index { |(name,secs),index|
       puts "%3.4f %-72s" % [secs,name]
       if index === size
@@ -104,12 +106,12 @@ class Id58TestBase < MiniTest::Test
     pointer.prepend("\n\n")
     raise "#{pointer}empty#{pointee}" if id58_suffix === ''
     raise "#{pointer}not id58#{pointee}" unless id58?(id58_suffix)
-    raise "#{pointer}duplicate#{pointee}" if duplicate(id58)
+    raise "#{pointer}duplicate#{pointee}" if duplicate?(id58)
     raise "#{pointer}overlap#{pointee}" if prefix[-2..-1] === id58_suffix[0..1]
     id58
   end
 
-  def self.duplicate(id58)
+  def self.duplicate?(id58)
     @@seen_ids[id58] ||= 0
     @@seen_ids[id58] += 1
     @@seen_ids[id58] > 2

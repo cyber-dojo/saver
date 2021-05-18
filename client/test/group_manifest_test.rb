@@ -9,7 +9,7 @@ class GroupManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0], '472', %w(
+  version_test 0, '472', %w(
   already existing group_manifest {test-data copied into saver}
   ) do
     manifest = group_manifest(id='chy6BJ')
@@ -32,7 +32,7 @@ class GroupManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], 'Q61', %w(
+  versions_test 'Q61', %w(
   retrieved group_manifest matches saved group_manifest
   ) do
     manifest = custom_manifest

@@ -9,7 +9,7 @@ class CreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], 'q31', %w(
+  versions_test 'q31', %w(
   |POST /group_create(manifest)
   |has status 200
   |returns the id: of a new group
@@ -25,7 +25,7 @@ class CreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], 'q32', %w(
+  versions_test 'q32', %w(
   |POST /kata_create(manifest)
   |has status 200
   |returns the id: of a new kata

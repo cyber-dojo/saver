@@ -85,13 +85,24 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  def self.version_tests(versions, id58_suffix, *lines, &block)
+  def self.versions_test(id58_suffix, *lines, &block)
+    current_version = 1
+    versions = (0..current_version)
     versions.each do |version|
-      test(id58_suffix + version.to_s, *lines) do
-        @version = version
-        self.instance_eval(&block)
-      end
+      version_test(version, id58_suffix, *lines, &block)
     end
+  end
+
+  def self.version_test(version, id58_suffix, *lines, &block)
+    lines.unshift("<version:#{version}>")
+    test(id58_suffix, *lines) do
+      @version = version
+      self.instance_eval(&block)
+    end
+  end
+
+  def version
+    @version
   end
 
   def custom_manifest
@@ -103,10 +114,6 @@ class TestBase < Id58TestBase
 
   def custom_start_points
     externals.custom_start_points
-  end
-
-  def version
-    @version
   end
 
   def display_name

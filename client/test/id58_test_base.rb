@@ -11,7 +11,7 @@ class Id58TestBase < MiniTest::Test
   end
 
   @@args = (ARGV.sort.uniq - ['--']) # eg 2m4
-  @@seen_ids = []
+  @@seen_ids = {}
   @@timings = {}
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -34,9 +34,11 @@ class Id58TestBase < MiniTest::Test
           self.instance_exec(&test_block)
           t2 = Time.now
           stripped = trimmed(name58.split("\n").join)
-          @@timings[id58+':'+source_file+':'+source_line+':'+stripped] = (t2 - t1)
+          @@timings[id58+' '+source_file+':'+source_line+' '+stripped] = (t2 - t1)
         ensure
-          puts $!.message unless $!.nil?
+          unless $!.nil?
+            puts($!.message)
+          end
           id58_teardown
         end
       }
@@ -58,12 +60,17 @@ class Id58TestBase < MiniTest::Test
   MiniTest.after_run do
     slow = @@timings.select{ |_name,secs| secs > 0.000 }
     sorted = slow.sort_by{ |name,secs| -secs }.to_h
-    size = sorted.size < 5 ? sorted.size : 5
+    max_shown = 5
+    size = sorted.size < max_shown ? sorted.size : max_shown
     puts
-    puts "Slowest #{size} tests are..." if size != 0
+    if size != 0
+      puts "Slowest #{size} tests are..."
+    end
     sorted.each_with_index { |(name,secs),index|
-      puts "%3.4f - %-72s" % [secs,name]
-      break if index === size
+      puts "%3.4f %-72s" % [secs,name]
+      if index === size
+        break
+      end
     }
     puts
   end
@@ -99,10 +106,15 @@ class Id58TestBase < MiniTest::Test
     pointer.prepend("\n\n")
     raise "#{pointer}empty#{pointee}" if id58_suffix === ''
     raise "#{pointer}not id58#{pointee}" unless id58?(id58_suffix)
-    raise "#{pointer}duplicate#{pointee}" if @@seen_ids.include?(id58)
+    raise "#{pointer}duplicate#{pointee}" if duplicate?(id58)
     raise "#{pointer}overlap#{pointee}" if prefix[-2..-1] === id58_suffix[0..1]
-    @@seen_ids << id58
     id58
+  end
+
+  def self.duplicate?(id58)
+    @@seen_ids[id58] ||= 0
+    @@seen_ids[id58] += 1
+    @@seen_ids[id58] > 2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

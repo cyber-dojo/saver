@@ -9,7 +9,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '1s9', %w(
+  versions_test '1s9', %w(
   group is initially empty
   ) do
     manifest = custom_manifest
@@ -19,7 +19,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '6A5', %w(
+  versions_test '6A5', %w(
   when you join a group you increase its size by one,
   and are a member of the group
   ) do
@@ -51,7 +51,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_tests [0,1], '6A6', %w(
+  versions_test '6A6', %w(
     when 64 avatars have joined the group is full
   ) do
     # Precreated almost full groups.
