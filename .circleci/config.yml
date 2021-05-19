@@ -10,11 +10,14 @@ jobs:
       - run:
           name: Build, test, push image to dockerhub (tagged)
           command: |
+            ./scripts/merkely_declare_pipeline.sh
             ./build.sh
             ./up.sh
             ./wait.sh
             ./test.sh
-            ./push.sh
+            ./scripts/images_push.sh
+            ./scripts/merkely_log_artifact.sh
+            ./scripts/merkely_log_evidence.sh
 
 
   deploy-to-beta:
@@ -27,6 +30,16 @@ jobs:
           command: ./.circleci/deploy_to_namespace.sh beta
 
 
+  merkely-log-deployment-to-beta:
+    machine:
+      image: ubuntu-2004:202008-01
+    steps:
+      - checkout
+      - run:
+          name: Log deployment to beta in Merkely
+          command: ./scripts/merkely_log_deployment.sh beta
+
+
   deploy-to-prod:
     docker:
       - image: cyberdojo/gcloud-kubectl-helm
@@ -37,6 +50,16 @@ jobs:
           command: ./.circleci/deploy_to_namespace.sh prod
 
 
+  merkely-log-deployment-to-prod:
+    machine:
+      image: ubuntu-2004:202008-01
+    steps:
+      - checkout
+      - run:
+          name: Log deployment to prod in Merkely
+          command: ./scripts/merkely_log_deployment.sh prod
+
+
   push-latest:
     machine:
       image: ubuntu-2004:202008-01
@@ -44,7 +67,7 @@ jobs:
       - checkout
       - run:
           name: Push image to dockerhub (latest)
-          command: ./push.sh latest
+          command: ./scripts/images_push.sh latest
 
 
 workflows:
@@ -64,6 +87,10 @@ workflows:
           context: cyberdojo-context
           requires: [ build-test-push ]
 
+      - merkely-log-deployment-to-beta:
+          context: cyberdojo-context
+          requires: [ deploy-to-beta ]
+
       - approve-to-prod:
           type: approval
           requires: [ deploy-to-beta ]
@@ -71,6 +98,10 @@ workflows:
       - deploy-to-prod:
           context: cyberdojo-context
           requires: [ approve-to-prod ]
+
+      - merkely-log-deployment-to-prod:
+          context: cyberdojo-context
+          requires: [ deploy-to-prod ]
 
       - push-latest:
           context: cyberdojo-context
