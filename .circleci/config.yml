@@ -106,13 +106,13 @@ workflows:
           type: approval
           requires: [ deploy-to-beta ]
 
-      - merkely-approve-deployment:
-          context: cyberdojo-context
-          requires: [ approve-to-prod ]
+      #- merkely-approve-deployment:
+      #    context: cyberdojo-context
+      #    requires: [ approve-to-prod ]
 
       - deploy-to-prod:
           context: cyberdojo-context
-          requires: [ merkely-approve-deployment ]
+          requires: [ approve-to-prod ]
 
       - merkely-log-deployment-to-prod:
           context: cyberdojo-context
