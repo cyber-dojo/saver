@@ -11,5 +11,16 @@ source "${SCRIPTS_DIR}/exit_non_zero_unless_installed.sh"
 source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
 export $(echo_versioner_env_vars)
 
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+containers_down()
+{
+  echo
+  augmented_docker_compose \
+    down \
+    --remove-orphans \
+    --volumes
+}
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 exit_non_zero_unless_installed docker docker-compose
 containers_down
