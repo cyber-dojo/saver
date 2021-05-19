@@ -5,10 +5,8 @@ readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
 
 source "${SCRIPTS_DIR}/augmented_docker_compose.sh"
 source "${SCRIPTS_DIR}/config.sh"
-source "${SCRIPTS_DIR}/exit_non_zero_unless_installed.sh"
-
 source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
-export $(echo_versioner_env_vars)
+source "${SCRIPTS_DIR}/exit_non_zero_unless_installed.sh"
 
 # - - - - - - - - - - - - - - - - - - - -
 # I would like to specify this size-limited tmpfs volume in
@@ -62,5 +60,6 @@ containers_up()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
+export $(echo_versioner_env_vars)
 exit_non_zero_unless_installed docker docker-compose
 containers_up

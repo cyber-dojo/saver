@@ -8,9 +8,6 @@ source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
 
-export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
-
 # - - - - - - - - - - - - - - - - - - -
 merkely_log_evidence()
 {
@@ -49,4 +46,6 @@ evidence_json_path()
 }
 
 # - - - - - - - - - - - - - - - - - - -
+export $(echo_versioner_env_vars)
+export $(merkely_echo_env_vars)
 merkely_log_evidence
