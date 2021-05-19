@@ -40,6 +40,17 @@ jobs:
           command: ./scripts/merkely_log_deployment.sh beta
 
 
+  merkely-approve-deployment:
+    machine:
+      image: ubuntu-2004:202008-01
+    steps:
+      - checkout
+      - run:
+          name: Approve deployment in Merkely
+          command: |
+            ./scripts/merkely_approve_deployment.sh
+
+
   deploy-to-prod:
     docker:
       - image: cyberdojo/gcloud-kubectl-helm
@@ -95,9 +106,13 @@ workflows:
           type: approval
           requires: [ deploy-to-beta ]
 
-      - deploy-to-prod:
+      - merkely-approve-deployment:
           context: cyberdojo-context
           requires: [ approve-to-prod ]
+
+      - deploy-to-prod:
+          context: cyberdojo-context
+          requires: [ merkely-approve-deployment ]
 
       - merkely-log-deployment-to-prod:
           context: cyberdojo-context
