@@ -20,7 +20,7 @@ merkely_approve_deployment()
     --env MERKELY_OLDEST_SRC_COMMITISH=origin/production \
     --env MERKELY_NEWEST_SRC_COMMITISH=${COMMIT_SHA} \
     --env MERKELY_DESCRIPTION="Approval created in CircleCI" \
-    --env MERKELY_SRC_REPO_ROOT=${CIRCLE_WORKING_DIRECTORY} \
+    --env MERKELY_SRC_REPO_ROOT=${ROOT_DIR} \
     --env MERKELY_API_TOKEN=${MERKELY_API_TOKEN} \
     --rm \
     --volume /var/run/docker.sock:/var/run/docker.sock \
