@@ -3,8 +3,8 @@
 # - - - - - - - - - - - - - - - - - - -
 exit_non_zero_unless_healthy()
 {
-  local -r SERVICE_NAME="${1}"
-  local -r CONTAINER_NAME="${2}"
+  local -r CONTAINER_NAME="${1}"
+  local -r SERVICE_NAME="${2}"
   local -r MAX_TRIES=50
 
   echo
@@ -46,7 +46,7 @@ strip_known_warning()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
-exit_unless_clean()
+exit_non_zero_unless_clean()
 {
   local -r name="${1}"
   local log=$(docker logs "${name}" 2>&1)
@@ -69,7 +69,7 @@ exit_unless_clean()
     echo "Expecting ${lines} lines"
     echo "   Actual ${line_count} lines"
     echo_docker_log "${name}" "${log}"
-    exit 1
+    exit 42
   fi
 }
 
@@ -88,12 +88,12 @@ echo_docker_log()
 containers_wait()
 {
   exit_non_zero_unless_healthy custom-start-points saver_custom-start-points_1
-  exit_unless_clean saver_custom-start-points_1
+  exit_non_zero_unless_clean   saver_custom-start-points_1
 
-  exit_non_zero_unless_healthy $(server_name) $(server_container)
-  exit_unless_clean $(server_container)
+  exit_non_zero_unless_healthy $(server_container) $(server_name)
+  exit_non_zero_unless_clean   $(server_container)
 
-  exit_non_zero_unless_healthy $(client_name) $(client_container)
-  exit_unless_clean $(client_container)
+  exit_non_zero_unless_healthy $(client_container) $(client_name)
+  exit_non_zero_unless_clean   $(client_container)
 }
 
