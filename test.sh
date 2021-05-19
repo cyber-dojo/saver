@@ -131,7 +131,7 @@ reset_dirs_inside_containers()
   # /cyber-dojo is a tmpfs
   DIRS="${DIRS} /cyber-dojo/*"
   # /one_k is an external volume
-  # See create_space_limited_volume() in scripts/containers_up.sh
+  # See create_space_limited_volume() in ./up.sh
   DIRS="${DIRS} /one_k/*"
   # /tmp is a tmpfs
   DIRS="${DIRS} /tmp/cyber-dojo/*"
