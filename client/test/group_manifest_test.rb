@@ -13,7 +13,7 @@ class GroupManifestTest < TestBase
   already existing group_manifest {test-data copied into saver}
   ) do
     manifest = group_manifest(id='chy6BJ')
-    refute manifest.has_key?('version')
+    assert_equal 0, manifest['version'], :version
     assert_equal 'Ruby, MiniTest', manifest['display_name']
     assert_equal 'cyberdojofoundation/ruby_mini_test', manifest['image_name'], :pre_tagging
     assert_equal ['.rb'], manifest['filename_extension']

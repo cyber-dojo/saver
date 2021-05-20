@@ -15,7 +15,7 @@ class KataEventsTest < TestBase
   ) do
     id = '5rTJv5'
     manifest = kata_manifest(id)
-    refute manifest.has_key?('version')
+    assert_equal 0, manifest['version'], :version
     actual = kata_events(id)
     expected = [
       { "index" => 0, "event" => "created", "time" => [2019,1,16,12,44,55,800239] },
