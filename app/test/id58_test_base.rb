@@ -18,6 +18,7 @@ class Id58TestBase < MiniTest::Test
 
   # :nocov:
   def self.test(id58_suffix, *lines, &test_block)
+    # TODO: the source_file:source_line is wrong for versions_test mutli-tests
     source = test_block.source_location
     source_file = File.basename(source[0])
     source_line = source[1].to_s
