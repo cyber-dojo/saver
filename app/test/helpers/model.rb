@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module TestHelpersModel
 
   def group_create(manifests, options)

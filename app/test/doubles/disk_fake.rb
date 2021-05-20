@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require_source 'disk_api'
 
 class DiskFake

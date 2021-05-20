@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require_relative 'external/custom_start_points'
 require_relative 'external/http'
 require_relative 'external/saver'

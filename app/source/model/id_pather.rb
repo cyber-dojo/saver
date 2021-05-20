@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module IdPather
 
   def group_id_path(id, *parts)

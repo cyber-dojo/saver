@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module PolyFiller
 
   def polyfill_manifest(json, event0)

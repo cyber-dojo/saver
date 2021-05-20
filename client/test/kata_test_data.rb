@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module KataTestData
 
   V0_KATA_ID = 'k5ZTk0'

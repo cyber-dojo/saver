@@ -1,7 +1,6 @@
-# frozen_string_literal: true
 require 'json'
 
-module JsonAdapter # mix-in
+module JsonAdapter
 
   # :nocov:
   def json_plain(obj)

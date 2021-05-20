@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module TestHelpersDisk
 
   def dir_exists_command(key)

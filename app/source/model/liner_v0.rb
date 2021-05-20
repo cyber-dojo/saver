@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-module Liner_v0 # mix-in
+module Liner_v0
 
   def lined(event)
     result = {}

@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require_relative 'lib/json_adapter'
 require_relative 'model/id_pather'
 require_relative 'model/group_v0'

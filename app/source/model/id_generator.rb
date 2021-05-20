@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require_relative 'id_pather'
 
 class IdGenerator
