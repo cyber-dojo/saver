@@ -15,22 +15,20 @@ class KataCreateTest < TestBase
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
-  |with version 1
-  |and a matching display_name
+  |with a matching display_name
   ) do
     assert_kata_create_200({})
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, 'q33', %w(
+  versions_test 'q33', %w(
   |POST /kata_create(manifest)
   |with good options
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
-  |with version 1
-  |and a matching display_name
+  |with a matching display_name
   ) do
     on_off = [ "on", "off" ]
     { "colour" => on_off,
@@ -49,7 +47,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, 'x32', %w(
+  versions_test 'x32', %w(
   |POST /kata_create(manifest,options)
   |with options not a Hash
   |has status 500
@@ -61,22 +59,24 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, 'x33', %w(
+  versions_test 'x33', %w(
   |POST /kata_create(manifest,options)
   |with unknown option key
   |has status 500
   ) do
-    assert_kata_create_500_exception({"wibble":42}, 'options:{"wibble": 42} unknown key: "wibble"')
+    error_message = 'options:{"wibble": 42} unknown key: "wibble"'
+    assert_kata_create_500_exception({"wibble":42}, error_message)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, 'x34', %w(
+  versions_test 'x34', %w(
   |POST /kata_create(manifest,options)
   |with unknown option value
   |has status 500
   ) do
-    assert_kata_create_500_exception({"fork_button":42}, 'options:{"fork_button": 42} unknown value: 42')
+    error_message = 'options:{"fork_button": 42} unknown value: 42'
+    assert_kata_create_500_exception({"fork_button":42}, error_message)
   end
 
   private
