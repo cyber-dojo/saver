@@ -50,6 +50,16 @@ service_up()
 }
 
 # - - - - - - - - - - - - - - - - - - - -
+containers_down()
+{
+  echo
+  augmented_docker_compose \
+    down \
+    --remove-orphans \
+    --volumes
+}
+
+# - - - - - - - - - - - - - - - - - - - -
 containers_up()
 {
   create_space_limited_volume
@@ -62,4 +72,5 @@ containers_up()
 # - - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
 exit_non_zero_unless_installed docker docker-compose
+containers_down
 containers_up
