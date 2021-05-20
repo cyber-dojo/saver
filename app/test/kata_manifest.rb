@@ -14,16 +14,16 @@ class KataManifestTest < TestBase
   is "polyfilled" to make it look like version=1
   ) do
     manifest = kata_manifest(id='5rTJv5')
-    refute manifest.has_key?('version')
-    assert_equal 'Ruby, MiniTest', manifest['display_name']
+    assert_equal 0, manifest['version'], :version
+    assert_equal 'Ruby, MiniTest', manifest['display_name'], :display_name
     assert_equal 'cyberdojofoundation/ruby_mini_test', manifest['image_name'], :pre_tagging
-    assert_equal ['.rb'], manifest['filename_extension']
-    assert_equal 2, manifest['tab_size']
-    assert_equal 'ISBN', manifest['exercise']
-    assert_equal [2019,1,16,12,44,55,800239], manifest['created']
-    assert_equal 'FxWwrr', manifest['group_id']
-    assert_equal 32, manifest['group_index']
-    assert_equal '5rTJv5', manifest['id']
+    assert_equal ['.rb'], manifest['filename_extension'], :filename_extension
+    assert_equal 2, manifest['tab_size'], :tab_size
+    assert_equal 'ISBN', manifest['exercise'], :exercise
+    assert_equal [2019,1,16, 12,44,55, 800239], manifest['created'], :created
+    assert_equal 'FxWwrr', manifest['group_id'], :group_id
+    assert_equal 32, manifest['group_index'], :group_index
+    assert_equal '5rTJv5', manifest['id'], :id
     assert manifest.has_key?('visible_files'), :polyfilled_visible_files
     expected_filenames = [
       "test_hiker.rb",
@@ -32,7 +32,7 @@ class KataManifestTest < TestBase
       "coverage.rb",
       "readme.txt"
     ]
-    assert_equal expected_filenames.sort, manifest['visible_files'].keys.sort
+    assert_equal expected_filenames.sort, manifest['visible_files'].keys.sort, :filenames
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -15,7 +15,7 @@ class KataEventsTest < TestBase
   ) do
     id = '5rTJv5'
     manifest = kata_manifest(id)
-    refute manifest.has_key?('version')
+    assert_equal 0, manifest["version"], :version
     actual = kata_events(id)
     expected = [
       { "index" => 0, "event" => "created", "time" => [2019,1,16,12,44,55,800239] },
@@ -32,7 +32,7 @@ class KataEventsTest < TestBase
   already existing kata_events() summary {test-data copied into saver}
   ) do
     id = '5U2J18'
-    assert_equal 1, kata_manifest(id)['version']
+    assert_equal 1, kata_manifest(id)['version'], :version
     actual = kata_events(id)
     expected = [
       { "index" => 0, "event"  => "created", "time" => [2020,10,19,12,52,46,396907]},

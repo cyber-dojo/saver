@@ -9,6 +9,7 @@ module PolyFiller
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def polyfill_manifest_defaults(manifest)
+    manifest['version'] ||= 0
     manifest['exercise'] ||= ''
     manifest['highlight_filenames'] ||= []
     manifest['tab_size'] ||= 4
