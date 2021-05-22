@@ -1,6 +1,6 @@
 require 'json'
 
-module JsonAdapter # mix-in
+module JsonAdapter
 
   def json_plain(obj)
     #Oj.dump(obj, { :mode => :strict })

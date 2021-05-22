@@ -12,6 +12,10 @@ module External
       @http = HttpJsonHash::service(self.class.name, http, service, port)
     end
 
+    def ready?
+      @http.get(__method__, {})
+    end
+
     def display_names
       @http.get(:names, {})
     end

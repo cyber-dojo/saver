@@ -94,9 +94,6 @@ echo_docker_log()
 # - - - - - - - - - - - - - - - - - - - -
 containers_wait()
 {
-  exit_non_zero_unless_healthy custom-start-points saver_custom-start-points_1
-  exit_non_zero_unless_clean   saver_custom-start-points_1
-
   exit_non_zero_unless_healthy $(server_container) $(server_name)
   exit_non_zero_unless_clean   $(server_container)
 
