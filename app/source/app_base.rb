@@ -53,10 +53,12 @@ class AppBase < Sinatra::Base
   end
 
   def to_json_object(body)
-    if body == ''
+    if body != ''
+      json = json_parse(body)
+    elsif params.empty?
       json = {}
     else
-      json = json_parse(body)
+      json = params.map{ |key,value| [key,value] }.to_h
     end
     unless json.instance_of?(Hash)
       fail RequestError, 'body is not JSON Hash'

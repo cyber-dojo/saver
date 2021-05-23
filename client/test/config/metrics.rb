@@ -28,7 +28,7 @@ MAX = {
       missed:0,
     },
     branches: {
-       total:6,
+       total:2,
       missed:0,
     }
   }

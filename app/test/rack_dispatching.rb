@@ -35,6 +35,14 @@ class RackDispatchingTest < TestBase
     assert_get('sha', '{}', 'sha', prober.sha)
   end
 
+  test 'E42', %w(
+  you can pass arguments as path params
+  as that is simpler when calling from JavaScript
+  ) do
+    assert_get('kata_exists?id=123AbZ', '', 'kata_exists?', false)
+    assert_get('kata_exists?id=5rTJv5', '', 'kata_exists?', true)
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
