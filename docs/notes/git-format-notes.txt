@@ -5,6 +5,9 @@ Only /cyber-dojo/katas/ needs to use git for v2.
 
 
 The git v2 kata directory structure will need to be like this:
+I want the files stored in the v2 git repo to be exactly as I want them.
+And a download will literally just tgz the whole git repo.
+
 
 	/files/*
 	  - holds all the text files the user sees in the browser.
@@ -23,12 +26,13 @@ The git v2 kata directory structure will need to be like this:
       This is the events SUMMARY file. Used by dashboard.
          viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
-      Note index is not necessarily 1-1-1 incrementing.
       There could be saver outages. See saver-outage-gaps.txt
       But these outages can be back-filled once saver is back online.
+      So index _IS_ 1-1-1 incrementing.
       
   /event.json
       Summary info as above {colour,time,prediction,duration,index}
+      for the most recent event.
       Allows faster re-enter/refresh on browser.
       Currently stored as N.event.json
       
@@ -46,11 +50,6 @@ This is the file that will be read by the browser to determine what each tag is.
 Is the initial commit? Is it a test event? Is it a file rename? etc
 The browser can filter. 
 I should add a new "type":"test" key to make filtering easier.
-
-
-Might be possible to create an empty branch (and avoid the need for git rm -rf .)
-by using plumbing commands for a speed up.
-See https://stackoverflow.com/questions/645450
 
 
 
@@ -94,20 +93,9 @@ in its API which would return two chunks of information
 - 2. The raw diff of {id,was_index,now_index}
 
 
-I want the files stored in the v2 git repo to be exactly as I want them.
-And a download will literally just tgz the whole git repo.
-
 
 
 - TODOS
-  o) Add model's API to saver. DONE.
-  o) Add model's server tests to saver. DONE.
-  o) Add model's docs to saver. DONE.
-  o) Add model's client tests to saver. DONE.
-  o) Add model's code to saver. DONE.
-  o) Drop model's code from model (delegates directly to saver). DONE.
-
-  -
     i. Add v2 storage to saver that stores directly in git format.
    ii. Add kata_git_diff() to saver and use in differ service.
        It can do git diff directly      
@@ -142,13 +130,6 @@ And a download will literally just tgz the whole git repo.
 	   So /events.json will still need to be saved as meta data
 	
 - However, this repo could still be useful for simple client-side proof of concept.
-
-- Currently not running branch-coverage.
-  See test/coverage.rb
-  SimpleCov.start do
-    #enable_coverage :branch
-    ...
-  end
  
 - Do I want to save the manifest in the tgz?
   Yes. It is needed if you want to create a start-point for example.

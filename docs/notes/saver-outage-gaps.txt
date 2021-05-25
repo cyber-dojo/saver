@@ -90,8 +90,11 @@ empty_tree=$(git hash-object -t tree /dev/null)
 id=$(git commit-tree ${empty_tree} < /dev/null)
 git checkout ${id}
 
-
 https://stackoverflow.com/questions/54367011/git-bare-repositories-worktrees-and-tracking-branches
+
+Might be possible to create an empty branch (and avoid the need for git rm -rf .)
+by using plumbing commands for a speed up.
+See https://stackoverflow.com/questions/645450
 
 
  
