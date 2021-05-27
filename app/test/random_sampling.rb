@@ -12,7 +12,7 @@ class RandomSamplingTest < TestBase
   test '340', %w[ sample(N) returns all of 0 to N-1 inclusive ] do
     size = ALPHABET_SIZE
     counts = {}
-    500.times do
+    1000.times do
       i = random.sample(size)
       assert_equal Integer, i.class
       assert i >= 0, i
