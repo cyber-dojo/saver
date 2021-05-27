@@ -48,7 +48,7 @@ class KataCreateTest < TestBase
 
   versions_test 'x32', %w(
   |POST /kata_create(manifest,options)
-  |with options not a Hash
+  |when options arg is not a Hash
   |has status 500
   ) do
     [nil, 42, false, []].each do |bad|
@@ -60,7 +60,7 @@ class KataCreateTest < TestBase
 
   versions_test 'x33', %w(
   |POST /kata_create(manifest,options)
-  |with unknown option key
+  |when options has an unknown key
   |has status 500
   ) do
     error_message = 'options:{"wibble": 42} unknown key: "wibble"'
@@ -71,7 +71,7 @@ class KataCreateTest < TestBase
 
   versions_test 'x34', %w(
   |POST /kata_create(manifest,options)
-  |with unknown option value
+  |when options has an unknown value
   |has status 500
   ) do
     error_message = 'options:{"fork_button": 42} unknown value: 42'

@@ -9,7 +9,9 @@ class RandomSamplingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '340', %w[ sample(N) returns all of 0 to N-1 inclusive ] do
+  test '340', %w[
+  sample(N) returns all of 0 to N-1 inclusive
+  ] do
     size = ALPHABET_SIZE
     counts = {}
     1000.times do
@@ -25,7 +27,7 @@ class RandomSamplingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '341', %w(
-  no id duplicates in 2000
+  no id duplicates in 2000 repeats
   ) do
     repeats = 2000
     ids = {}

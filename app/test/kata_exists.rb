@@ -27,10 +27,10 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '762', %w(
-  |kata_exists? is false,
+  versions_test '762', %w[
+  |kata_exists? is false (it does not raise),
   |for a malformed id
-  ) do
+  ] do
     refute kata_exists?(42), 'Integer'
     refute kata_exists?(nil), 'nil'
     refute kata_exists?([]), '[]'
