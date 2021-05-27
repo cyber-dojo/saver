@@ -18,10 +18,13 @@ class Id58TestBase < MiniTest::Test
 
   # :nocov:
   def self.test(id58_suffix, *lines, &test_block)
-    # TODO: the source_file:source_line is wrong for versions_test mutli-tests
-    source = test_block.source_location
-    source_file = File.basename(source[0])
-    source_line = source[1].to_s
+    callers = test_block.send('caller')
+    base_dir = "/app/test/"
+    it = callers.find { |entry| !entry.start_with?("#{base_dir}test_base.rb:") }
+    match = it.match(/(.*):(\d+):/)
+    source_file = match[1][base_dir.size..-1]
+    source_line = match[2]
+
     id58 = checked_id58(id58_suffix.to_s, lines)
     if @@args === [] || @@args.any?{ |arg| id58.include?(arg) }
       name58 = lines.join(' ').split('|').join("\n|")
@@ -65,7 +68,7 @@ class Id58TestBase < MiniTest::Test
     size = sorted.size < max_shown ? sorted.size : max_shown
     puts
     if size != 0
-      puts "Slowest #{size} tests are..."
+      puts "Slowest #{size} tests in /app/test/ are..."
     end
     sorted.each_with_index { |(name,secs),index|
       puts "%3.4f %-72s" % [secs,name]
