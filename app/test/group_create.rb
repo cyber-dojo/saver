@@ -63,7 +63,8 @@ class GroupCreateTest < TestBase
   |with unknown option key
   |has status 500
   ) do
-    assert_group_create_500_exception({"wibble":42}, 'options:{"wibble": 42} unknown key: "wibble"')
+    expected = 'options:{"wibble": 42} unknown key: "wibble"'
+    assert_group_create_500_exception({"wibble":42}, expected)
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -73,7 +74,8 @@ class GroupCreateTest < TestBase
   |with unknown option value
   |has status 500
   ) do
-    assert_group_create_500_exception({"fork_button":42}, 'options:{"fork_button": 42} unknown value: 42')
+    expected = 'options:{"fork_button": 42} unknown value: 42'
+    assert_group_create_500_exception({"fork_button":42}, expected)
   end
 
   private
