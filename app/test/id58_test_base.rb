@@ -18,13 +18,7 @@ class Id58TestBase < MiniTest::Test
 
   # :nocov:
   def self.test(id58_suffix, *lines, &test_block)
-    callers = test_block.send('caller')
-    base_dir = "/app/test/"
-    it = callers.find { |entry| !entry.start_with?("#{base_dir}test_base.rb:") }
-    match = it.match(/(.*):(\d+):/)
-    source_file = match[1][base_dir.size..-1]
-    source_line = match[2]
-
+    source_file, source_line = *self.location(&test_block)
     id58 = checked_id58(id58_suffix.to_s, lines)
     if @@args === [] || @@args.any?{ |arg| id58.include?(arg) }
       name58 = lines.join(' ').split('|').join("\n|")
@@ -49,6 +43,17 @@ class Id58TestBase < MiniTest::Test
       name = "#{id58_prefix}#{id58_suffix}\n#{name58}"
       define_method("test_\n#{name}".to_sym, &execute_around)
     end
+  end
+
+  BASE_DIR = File.dirname(__FILE__) + '/'
+
+  def self.location(&test_block)
+    callers = test_block.send('caller')
+    it = callers.find { |entry| !entry.start_with?("#{BASE_DIR}test_base.rb:") }
+    match = it.match(/(.*):(\d+):/)
+    filename = match[1][BASE_DIR.size..-1]
+    line = match[2]
+    [ filename, line ]
   end
 
   def trimmed(s)
