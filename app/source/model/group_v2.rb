@@ -5,10 +5,10 @@ require_relative 'options_checker'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
-# 1. Manifest now has explicit version (1)
-# 2. avatars() now does 1 read, not 64 reads.
-# 3. No longer stores JSON in pretty format.
-# 4. No longer stores file contents in lined format.
+# 1. Manifest has explicit version (2)
+# 2. avatars() does 1 read, not 64 reads.
+# 3. TODO: Store JSON in pretty format.
+# 4. TODO: Stores file contents in lined format?
 
 class Group_v2
 

@@ -24,6 +24,10 @@ module TestHelpersExternals
     externals.random
   end
 
+  def shell
+    externals.shell
+  end
+
   def time
     externals.time
   end
