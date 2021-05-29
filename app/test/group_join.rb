@@ -16,9 +16,47 @@ class GroupJoinTest < TestBase
     assert_equal({}, joined(id))
   end
 
+  version_test 2, '2s9', %w(
+  group is initially empty
+  ) do
+    manifest = custom_manifest
+    id = group_create([manifest], default_options)
+    assert_equal({}, joined(id))
+  end
+
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '6A5', %w(
+  when you join a group you increase its size by one,
+  and are a member of the group
+  ) do
+    manifest = custom_manifest
+    group_id = group_create([manifest], default_options)
+
+    indexes = [15,4] + ((0..63).to_a - [15,4]).shuffle
+    kata_1_id = group_join(group_id, indexes)
+    assert kata_exists?(kata_1_id), kata_1_id
+    kata_1_manifest = kata_manifest(kata_1_id)
+    assert_equal kata_1_id, kata_1_manifest['id']
+    assert_equal 15, kata_1_manifest['group_index']
+    assert_equal group_id, kata_1_manifest['group_id']
+
+    expected = {}
+    expected["15"] = { "id" => kata_1_id }
+    assert_equal expected, joined(group_id)
+
+    kata_2_id = group_join(group_id, indexes)
+    assert kata_exists?(kata_2_id), kata_2_id
+    kata_2_manifest = kata_manifest(kata_2_id)
+    assert_equal kata_2_id, kata_2_manifest['id']
+    assert_equal 4, kata_2_manifest['group_index']
+    assert_equal group_id, kata_2_manifest['group_id']
+
+    expected["4"] = { "id" => kata_2_id }
+    assert_equal expected, joined(group_id)
+  end
+
+  version_test 2, '7A5', %w(
   when you join a group you increase its size by one,
   and are a member of the group
   ) do

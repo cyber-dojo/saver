@@ -2,6 +2,7 @@ require_relative 'lib/json_adapter'
 require_relative 'model/id_pather'
 require_relative 'model/group_v0'
 require_relative 'model/group_v1'
+require_relative 'model/group_v2'
 require_relative 'model/kata_v0'
 require_relative 'model/kata_v1'
 
@@ -153,7 +154,7 @@ class Model
     @externals.disk
   end
 
-  GROUPS = [ Group_v0, Group_v1 ]
+  GROUPS = [ Group_v0, Group_v1, Group_v2 ]
   KATAS = [ Kata_v0, Kata_v1 ]
 
 end
