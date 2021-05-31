@@ -14,23 +14,60 @@ class Kata_v2
 
   def create(manifest, options)
     fail_unless_known_options(options)
-    manifest.merge!(options)
+    #manifest.merge!(options)
     manifest['version'] = 2
     manifest['created'] = time.now
+    # IdGenerator makes the root dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
     event_summary = {
       'index' => 0,
       'time' => manifest['created'],
       'event' => 'created'
     }
-    event0 = {
-      'files' => manifest['visible_files']
-    }
+    files = manifest.delete('visible_files')
+
     disk.assert_all([
-      manifest_file_create_command(id, json_plain(manifest)),
-      events_file_create_command(id, json_plain(event_summary)),
-      event_file_create_command(id, 0, json_plain(event0.merge(event_summary)))
+      manifest_file_create_command(id, json_pretty(manifest)),
+      events_summary_file_create_command(id, json_plain(event_summary)),
     ])
+
+    # Write files/
+
+    kata_dir = kata_id_path(id)  # '/katas/Rl/mR/cV
+
+    make_dirs_commands = [
+      disk.dir_make_command("#{kata_dir}/config")
+    ]
+    files.keys.each do |filename|
+      path = "#{kata_dir}/files/#{filename}"
+      dir = File.dirname(path)
+      make_dirs_commands << disk.dir_make_command(dir)
+    end
+    # disk.dir_make_command(dir) is not idempotent so dont use assert_all()
+    disk.run_all(make_dirs_commands)
+
+    create_files_commands = [
+      disk.file_create_command("#{kata_dir}/truncations.json", '{}')
+    ]
+    files.each do |filename, file|
+      path = "#{kata_dir}/files/#{filename}"
+      create_files_commands << disk.file_create_command(path, file["content"])
+    end
+    disk.assert_all(create_files_commands)
+
+    #TODO: Write options to config/
+    #TODO: Write README.md to /
+
+    shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir}", [
+      "git init --quiet",
+      "git config user.name '#{id}'",
+      "git config user.email '#{id}@cyber-dojo.org'",
+      "git add .",
+      "git commit --allow-empty --all --message '0 kata creation' --quiet",
+      "git tag 0 HEAD",
+      "git branch -m master main"
+    ])
+
     id
   end
 
@@ -182,21 +219,37 @@ class Kata_v2
     disk.file_read_command(manifest_filename(id))
   end
 
+  def manifest_filename(id)
+    kata_id_path(id, 'manifest.json')
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
+    # eg content ==> { "display_name": "Ruby, MiniTest",...}
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - -
   # events
 
-  def events_file_create_command(id, event0_src)
-    disk.file_create_command(events_filename(id), event0_src)
+  def events_summary_file_create_command(id, event0_src)
+    disk.file_create_command(events_summary_filename(id), event0_src)
   end
 
-  def events_file_append_command(id, eventN_src)
-    disk.file_append_command(events_filename(id), eventN_src)
+  def events_summary_file_append_command(id, eventN_src)
+    disk.file_append_command(events_summary_filename(id), eventN_src)
   end
 
-  def events_file_read_command(id)
-    disk.file_read_command(events_filename(id))
+  def events_summary_file_read_command(id)
+    disk.file_read_command(events_summary_filename(id))
   end
 
+  def events_summary_filename(id)
+    kata_id_path(id, 'events_summary.json')
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events_summary.json'
+    # eg content ==>
+    # { "index": 0, ..., "event": "created" },
+    # { "index": 1, ..., "colour": "red"    },
+    # { "index": 2, ..., "colour": "amber"  },
+  end
+
+=begin
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
 
@@ -210,21 +263,6 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # names of dirs/files
-
-  def manifest_filename(id)
-    kata_id_path(id, 'manifest.json')
-    # eg id == 'SyG9sT' ==> '/cyber-dojo/katas/Sy/G9/sT/manifest.json'
-    # eg content ==> { "display_name": "Ruby, MiniTest",...}
-  end
-
-  def events_filename(id)
-    kata_id_path(id, 'events.json')
-    # eg id == 'SyG9sT' ==> '/cyber-dojo/katas/Sy/G9/sT/events.json'
-    # eg content ==>
-    # { "index": 0, ..., "event": "created" },
-    # { "index": 1, ..., "colour": "red"    },
-    # { "index": 2, ..., "colour": "amber"  },
-  end
 
   def event_filename(id, index)
     kata_id_path(id, "#{index}.event.json")
@@ -244,6 +282,7 @@ class Kata_v2
     #   "colour": "amber"
     # }
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
@@ -257,6 +296,10 @@ class Kata_v2
 
   def disk
     @externals.disk
+  end
+
+  def shell
+    @externals.shell
   end
 
   def time

@@ -78,7 +78,7 @@ class KataManifestTest < TestBase
   include KataTestData
 
   version_test 2, 'K8S', %w(
-  |kata_manifst
+  |kata_manifest
   ) do
     now = [2021,5,31, 10,3,51,6553]
     externals.instance_exec { @time = TimeStub.new(now) }

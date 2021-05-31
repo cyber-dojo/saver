@@ -13,6 +13,17 @@ And a download will literally just tgz the whole git repo.
 	  - holds all the text files the user sees in the browser.
 	    The files sent to runner and saved in runner's /sandbox dir.
       
+  /truncations.json
+    - holds all the values of the truncated keys, eg
+      { "files" => {
+          "cyber-dojo.sh" => false,
+          "tennis.py" => false
+        },
+        "stdout" => false,
+        "stderr" => false,
+        "status" => false
+      }
+      
   /manifest.json
     - never changes. Holds eg, the docker image name.
     

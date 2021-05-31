@@ -33,9 +33,14 @@ but because there is already an index entry in events.json for 47.
 
 
 $ git init 
-$ git config user.email "#{id}@cyber-dojo.org"
 $ git config user.name "#{id}"
-$ # Add initial files, eg events.json
+$ git config user.email "#{id}@cyber-dojo.org"
+$ # Add initial files
+   files/*
+   config/*
+   manifest.json
+   events_summmary.json
+   event.json
 $ git add .
 $ git commit -m "0 kata creation"
 $ git tag 0 
@@ -48,7 +53,10 @@ $ events_src = `git show main:events.json`
 $ events = JSON.parse('[' + events_src + ']')
 $   # Check TAG is not already present as an index in events.json
 $   # If it is, raise an exception
+$   # Check TAG is greater than largest index in events.json
+$   # If it is, raise an exception
 
+$ # Generate a uniqueName
 $ git worktree add /tmp/<uniqueName> 
 $ cd /tmp/<uniqueName>
 $ git rm -rf .

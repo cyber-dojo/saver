@@ -9,6 +9,8 @@ module External
       @root_dir = root_dir
     end
 
+    attr_reader :root_dir
+
     include DiskApi
 
     private
