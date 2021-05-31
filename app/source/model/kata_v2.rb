@@ -1,3 +1,4 @@
+require 'securerandom'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options_checker'
@@ -34,20 +35,18 @@ class Kata_v2
 
     kata_dir = kata_id_path(id)  # '/katas/R2/mR/cV
 
-    make_dirs_commands = [
-      disk.dir_make_command("#{kata_dir}/config")
-    ]
+    dirs = [ "#{kata_dir}/config" ]
     files.keys.each do |filename|
       path = "#{kata_dir}/files/#{filename}"
-      dir = File.dirname(path)
+      dirs << File.dirname(path)
+    end
+    make_dirs_commands = []
+    dirs.sort.uniq.each do |dir|
       make_dirs_commands << disk.dir_make_command(dir)
     end
-    # NB: disk.dir_make_command(dir) is not idempotent so dont use assert_all()
-    disk.run_all(make_dirs_commands)
+    disk.run_all(make_dirs_commands) # Not assert_all()
 
-    create_files_commands = [
-      disk.file_create_command("#{kata_dir}/truncations.json", '{}') # NEEDED?
-    ]
+    create_files_commands = []
     files.each do |filename, file|
       path = "#{kata_dir}/files/#{filename}"
       create_files_commands << disk.file_create_command(path, file["content"])
@@ -101,13 +100,13 @@ class Kata_v2
     tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
-      if filename == prefix
+      if filename === prefix
         next
       elsif filename.start_with?(prefix)
         result["files"][filename[prefix.size..-1]] = {
           "content" => content
         }
-      elsif filename == "event.json"
+      elsif filename === "event.json"
         result.merge!(json_parse(content))
       end
     end
@@ -222,6 +221,76 @@ class Kata_v2
       events_summary_file_append_command(id, ",\n" + json_plain(summary))
     ])
     result
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def new_universal_append(id, index, files, stdout, stderr, status, summary)
+    uuid = SecureRandom.alphanumeric(8)
+    tmp_dir = "/tmp/#{uuid}"
+
+    #src = disk.assert(events_summary_file_read_command(id))
+    #events_summary = json_parse('[' + src + ']')
+    #TODO:
+    #   Check arg-index is not already present as an index in events.json
+    #     If it is, raise an exception
+    #   Check arg-index is greater than largest index in events.json
+    #     If it is, raise an exception
+
+    kata_dir = kata_id_path(id)               #            /katas/R2/mR/cV
+    root_dir = '/' + disk.root_dir + kata_dir # /cyber-dojo/katas/R2/mR/cV
+    shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
+    shell.assert_cd_exec(tmp_dir, "git rm -rf .")
+
+    truncations = {
+      "stdout" => stdout["truncated"],
+      "stderr" => stderr["truncated"]
+    }
+
+    disk = External::Disk.new(tmp_dir)
+    make_dirs_commands = []
+    files.keys.each do |filename|
+      dir = File.dirname(filename)
+      unless dir === '.'
+        make_dirs_commands << disk.dir_make_command(dir)
+      end
+    end
+    disk.run_all(make_dirs_commands)
+
+    summary['index'] = index
+    summary['time'] = time.now
+    write_files_commands = []
+    files.each do |filename,file|
+      write_files_commands << disk.file_write_command(filename, file['content'])
+    end
+    write_files_commands << events_summary_file_append_command(id, ",\n" + json_plain(summary))
+    write_files_commands << disk.file_write_command("truncations.json", json_pretty(truncations))
+    write_files_commands << disk.file_write_command("stdout", stdout)
+    write_files_commands << disk.file_write_command("stderr", stderr)
+    write_files_commands << disk.file_write_command("status", status)
+    disk.assert_all(write_files_commands)
+
+    message = "'#{index}'" # TODO: better message, eg predicted green got red
+    shell.assert_cd_exec(tmp_dir, [
+      "git checkout main -- config/",
+      "git checkout main -- manifest.json",
+      "git add .",
+      "git commit --allow-empty --all --message #{message} --quiet",
+    ])
+
+    shell.assert_cd_exec(root_dir, "git merge --ff-only #{uuid}")
+    tag_commands = [
+      "git tag #{index} HEAD",
+    ]
+    # TODO: Add tag_commands for saver outages
+    shell.assert_cd_exec(root_dir, tag_commands)
+
+  ensure
+    shell.assert_cd_exec(root_dir,
+      "git worktree remove #{uuid}",
+      "git branch -d #{uuid}",
+      "rm -rf #{tmp_dir}"
+    )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

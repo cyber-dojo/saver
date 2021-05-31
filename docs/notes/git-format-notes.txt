@@ -26,14 +26,17 @@ And a download will literally just tgz the whole git repo.
       
   /manifest.json
     - never changes. Holds eg, the docker image name.
+    - does NOT hold visible_files
+      files from tag 0 need to be added back when returning manifest()
     
 	/config/*
 	  - the files holding the state of the options, eg
    		   is prediction on/off
          is theme light/dark
       and probably more in the future.
+      Should updating these be in a commit & ff-merge?
       
-	/events.json    
+	/events_summary.json    
       This is the events SUMMARY file. Used by dashboard.
          viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
@@ -46,6 +49,7 @@ And a download will literally just tgz the whole git repo.
       for the most recent event.
       Allows faster re-enter/refresh on browser.
       Currently stored as N.event.json
+      ? Drop and use last entry in events_summary.json ?
       
   /stdout
   /stderr

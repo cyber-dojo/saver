@@ -70,7 +70,7 @@ $ git checkout main manifest.json
 
 $ # add all files/
 $ # add stdout,stderr,status
-$ # add event.json containing summary
+$ # add event.json containing summary?
 
 $ git add .
 $ git commit -m "${TAG} predicted green got red"
