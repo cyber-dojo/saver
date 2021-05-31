@@ -1,6 +1,6 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
-require_relative 'kata_v1'
+require_relative 'kata_v2'
 require_relative 'options_checker'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
@@ -13,7 +13,7 @@ require_relative '../lib/json_adapter'
 class Group_v2
 
   def initialize(externals)
-    @kata = Kata_v1.new(externals)
+    @kata = Kata_v2.new(externals)
     @externals = externals
   end
 

@@ -73,4 +73,31 @@ class KataManifestTest < TestBase
     assert_equal version, saved['version'], :version
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  include KataTestData
+
+  version_test 2, 'K8S', %w(
+  |kata_manifst
+  ) do
+    now = [2021,5,31, 10,3,51,6553]
+    externals.instance_exec { @time = TimeStub.new(now) }
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = 2
+
+    id = kata_create(manifest, default_options)
+
+    manifest["created"] = now
+    manifest["exercise"] = ""
+    manifest["highlight_filenames"] = []
+    manifest["id"] = id
+    manifest["max_seconds"] = 10
+    manifest["progress_regexs"] = []
+    manifest["tab_size"] = 4
+
+    actual = kata_manifest(id)
+
+    assert_equal manifest, actual
+  end
+
 end

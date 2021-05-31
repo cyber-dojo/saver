@@ -19,6 +19,17 @@ class KataCreateTest < TestBase
     assert_kata_create_200({})
   end
 
+  version_test 1, 'r32', %w(
+  |POST /kata_create(manifest)
+  |with empty options
+  |has status 200
+  |returns the id: of a new kata
+  |that exists in saver
+  |with a matching display_name
+  ) do
+    assert_kata_create_200({})
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'q33', %w(

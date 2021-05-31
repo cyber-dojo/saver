@@ -27,8 +27,8 @@ And a download will literally just tgz the whole git repo.
          viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
       There could be saver outages. See saver-outage-gaps.txt
-      But these outages can be back-filled once saver is back online.
-      So index _IS_ 1-1-1 incrementing.
+      These outages will be back-filled once saver is back online.
+      So index values in json hash _ARE_ strictly +1 incrementing.
       
   /event.json
       Summary info as above {colour,time,prediction,duration,index}
@@ -60,7 +60,7 @@ I should add a new "type":"test" key to make filtering easier.
     The writes a tgz stream to stdout.
     It should be possible to read the tgz file in memory, like runner does.
     
-      tgz = shell.capture("cd #{repo_dir} && git archive --format=tar #{tag}")
+      tgz = shell.capture("cd #{repo_dir} && git archive --format=tar #{index}")
       unzipped = Gnu.unzip(tgz)
       reader = TarFile::Reader.new(unzipped)
       files = reader.files.each.with_object({}) do |(filename,content),memo|
@@ -129,8 +129,6 @@ in its API which would return two chunks of information
 	   This will still be needed for dashboard and web.
 	   So /events.json will still need to be saved as meta data
 	
-- However, this repo could still be useful for simple client-side proof of concept.
- 
 - Do I want to save the manifest in the tgz?
   Yes. It is needed if you want to create a start-point for example.
 
@@ -140,7 +138,8 @@ in its API which would return two chunks of information
    individual: cyber-dojo-2021-03-14-DfH8sP-FizzBuzz
      - where FizzBuzz is optional as exercise may be unnamed.
                 
-- How to provide instructions on pushing the repo to a remote, eg github?
+- tgz contents will need to include a README.md file. 
+  Provide info and instructions on pushing the repo to a remote, eg github?
   $ git remote add origin git@github.com:user/repo.git
   $ git push origin main  
 

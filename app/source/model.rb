@@ -5,6 +5,7 @@ require_relative 'model/group_v1'
 require_relative 'model/group_v2'
 require_relative 'model/kata_v0'
 require_relative 'model/kata_v1'
+require_relative 'model/kata_v2'
 
 class Model
 
@@ -155,6 +156,6 @@ class Model
   end
 
   GROUPS = [ Group_v0, Group_v1, Group_v2 ]
-  KATAS = [ Kata_v0, Kata_v1 ]
+  KATAS = [ Kata_v0, Kata_v1, Kata_v2 ]
 
 end
