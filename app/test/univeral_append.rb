@@ -16,6 +16,16 @@ class UniversalAppendTest < TestBase
     }
   end
 
+  version_test 2, 'XX2', %w(
+  |kata_ran_tests gives same results in both versions
+  ) do
+    universal_append { |id, index, files, stdout, stderr, status, summary|
+      kata_ran_tests(id, index, files, stdout, stderr, status, summary)
+    }
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   versions_test 'Dk2', %w(
   |kata_predicted_right gives same results in both versions
   ) do
@@ -91,15 +101,16 @@ class UniversalAppendTest < TestBase
     }
     yield(id, index, files, stdout, stderr, status, summary)
     actual = kata_event(id, index)
-    assert_equal files, actual["files"]
-    assert_equal stdout, actual["stdout"]
-    assert_equal stderr, actual["stderr"]
-    assert_equal status, actual["status"]
-    assert_equal colour, actual['colour']
-    assert_equal duration, actual['duration']
-    assert_equal predicted, actual['predicted']
-    assert_equal index, actual['index']
-    assert_equal t1, actual['time']
+    assert_equal files, actual["files"], :files
+
+    assert_equal stdout, actual["stdout"], :stdout
+    assert_equal stderr, actual["stderr"], :stderr
+    assert_equal status, actual["status"], :status
+    assert_equal colour, actual['colour'], :colour # nil
+    assert_equal duration, actual['duration'], :duration
+    assert_equal predicted, actual['predicted'], :predicted
+    assert_equal index, actual['index'], :index
+    assert_equal t1, actual['time'], :time
   end
 
 end

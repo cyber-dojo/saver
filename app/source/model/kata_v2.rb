@@ -15,7 +15,7 @@ class Kata_v2
 
   def create(manifest, options)
     fail_unless_known_options(options)
-    #manifest.merge!(options)
+    manifest.merge!(options)
     manifest['version'] = 2
     manifest['created'] = time.now
     # IdGenerator makes the root dir, eg /cyber-dojo/katas/Rl/mR/cV
@@ -30,7 +30,6 @@ class Kata_v2
     disk.assert_all([
       manifest_file_create_command(id, json_pretty(manifest)),
       events_summary_file_create_command(id, json_plain(event_summary)),
-      event_file_create_command(id, json_pretty(event_summary))
     ])
 
     kata_dir = kata_id_path(id)  # '/katas/R2/mR/cV
@@ -61,7 +60,7 @@ class Kata_v2
       "git config user.name '#{id}'",
       "git config user.email '#{id}@cyber-dojo.org'",
       "git add .",
-      "git commit --allow-empty --all --message '0 kata creation' --quiet",
+      "git commit --all --allow-empty --message '0 kata creation' --quiet",
       "git tag 0 HEAD",
       "git branch -m master main"
     ])
@@ -99,6 +98,7 @@ class Kata_v2
     prefix = "files/"
     tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
+    truncations = nil
     reader.files.each do |filename, content|
       if filename === prefix
         next
@@ -106,10 +106,22 @@ class Kata_v2
         result["files"][filename[prefix.size..-1]] = {
           "content" => content
         }
-      elsif filename === "event.json"
-        result.merge!(json_parse(content))
+      elsif ["stdout", "stderr"].include?(filename)
+        result[filename] = {
+          "content" => content
+        }
+      elsif filename === "status"
+        result["status"] = content
+      elsif filename === "events_summary.json"
+        event = json_parse(content.lines.last)
+        result.merge!(event)
+      elsif filename === "truncations.json"
+        truncations = json_parse(content)
       end
     end
+
+    result['stdout']['truncated'] = truncations['stdout']
+    result['stderr']['truncated'] = truncations['stderr']
 
     result
   end
@@ -205,12 +217,11 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def universal_append(id, index, files, stdout, stderr, status, summary)
-    # TODO:
+  def old_universal_append(id, index, files, stdout, stderr, status, summary)
     summary['index'] = index
     summary['time'] = time.now
     event_n = {
-      #'files' => files,
+      'files' => files,
       'stdout' => stdout,
       'stderr' => stderr,
       'status' => status
@@ -225,11 +236,11 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def new_universal_append(id, index, files, stdout, stderr, status, summary)
+  def universal_append(id, index, files, stdout, stderr, status, summary)
     uuid = SecureRandom.alphanumeric(8)
     tmp_dir = "/tmp/#{uuid}"
 
-    #src = disk.assert(events_summary_file_read_command(id))
+    src = disk.assert(events_summary_file_read_command(id))
     #events_summary = json_parse('[' + src + ']')
     #TODO:
     #   Check arg-index is not already present as an index in events.json
@@ -250,29 +261,28 @@ class Kata_v2
     disk = External::Disk.new(tmp_dir)
     make_dirs_commands = []
     files.keys.each do |filename|
-      dir = File.dirname(filename)
-      unless dir === '.'
-        make_dirs_commands << disk.dir_make_command(dir)
-      end
+      dir = File.dirname("files/#{filename}")
+      make_dirs_commands << disk.dir_make_command(dir)
     end
-    disk.run_all(make_dirs_commands)
+    disk.run_all(make_dirs_commands.sort.uniq)
 
     summary['index'] = index
     summary['time'] = time.now
     write_files_commands = []
     files.each do |filename,file|
-      write_files_commands << disk.file_write_command(filename, file['content'])
+      path = "files/#{filename}"
+      write_files_commands << disk.file_create_command(path, file['content'])
     end
-    write_files_commands << events_summary_file_append_command(id, ",\n" + json_plain(summary))
-    write_files_commands << disk.file_write_command("truncations.json", json_pretty(truncations))
-    write_files_commands << disk.file_write_command("stdout", stdout)
-    write_files_commands << disk.file_write_command("stderr", stderr)
-    write_files_commands << disk.file_write_command("status", status)
+    write_files_commands << disk.file_create_command("events_summary.json", src + ",\n" + json_plain(summary))
+    write_files_commands << disk.file_create_command("truncations.json", json_pretty(truncations))
+    write_files_commands << disk.file_create_command("stdout", stdout['content'])
+    write_files_commands << disk.file_create_command("stderr", stderr['content'])
+    write_files_commands << disk.file_create_command("status", status.to_s)
     disk.assert_all(write_files_commands)
 
     message = "'#{index}'" # TODO: better message, eg predicted green got red
     shell.assert_cd_exec(tmp_dir, [
-      "git checkout main -- config/",
+      #"git checkout main -- config/",
       "git checkout main -- manifest.json",
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
@@ -287,8 +297,8 @@ class Kata_v2
 
   ensure
     shell.assert_cd_exec(root_dir,
-      "git worktree remove #{uuid}",
-      "git branch -d #{uuid}",
+      "git worktree remove --force #{uuid}",
+      "git branch --delete --force #{uuid}",
       "rm -rf #{tmp_dir}"
     )
   end

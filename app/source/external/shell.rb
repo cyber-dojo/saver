@@ -10,7 +10,8 @@ module External
     end
 
     def assert_exec(*commands)
-      stdout,stderr,r = Open3.capture3('sh -c ' + quoted(commands.join(' && ')))
+      command = 'sh -c ' + quoted(commands.join(' && '))
+      stdout,stderr,r = Open3.capture3(command)
       stdout = Utf8::clean(stdout)
       stderr = Utf8::clean(stderr)
       exit_status = r.exitstatus
