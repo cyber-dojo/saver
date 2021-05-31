@@ -175,4 +175,21 @@ class KataEventTest < TestBase
     assert_equal last, actual
   end
 
+  version_test 2, 'Ax9', %w(
+  |kata_event(id, index=-1) retrieves the most recent event
+  |even when only the creation event exists
+  ) do
+    display_name = custom_start_points.display_names.sample
+    manifest = custom_start_points.manifest(display_name)
+    manifest['version'] = version
+    post_json '/kata_create', {
+      manifest:manifest,
+      options:default_options
+    }.to_json
+    id = json_response_body['kata_create']
+    last = kata_event(id, 0)
+    actual = kata_event(id, -1)
+    assert_equal last, actual
+  end
+
 end
