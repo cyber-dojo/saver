@@ -29,11 +29,10 @@ class Kata_v2
     disk.assert_all([
       manifest_file_create_command(id, json_pretty(manifest)),
       events_summary_file_create_command(id, json_plain(event_summary)),
+      event_file_create_command(id, json_pretty(event_summary))
     ])
 
-    # Write files/
-
-    kata_dir = kata_id_path(id)  # '/katas/Rl/mR/cV
+    kata_dir = kata_id_path(id)  # '/katas/R2/mR/cV
 
     make_dirs_commands = [
       disk.dir_make_command("#{kata_dir}/config")
@@ -43,11 +42,11 @@ class Kata_v2
       dir = File.dirname(path)
       make_dirs_commands << disk.dir_make_command(dir)
     end
-    # disk.dir_make_command(dir) is not idempotent so dont use assert_all()
+    # NB: disk.dir_make_command(dir) is not idempotent so dont use assert_all()
     disk.run_all(make_dirs_commands)
 
     create_files_commands = [
-      disk.file_create_command("#{kata_dir}/truncations.json", '{}')
+      disk.file_create_command("#{kata_dir}/truncations.json", '{}') # NEEDED?
     ]
     files.each do |filename, file|
       path = "#{kata_dir}/files/#{filename}"
@@ -83,18 +82,37 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    json_parse('[' + disk.assert(events_summary_file_read_command(id)) + ']')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
+    result = { "files" => {} }
     index = index.to_i
     if index < 0
       all = events(id)
       index = all[index]['index']
     end
-    json_parse(disk.assert(event_file_read_command(id, index)))
+
+    kata_dir = '/' + disk.root_dir + kata_id_path(id)  # '/cyber-dojo/katas/R2/mR/cV
+
+    prefix = "files/"
+    tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
+    reader = TarFile::Reader.new(tar_file)
+    reader.files.each do |filename, content|
+      if filename == prefix
+        next
+      elsif filename.start_with?(prefix)
+        result["files"][filename[prefix.size..-1]] = {
+          "content" => content
+        }
+      elsif filename == "event.json"
+        result.merge!(json_parse(content))
+      end
+    end
+
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -146,6 +164,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def option_get(id, name)
+    # TODO: use config/ dir
     fail_unless_known_option(name)
     filename = kata_id_path(id, name)
     result = disk.run(disk.file_read_command(filename))
@@ -164,6 +183,7 @@ class Kata_v2
   end
 
   def option_set(id, name, value)
+    # TODO: use config/ dir
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
@@ -187,10 +207,11 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def universal_append(id, index, files, stdout, stderr, status, summary)
-    summary['index'] = index # See point 6 at top of file
+    # TODO:
+    summary['index'] = index
     summary['time'] = time.now
     event_n = {
-       'files' => files,
+      #'files' => files,
       'stdout' => stdout,
       'stderr' => stderr,
       'status' => status
@@ -198,7 +219,7 @@ class Kata_v2
     result = disk.assert_all([
       # A failing create_command() ensures the append_command() is not run.
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
-      events_file_append_command(id, ",\n" + json_plain(summary))
+      events_summary_file_append_command(id, ",\n" + json_plain(summary))
     ])
     result
   end
@@ -206,11 +227,6 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
   #
-  # In theory the manifest could store only the display_name
-  # and exercise_name and be recreated, on-demand, from the relevant
-  # start-point services. In practice it creates coupling, and it
-  # doesn't work anyway, since start-points change over time.
-
   def manifest_file_create_command(id, manifest_src)
     disk.file_create_command(manifest_filename(id), manifest_src)
   end
@@ -249,40 +265,28 @@ class Kata_v2
     # { "index": 2, ..., "colour": "amber"  },
   end
 
-=begin
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
 
-  def event_file_create_command(id, index, event_src)
-    disk.file_create_command(event_filename(id,index), event_src)
+  def event_file_create_command(id, event_src)
+    disk.file_create_command(event_filename(id), event_src)
   end
 
-  def event_file_read_command(id, index)
-    disk.file_read_command(event_filename(id,index))
+  def event_file_read_command(id)
+    disk.file_read_command(event_filename(id))
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-  # names of dirs/files
-
-  def event_filename(id, index)
-    kata_id_path(id, "#{index}.event.json")
-    # eg id == 'SyG9sT', index == 2 ==> '/cyber-dojo/katas/Sy/G9/sT/2.event.json'
+  def event_filename(id)
+    kata_id_path(id, "event.json")
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/event.json'
     # eg content ==>
     # {
-    #   "files": {
-    #     "hiker.rb": { "content": "......", "truncated": false },
-    #     ...
-    #   },
-    #   "stdout": { "content": "...", "truncated": false },
-    #   "stderr": { "content": "...", "truncated": false },
-    #   "status": 1,
     #   "index": 2,
     #   "time": [ 2020,3,27,11,56,7,719235 ],
     #   "duration": 1.064011,
     #   "colour": "amber"
     # }
   end
-=end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 

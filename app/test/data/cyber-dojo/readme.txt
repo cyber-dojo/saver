@@ -28,7 +28,7 @@ saver data, version 1
 /cyber-dojo/groups/Ly/Qp/Fr                       Python, unittest (has progress_regex)
 /cyber-dojo/groups/Ly/Qp/Fr/manifest.json.  (26==koala ==> rUqcey, 27==leopard ==> 38w9NC)
 /cyber-dojo/katas/rU/qc/ey/   (26 == koala)
-/cyber-dojo/karas/38/w9/NC/   (27 == leopard)
+/cyber-dojo/katas/38/w9/NC/   (27 == leopard)
 
 /cyber-dojo/groups/RE/f1/t8/44
 /cyber-dojo/groups/RE/f1/t8/katas.txt
