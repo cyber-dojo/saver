@@ -119,8 +119,10 @@ class Kata_v2
       end
     end
 
-    result['stdout']['truncated'] = truncations['stdout']
-    result['stderr']['truncated'] = truncations['stderr']
+    if result.has_key?('stdout')
+      result['stdout']['truncated'] = truncations['stdout']
+      result['stderr']['truncated'] = truncations['stderr']
+    end
 
     result
   end
