@@ -1,7 +1,7 @@
 require_relative 'test_base'
 require_source 'model/id_generator'
 
-class RandomSamplingTest < TestBase
+class RandomTest < TestBase
 
   def self.id58_prefix
     'aA8'
@@ -27,7 +27,7 @@ class RandomSamplingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '341', %w(
-  no id duplicates in 2000 repeats
+  no sample(N) duplicates in 2000 repeats
   ) do
     repeats = 2000
     ids = {}
@@ -37,6 +37,36 @@ class RandomSamplingTest < TestBase
     end
     assert_equal repeats, ids.size
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '342', %w(
+  alphanumeric(N) returns N character string sampled from [0-9A-Za-z]
+  ) do
+    counts = {}
+    1000.times do
+      random.alphanumeric(10).chars.each { |ch| counts[ch] = true }
+    end
+    assert_equal 26+26+10, counts.size
+    expected = [*('0'..'9'),*('A'..'Z'),*('a'..'z')].join
+    assert_equal expected, counts.keys.sort.join
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test '343', %w(
+  no alphanumeric(6) duplicates in 2000 repeats
+  ) do
+    repeats = 2000
+    ids = {}
+    repeats.times do
+      id = random.alphanumeric(6)
+      ids[id] = true
+    end
+    assert_equal repeats, ids.size
+  end
+
+  private
 
   ALPHABET_SIZE = IdGenerator::ALPHABET.size
 

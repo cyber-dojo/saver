@@ -1,4 +1,3 @@
-require 'securerandom'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options_checker'
@@ -237,7 +236,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def universal_append(id, index, files, stdout, stderr, status, summary)
-    uuid = SecureRandom.alphanumeric(8)
+    uuid = random.alphanumeric(8)
     tmp_dir = "/tmp/#{uuid}"
 
     src = disk.assert(events_summary_file_read_command(id))
@@ -379,6 +378,10 @@ class Kata_v2
 
   def disk
     @externals.disk
+  end
+
+  def random
+    @externals.random
   end
 
   def shell
