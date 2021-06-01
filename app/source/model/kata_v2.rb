@@ -188,7 +188,7 @@ class Kata_v2
         'revert_red' => 'off',
         'revert_amber' => 'off',
         'revert_green' => 'off',
-        }[name]
+      }[name]
     end
   end
 
