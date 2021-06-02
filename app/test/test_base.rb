@@ -47,12 +47,14 @@ class TestBase < Id58TestBase
     end
   end
 
+=begin
   def self.versions3_test(id58_suffix, *lines, &block)
     versions = (0..2)
     versions.each do |version|
       version_test(version, id58_suffix, *lines, &block)
     end
   end
+=end
 
   def self.version_test(version, id58_suffix, *lines, &block)
     lines.unshift("<version:#{version}>")

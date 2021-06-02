@@ -49,11 +49,16 @@ class Id58TestBase < MiniTest::Test
 
   def self.location(&test_block)
     callers = test_block.send('caller')
-    it = callers.find { |entry| !entry.start_with?("#{BASE_DIR}test_base.rb:") }
+    it = callers.find { |entry| is_test_filename?(entry) }
     match = it.match(/(.*):(\d+):/)
     filename = match[1][BASE_DIR.size..-1]
     line = match[2]
     [ filename, line ]
+  end
+
+  def self.is_test_filename?(filename)
+    !filename.start_with?("#{BASE_DIR}id58_test_base.rb:") &&
+      !filename.start_with?("#{BASE_DIR}test_base.rb:")
   end
 
   def trimmed(s)
