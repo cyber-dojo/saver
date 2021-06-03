@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class UniversalAppendTest < TestBase
+class KataRanTestsTest < TestBase
 
   def self.id58_prefix
     'Sp4'
@@ -8,53 +8,71 @@ class UniversalAppendTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Dk1', %w(
-  |kata_ran_tests gives same results in both versions
+  versions3_test 'XX2', %w(
+  |kata_ran_tests gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
+    universal_append { |id, index, files, stdout, stderr, status|
+      summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "none",
+      }
       kata_ran_tests(id, index, files, stdout, stderr, status, summary)
-    }
-  end
-
-  version_test 2, 'XX2', %w(
-  |kata_ran_tests gives same results in both versions
-  ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
-      kata_ran_tests(id, index, files, stdout, stderr, status, summary)
+      summary
     }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Dk2', %w(
-  |kata_predicted_right gives same results in both versions
+  versions3_test 'Dk2', %w(
+  |kata_predicted_right gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
+    universal_append { |id, index, files, stdout, stderr, status|
+      summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "red",
+      }
       kata_predicted_right(id, index, files, stdout, stderr, status, summary)
+      summary
     }
   end
 
-  versions_test 'Dk3', %w(
-  |kata_predicted_wrong gives same results in both versions
+  versions3_test 'Dk3', %w(
+  |kata_predicted_wrong gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
+    universal_append { |id, index, files, stdout, stderr, status|
+      summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "green",
+      }
       kata_predicted_wrong(id, index, files, stdout, stderr, status, summary)
+      summary
     }
   end
 
-  versions_test 'Dk7', %w(
-  |kata_reverted gives same results in both versions
+  versions3_test 'Dk7', %w(
+  |kata_reverted gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
+    universal_append { |id, index, files, stdout, stderr, status|
+      summary = {
+        #TODO
+      }
       kata_reverted(id, index, files, stdout, stderr, status, summary)
+      summary
     }
   end
 
-  versions_test 'Dk6', %w(
-  |kata_checked_out gives same results in both versions
+  versions3_test 'Dk6', %w(
+  |kata_checked_out gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status, summary|
+    universal_append { |id, index, files, stdout, stderr, status|
+      summary = {
+        #TODO
+      }
       kata_checked_out(id, index, files, stdout, stderr, status, summary)
+      summary
     }
   end
 
@@ -94,23 +112,23 @@ class UniversalAppendTest < TestBase
       "truncated" => false
     }
     status = "1"
-    summary = {
-      "colour" => (colour = "red"),
-      "duration" => (duration = 1.46448),
-      "predicted" => (predicted = "none")
-    }
-    yield(id, index, files, stdout, stderr, status, summary)
+
+    summary = yield(id, index, files, stdout, stderr, status)
+
     actual = kata_event(id, index)
     assert_equal files, actual["files"], :files
 
     assert_equal stdout, actual["stdout"], :stdout
     assert_equal stderr, actual["stderr"], :stderr
     assert_equal status, actual["status"], :status
-    assert_equal colour, actual['colour'], :colour # nil
-    assert_equal duration, actual['duration'], :duration
-    assert_equal predicted, actual['predicted'], :predicted
+
     assert_equal index, actual['index'], :index
     assert_equal t1, actual['time'], :time
+
+    summary.keys.each do |key|
+      expected = summary[key]
+      assert_equal expected, actual[key], key
+    end
   end
 
 end

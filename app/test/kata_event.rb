@@ -72,7 +72,7 @@ class KataEventTest < TestBase
     assert_equal [2019,1,16,12,45,40,544806], actual['time'], :polyfilled_time
     assert_equal 1.46448, actual['duration'], :polyfilled_duration
     assert_equal 'red', actual['colour'], :polyfilled_colour
-    assert_equal 'none', actual['predicted'], :polyfilled_predicted
+    assert_equal 'red', actual['predicted'], :polyfilled_predicted
     assert_equal 1, actual['index'], :polyfilled_index
   end
 

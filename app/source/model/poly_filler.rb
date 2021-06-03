@@ -31,6 +31,7 @@ module PolyFiller
     if event_summary.has_key?('colour')
       event['colour'] = event_summary['colour']
       event['duration'] = event_summary['duration']
+      event['predicted'] = event_summary['predicted']
       event['predicted'] ||= 'none'
     end
     event['index'] = index

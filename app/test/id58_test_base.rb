@@ -128,7 +128,7 @@ class Id58TestBase < MiniTest::Test
   def self.duplicate?(id58)
     @@seen_ids[id58] ||= 0
     @@seen_ids[id58] += 1
-    @@seen_ids[id58] > 2
+    @@seen_ids[id58] > 3
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
