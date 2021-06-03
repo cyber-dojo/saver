@@ -34,6 +34,9 @@ module PolyFiller
       event['predicted'] = event_summary['predicted']
       event['predicted'] ||= 'none'
     end
+    if event_summary.has_key?('revert')
+      event['revert'] = event_summary['revert']
+    end
     event['index'] = index
     event['time'] = event_summary['time']
   end

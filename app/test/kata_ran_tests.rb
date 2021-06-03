@@ -8,17 +8,17 @@ class KataRanTestsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'XX2', %w(
+  versions3_test 'Dk1', %w(
   |kata_ran_tests gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status|
+    universal_append { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
         "predicted" => "none",
       }
-      kata_ran_tests(id, index, files, stdout, stderr, status, summary)
-      summary
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
+      [index, summary]
     }
   end
 
@@ -27,61 +27,66 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk2', %w(
   |kata_predicted_right gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status|
+    universal_append { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
         "predicted" => "red",
       }
-      kata_predicted_right(id, index, files, stdout, stderr, status, summary)
-      summary
+      kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
+      [index, summary]
     }
   end
 
   versions3_test 'Dk3', %w(
   |kata_predicted_wrong gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status|
+    universal_append { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
         "predicted" => "green",
       }
-      kata_predicted_wrong(id, index, files, stdout, stderr, status, summary)
-      summary
+      kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
+      [index, summary]
     }
   end
 
   versions3_test 'Dk7', %w(
   |kata_reverted gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status|
-      summary = {
-        #TODO
+    universal_append { |id, files, stdout, stderr, status|
+      ran_summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "none",
       }
-      kata_reverted(id, index, files, stdout, stderr, status, summary)
-      summary
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, ran_summary)
+      kata_ran_tests(id, index=2, files, stdout, stderr, status, ran_summary)
+      summary = {
+        "colour" => "red",
+        "revert" => [id, index=1]
+      }
+      kata_reverted(id, index=3, files, stdout, stderr, status, summary)
+      [index, summary]
     }
   end
 
   versions3_test 'Dk6', %w(
   |kata_checked_out gives same results in all versions
   ) do
-    universal_append { |id, index, files, stdout, stderr, status|
+    universal_append { |id, files, stdout, stderr, status|
       summary = {
         #TODO
       }
-      kata_checked_out(id, index, files, stdout, stderr, status, summary)
-      summary
+      kata_checked_out(id, index=1, files, stdout, stderr, status, summary)
+      [index, summary]
     }
   end
 
   private
 
   def universal_append
-    t0 = [2020,11,1, 5,6,18,654318]
-    t1 = [2020,11,1, 5,7,23,883467]
-    externals.instance_exec { @time = TimeStub.new(t0,t1) }
     manifest = custom_manifest
     manifest['version'] = version
     id = kata_create(manifest, default_options)
@@ -113,9 +118,10 @@ class KataRanTestsTest < TestBase
     }
     status = "1"
 
-    summary = yield(id, index, files, stdout, stderr, status)
+    index, summary = *yield(id, files, stdout, stderr, status)
 
     actual = kata_event(id, index)
+
     assert_equal files, actual["files"], :files
 
     assert_equal stdout, actual["stdout"], :stdout
@@ -123,7 +129,6 @@ class KataRanTestsTest < TestBase
     assert_equal status, actual["status"], :status
 
     assert_equal index, actual['index'], :index
-    assert_equal t1, actual['time'], :time
 
     summary.keys.each do |key|
       expected = summary[key]
