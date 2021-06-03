@@ -196,6 +196,8 @@ class Kata_v2
 
   def option_set(id, name, value)
     # TODO: use config/ dir
+    # TODO: commit & ff-merge
+    # TODO: write the new value (dont append to the file)
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
@@ -218,6 +220,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
   def old_universal_append(id, index, files, stdout, stderr, status, summary)
     summary['index'] = index
     summary['time'] = time.now
@@ -234,6 +237,7 @@ class Kata_v2
     ])
     result
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
