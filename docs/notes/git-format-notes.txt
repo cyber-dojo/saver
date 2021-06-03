@@ -34,7 +34,10 @@ And a download will literally just tgz the whole git repo.
    		   is prediction on/off
          is theme light/dark
       and probably more in the future.
-      Should updating these be in a commit & ff-merge?
+      Should updating these be in a commit & ff-merge? YES.
+      The update should write the new value (not append to the file).
+      This will mean more than the creation event 
+      will need to be filtered in the diff view.
       
 	/events_summary.json    
       This is the events SUMMARY file. Used by dashboard.
@@ -72,18 +75,18 @@ I should add a new "type":"test" key to make filtering easier.
   This will be needed by differ. And by browser re-enter/refresh.
 
   - $ git archive --format=tar treeish
-    The writes a tgz stream to stdout.
-    It should be possible to read the tgz file in memory, like runner does.
+    The writes a tar stream to stdout.
+    Read the tar file into memory, like runner does.
     
-      tgz = shell.capture("cd #{repo_dir} && git archive --format=tar #{index}")
-      unzipped = Gnu.unzip(tgz)
-      reader = TarFile::Reader.new(unzipped)
-      files = reader.files.each.with_object({}) do |(filename,content),memo|
-        memo[filename] = content
+      tar = shell.capture("cd #{repo_dir} && git archive --format=tar #{index}")
+      reader = TarFile::Reader.new(tar)
+      files = { "files" => {} }
+      reader.files.each do |filename,file|
+        if filename[-1] === '/'
+          next
+        end
+        files[filename] = file["content"]
       end
-      # TODO: Does files[] needs to be put into the correct format ?
-      # could differ simply only process files,stdout,stderr,status ?
-      No need for an external `git ls-tree -r treeish` command to get file paths.
 
 
 

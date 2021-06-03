@@ -99,7 +99,7 @@ class Kata_v2
     reader = TarFile::Reader.new(tar_file)
     truncations = nil
     reader.files.each do |filename, content|
-      if filename[-1] === '/'
+      if filename[-1] === '/' # dir marker
         next
       elsif filename.start_with?(prefix)
         result["files"][filename[prefix.size..-1]] = {
