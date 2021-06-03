@@ -6,7 +6,7 @@ class KataRanTestsTest < TestBase
     'Sp4'
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions3_test 'Dk1', %w(
   |kata_ran_tests gives same results in all versions
@@ -22,7 +22,7 @@ class KataRanTestsTest < TestBase
     }
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions3_test 'Dk2', %w(
   |kata_predicted_right gives same results in all versions
@@ -38,6 +38,8 @@ class KataRanTestsTest < TestBase
     }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   versions3_test 'Dk3', %w(
   |kata_predicted_wrong gives same results in all versions
   ) do
@@ -51,6 +53,8 @@ class KataRanTestsTest < TestBase
       [index, summary]
     }
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions3_test 'Dk7', %w(
   |kata_reverted gives same results in all versions
@@ -72,12 +76,31 @@ class KataRanTestsTest < TestBase
     }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   versions3_test 'Dk6', %w(
   |kata_checked_out gives same results in all versions
   ) do
     universal_append { |id, files, stdout, stderr, status|
+
+      ran_summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "none",
+      }
+      manifest = kata_manifest(id)
+      group_id = manifest["group_id"]
+      group_index = manifest["group_index"]
+      id2 = group_join(group_id)
+      kata_ran_tests(id2, index=1, files, stdout, stderr, status, ran_summary)
+
       summary = {
-        #TODO
+        "colour" => "red",
+        "checkout" => {
+          "id" => id2,
+          "index" => 1,
+          "avatarIndex" => group_index
+        }
       }
       kata_checked_out(id, index=1, files, stdout, stderr, status, summary)
       [index, summary]
@@ -89,7 +112,10 @@ class KataRanTestsTest < TestBase
   def universal_append
     manifest = custom_manifest
     manifest['version'] = version
-    id = kata_create(manifest, default_options)
+
+    gid = group_create([manifest], default_options)
+    id = group_join(gid)
+
     index = 1
     files = {
       "test_hiker.sh" => {

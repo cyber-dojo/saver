@@ -37,6 +37,9 @@ module PolyFiller
     if event_summary.has_key?('revert')
       event['revert'] = event_summary['revert']
     end
+    if event_summary.has_key?('checkout')
+      event['checkout'] = event_summary['checkout']
+    end
     event['index'] = index
     event['time'] = event_summary['time']
   end
