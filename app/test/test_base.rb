@@ -28,11 +28,11 @@ class TestBase < Id58TestBase
 
   def self.disk_tests(id58_suffix, *lines, &block)
     test(id58_suffix, ["<disk:Real>"]+lines) do
-      self.instance_eval(&block)
+      self.instance_exec(&block)
     end
 =begin
     test(id58_suffix, ["<disk:Fake>"]+lines) do
-      self.externals.instance_eval { @disk = DiskFake.new }
+      self.externals.instance_exec { @disk = DiskFake.new }
       self.instance_eval(&block)
     end
 =end
@@ -58,7 +58,7 @@ class TestBase < Id58TestBase
     lines.unshift("<version:#{version}>")
     test(id58_suffix, *lines) do
       @version = version
-      self.instance_eval(&block)
+      self.instance_exec(&block)
     end
   end
 
