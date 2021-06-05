@@ -360,10 +360,7 @@ class Kata_v2
       path = "#{base_dir}/files/#{filename}"
       dirs << File.dirname(path)
     end
-    commands = []
-    dirs.sort.uniq.each do |dir|
-      commands << disk.dir_make_command(dir)
-    end
+    commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq
     # Not assert_all() because making a dir is not idempotent
     disk.run_all(commands)
   end
