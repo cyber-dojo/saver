@@ -8,9 +8,10 @@ require_relative '../lib/json_adapter'
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
-# 5. TODO: saver outages are recorded in events_summary.json
-# 6. TODO: option_set is recorded as an event
-# 7. TODO: polyfill events_summary so all entries have an 'event' key
+# TODO: saver outages are recorded in events_summary.json
+# TODO: options.json holds the options
+# TODO: option_set is recorded as an event
+# TODO: polyfill events_summary so all entries have an 'event' key
 
 class Kata_v2
 
@@ -22,7 +23,7 @@ class Kata_v2
 
   def create(manifest, options)
     fail_unless_known_options(options)
-    manifest.merge!(options)
+    manifest.merge!(options) # TODO: revisit...
     manifest['version'] = 2
     manifest['created'] = time.now
     events = [{
@@ -31,17 +32,17 @@ class Kata_v2
       'time' => manifest['created']
     }]
     files = manifest.delete('visible_files')
+    options.merge!(default_options)
 
     # IdGenerator makes the kata dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
     disk.assert_all([
-      manifest_file_create_command(id, json_pretty(manifest)),
-      events_file_create_command(id, json_pretty(events)),
-      #TODO: Write options to options.json
+      disk.file_create_command(manifest_filename(id), json_pretty(manifest)),
+      disk.file_create_command(events_filename(id), json_pretty(events)),
+      disk.file_create_command(options_filename(id), json_pretty(options))
     ])
 
     #TODO: Write README.md to /
-    make_dir(id, "config")
     files_dir = "#{kata_dir(id)}/files"
     write_files(disk, files_dir, content_of(files))
 
@@ -61,16 +62,17 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    manifest_src = disk.assert(manifest_file_read_command(id))
-    manifest = json_parse(manifest_src)
-    polyfill_manifest_defaults(manifest)
-    manifest
+    result = manifest_read(disk, id)
+    polyfill_manifest_defaults(result)
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse(disk.assert(events_file_read_command(id)))
+    result = events_read(disk, id)
+    #TODO: polyfill_events_defaults(result)
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -82,17 +84,15 @@ class Kata_v2
       index = events(id)[index]['index']
     end
 
+    truncations = nil
     kata_dir = '/' + disk.root_dir + kata_id_path(id)  # '/cyber-dojo/katas/R2/mR/cV
-
-    prefix = "files/"
     tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
-    truncations = nil
     reader.files.each do |filename, content|
       if filename[-1] === '/' # dir marker
         next
-      elsif filename.start_with?(prefix)
-        result["files"][filename[prefix.size..-1]] = {
+      elsif filename.start_with?("files/")
+        result["files"][filename["files/".size..-1]] = {
           "content" => content
         }
       elsif ["stdout", "stderr"].include?(filename)
@@ -120,13 +120,14 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event_batch(ids, indexes)
+    # TODO: loop over event(id, index) above
     json = {}
 
     commands = []
     (0...ids.size).each do |i|
       id = ids[i]
       index = indexes[i]
-      commands << event_file_read_command(id, index)
+      commands << events_file_read_command(id, index) # TODO: drop
     end
     results = disk.assert_all(commands)
 
@@ -173,14 +174,7 @@ class Kata_v2
     if result
       result.lines.last
     else
-      {
-        'theme' => 'light',
-        'colour' => 'on',
-        'predict' => 'off',
-        'revert_red' => 'off',
-        'revert_amber' => 'off',
-        'revert_green' => 'off',
-      }[name]
+      default_options[name]
     end
   end
 
@@ -200,6 +194,17 @@ class Kata_v2
     result
   end
 
+  def default_options
+    {
+      'theme' => 'light',
+      'colour' => 'on',
+      'predict' => 'off',
+      'revert_red' => 'off',
+      'revert_amber' => 'off',
+      'revert_green' => 'off',
+    }
+  end
+
   private
 
   include IdPather
@@ -216,16 +221,17 @@ class Kata_v2
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
-    events = json_parse(disk.assert(disk.file_read_command("events.json")))
+    manifest = manifest_read(disk)
+    options = options_read(disk)
+    events = events_read(disk)
     #TODO:
-    #   Check arg-index is not already present as an index in events.json
+    #   Check index is not already present as an index in events.json
     #     If it is, raise an exception
     #   Check arg-index is greater than largest index in events.json
     #     If it is, raise an exception
     summary['index'] = index
     summary['time'] = time.now
     events << summary
-    # TODO: read options.json
 
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
@@ -235,8 +241,9 @@ class Kata_v2
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
-      # "options.json" => json_pretty(options),
-      "events.json" => json_pretty(events),
+      manifest_filename => json_pretty(manifest),
+      options_filename => json_pretty(options),
+      events_filename => json_pretty(events),
       "truncations.json" => json_pretty({
         "stdout" => stdout["truncated"],
         "stderr" => stderr["truncated"]
@@ -266,35 +273,47 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-  # manifest
-  #
-  def manifest_file_create_command(id, manifest_src)
-    disk.file_create_command(manifest_filename(id), manifest_src)
+
+  def manifest_read(disk, id=nil)
+    read_json(disk, manifest_filename(id))
   end
 
-  def manifest_file_read_command(id)
-    disk.file_read_command(manifest_filename(id))
+  def options_read(disk, id=nil)
+    read_json(disk, events_filename(id))
   end
 
-  def manifest_filename(id)
-    kata_id_path(id, 'manifest.json')
-    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
-    # eg content ==> { "display_name": "Ruby, MiniTest",...}
+  def events_read(disk, id=nil)
+    read_json(disk, events_filename(id))
+  end
+
+  def read_json(disk, filename)
+    command = disk.file_read_command(filename)
+    content = disk.assert(command)
+    json_parse(content)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-  # events
 
-  def events_file_create_command(id, event0_src)
-    disk.file_create_command(events_filename(id), event0_src)
+  def manifest_filename(id=nil)
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
+    # eg content ==> { "display_name": "Ruby, MiniTest",...}
+    if id.nil?
+      "manifest.json"
+    else
+      kata_id_path(id, manifest_filename)
+    end
   end
 
-  def events_file_read_command(id)
-    disk.file_read_command(events_filename(id))
+  def options_filename(id=nil)
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/options.json'
+    if id.nil?
+      "options.json"
+    else
+      kata_id_path(id, options_filename)
+    end
   end
 
-  def events_filename(id)
-    kata_id_path(id, 'events.json')
+  def events_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events.json'
     # eg content ==>
     # [
@@ -302,6 +321,18 @@ class Kata_v2
     #  { "index": 1, ..., "colour": "red"    },
     #  { "index": 2, ..., "colour": "amber"  }
     # ]
+    if id.nil?
+      "events.json"
+    else
+      kata_id_path(id, events_filename)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def events_file_read_command(id)
+    # Used from group_v2
+    disk.file_read_command(events_filename(id))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
