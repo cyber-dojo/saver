@@ -67,17 +67,10 @@ class Group_v2
 
   def joined(id)
     result = {}
-    indexes = katas_indexes(id)
-    # read the events summary file for each avatar
-    read_events_files_commands = katas_ids(indexes).map do |kata_id|
-      # eg reads file /cyber-dojo/katas/k5/ZT/k0/events.json
-      @kata.send(:events_file_read_command, kata_id)
-    end
-    katas_events = disk.assert_all(read_events_files_commands)
-    indexes.each.with_index(0) do |(group_index,kata_id),index|
+    katas_indexes(id).each.with_index(0) do |(group_index,kata_id),index|
       result[group_index.to_s] = {
         'id' => kata_id,
-        'events' => json_parse(katas_events[index])
+        'events' => @kata.events(kata_id)
       }
     end
     result

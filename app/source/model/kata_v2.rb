@@ -330,13 +330,6 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def events_file_read_command(id)
-    # Used from group_v2
-    disk.file_read_command(events_filename(id))
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def fail_unless_known_option(name)
     unless %w( theme colour predict revert_red revert_amber revert_green ).include?(name)
       fail "Unknown option #{name}"
