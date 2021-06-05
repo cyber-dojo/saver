@@ -29,7 +29,7 @@ class Kata_v2
     events = [{
       'index' => 0,
       'event' => 'created',
-      'time' => manifest['created']
+      'time'  => manifest['created']
     }]
     files = manifest.delete('visible_files')
     options.merge!(default_options)
@@ -38,11 +38,11 @@ class Kata_v2
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
     disk.assert_all([
       disk.file_create_command(manifest_filename(id), json_pretty(manifest)),
+      disk.file_create_command(options_filename(id), json_pretty(options)),
       disk.file_create_command(events_filename(id), json_pretty(events)),
-      disk.file_create_command(options_filename(id), json_pretty(options))
+      disk.file_create_command(readme_filename(id), readme)
     ])
 
-    #TODO: Write README.md to /
     files_dir = "#{kata_dir(id)}/files"
     write_files(disk, files_dir, content_of(files))
 
@@ -62,7 +62,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    result = manifest_read(disk, id)
+    result = read_manifest(disk, id)
     polyfill_manifest_defaults(result)
     result
   end
@@ -70,7 +70,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    result = events_read(disk, id)
+    result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
     result
   end
@@ -167,15 +167,8 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def option_get(id, name)
-    # TODO: use options.json file
     fail_unless_known_option(name)
-    filename = kata_id_path(id, name)
-    result = disk.run(disk.file_read_command(filename))
-    if result
-      result.lines.last
-    else
-      default_options[name]
-    end
+    options_read(disk, id)[name]
   end
 
   def option_set(id, name, value)
@@ -194,17 +187,6 @@ class Kata_v2
     result
   end
 
-  def default_options
-    {
-      'theme' => 'light',
-      'colour' => 'on',
-      'predict' => 'off',
-      'revert_red' => 'off',
-      'revert_amber' => 'off',
-      'revert_green' => 'off',
-    }
-  end
-
   private
 
   include IdPather
@@ -221,14 +203,17 @@ class Kata_v2
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
-    manifest = manifest_read(disk)
-    options = options_read(disk)
-    events = events_read(disk)
+    manifest = read_manifest(disk)
+    options  = read_options(disk)
+    events   = read_events(disk)
+    readme   = read_readme(disk)
+
     #TODO:
     #   Check index is not already present as an index in events.json
     #     If it is, raise an exception
     #   Check arg-index is greater than largest index in events.json
     #     If it is, raise an exception
+
     summary['index'] = index
     summary['time'] = time.now
     events << summary
@@ -238,12 +223,13 @@ class Kata_v2
     write_files(disk, "files", content_of(files))
 
     write_files(disk, '', {
-      "stdout" => stdout['content'],
-      "stderr" => stderr['content'],
-      "status" => status.to_s,
       manifest_filename => json_pretty(manifest),
       options_filename => json_pretty(options),
       events_filename => json_pretty(events),
+      readme_filename => readme,
+      "stdout" => stdout['content'],
+      "stderr" => stderr['content'],
+      "status" => status.to_s,
       "truncations.json" => json_pretty({
         "stdout" => stdout["truncated"],
         "stderr" => stderr["truncated"]
@@ -274,22 +260,29 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def manifest_read(disk, id=nil)
+  def read_manifest(disk, id=nil)
     read_json(disk, manifest_filename(id))
   end
 
-  def options_read(disk, id=nil)
+  def read_options(disk, id=nil)
     read_json(disk, events_filename(id))
   end
 
-  def events_read(disk, id=nil)
+  def read_events(disk, id=nil)
     read_json(disk, events_filename(id))
+  end
+
+  def read_readme(disk, id=nil)
+    read(disk, readme_filename(id))
   end
 
   def read_json(disk, filename)
+    json_parse(read(disk, filename))
+  end
+
+  def read(disk, filename)
     command = disk.file_read_command(filename)
-    content = disk.assert(command)
-    json_parse(content)
+    disk.assert(command)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -326,6 +319,18 @@ class Kata_v2
     else
       kata_id_path(id, events_filename)
     end
+  end
+
+  def readme_filename(id=nil)
+    if id.nil?
+      "README.md"
+    else
+      kata_id_path(id, readme_filename)
+    end
+  end
+
+  def readme
+    "README"
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -369,6 +374,19 @@ class Kata_v2
 
   def content_of(files)
     files.map{|filename,file| [filename,file['content']]}.to_h
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def default_options
+    {
+      'theme' => 'light',
+      'colour' => 'on',
+      'predict' => 'off',
+      'revert_red' => 'off',
+      'revert_amber' => 'off',
+      'revert_green' => 'off',
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
