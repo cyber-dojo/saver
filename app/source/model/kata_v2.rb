@@ -9,8 +9,9 @@ require_relative '../lib/json_adapter'
 # 3. events.json is now called events_summary.json
 #    TODO: it does not contain json; needs [ ] sentinels, rename?
 # 4. entries in events_summary.json are strictly sequential
-# 5. saver outages are recorded in events_summary.json (TODO)
-# 6. option_set is now recorded as an event (TODO)
+# 5. TODO: saver outages are recorded in events_summary.json
+# 6. TODO: option_set is now recorded as an event
+# 7. TODO: polyfill events_summary so all entries have an 'event' key
 
 class Kata_v2
 
@@ -144,23 +145,23 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -231,7 +232,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def universal_append(id, index, files, stdout, stderr, status, summary)
+  def git_commit_tag(id, index, files, stdout, stderr, status, summary)
     src = disk.assert(events_summary_file_read_command(id))
     #events_summary = json_parse('[' + src + ']')
     #TODO:
