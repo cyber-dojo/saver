@@ -7,6 +7,7 @@ require_relative '../lib/json_adapter'
 # 1. Now uses git repo to store kata
 # 2. event.json has been dropped
 # 3. events.json is now called events_summary.json
+#    TODO: it does not contain json; needs [ ] sentinels, rename?
 # 4. entries in events_summary.json are strictly sequential
 # 5. saver outages are recorded in events_summary.json (TODO)
 # 6. option_set is now recorded as an event (TODO)
@@ -42,7 +43,7 @@ class Kata_v2
     make_dir(id, "config")
     #TODO: Write options to config/
     files_dir = "#{kata_dir(id)}/files"
-    write_files(disk, files_dir, files)
+    write_files(disk, files_dir, content_of(files))
 
     shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
       "git init --quiet",
@@ -231,9 +232,6 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def universal_append(id, index, files, stdout, stderr, status, summary)
-    uuid = random.alphanumeric(8)
-    tmp_dir = "/tmp/#{uuid}"
-
     src = disk.assert(events_summary_file_read_command(id))
     #events_summary = json_parse('[' + src + ']')
     #TODO:
@@ -241,28 +239,33 @@ class Kata_v2
     #     If it is, raise an exception
     #   Check arg-index is greater than largest index in events.json
     #     If it is, raise an exception
+    summary['index'] = index
+    summary['time'] = time.now
+    events_summary = src + ",\n" + json_plain(summary)
+
+
+    uuid = random.alphanumeric(8)
+    tmp_dir = "/tmp/#{uuid}"
 
     root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
+    #TODO: read events_summary.json here
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
-    truncations = {
-      "stdout" => stdout["truncated"],
-      "stderr" => stderr["truncated"]
-    }
-
     disk = External::Disk.new(tmp_dir)
-    write_files(disk, "files", files)
+    write_files(disk, "files", content_of(files))
 
-    write_files_commands = []
-    summary['index'] = index
-    summary['time'] = time.now
-    write_files_commands << disk.file_create_command("events_summary.json", src + ",\n" + json_plain(summary))
-    write_files_commands << disk.file_create_command("truncations.json", json_pretty(truncations))
-    write_files_commands << disk.file_create_command("stdout", stdout['content'])
-    write_files_commands << disk.file_create_command("stderr", stderr['content'])
-    write_files_commands << disk.file_create_command("status", status.to_s)
-    disk.assert_all(write_files_commands)
+
+    write_files(disk, '', {
+      "stdout" => stdout['content'],
+      "stderr" => stderr['content'],
+      "status" => status.to_s,
+      "events_summary.json" => events_summary,
+      "truncations.json" => json_pretty({
+        "stdout" => stdout["truncated"],
+        "stderr" => stderr["truncated"]
+      })
+    })
 
     message = "'#{index}'" # TODO: better message, eg predicted green got red
     shell.assert_cd_exec(tmp_dir, [
@@ -364,9 +367,9 @@ class Kata_v2
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
     create_files_commands = []
-    files.each do |filename, file|
+    files.each do |filename, content|
       path = "#{base_dir}/#{filename}"
-      create_files_commands << disk.file_create_command(path, file["content"])
+      create_files_commands << disk.file_create_command(path, content)
     end
     disk.assert_all(create_files_commands)
   end
@@ -394,6 +397,10 @@ class Kata_v2
   def kata_dir(id)
     # relative to /cyber-dojo/
     kata_id_path(id) # eg '/katas/R2/mR/cV
+  end
+
+  def content_of(files)
+    files.map{|filename,file| [filename,file['content']]}.to_h
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
