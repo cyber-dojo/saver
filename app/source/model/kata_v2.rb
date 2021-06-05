@@ -42,7 +42,6 @@ class Kata_v2
     make_dir(id, "config")
     #TODO: Write options to config/
     files_dir = "#{kata_dir(id)}/files"
-    make_dirs(disk, files_dir, files)
     write_files(disk, files_dir, files)
 
     shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
@@ -253,7 +252,6 @@ class Kata_v2
     }
 
     disk = External::Disk.new(tmp_dir)
-    make_dirs(disk, "files", files)
     write_files(disk, "files", files)
 
     write_files_commands = []
@@ -363,15 +361,14 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_dir(id)
-    # relative to /cyber-dojo/
-    kata_id_path(id) # eg '/katas/R2/mR/cV
-  end
-
-  def make_dir(id, dir)
-    path = "#{kata_dir(id)}/#{dir}"
-    command = disk.dir_make_command(path)
-    disk.run(command)
+  def write_files(disk, base_dir, files)
+    make_dirs(disk, base_dir, files)
+    create_files_commands = []
+    files.each do |filename, file|
+      path = "#{base_dir}/#{filename}"
+      create_files_commands << disk.file_create_command(path, file["content"])
+    end
+    disk.assert_all(create_files_commands)
   end
 
   def make_dirs(disk, base_dir, files)
@@ -388,13 +385,15 @@ class Kata_v2
     disk.run_all(commands)
   end
 
-  def write_files(disk, base_dir, files)
-    create_files_commands = []
-    files.each do |filename, file|
-      path = "#{base_dir}/#{filename}"
-      create_files_commands << disk.file_create_command(path, file["content"])
-    end
-    disk.assert_all(create_files_commands)
+  def make_dir(id, dir)
+    path = "#{kata_dir(id)}/#{dir}"
+    command = disk.dir_make_command(path)
+    disk.run(command)
+  end
+
+  def kata_dir(id)
+    # relative to /cyber-dojo/
+    kata_id_path(id) # eg '/katas/R2/mR/cV
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
