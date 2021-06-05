@@ -4,6 +4,13 @@ require_relative 'options_checker'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
+# 1. Now uses git repo to store kata
+# 2. event.json has been dropped
+# 3. events.json is now called events_summary.json
+# 4. entries in events_summary.json are strictly sequential
+# 5. saver outages are recorded in events_summary.json (TODO)
+# 6. option_set is now recorded as an event (TODO)
+
 class Kata_v2
 
   def initialize(externals)
@@ -31,30 +38,13 @@ class Kata_v2
       events_summary_file_create_command(id, json_plain(event_summary)),
     ])
 
-    kata_dir = kata_id_path(id)  # '/katas/R2/mR/cV
-
-    dirs = [ "#{kata_dir}/config" ]
-    files.keys.each do |filename|
-      path = "#{kata_dir}/files/#{filename}"
-      dirs << File.dirname(path)
-    end
-    make_dirs_commands = []
-    dirs.sort.uniq.each do |dir|
-      make_dirs_commands << disk.dir_make_command(dir)
-    end
-    disk.run_all(make_dirs_commands) # Not assert_all()
-
-    create_files_commands = []
-    files.each do |filename, file|
-      path = "#{kata_dir}/files/#{filename}"
-      create_files_commands << disk.file_create_command(path, file["content"])
-    end
-    disk.assert_all(create_files_commands)
-
+    make_dir(id, "config")
+    make_dirs_for(id, files)
+    create_files(id, files)
     #TODO: Write options to config/
     #TODO: Write README.md to /
 
-    shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir}", [
+    shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
       "git init --quiet",
       "git config user.name '#{id}'",
       "git config user.email '#{id}@cyber-dojo.org'",
@@ -65,6 +55,40 @@ class Kata_v2
     ])
 
     id
+  end
+
+  def kata_dir(id)
+    # relative to /cyber-dojo/
+    kata_id_path(id) # eg '/katas/R2/mR/cV
+  end
+
+  def make_dir(id, dir)
+    path = "#{kata_dir(id)}/#{dir}"
+    command = disk.dir_make_command(path)
+    disk.run(command)
+  end
+
+  def make_dirs_for(id, files)
+    dirs = []
+    files.keys.each do |filename|
+      path = "#{kata_dir(id)}/files/#{filename}"
+      dirs << File.dirname(path)
+    end
+    commands = []
+    dirs.sort.uniq.each do |dir|
+      commands << disk.dir_make_command(dir)
+    end
+    # Not assert_all() because making a dir is not idempotent
+    disk.run_all(commands)
+  end
+
+  def create_files(id, files)
+    create_files_commands = []
+    files.each do |filename, file|
+      path = "#{kata_dir(id)}/files/#{filename}"
+      create_files_commands << disk.file_create_command(path, file["content"])
+    end
+    disk.assert_all(create_files_commands)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -88,8 +112,7 @@ class Kata_v2
     result = { "files" => {} }
     index = index.to_i
     if index < 0
-      all = events(id)
-      index = all[index]['index']
+      index = events(id)[index]['index']
     end
 
     kata_dir = '/' + disk.root_dir + kata_id_path(id)  # '/cyber-dojo/katas/R2/mR/cV
