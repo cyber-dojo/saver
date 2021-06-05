@@ -38,11 +38,11 @@ class Kata_v2
       events_summary_file_create_command(id, json_plain(event_summary)),
     ])
 
-    make_dir(id, "config")
-    make_dirs_for(id, files)
-    create_files(id, files)
-    #TODO: Write options to config/
     #TODO: Write README.md to /
+    make_dir(id, "config")
+    #TODO: Write options to config/
+    make_dirs(disk, "#{kata_dir(id)}/files", files)
+    write_files(id, files)
 
     shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
       "git init --quiet",
@@ -55,40 +55,6 @@ class Kata_v2
     ])
 
     id
-  end
-
-  def kata_dir(id)
-    # relative to /cyber-dojo/
-    kata_id_path(id) # eg '/katas/R2/mR/cV
-  end
-
-  def make_dir(id, dir)
-    path = "#{kata_dir(id)}/#{dir}"
-    command = disk.dir_make_command(path)
-    disk.run(command)
-  end
-
-  def make_dirs_for(id, files)
-    dirs = []
-    files.keys.each do |filename|
-      path = "#{kata_dir(id)}/files/#{filename}"
-      dirs << File.dirname(path)
-    end
-    commands = []
-    dirs.sort.uniq.each do |dir|
-      commands << disk.dir_make_command(dir)
-    end
-    # Not assert_all() because making a dir is not idempotent
-    disk.run_all(commands)
-  end
-
-  def create_files(id, files)
-    create_files_commands = []
-    files.each do |filename, file|
-      path = "#{kata_dir(id)}/files/#{filename}"
-      create_files_commands << disk.file_create_command(path, file["content"])
-    end
-    disk.assert_all(create_files_commands)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -276,8 +242,7 @@ class Kata_v2
     #   Check arg-index is greater than largest index in events.json
     #     If it is, raise an exception
 
-    kata_dir = kata_id_path(id)               #            /katas/R2/mR/cV
-    root_dir = '/' + disk.root_dir + kata_dir # /cyber-dojo/katas/R2/mR/cV
+    root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
@@ -287,12 +252,7 @@ class Kata_v2
     }
 
     disk = External::Disk.new(tmp_dir)
-    make_dirs_commands = []
-    files.keys.each do |filename|
-      dir = File.dirname("files/#{filename}")
-      make_dirs_commands << disk.dir_make_command(dir)
-    end
-    disk.run_all(make_dirs_commands.sort.uniq)
+    make_dirs(disk, "files", files)
 
     summary['index'] = index
     summary['time'] = time.now
@@ -401,6 +361,42 @@ class Kata_v2
     unless %w( theme colour predict revert_red revert_amber revert_green ).include?(name)
       fail "Unknown option #{name}"
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def kata_dir(id)
+    # relative to /cyber-dojo/
+    kata_id_path(id) # eg '/katas/R2/mR/cV
+  end
+
+  def make_dir(id, dir)
+    path = "#{kata_dir(id)}/#{dir}"
+    command = disk.dir_make_command(path)
+    disk.run(command)
+  end
+
+  def make_dirs(disk, base_dir, files)
+    dirs = []
+    files.keys.each do |filename|
+      path = "#{base_dir}/files/#{filename}"
+      dirs << File.dirname(path)
+    end
+    commands = []
+    dirs.sort.uniq.each do |dir|
+      commands << disk.dir_make_command(dir)
+    end
+    # Not assert_all() because making a dir is not idempotent
+    disk.run_all(commands)
+  end
+
+  def write_files(id, files)
+    create_files_commands = []
+    files.each do |filename, file|
+      path = "#{kata_dir(id)}/files/#{filename}"
+      create_files_commands << disk.file_create_command(path, file["content"])
+    end
+    disk.assert_all(create_files_commands)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
