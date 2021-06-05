@@ -9,7 +9,7 @@ require_relative '../lib/json_adapter'
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
 # 5. TODO: saver outages are recorded in events_summary.json
-# 6. TODO: option_set is now recorded as an event
+# 6. TODO: option_set is recorded as an event
 # 7. TODO: polyfill events_summary so all entries have an 'event' key
 
 class Kata_v2
@@ -25,23 +25,23 @@ class Kata_v2
     manifest.merge!(options)
     manifest['version'] = 2
     manifest['created'] = time.now
-    # IdGenerator makes the root dir, eg /cyber-dojo/katas/Rl/mR/cV
-    id = manifest['id'] = IdGenerator.new(@externals).kata_id
     events = [{
       'index' => 0,
-      'time' => manifest['created'],
-      'event' => 'created'
+      'event' => 'created',
+      'time' => manifest['created']
     }]
     files = manifest.delete('visible_files')
 
+    # IdGenerator makes the kata dir, eg /cyber-dojo/katas/Rl/mR/cV
+    id = manifest['id'] = IdGenerator.new(@externals).kata_id
     disk.assert_all([
       manifest_file_create_command(id, json_pretty(manifest)),
-      events_summary_file_create_command(id, json_pretty(events)),
+      events_file_create_command(id, json_pretty(events)),
+      #TODO: Write options to options.json
     ])
 
     #TODO: Write README.md to /
     make_dir(id, "config")
-    #TODO: Write options to config/
     files_dir = "#{kata_dir(id)}/files"
     write_files(disk, files_dir, content_of(files))
 
@@ -70,7 +70,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse(disk.assert(events_summary_file_read_command(id)))
+    json_parse(disk.assert(events_file_read_command(id)))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -166,7 +166,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def option_get(id, name)
-    # TODO: use config/ dir
+    # TODO: use options.json file
     fail_unless_known_option(name)
     filename = kata_id_path(id, name)
     result = disk.run(disk.file_read_command(filename))
@@ -185,9 +185,8 @@ class Kata_v2
   end
 
   def option_set(id, name, value)
-    # TODO: use config/ dir
+    # TODO: use options.json file
     # TODO: commit & ff-merge
-    # TODO: write the new value (dont append to the file)
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
@@ -226,7 +225,7 @@ class Kata_v2
     summary['index'] = index
     summary['time'] = time.now
     events << summary
-
+    # TODO: read options.json
 
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
@@ -236,6 +235,7 @@ class Kata_v2
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
+      # "options.json" => json_pretty(options),
       "events.json" => json_pretty(events),
       "truncations.json" => json_pretty({
         "stdout" => stdout["truncated"],
@@ -245,7 +245,6 @@ class Kata_v2
 
     message = "'#{index}'" # TODO: better message, eg predicted green got red
     shell.assert_cd_exec(tmp_dir, [
-      #"git checkout main -- config/",
       "git checkout main -- manifest.json",
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
@@ -286,25 +285,23 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
   # events
 
-  def events_summary_file_create_command(id, event0_src)
-    disk.file_create_command(events_summary_filename(id), event0_src)
+  def events_file_create_command(id, event0_src)
+    disk.file_create_command(events_filename(id), event0_src)
   end
 
-  def events_summary_file_append_command(id, eventN_src)
-    disk.file_append_command(events_summary_filename(id), eventN_src)
+  def events_file_read_command(id)
+    disk.file_read_command(events_filename(id))
   end
 
-  def events_summary_file_read_command(id)
-    disk.file_read_command(events_summary_filename(id))
-  end
-
-  def events_summary_filename(id)
+  def events_filename(id)
     kata_id_path(id, 'events.json')
-    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events_summary.json'
+    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events.json'
     # eg content ==>
-    # { "index": 0, ..., "event": "created" },
-    # { "index": 1, ..., "colour": "red"    },
-    # { "index": 2, ..., "colour": "amber"  },
+    # [
+    #  { "index": 0, ..., "event": "created" },
+    #  { "index": 1, ..., "colour": "red"    },
+    #  { "index": 2, ..., "colour": "amber"  }
+    # ]
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -332,7 +329,7 @@ class Kata_v2
       array << File.dirname(path)
     end
     commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq
-    # Not assert_all() because making a dir is not idempotent
+    # Not assert_all() because dir_make_command() is not idempotent
     disk.run_all(commands)
   end
 
