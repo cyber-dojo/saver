@@ -211,27 +211,6 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-=begin
-  def old_universal_append(id, index, files, stdout, stderr, status, summary)
-    summary['index'] = index
-    summary['time'] = time.now
-    event_n = {
-      'files' => files,
-      'stdout' => stdout,
-      'stderr' => stderr,
-      'status' => status
-    }
-    result = disk.assert_all([
-      # A failing create_command() ensures the append_command() is not run.
-      event_file_create_command(id, index, json_plain(event_n.merge(summary))),
-      events_summary_file_append_command(id, ",\n" + json_plain(summary))
-    ])
-    result
-  end
-=end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def git_commit_tag(id, index, files, stdout, stderr, status, summary)
     src = disk.assert(events_summary_file_read_command(id))
     #events_summary = json_parse('[' + src + ']')
