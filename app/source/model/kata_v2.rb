@@ -41,8 +41,9 @@ class Kata_v2
     #TODO: Write README.md to /
     make_dir(id, "config")
     #TODO: Write options to config/
-    make_dirs(disk, "#{kata_dir(id)}/files", files)
-    write_files(id, files)
+    files_dir = "#{kata_dir(id)}/files"
+    make_dirs(disk, files_dir, files)
+    write_files(disk, files_dir, files)
 
     shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
       "git init --quiet",
@@ -253,14 +254,11 @@ class Kata_v2
 
     disk = External::Disk.new(tmp_dir)
     make_dirs(disk, "files", files)
+    write_files(disk, "files", files)
 
+    write_files_commands = []
     summary['index'] = index
     summary['time'] = time.now
-    write_files_commands = []
-    files.each do |filename,file|
-      path = "files/#{filename}"
-      write_files_commands << disk.file_create_command(path, file['content'])
-    end
     write_files_commands << disk.file_create_command("events_summary.json", src + ",\n" + json_plain(summary))
     write_files_commands << disk.file_create_command("truncations.json", json_pretty(truncations))
     write_files_commands << disk.file_create_command("stdout", stdout['content'])
@@ -390,10 +388,10 @@ class Kata_v2
     disk.run_all(commands)
   end
 
-  def write_files(id, files)
+  def write_files(disk, base_dir, files)
     create_files_commands = []
     files.each do |filename, file|
-      path = "#{kata_dir(id)}/files/#{filename}"
+      path = "#{base_dir}/#{filename}"
       create_files_commands << disk.file_create_command(path, file["content"])
     end
     disk.assert_all(create_files_commands)
