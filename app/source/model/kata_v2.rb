@@ -6,9 +6,8 @@ require_relative '../lib/json_adapter'
 
 # 1. Now uses git repo to store kata
 # 2. event.json has been dropped
-# 3. events.json is now called events_summary.json
-#    TODO: it does not contain json; needs [ ] sentinels, rename?
-# 4. entries in events_summary.json are strictly sequential
+# 3. event_summary.json is now called events.json and contains a json array
+# 4. entries in events.json have strictly sequential indexes
 # 5. TODO: saver outages are recorded in events_summary.json
 # 6. TODO: option_set is now recorded as an event
 # 7. TODO: polyfill events_summary so all entries have an 'event' key
@@ -28,16 +27,16 @@ class Kata_v2
     manifest['created'] = time.now
     # IdGenerator makes the root dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
-    event_summary = {
+    events = [{
       'index' => 0,
       'time' => manifest['created'],
       'event' => 'created'
-    }
+    }]
     files = manifest.delete('visible_files')
 
     disk.assert_all([
       manifest_file_create_command(id, json_pretty(manifest)),
-      events_summary_file_create_command(id, json_plain(event_summary)),
+      events_summary_file_create_command(id, json_pretty(events)),
     ])
 
     #TODO: Write README.md to /
@@ -71,7 +70,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse('[' + disk.assert(events_summary_file_read_command(id)) + ']')
+    json_parse(disk.assert(events_summary_file_read_command(id)))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -103,7 +102,7 @@ class Kata_v2
       elsif filename === "status"
         result["status"] = content
       elsif filename === "events.json"
-        event = json_parse(content.lines.last)
+        event = json_parse(content).last
         result.merge!(event)
       elsif filename === "truncations.json"
         truncations = json_parse(content)
@@ -212,28 +211,22 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary)
-    #src = disk.assert(events_summary_file_read_command(id))
-    #events_summary = json_parse('[' + src + ']')
-    #TODO:
-    #   Check arg-index is not already present as an index in events.json
-    #     If it is, raise an exception
-    #   Check arg-index is greater than largest index in events.json
-    #     If it is, raise an exception
-
     root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
     tmp_dir = "/tmp/#{uuid}"
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
-    src = disk.assert(disk.file_read_command("events.json"))
-    #events_summary_file_read_command(id))
+    events = json_parse(disk.assert(disk.file_read_command("events.json")))
+    #TODO:
+    #   Check arg-index is not already present as an index in events.json
+    #     If it is, raise an exception
+    #   Check arg-index is greater than largest index in events.json
+    #     If it is, raise an exception
     summary['index'] = index
     summary['time'] = time.now
-    events_summary = src + ",\n" + json_plain(summary)
+    events << summary
 
-    #events_summary = json_parse('[' + src + ']')
-    #TODO: read events_summary.json here
 
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
@@ -243,7 +236,7 @@ class Kata_v2
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
-      "events.json" => events_summary,
+      "events.json" => json_pretty(events),
       "truncations.json" => json_pretty({
         "stdout" => stdout["truncated"],
         "stderr" => stderr["truncated"]
