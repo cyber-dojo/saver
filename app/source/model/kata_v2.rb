@@ -102,7 +102,7 @@ class Kata_v2
         }
       elsif filename === "status"
         result["status"] = content
-      elsif filename === "events_summary.json"
+      elsif filename === "events.json"
         event = json_parse(content.lines.last)
         result.merge!(event)
       elsif filename === "truncations.json"
@@ -226,7 +226,7 @@ class Kata_v2
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
-    src = disk.assert(disk.file_read_command("events_summary.json"))
+    src = disk.assert(disk.file_read_command("events.json"))
     #events_summary_file_read_command(id))
     summary['index'] = index
     summary['time'] = time.now
@@ -243,7 +243,7 @@ class Kata_v2
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
-      "events_summary.json" => events_summary,
+      "events.json" => events_summary,
       "truncations.json" => json_pretty({
         "stdout" => stdout["truncated"],
         "stderr" => stderr["truncated"]
@@ -306,7 +306,7 @@ class Kata_v2
   end
 
   def events_summary_filename(id)
-    kata_id_path(id, 'events_summary.json')
+    kata_id_path(id, 'events.json')
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events_summary.json'
     # eg content ==>
     # { "index": 0, ..., "event": "created" },
