@@ -212,16 +212,13 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary)
-    src = disk.assert(events_summary_file_read_command(id))
+    #src = disk.assert(events_summary_file_read_command(id))
     #events_summary = json_parse('[' + src + ']')
     #TODO:
     #   Check arg-index is not already present as an index in events.json
     #     If it is, raise an exception
     #   Check arg-index is greater than largest index in events.json
     #     If it is, raise an exception
-    summary['index'] = index
-    summary['time'] = time.now
-    events_summary = src + ",\n" + json_plain(summary)
 
     root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
@@ -229,6 +226,13 @@ class Kata_v2
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
+    src = disk.assert(disk.file_read_command("events_summary.json"))
+    #events_summary_file_read_command(id))
+    summary['index'] = index
+    summary['time'] = time.now
+    events_summary = src + ",\n" + json_plain(summary)
+
+    #events_summary = json_parse('[' + src + ']')
     #TODO: read events_summary.json here
 
     shell.assert_cd_exec(tmp_dir, "git rm -rf .")
