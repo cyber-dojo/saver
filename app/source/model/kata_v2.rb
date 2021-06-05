@@ -346,19 +346,17 @@ class Kata_v2
 
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
-    create_files_commands = []
-    files.each do |filename, content|
+    commands = files.each_with_object([]) do |(filename,content),array|
       path = "#{base_dir}/#{filename}"
-      create_files_commands << disk.file_create_command(path, content)
+      array << disk.file_create_command(path, content)
     end
-    disk.assert_all(create_files_commands)
+    disk.assert_all(commands)
   end
 
   def make_dirs(disk, base_dir, files)
-    dirs = []
-    files.keys.each do |filename|
+    dirs = files.keys.each_with_object([]) do |filename, array|
       path = "#{base_dir}/files/#{filename}"
-      dirs << File.dirname(path)
+      array << File.dirname(path)
     end
     commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq
     # Not assert_all() because making a dir is not idempotent
@@ -372,8 +370,7 @@ class Kata_v2
   end
 
   def kata_dir(id)
-    # relative to /cyber-dojo/
-    kata_id_path(id) # eg '/katas/R2/mR/cV
+    kata_id_path(id) # relative to /cyber-dojo/ eg '/katas/R2/mR/cV
   end
 
   def content_of(files)
