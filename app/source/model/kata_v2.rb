@@ -315,29 +315,6 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-  # event
-
-  def event_file_create_command(id, event_src)
-    disk.file_create_command(event_filename(id), event_src)
-  end
-
-  def event_file_read_command(id)
-    disk.file_read_command(event_filename(id))
-  end
-
-  def event_filename(id)
-    kata_id_path(id, "event.json")
-    # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/event.json'
-    # eg content ==>
-    # {
-    #   "index": 2,
-    #   "time": [ 2020,3,27,11,56,7,719235 ],
-    #   "duration": 1.064011,
-    #   "colour": "amber"
-    # }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def fail_unless_known_option(name)
     unless %w( theme colour predict revert_red revert_amber revert_green ).include?(name)
