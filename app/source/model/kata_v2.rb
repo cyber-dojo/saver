@@ -223,18 +223,17 @@ class Kata_v2
     summary['time'] = time.now
     events_summary = src + ",\n" + json_plain(summary)
 
-
+    root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
     tmp_dir = "/tmp/#{uuid}"
-
-    root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
-    #TODO: read events_summary.json here
-    shell.assert_cd_exec(tmp_dir, "git rm -rf .")
 
     disk = External::Disk.new(tmp_dir)
-    write_files(disk, "files", content_of(files))
+    #TODO: read events_summary.json here
 
+    shell.assert_cd_exec(tmp_dir, "git rm -rf .")
+
+    write_files(disk, "files", content_of(files))
 
     write_files(disk, '', {
       "stdout" => stdout['content'],
