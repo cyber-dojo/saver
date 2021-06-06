@@ -237,7 +237,6 @@ class Kata_v2
 
     message = "'#{index}'" # TODO: better message, eg predicted green got red
     shell.assert_cd_exec(tmp_dir, [
-      "git checkout main -- manifest.json",
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
     ])
