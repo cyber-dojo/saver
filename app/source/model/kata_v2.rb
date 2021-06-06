@@ -212,6 +212,7 @@ class Kata_v2
     unless index > events.last['index']
       raise "Out of sync event"
     end
+
     #TODO: Fill in saver outage entries
 
     summary['index'] = index
@@ -219,8 +220,7 @@ class Kata_v2
     events << summary
 
     # Remove worktree files we are recreating
-    rm_files = "files stdout stderr status truncations.json #{events_filename}"
-    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -r #{rm_files}")
+    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -r files/")
 
     # Recreate worktree files
     write_files(disk, "files", content_of(files))
@@ -236,13 +236,17 @@ class Kata_v2
       })
     })
 
+    # Add all files and commit
     message = "'#{index}'" # TODO: better message, eg predicted green got red
     shell.assert_cd_exec(tmp_dir, [
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
     ])
 
+    # Attempt fast-forward merge in original repo
     shell.assert_cd_exec(root_dir, "git merge --ff-only #{uuid}")
+
+    # If merge succeeded tag the commit
     tag_commands = [
       "git tag #{index} HEAD",
     ]
@@ -346,7 +350,7 @@ class Kata_v2
     make_dirs(disk, base_dir, files)
     commands = files.each_with_object([]) do |(filename,content),array|
       path = "#{base_dir}/#{filename}"
-      array << disk.file_create_command(path, content)
+      array << disk.file_write_command(path, content)
     end
     disk.assert_all(commands)
   end
