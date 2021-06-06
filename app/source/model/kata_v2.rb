@@ -3,6 +3,7 @@ require_relative 'id_pather'
 require_relative 'options_checker'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
+require_relative '../lib/tarfile_reader'
 
 # 1. Now uses git repo to store kata
 # 2. event.json has been dropped
