@@ -28,6 +28,16 @@ class DiskFake
     end
   end
 
+  def file_write(key, value)
+    path = path_name(key)
+    if dir?(File.dirname(path))
+      files[path] = value
+      true
+    else
+      false
+    end
+  end
+
   def file_append(key, value)
     path = path_name(key)
     if dir?(File.dirname(path)) && file?(path)

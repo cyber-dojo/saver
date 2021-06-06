@@ -12,6 +12,10 @@ module TestHelpersDisk
     disk.file_create_command(key, value)
   end
 
+  def file_write_command(key, value)
+    disk.file_write_command(key, value)
+  end
+
   def file_append_command(key, value)
     disk.file_append_command(key, value)
   end

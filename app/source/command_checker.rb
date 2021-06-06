@@ -40,6 +40,7 @@ module CommandChecker
     when 'dir_exists?' then fail_unless_well_formed_args(command, index, 'dirname')
     when 'dir_make'    then fail_unless_well_formed_args(command, index, 'dirname')
     when 'file_create' then fail_unless_well_formed_args(command, index, 'filename', 'content')
+    when 'file_write'  then fail_unless_well_formed_args(command, index, 'filename', 'content')
     when 'file_append' then fail_unless_well_formed_args(command, index, 'filename', 'content')
     when 'file_read'   then fail_unless_well_formed_args(command, index, 'filename')
     else

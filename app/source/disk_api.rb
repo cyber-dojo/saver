@@ -17,6 +17,10 @@ module DiskApi
     [ FILE_CREATE_COMMAND_NAME, filename, content ]
   end
 
+  def file_write_command(filename, content)
+    [ FILE_WRITE_COMMAND_NAME, filename, content ]
+  end
+
   def file_append_command(filename, content)
     [ FILE_APPEND_COMMAND_NAME, filename, content ]
   end
@@ -44,6 +48,7 @@ module DiskApi
       DIR_EXISTS_COMMAND_NAME  => -> { dir_exists?(*args) },
       DIR_MAKE_COMMAND_NAME    => -> { dir_make(*args) },
       FILE_CREATE_COMMAND_NAME => -> { file_create(*args) },
+      FILE_WRITE_COMMAND_NAME  => -> { file_write(*args) },
       FILE_APPEND_COMMAND_NAME => -> { file_append(*args) },
       FILE_READ_COMMAND_NAME   => -> { file_read(*args) },
     }[name].call()
@@ -82,6 +87,7 @@ module DiskApi
   DIR_MAKE_COMMAND_NAME   = 'dir_make'
 
   FILE_CREATE_COMMAND_NAME = 'file_create'
+  FILE_WRITE_COMMAND_NAME  = 'file_write'
   FILE_APPEND_COMMAND_NAME = 'file_append'
   FILE_READ_COMMAND_NAME   = 'file_read'
 

@@ -72,6 +72,40 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_write()
 
+  disk_tests '701', %w(
+    file_write() succeeds
+    when its dir-name exists and its file-name does not exist
+  ) do
+    dirname = 'groups/a2/r6/3H'
+    filename = dirname + '/events.json'
+    content = '{"time":[3,4,5,6,7,8]}'
+    disk.run(dir_make_command(dirname))
+    assert disk.run(file_write_command(filename, content))
+    assert_equal content, disk.run(file_read_command(filename))
+  end
+
+  disk_tests '702', %w(
+    file_write() succeeds
+    when its dir-name exists and its file-name exists
+  ) do
+    dirname = 'groups/a3/r7/4H'
+    filename = dirname + '/events.json'
+    content = '{"time":[3,4,5,6,7,8]}'
+    disk.run(dir_make_command(dirname))
+    disk.assert(file_create_command(filename, "old-content"))
+    assert disk.run(file_write_command(filename, content))
+    assert_equal content, disk.run(file_read_command(filename))
+  end
+
+  disk_tests '703', %w(
+    file_write() fails
+    when its dir-name does not exist
+  ) do
+    dirname = 'groups/a4/r7/5H'
+    filename = dirname + '/events.json'
+    content = '{"time":[3,4,5,6,7,8]}'
+    refute disk.run(file_write_command(filename, content))
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_append()

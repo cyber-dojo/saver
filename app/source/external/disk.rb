@@ -49,6 +49,21 @@ module External
 
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
+    def file_write(filename, content)
+      # Errno::ENOSPC (no space left on device) will
+      # be caught by RackDispatcher --> status=500
+      mode = File::WRONLY | File::TRUNC | File::CREAT
+      File.open(path_name(filename), mode) do |fd|
+        fd.flock(File::LOCK_EX)
+        fd.write(content)
+      end
+      true
+    rescue Errno::ENOENT # dir does not exist
+      false
+    end
+
+    # - - - - - - - - - - - - - - - - - - - - - - - -
+
     def file_append(filename, content)
       # Errno::ENOSPC (no space left on device) will
       # be caught by RackDispatcher --> status=500
