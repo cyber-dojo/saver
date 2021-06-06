@@ -203,30 +203,23 @@ class Kata_v2
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
     disk = External::Disk.new(tmp_dir)
-    manifest = read_manifest(disk)
-    options  = read_options(disk)
     events   = read_events(disk)
-    readme   = read_readme(disk)
 
     #TODO:
-    #   Check index is not already present as an index in events.json
-    #     If it is, raise an exception
-    #   Check arg-index is greater than largest index in events.json
-    #     If it is, raise an exception
+    #   Check if index is greater than largest index in events
+    #     If it isn't, raise an exception
 
     summary['index'] = index
     summary['time'] = time.now
     events << summary
 
-    shell.assert_cd_exec(tmp_dir, "git rm -rf .")
+    rm_files = "files/ stdout stderr status truncations.json #{events_filename}"
+    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -rf #{rm_files}")
 
     write_files(disk, "files", content_of(files))
 
     write_files(disk, '', {
-      manifest_filename => json_pretty(manifest),
-      options_filename => json_pretty(options),
       events_filename => json_pretty(events),
-      readme_filename => readme,
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
