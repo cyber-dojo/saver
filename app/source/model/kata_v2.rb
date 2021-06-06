@@ -200,22 +200,28 @@ class Kata_v2
     root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
     tmp_dir = "/tmp/#{uuid}"
+
+    # Make a unique worktree in tmp_dir
+    # uuid is now a branch in root_dir's repo
     shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
 
+    # Read events.json from worktree (and update it) before it is git rm'd
     disk = External::Disk.new(tmp_dir)
     events   = read_events(disk)
 
-    #TODO:
-    #   Check if index is greater than largest index in events
-    #     If it isn't, raise an exception
+    #TODO: Check if index is greater than largest index in events
+    #         If it isn't, raise an exception (out of sync avatar)
+    #TODO: Fill in saver outage entries
 
     summary['index'] = index
     summary['time'] = time.now
     events << summary
 
+    # Remove worktree files we are recreating
     rm_files = "files/ stdout stderr status truncations.json #{events_filename}"
     shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -rf #{rm_files}")
 
+    # Recreate worktree files
     write_files(disk, "files", content_of(files))
 
     write_files(disk, '', {
