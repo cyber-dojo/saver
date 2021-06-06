@@ -197,17 +197,17 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary)
-    root_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
+    repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
-    tmp_dir = "/tmp/#{uuid}"
+    work_tree_dir = "/tmp/#{uuid}"
 
-    # Make a unique worktree in tmp_dir
-    # uuid is now a branch in root_dir's repo
-    shell.assert_cd_exec(root_dir, "git worktree add #{tmp_dir}")
+    # Make a new worktree in work_tree_dir
+    # uuid is now a branch in repo_dir
+    shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
 
-    # Read events.json from worktree (and update it) before it is git rm'd
-    disk = External::Disk.new(tmp_dir)
-    events   = read_events(disk)
+    # Read events from worktree
+    work_tree = External::Disk.new(work_tree_dir)
+    events = read_events(work_tree)
 
     unless index > events.last['index']
       raise "Out of sync event"
@@ -215,17 +215,18 @@ class Kata_v2
 
     #TODO: Fill in saver outage entries
 
+    # Update events with the new event
     summary['index'] = index
     summary['time'] = time.now
     events << summary
 
-    # Remove worktree files we are recreating
-    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -r files/")
+    # Remove files/ we are recreating from worktree
+    shell.assert_cd_exec(work_tree_dir, "git rm -r files/")
 
     # Recreate worktree files
-    write_files(disk, "files", content_of(files))
+    write_files(work_tree, "files", content_of(files))
 
-    write_files(disk, '', {
+    write_files(work_tree, '', {
       events_filename => json_pretty(events),
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
@@ -238,26 +239,26 @@ class Kata_v2
 
     # Add all files and commit
     message = "'#{index}'" # TODO: better message, eg predicted green got red
-    shell.assert_cd_exec(tmp_dir, [
+    shell.assert_cd_exec(work_tree_dir, [
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
     ])
 
     # Attempt fast-forward merge in original repo
-    shell.assert_cd_exec(root_dir, "git merge --ff-only #{uuid}")
+    shell.assert_cd_exec(repo_dir, "git merge --ff-only #{uuid}")
 
     # If merge succeeded tag the commit
     tag_commands = [
       "git tag #{index} HEAD",
     ]
     # TODO: Add tag_commands for saver outages
-    shell.assert_cd_exec(root_dir, tag_commands)
+    shell.assert_cd_exec(repo_dir, tag_commands)
 
   ensure
-    shell.assert_cd_exec(root_dir,
+    shell.assert_cd_exec(repo_dir,
       "git worktree remove --force #{uuid}",
       "git branch --delete --force #{uuid}",
-      "rm -rf #{tmp_dir}"
+      "rm -rf #{work_tree_dir}"
     )
   end
 
