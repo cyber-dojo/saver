@@ -265,6 +265,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def read_manifest(disk, id=nil)
+    # eg { "display_name": "Ruby, MiniTest",...}
     read_json(disk, manifest_filename(id))
   end
 
@@ -273,6 +274,12 @@ class Kata_v2
   end
 
   def read_events(disk, id=nil)
+    # eg
+    # [
+    #  { "index": 0, ..., "event": "created" },
+    #  { "index": 1, ..., "colour": "red"    },
+    #  { "index": 2, ..., "colour": "amber"  }
+    # ]
     read_json(disk, events_filename(id))
   end
 
@@ -291,14 +298,9 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def manifest_filename(id=nil)
+  def manifest_filename(id)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
-    # eg content ==> { "display_name": "Ruby, MiniTest",...}
-    if id.nil?
-      "manifest.json"
-    else
-      kata_id_path(id, manifest_filename)
-    end
+    kata_id_path(id, "manifest.json")
   end
 
   def options_filename(id=nil)
@@ -312,12 +314,6 @@ class Kata_v2
 
   def events_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events.json'
-    # eg content ==>
-    # [
-    #  { "index": 0, ..., "event": "created" },
-    #  { "index": 1, ..., "colour": "red"    },
-    #  { "index": 2, ..., "colour": "amber"  }
-    # ]
     if id.nil?
       "events.json"
     else
@@ -325,12 +321,8 @@ class Kata_v2
     end
   end
 
-  def readme_filename(id=nil)
-    if id.nil?
-      "README.md"
-    else
-      kata_id_path(id, readme_filename)
-    end
+  def readme_filename(id)
+    kata_id_path(id, "README.md")
   end
 
   def readme
@@ -365,12 +357,6 @@ class Kata_v2
     # Eg [ 'a/b', 'a/b/c' ] which must be created in that order
     # because the make_dir command is not idempotent.
     disk.assert_all(commands)
-  end
-
-  def make_dir(id, dir)
-    path = "#{kata_dir(id)}/#{dir}"
-    command = disk.dir_make_command(path)
-    disk.run(command)
   end
 
   def kata_dir(id)
