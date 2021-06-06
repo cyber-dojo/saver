@@ -137,7 +137,6 @@ class KataRanTestsTest < TestBase
 
     gid = group_create([manifest], default_options)
     id = group_join(gid)
-
     index = 1
     files = {
       "test_hiker.sh" => {

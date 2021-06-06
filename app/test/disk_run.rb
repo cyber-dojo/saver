@@ -70,6 +70,10 @@ class DiskRunTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
+  # file_write()
+
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_append()
 
   disk_tests '606', %w(

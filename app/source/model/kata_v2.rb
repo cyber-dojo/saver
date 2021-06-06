@@ -219,8 +219,8 @@ class Kata_v2
     events << summary
 
     # Remove worktree files we are recreating
-    rm_files = "files/ stdout stderr status truncations.json #{events_filename}"
-    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -rf #{rm_files}")
+    rm_files = "files stdout stderr status truncations.json #{events_filename}"
+    shell.assert_cd_exec(tmp_dir, "git rm --ignore-unmatch -r #{rm_files}")
 
     # Recreate worktree files
     write_files(disk, "files", content_of(files))
@@ -353,11 +353,19 @@ class Kata_v2
 
   def make_dirs(disk, base_dir, files)
     dirs = files.keys.each_with_object([]) do |filename, array|
-      path = "#{base_dir}/files/#{filename}"
-      array << File.dirname(path)
+      path = "#{base_dir}/#{filename}"
+      dirname = File.dirname(path)
+      unless dirname === '/'
+        array << dirname
+      end
     end
-    commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq
-    # Not assert_all() because dir_make_command() is not idempotent
+    commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq.sort
+    # Not assert_all()
+    # A set of dir_make_command()'s are not idempotent.
+    # For example, /a/b/c/some-file.txt and a/b/other-file.txt
+    # gives two dirs to make of [ 'a/b/c', 'a/b' ]
+    # which, if created in this order, would fail for 'a/b'
+    #p("==:#{commands}:==")
     disk.run_all(commands)
   end
 
