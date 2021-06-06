@@ -354,19 +354,12 @@ class Kata_v2
   def make_dirs(disk, base_dir, files)
     dirs = files.keys.each_with_object([]) do |filename, array|
       path = "#{base_dir}/#{filename}"
-      dirname = File.dirname(path)
-      unless dirname === '/'
-        array << dirname
-      end
+      array << File.dirname(path)
     end
-    commands = dirs.map{|dir| disk.dir_make_command(dir)}.uniq.sort
-    # Not assert_all()
-    # A set of dir_make_command()'s are not idempotent.
-    # For example, /a/b/c/some-file.txt and a/b/other-file.txt
-    # gives two dirs to make of [ 'a/b/c', 'a/b' ]
-    # which, if created in this order, would fail for 'a/b'
-    #p("==:#{commands}:==")
-    disk.run_all(commands)
+    commands = (dirs.uniq.sort - ['/']).map{|dir| disk.dir_make_command(dir)}
+    # Eg [ 'a/b', 'a/b/c' ] which must be created in that order
+    # because the make_dir command is not idempotent.
+    disk.assert_all(commands)
   end
 
   def make_dir(id, dir)
