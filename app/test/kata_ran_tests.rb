@@ -107,6 +107,28 @@ class KataRanTestsTest < TestBase
     }
   end
 
+  version_test 2, 'Dk9', %w(
+  kata_ran_tests with an already used index raises
+  ) do
+    universal_append { |id, files, stdout, stderr, status|
+      summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "none",
+      }
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
+
+      error = assert_raises(RuntimeError) {
+        kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
+      }
+      assert_equal "Out of sync event", error.message
+
+      [index=1, summary]
+    }
+
+  end
+
+
   private
 
   def universal_append

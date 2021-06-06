@@ -173,7 +173,7 @@ class Kata_v2
 
   def option_set(id, name, value)
     # TODO: use options.json file
-    # TODO: commit & ff-merge
+    # TODO: commit & ff-merge but do not tag
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
@@ -209,8 +209,9 @@ class Kata_v2
     disk = External::Disk.new(tmp_dir)
     events   = read_events(disk)
 
-    #TODO: Check if index is greater than largest index in events
-    #         If it isn't, raise an exception (out of sync avatar)
+    unless index > events.last['index']
+      raise "Out of sync event"
+    end
     #TODO: Fill in saver outage entries
 
     summary['index'] = index
