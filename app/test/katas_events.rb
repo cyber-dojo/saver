@@ -32,4 +32,70 @@ class KatasEventsTest < TestBase
     assert_equal expected, actual
   end
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, '1P4', %w( v2 example ) do
+
+    now = [2018,11,30, 9,34,56,6453]
+    externals.instance_exec {
+      @time = TimeStub.new(now,now,now,now,now,now,now)
+    }
+
+    files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
+    stdout = { "content" => "so", "truncated" => false }
+    stderr = { "content" => "se", "truncated" => true }
+    summary = { "colour" => "red" }
+    in_group do |gid|
+      ids = []
+      in_kata(gid) do |id|
+        ids << id
+        kata_ran_tests(id, 1, files, stdout, stderr, "0", summary)
+      end
+      in_kata(gid) do |id|
+        ids << id
+        kata_ran_tests(id, 1, files, stdout, stderr,   "0", summary)
+        kata_ran_tests(id, 2, files, stdout, stderr,   "0", summary)
+        kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
+      end
+      actual = katas_events([ids[0],ids[1]], [1,3])
+      expected = {
+        ids[0] => {
+          "1" => {
+            "index" => 1,
+            "files" => files,
+            "colour" => "red",
+            "time" => now,
+            "stdout" => stdout,
+            "stderr" => stderr,
+            "status" => "0"
+          }
+        },
+        ids[1] => {
+          "3" => {
+            "index" => 3,
+            "files" => files,
+            "colour" => "red",
+            "time" => now,
+            "stdout" => stdout,
+            "stderr" => stderr,
+            "status" => "137"
+          }
+        }
+      }
+      assert_equal expected, actual
+    end
+  end
+
+  private
+
+  def in_group(&block)
+    manifest = custom_manifest
+    manifest["version"] = version
+    yield group_create([manifest], default_options)
+  end
+
+  def in_kata(gid, &block)
+    yield group_join(gid)
+  end
+
 end

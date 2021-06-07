@@ -27,4 +27,11 @@ class TimeNowStubTest < TestBase
     assert_equal ymdhms, t.now
   end
 
+  test '193', %w( stubbing more than one time ) do
+    ymdhms = [2021,4,18, 19,12,23,454231]
+    t = TimeStub.new(ymdhms, ymdhms)
+    assert_equal ymdhms, t.now
+    assert_equal ymdhms, t.now
+    assert_nil t.now
+  end
 end

@@ -9,9 +9,7 @@ require_relative '../lib/tarfile_reader'
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
-# TODO: implement event_batch()
 # TODO: saver outages are recorded in events_summary.json
-# TODO: options.json holds the options
 # TODO: options includes fork_button and starting_info_dialog
 # TODO: polyfill events_summary so all entries have an 'event' key
 # TODO: fill in readme content
@@ -123,25 +121,13 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event_batch(ids, indexes)
-    # TODO: loop over event(id, index) above
     json = {}
-
-    commands = []
     (0...ids.size).each do |i|
-      id = ids[i]
-      index = indexes[i]
-      commands << events_file_read_command(id, index) # TODO: drop
-    end
-    results = disk.assert_all(commands)
-
-    (0...ids.size).each do |i|
-      j = json_parse(results[i])
       id = ids[i]
       index = indexes[i]
       json[id] ||= {}
-      json[id][index.to_s] = j
+      json[id][index.to_s] = event(id, index)
     end
-
     json
   end
 
