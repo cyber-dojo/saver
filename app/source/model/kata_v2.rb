@@ -353,7 +353,7 @@ class Kata_v2
 
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
-    commands = files.each_with_object([]) do |(filename,content),array|
+    commands = files.each.with_object([]) do |(filename,content),array|
       path = "#{base_dir}/#{filename}"
       array << disk.file_write_command(path, content)
     end
@@ -361,7 +361,7 @@ class Kata_v2
   end
 
   def make_dirs(disk, base_dir, files)
-    dirs = files.keys.each_with_object([]) do |filename, array|
+    dirs = files.keys.each.with_object([]) do |filename, array|
       path = "#{base_dir}/#{filename}"
       array << File.dirname(path)
     end
