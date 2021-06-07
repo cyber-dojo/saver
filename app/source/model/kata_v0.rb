@@ -1,7 +1,7 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'liner_v0'
-require_relative 'options_checker'
+require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
@@ -124,12 +124,13 @@ class Kata_v0
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
+  include Options
+
   private
 
   include IdPather
   include JsonAdapter
   include Liner_v0
-  include OptionsChecker
   include PolyFiller
 
   def universal_append(id, index, files, stdout, stderr, status, summary)

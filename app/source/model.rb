@@ -103,11 +103,11 @@ class Model
   end
 
   def kata_option_get(id:, name:)
-    kata(CURRENT_VERSION).option_get(id, name)
+    kata(id).option_get(id, name)
   end
 
   def kata_option_set(id:, name:, value:)
-    kata(CURRENT_VERSION).option_set(id, name, value)
+    kata(id).option_set(id, name, value)
   end
 
   CURRENT_VERSION = 1

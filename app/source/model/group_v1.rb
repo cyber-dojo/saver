@@ -1,7 +1,7 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v1'
-require_relative 'options_checker'
+require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
@@ -87,7 +87,7 @@ class Group_v1
 
   include IdPather
   include JsonAdapter
-  include OptionsChecker
+  include Options
   include PolyFiller
 
   # - - - - - - - - - - - - - - - - - - - - - -

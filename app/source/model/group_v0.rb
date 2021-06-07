@@ -2,7 +2,6 @@ require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v0'
 require_relative 'liner_v0'
-require_relative 'options_checker'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
@@ -15,7 +14,7 @@ class Group_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, options)
+  def create(manifest, _options)
     # Groups created in cyber-dojo are now always version 1.
     # The ability to create version 0 groups is retained for testing.
     manifest = manifest.clone

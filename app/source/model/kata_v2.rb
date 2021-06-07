@@ -1,6 +1,6 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
-require_relative 'options_checker'
+require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
@@ -35,7 +35,7 @@ class Kata_v2
       'time'  => manifest['created']
     }]
     files = manifest.delete('visible_files')
-    options.merge!(default_options)
+    options = default_options.merge(options)
 
     # IdGenerator makes the kata dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
@@ -179,30 +179,53 @@ class Kata_v2
 
   def option_get(id, name)
     fail_unless_known_option(name)
-    read_options(id)[name]
+    read_options(disk, id)[name]
   end
 
   def option_set(id, name, value)
-    # TODO: use options.json file
-    # TODO: commit & ff-merge but do not tag
+    work_tree_created = false
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
-    filename = kata_id_path(id, name)
-    result = disk.run_all([
-      disk.file_create_command(filename, "\n"+value),
-      disk.file_append_command(filename, "\n"+value)
+    #filename = kata_id_path(id, name)
+    #result = disk.run_all([
+    #  disk.file_create_command(filename, "\n"+value),
+    #  disk.file_append_command(filename, "\n"+value)
+    #])
+    #result
+    repo_dir = '/' + disk.root_dir + kata_dir(id)
+    uuid = random.alphanumeric(8)
+    work_tree_dir = "/tmp/#{uuid}"
+    shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
+    work_tree_created = true
+    work_tree = External::Disk.new(work_tree_dir)
+    options = read_options(work_tree)
+    options[name] = value
+    write_files(work_tree, '', { options_filename => json_pretty(options) })
+
+    shell.assert_cd_exec(work_tree_dir, [
+      "git add .",
+      "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
     ])
-    result
+    shell.assert_cd_exec(repo_dir, "git merge --ff-only #{uuid}")
+
+  ensure
+    if work_tree_created
+      shell.assert_cd_exec(repo_dir,
+        "git worktree remove --force #{uuid}",
+        "git branch --delete --force #{uuid}",
+        "rm -rf #{work_tree_dir}"
+      )
+    end
   end
 
   private
 
   include IdPather
   include JsonAdapter
-  include OptionsChecker
+  include Options
   include PolyFiller
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -218,6 +241,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    work_tree_created = false
     repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
     work_tree_dir = "/tmp/#{uuid}"
@@ -225,7 +249,7 @@ class Kata_v2
     # Make a new worktree in work_tree_dir
     # uuid is now a branch in repo_dir
     shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
-
+    work_tree_created = true
     # Update events in worktree
     work_tree = External::Disk.new(work_tree_dir)
     events = read_events(work_tree)
@@ -273,11 +297,13 @@ class Kata_v2
     # TODO: add tags for saver outages
 
   ensure
-    shell.assert_cd_exec(repo_dir,
-      "git worktree remove --force #{uuid}",
-      "git branch --delete --force #{uuid}",
-      "rm -rf #{work_tree_dir}"
-    )
+    if work_tree_created
+      shell.assert_cd_exec(repo_dir,
+        "git worktree remove --force #{uuid}",
+        "git branch --delete --force #{uuid}",
+        "rm -rf #{work_tree_dir}"
+      )
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -292,13 +318,13 @@ class Kata_v2
     read_json(disk, events_filename(id))
   end
 
+  def read_options(disk, id=nil)
+    read_json(disk, options_filename(id))
+  end
+
   def read_manifest(id)
     # eg { "display_name": "Ruby, MiniTest",...}
     read_json(disk, manifest_filename(id))
-  end
-
-  def read_options(id)
-    read_json(disk, events_filename(id))
   end
 
   def read_json(disk, filename)
@@ -317,9 +343,13 @@ class Kata_v2
     kata_id_path(id, "manifest.json")
   end
 
-  def options_filename(id)
+  def options_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/options.json'
-    kata_id_path(id, "options.json")
+    if id.nil?
+      "options.json"
+    else
+      kata_id_path(id, options_filename)
+    end
   end
 
   def events_filename(id=nil)
