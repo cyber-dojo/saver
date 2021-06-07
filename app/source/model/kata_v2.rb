@@ -189,12 +189,6 @@ class Kata_v2
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
-    #filename = kata_id_path(id, name)
-    #result = disk.run_all([
-    #  disk.file_create_command(filename, "\n"+value),
-    #  disk.file_append_command(filename, "\n"+value)
-    #])
-    #result
     repo_dir = '/' + disk.root_dir + kata_dir(id)
     uuid = random.alphanumeric(8)
     work_tree_dir = "/tmp/#{uuid}"
