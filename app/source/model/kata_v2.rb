@@ -14,7 +14,6 @@ require_relative '../lib/tarfile_reader'
 # TODO: options.json holds the options
 # TODO: options includes fork_button and starting_info_dialog
 # TODO: polyfill events_summary so all entries have an 'event' key
-# TODO: better commit messages
 # TODO: fill in readme content
 
 class Kata_v2
@@ -149,23 +148,31 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    git_commit_tag(id, index, files, stdout, stderr, status, summary)
+    message = "ran tests, no prediction"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    git_commit_tag(id, index, files, stdout, stderr, status, summary)
+    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    git_commit_tag(id, index, files, stdout, stderr, status, summary)
+    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
-    git_commit_tag(id, index, files, stdout, stderr, status, summary)
+    revert = summary['revert']
+    info = json_plain({ "id" => revert[0], "index" => revert[1] })
+    message = "reverted to #{info.inspect}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
-    git_commit_tag(id, index, files, stdout, stderr, status, summary)
+    info = json_plain(summary['checkout'])
+    message = "checked out #{info.inspect}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -200,7 +207,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, stdout, stderr, status, summary)
+  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
     repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     uuid = random.alphanumeric(8)
     work_tree_dir = "/tmp/#{uuid}"
@@ -242,11 +249,9 @@ class Kata_v2
     })
 
     # Add all files to worktree and commit
-    # TODO: better message, eg predicted green got red
-    message = "'#{index}'"
     shell.assert_cd_exec(work_tree_dir, [
       "git add .",
-      "git commit --allow-empty --all --message #{message} --quiet",
+      "git commit --allow-empty --all --message '#{index} #{message}' --quiet",
     ])
     # TODO: add commit messages for saver outages?
 

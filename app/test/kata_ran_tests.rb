@@ -13,6 +13,7 @@ class KataRanTestsTest < TestBase
   ) do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      assert_v2_last_commit_message(id, "1 ran tests, no prediction")
       [index, red_summary]
     }
   end
@@ -25,6 +26,7 @@ class KataRanTestsTest < TestBase
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({'predicted' => 'red' })
       kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
+      assert_v2_last_commit_message(id, "1 ran tests, predicted red, got red")
       [index, summary]
     }
   end
@@ -37,6 +39,7 @@ class KataRanTestsTest < TestBase
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({ 'predicted' => 'green' })
       kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
+      assert_v2_last_commit_message(id, "1 ran tests, predicted green, got red")
       [index, summary]
     }
   end
@@ -51,6 +54,8 @@ class KataRanTestsTest < TestBase
       kata_ran_tests(id, index=2, files, stdout, stderr, status, red_summary)
       reverted_summary = { "colour" => "red", "revert" => [id, index=1] }
       kata_reverted(id, index=3, files, stdout, stderr, status, reverted_summary)
+      expected = JSON.generate({"id":id, "index":1})
+      assert_v2_last_commit_message(id, "3 reverted to #{expected}")
       [index, reverted_summary]
     }
   end
@@ -66,15 +71,11 @@ class KataRanTestsTest < TestBase
       group_index = manifest["group_index"]
       id2 = group_join(group_id)
       kata_ran_tests(id2, index=1, files, stdout, stderr, status, red_summary)
-      checkout_out_summary = {
-        "colour" => "red",
-        "checkout" => {
-          "id" => id2,
-          "index" => 1,
-          "avatarIndex" => group_index
-        }
-      }
+      checkout = { "id" => id2, "index" => 1, "avatarIndex" => group_index }
+      checkout_out_summary = { "colour" => "red", "checkout" => checkout }
       kata_checked_out(id, index=1, files, stdout, stderr, status, checkout_out_summary)
+      expected = JSON.generate(checkout)
+      assert_v2_last_commit_message(id, "1 checked out #{expected}")
       [index, checkout_out_summary]
     }
   end
@@ -161,6 +162,16 @@ class KataRanTestsTest < TestBase
       "duration" => 1.46448,
       "predicted" => "none",
     }
+  end
+
+  def assert_v2_last_commit_message(id, expected)
+    if version === 2
+      dir = '/' + disk.root_dir + "/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
+      stdout = shell.assert_cd_exec(dir, "git log --abbrev-commit --pretty=oneline")
+      last = stdout.lines[0]
+      diagnostic = "\nexpected:#{expected}\n  actual:#{last}"
+      assert last.include?(expected), diagnostic
+    end
   end
 
 end
