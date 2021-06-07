@@ -65,7 +65,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest(id)
-    result = read_manifest(disk, id)
+    result = read_manifest(id)
     polyfill_manifest_defaults(result)
     result
   end
@@ -179,7 +179,7 @@ class Kata_v2
 
   def option_get(id, name)
     fail_unless_known_option(name)
-    options_read(disk, id)[name]
+    read_options(id)[name]
   end
 
   def option_set(id, name, value)
@@ -204,6 +204,16 @@ class Kata_v2
   include JsonAdapter
   include OptionsChecker
   include PolyFiller
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def readme_filename(id)
+    kata_id_path(id, "README.md")
+  end
+
+  def readme
+    "README"
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
@@ -272,15 +282,6 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def read_manifest(disk, id=nil)
-    # eg { "display_name": "Ruby, MiniTest",...}
-    read_json(disk, manifest_filename(id))
-  end
-
-  def read_options(disk, id=nil)
-    read_json(disk, events_filename(id))
-  end
-
   def read_events(disk, id=nil)
     # eg
     # [
@@ -291,8 +292,13 @@ class Kata_v2
     read_json(disk, events_filename(id))
   end
 
-  def read_readme(disk, id=nil)
-    read(disk, readme_filename(id))
+  def read_manifest(id)
+    # eg { "display_name": "Ruby, MiniTest",...}
+    read_json(disk, manifest_filename(id))
+  end
+
+  def read_options(id)
+    read_json(disk, events_filename(id))
   end
 
   def read_json(disk, filename)
@@ -311,13 +317,9 @@ class Kata_v2
     kata_id_path(id, "manifest.json")
   end
 
-  def options_filename(id=nil)
+  def options_filename(id)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/options.json'
-    if id.nil?
-      "options.json"
-    else
-      kata_id_path(id, options_filename)
-    end
+    kata_id_path(id, "options.json")
   end
 
   def events_filename(id=nil)
@@ -327,14 +329,6 @@ class Kata_v2
     else
       kata_id_path(id, events_filename)
     end
-  end
-
-  def readme_filename(id)
-    kata_id_path(id, "README.md")
-  end
-
-  def readme
-    "README"
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
