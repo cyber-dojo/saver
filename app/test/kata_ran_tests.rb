@@ -12,13 +12,8 @@ class KataRanTestsTest < TestBase
   |kata_ran_tests gives same results in all versions
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "none",
-      }
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
-      [index, summary]
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      [index, red_summary]
     }
   end
 
@@ -28,11 +23,7 @@ class KataRanTestsTest < TestBase
   |kata_predicted_right gives same results in all versions
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "red",
-      }
+      summary = red_summary.merge({'predicted' => 'red' })
       kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
       [index, summary]
     }
@@ -44,11 +35,7 @@ class KataRanTestsTest < TestBase
   |kata_predicted_wrong gives same results in all versions
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "green",
-      }
+      summary = red_summary.merge({ 'predicted' => 'green' })
       kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
       [index, summary]
     }
@@ -60,19 +47,11 @@ class KataRanTestsTest < TestBase
   |kata_reverted gives same results in all versions
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      ran_summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "none",
-      }
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, ran_summary)
-      kata_ran_tests(id, index=2, files, stdout, stderr, status, ran_summary)
-      summary = {
-        "colour" => "red",
-        "revert" => [id, index=1]
-      }
-      kata_reverted(id, index=3, files, stdout, stderr, status, summary)
-      [index, summary]
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, index=2, files, stdout, stderr, status, red_summary)
+      reverted_summary = { "colour" => "red", "revert" => [id, index=1] }
+      kata_reverted(id, index=3, files, stdout, stderr, status, reverted_summary)
+      [index, reverted_summary]
     }
   end
 
@@ -82,19 +61,12 @@ class KataRanTestsTest < TestBase
   |kata_checked_out gives same results in all versions
   ) do
     in_kata { |id, files, stdout, stderr, status|
-
-      ran_summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "none",
-      }
       manifest = kata_manifest(id)
       group_id = manifest["group_id"]
       group_index = manifest["group_index"]
       id2 = group_join(group_id)
-      kata_ran_tests(id2, index=1, files, stdout, stderr, status, ran_summary)
-
-      summary = {
+      kata_ran_tests(id2, index=1, files, stdout, stderr, status, red_summary)
+      checkout_out_summary = {
         "colour" => "red",
         "checkout" => {
           "id" => id2,
@@ -102,8 +74,8 @@ class KataRanTestsTest < TestBase
           "avatarIndex" => group_index
         }
       }
-      kata_checked_out(id, index=1, files, stdout, stderr, status, summary)
-      [index, summary]
+      kata_checked_out(id, index=1, files, stdout, stderr, status, checkout_out_summary)
+      [index, checkout_out_summary]
     }
   end
 
@@ -111,19 +83,12 @@ class KataRanTestsTest < TestBase
   kata_ran_tests with an already used index raises
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "none",
-      }
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
-
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, index=1, files, stdout, stderr, status, summary)
+        kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       }
       assert_equal "Out of sync event", error.message
-
-      [index=1, summary]
+      [index=1, red_summary]
     }
   end
 
@@ -131,20 +96,13 @@ class KataRanTestsTest < TestBase
   kata_ran_tests with saver-outages backfilled in events
   ) do
     in_kata { |id, files, stdout, stderr, status|
-      summary = {
-        "colour" => "red",
-        "duration" => 1.46448,
-        "predicted" => "none",
-      }
-      kata_ran_tests(id, index=4, files, stdout, stderr, status, summary)
-
+      kata_ran_tests(id, index=4, files, stdout, stderr, status, red_summary)
       events = kata_events(id)
-      (2..3).each do |n|
+      (2..index-1).each do |n|
         expected = { 'index' => n, 'event' => 'outage' }
         assert_equal expected, events[n]
       end
-
-      [index, summary]
+      [index, red_summary]
     }
   end
 
@@ -153,7 +111,6 @@ class KataRanTestsTest < TestBase
   def in_kata
     manifest = custom_manifest
     manifest['version'] = version
-
     gid = group_create([manifest], default_options)
     id = group_join(gid)
     index = 1
@@ -187,19 +144,23 @@ class KataRanTestsTest < TestBase
     index, summary = *yield(id, files, stdout, stderr, status)
 
     actual = kata_event(id, index)
-
     assert_equal files, actual["files"], :files
-
     assert_equal stdout, actual["stdout"], :stdout
     assert_equal stderr, actual["stderr"], :stderr
     assert_equal status, actual["status"], :status
-
     assert_equal index, actual['index'], :index
-
     summary.keys.each do |key|
       expected = summary[key]
       assert_equal expected, actual[key], key
     end
+  end
+
+  def red_summary
+    {
+      "colour" => "red",
+      "duration" => 1.46448,
+      "predicted" => "none",
+    }
   end
 
 end
