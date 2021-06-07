@@ -11,7 +11,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk1', %w(
   |kata_ran_tests gives same results in all versions
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
@@ -27,7 +27,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk2', %w(
   |kata_predicted_right gives same results in all versions
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
@@ -43,7 +43,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk3', %w(
   |kata_predicted_wrong gives same results in all versions
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
@@ -59,7 +59,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk7', %w(
   |kata_reverted gives same results in all versions
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
       ran_summary = {
         "colour" => "red",
         "duration" => 1.46448,
@@ -81,7 +81,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk6', %w(
   |kata_checked_out gives same results in all versions
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
 
       ran_summary = {
         "colour" => "red",
@@ -110,7 +110,7 @@ class KataRanTestsTest < TestBase
   version_test 2, 'Dk9', %w(
   kata_ran_tests with an already used index raises
   ) do
-    universal_append { |id, files, stdout, stderr, status|
+    in_kata { |id, files, stdout, stderr, status|
       summary = {
         "colour" => "red",
         "duration" => 1.46448,
@@ -125,13 +125,32 @@ class KataRanTestsTest < TestBase
 
       [index=1, summary]
     }
-
   end
 
+  version_test 2, 'DkA', %w(
+  kata_ran_tests with saver-outages backfilled in events
+  ) do
+    in_kata { |id, files, stdout, stderr, status|
+      summary = {
+        "colour" => "red",
+        "duration" => 1.46448,
+        "predicted" => "none",
+      }
+      kata_ran_tests(id, index=4, files, stdout, stderr, status, summary)
+
+      events = kata_events(id)
+      (2..3).each do |n|
+        expected = { 'index' => n, 'event' => 'outage' }
+        assert_equal expected, events[n]
+      end
+
+      [index, summary]
+    }
+  end
 
   private
 
-  def universal_append
+  def in_kata
     manifest = custom_manifest
     manifest['version'] = version
 

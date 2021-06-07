@@ -5,14 +5,17 @@ require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 
-# 1. Now uses git repo to store kata
+# 1. Uses git repo to store kata
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
+# TODO: implement event_batch()
 # TODO: saver outages are recorded in events_summary.json
 # TODO: options.json holds the options
-# TODO: option_set is recorded as an event
+# TODO: options includes fork_button and starting_info_dialog
 # TODO: polyfill events_summary so all entries have an 'event' key
+# TODO: better commit messages
+# TODO: fill in readme content
 
 class Kata_v2
 
@@ -206,29 +209,29 @@ class Kata_v2
     # uuid is now a branch in repo_dir
     shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
 
-    # Read events from worktree
+    # Update events in worktree
     work_tree = External::Disk.new(work_tree_dir)
     events = read_events(work_tree)
-
-    unless index > events.last['index']
+    last_index = events.last['index']
+    unless index > last_index
       raise "Out of sync event"
     end
+    # Backfill saver outage events
+    saver_outages = (last_index+1..index-1)
+    saver_outages.each do |n|
+      events << { 'index' => n, 'event' => 'outage' }
+    end
+    # Add the new event
+    events << summary.merge!({ 'index' => index, 'time' => time.now })
+    write_files(work_tree, '', { events_filename => json_pretty(events) })
 
-    #TODO: Fill in saver outage entries
-
-    # Update events with the new event
-    summary['index'] = index
-    summary['time'] = time.now
-    events << summary
-
-    # Remove files/ we are recreating from worktree
+    # Update files/ in worktree
     shell.assert_cd_exec(work_tree_dir, "git rm -r files/")
-
-    # Recreate worktree files
+    # Recreate worktree files/
     write_files(work_tree, "files", content_of(files))
 
+    # Update metadata in worktree
     write_files(work_tree, '', {
-      events_filename => json_pretty(events),
       "stdout" => stdout['content'],
       "stderr" => stderr['content'],
       "status" => status.to_s,
@@ -238,22 +241,21 @@ class Kata_v2
       })
     })
 
-    # Add all files and commit
-    message = "'#{index}'" # TODO: better message, eg predicted green got red
+    # Add all files to worktree and commit
+    # TODO: better message, eg predicted green got red
+    message = "'#{index}'"
     shell.assert_cd_exec(work_tree_dir, [
       "git add .",
       "git commit --allow-empty --all --message #{message} --quiet",
     ])
+    # TODO: add commit messages for saver outages?
 
     # Attempt fast-forward merge in original repo
     shell.assert_cd_exec(repo_dir, "git merge --ff-only #{uuid}")
 
     # If merge succeeded tag the commit
-    tag_commands = [
-      "git tag #{index} HEAD",
-    ]
-    # TODO: Add tag_commands for saver outages
-    shell.assert_cd_exec(repo_dir, tag_commands)
+    shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
+    # TODO: add tags for saver outages
 
   ensure
     shell.assert_cd_exec(repo_dir,
