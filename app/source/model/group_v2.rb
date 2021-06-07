@@ -85,10 +85,6 @@ class Group_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def katas_ids(katas_indexes)
-    katas_indexes.map{ |_,kata_id| kata_id }
-  end
-
   def katas_indexes(id)
     katas_src = disk.assert(katas_read_command(id))
     # G2ws77 15
