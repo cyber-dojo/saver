@@ -165,35 +165,20 @@ class Kata_v2
   end
 
   def option_set(id, name, value)
-    work_tree_created = false
     fail_unless_known_option(name)
     possibles = (name === 'theme') ? ['dark','light'] : ['on', 'off']
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
     repo_dir = '/' + disk.root_dir + kata_dir(id)
-    uuid = random.alphanumeric(8)
-    work_tree_dir = "/tmp/#{uuid}"
-    shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
-    work_tree_created = true
-    work_tree = External::Disk.new(work_tree_dir)
-    options = read_options(work_tree)
-    options[name] = value
-    write_files(work_tree, '', { options_filename => json_pretty(options) })
-
-    shell.assert_cd_exec(work_tree_dir, [
-      "git add .",
-      "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
-    ])
-    shell.assert_cd_exec(repo_dir, "git merge --ff-only #{uuid}")
-
-  ensure
-    if work_tree_created
-      shell.assert_cd_exec(repo_dir,
-        "git worktree remove --force #{uuid}",
-        "git branch --delete --force #{uuid}",
-        "rm -rf #{work_tree_dir}"
-      )
+    git_ff_merge_worktree(repo_dir) do |worktree|
+      options = read_options(worktree)
+      options[name] = value
+      write_files(worktree, '', { options_filename => json_pretty(options) })
+      shell.assert_cd_exec(worktree.root_dir, [
+        "git add .",
+        "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
+      ])
     end
   end
 
@@ -269,7 +254,6 @@ class Kata_v2
     shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
     worktree = External::Disk.new(worktree_dir)
     yield worktree
-    # Attempt fast-forward merge in original repo
     shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
   ensure
     shell.assert_cd_exec(repo_dir,
