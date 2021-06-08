@@ -25,3 +25,9 @@ docker exec $(server_container) \
     > "${dst_tgz_filename}"
 
 echo "Filename == ${dst_tgz_filename}"
+echo
+echo "Now add the following lines to ./test.sh"
+echo
+echo "cat \"\${TEST_DATA_DIR}/almost_full_group.v${version}.${gid}.tgz\" \\"
+echo ' | docker exec -i "$(server_container)" tar -zxf - -C /'
+echo

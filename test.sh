@@ -154,6 +154,9 @@ copy_in_saver_test_data()
 
   cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" \
     | docker exec -i "$(server_container)" tar -zxf - -C /
+  
+  cat "${TEST_DATA_DIR}/almost_full_group.v2.U8Tt6y.tgz" \
+    | docker exec -i "$(server_container)" tar -zxf - -C /
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
