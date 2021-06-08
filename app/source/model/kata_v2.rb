@@ -217,69 +217,66 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
-    work_tree_created = false
     repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
-    uuid = random.alphanumeric(8)
-    work_tree_dir = "/tmp/#{uuid}"
+    git_ff_merge_worktree(repo_dir) do |worktree|
+      # Update events in worktree
+      events = read_events(worktree)
+      last_index = events.last['index']
+      unless index > last_index
+        raise "Out of sync event"
+      end
+      # Backfill saver outage events
+      saver_outages = (last_index+1..index-1)
+      saver_outages.each do |n|
+        events << { 'index' => n, 'event' => 'outage' }
+      end
+      # Add the new event
+      events << summary.merge!({ 'index' => index, 'time' => time.now })
+      write_files(worktree, '', { events_filename => json_pretty(events) })
 
-    # Make a new worktree in work_tree_dir
-    # uuid is now a branch in repo_dir
-    shell.assert_cd_exec(repo_dir, "git worktree add #{work_tree_dir}")
-    work_tree_created = true
-    # Update events in worktree
-    work_tree = External::Disk.new(work_tree_dir)
-    events = read_events(work_tree)
-    last_index = events.last['index']
-    unless index > last_index
-      raise "Out of sync event"
-    end
-    # Backfill saver outage events
-    saver_outages = (last_index+1..index-1)
-    saver_outages.each do |n|
-      events << { 'index' => n, 'event' => 'outage' }
-    end
-    # Add the new event
-    events << summary.merge!({ 'index' => index, 'time' => time.now })
-    write_files(work_tree, '', { events_filename => json_pretty(events) })
+      # Remove files/
+      shell.assert_cd_exec(worktree.root_dir, "git rm -r files/")
+      # Add new files/
+      write_files(worktree, "files", content_of(files))
 
-    # Update files/ in worktree
-    shell.assert_cd_exec(work_tree_dir, "git rm -r files/")
-    # Recreate worktree files/
-    write_files(work_tree, "files", content_of(files))
-
-    # Update metadata in worktree
-    write_files(work_tree, '', {
-      "stdout" => stdout['content'],
-      "stderr" => stderr['content'],
-      "status" => status.to_s,
-      "truncations.json" => json_pretty({
-        "stdout" => stdout["truncated"],
-        "stderr" => stderr["truncated"]
+      # Update metadata
+      write_files(worktree, '', {
+        "stdout" => stdout['content'],
+        "stderr" => stderr['content'],
+        "status" => status.to_s,
+        "truncations.json" => json_pretty({
+          "stdout" => stdout["truncated"],
+          "stderr" => stderr["truncated"]
+        })
       })
-    })
 
-    # Add all files to worktree and commit
-    shell.assert_cd_exec(work_tree_dir, [
-      "git add .",
-      "git commit --allow-empty --all --message '#{index} #{message}' --quiet",
-    ])
-    # TODO: add commit messages for saver outages?
-
-    # Attempt fast-forward merge in original repo
-    shell.assert_cd_exec(repo_dir, "git merge --ff-only #{uuid}")
-
-    # If merge succeeded tag the commit
+      # Add all files and commit
+      shell.assert_cd_exec(worktree.root_dir, [
+        "git add .",
+        "git commit --allow-empty --all --message '#{index} #{message}' --quiet",
+      ])
+    end
+    # Merge succeeded, tag
     shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
     # TODO: add tags for saver outages
+  end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def git_ff_merge_worktree(repo_dir)
+    branch = random.alphanumeric(8)
+    worktree_dir = "/tmp/#{branch}"
+    shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
+    worktree = External::Disk.new(worktree_dir)
+    yield worktree
+    # Attempt fast-forward merge in original repo
+    shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
   ensure
-    if work_tree_created
-      shell.assert_cd_exec(repo_dir,
-        "git worktree remove --force #{uuid}",
-        "git branch --delete --force #{uuid}",
-        "rm -rf #{work_tree_dir}"
-      )
-    end
+    shell.assert_cd_exec(repo_dir,
+      "git worktree remove --force #{branch}",
+      "git branch --delete --force #{branch}",
+      "rm -rf #{worktree_dir}"
+    )
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
