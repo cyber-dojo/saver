@@ -121,14 +121,10 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event_batch(ids, indexes)
-    json = {}
-    (0...ids.size).each do |i|
-      id = ids[i]
-      index = indexes[i]
-      json[id] ||= {}
-      json[id][index.to_s] = event(id, index)
+    ids.zip(indexes).each.with_object({}) do |(id,index),hash|
+      hash[id] ||= {}
+      hash[id][index.to_s] = event(id, index)
     end
-    json
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
