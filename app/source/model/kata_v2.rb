@@ -240,13 +240,13 @@ class Kata_v2
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
         "git add .",
-        "git commit --allow-empty --all --message '#{index} #{message}' --quiet",
+        "git commit --all --message '#{index} #{message}' --quiet",
       ])
     end
     # Merge succeeded, tag
     shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
     saver_outages.each do |n|
-      shell.assert_cd_exec(repo_dir, ["git tag #{n} HEAD"])      
+      shell.assert_cd_exec(repo_dir, ["git tag #{n} HEAD"])
     end
   end
 
