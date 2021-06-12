@@ -12,9 +12,6 @@ class KataEventTest < TestBase
     actual = kata_event(V0_KATA_ID, 2)
     expected = kata_event_k5ZTk0_2
     assert_equal expected, actual
-  end
-
-  version_test 0, '2R7', %w( v0 example next event ) do
     actual = kata_event(V0_KATA_ID, 3)
     expected = kata_event_k5ZTk0_3
     assert_equal expected, actual
@@ -34,9 +31,6 @@ class KataEventTest < TestBase
     actual = kata_event(V1_KATA_ID, 1)
     expected = kata_event_rUqcey_1
     assert_equal expected, actual
-  end
-
-  version_test 1, '1P4', %w( v1 example next event) do
     actual = kata_event(V1_KATA_ID, 2)
     expected = kata_event_rUqcey_2
     assert_equal expected, actual
@@ -104,44 +98,26 @@ class KataEventTest < TestBase
   # kata_event(id, index < 0)
 
   version_test 0, '2dJ', %w(
-  kata_event(id, index=-1) retrieves the most recent event
+  kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5rTJv5'
-    actual = kata_event(id, -1)
-    last = kata_event(id, 3)
-    assert_equal last, actual
-  end
-
-  version_test 0, '3dJ', %w(
-  kata_event(id, index=-2) retrieves the 2nd most recent event
-  ) do
-    id = '5rTJv5'
-    actual = kata_event(id, -2)
-    second_last = kata_event(id, 2)
-    assert_equal second_last, actual
+    assert_equal kata_event(id, 3), kata_event(id, -1)
+    assert_equal kata_event(id, 2), kata_event(id, -2)
+    assert_equal kata_event(id, 1), kata_event(id, -3)
   end
 
   version_test 1, 'Hx7', %w(
-  kata_event(id, index=-1) retrieves the most recent event
+  kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5U2J18'
-    actual = kata_event(id, -1)
-    last = kata_event(id, 3)
-    assert_equal last, actual
-  end
-
-  version_test 1, 'Hx8', %w(
-  kata_event(id, index=-2) retrieves the second most recent event
-  ) do
-    id = '5U2J18'
-    actual = kata_event(id, -2)
-    second_last = kata_event(id, 2)
-    assert_equal second_last, actual
+    assert_equal kata_event(id, 3), kata_event(id, -1)
+    assert_equal kata_event(id, 2), kata_event(id, -2)
+    assert_equal kata_event(id, 1), kata_event(id, -3)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, '4dJ', %w(
+  versions3_test 0, '4dJ', %w(
   |kata_event(id, index=-1) retrieves the most recent event
   |even when only the creation event exists
   ) do
@@ -157,39 +133,5 @@ class KataEventTest < TestBase
     actual = kata_event(id, -1)
     assert_equal last, actual
   end
-
-  version_test 1, 'Hx9', %w(
-  |kata_event(id, index=-1) retrieves the most recent event
-  |even when only the creation event exists
-  ) do
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    post_json '/kata_create', {
-      manifest:manifest,
-      options:default_options
-    }.to_json
-    id = json_response_body['kata_create']
-    last = kata_event(id, 0)
-    actual = kata_event(id, -1)
-    assert_equal last, actual
-  end
-
-  version_test 2, 'Ax9', %w(
-  |kata_event(id, index=-1) retrieves the most recent event
-  |even when only the creation event exists
-  ) do
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    post_json '/kata_create', {
-      manifest:manifest,
-      options:default_options
-    }.to_json
-    id = json_response_body['kata_create']
-    last = kata_event(id, 0)
-    actual = kata_event(id, -1)
-    assert_equal last, actual
-  end
-
+  
 end
