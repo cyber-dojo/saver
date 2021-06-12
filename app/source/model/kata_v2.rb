@@ -24,7 +24,6 @@ class Kata_v2
 
   def create(manifest, options)
     fail_unless_known_options(options)
-    manifest.merge!(options) # TODO: revisit...
     manifest['version'] = 2
     manifest['created'] = time.now
     events = [{

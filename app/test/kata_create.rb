@@ -50,7 +50,7 @@ class KataCreateTest < TestBase
       values.each do |value|
         options = { key => value }
         manifest = assert_kata_create_200(options)
-        assert_equal value, manifest[key]
+        assert_equal value, manifest[key], key
       end
     end
   end

@@ -16,6 +16,7 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
   def group_create(manifests:, options:)
+    # NB: No options are being passed yet.        
     manifest = manifests[0]
     version = from_manifest(manifest)
     group(version).create(manifest, options)
@@ -53,6 +54,7 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:, options:)
+    # NB: No options are being passed yet.    
     version = from_manifest(manifest)
     kata(version).create(manifest, options)
   end
