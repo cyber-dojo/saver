@@ -7,5 +7,3 @@ images_build()
     build \
     --build-arg COMMIT_SHA=${COMMIT_SHA}
 }
-
-
