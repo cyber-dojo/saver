@@ -51,7 +51,7 @@ class Kata_v2
       "git config user.name '#{id}'",
       "git config user.email '#{id}@cyber-dojo.org'",
       "git add .",
-      "git commit --all --allow-empty --message '0 kata creation' --quiet",
+      "git commit --message '0 kata creation' --quiet",
       "git tag 0 HEAD",
       "git branch -m master main"
     ])
@@ -240,7 +240,7 @@ class Kata_v2
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
         "git add .",
-        "git commit --all --message '#{index} #{message}' --quiet",
+        "git commit --message '#{index} #{message}' --quiet",
       ])
     end
     # Merge succeeded, tag
