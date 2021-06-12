@@ -9,12 +9,8 @@ class KataEventTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 0, '2R6', %w( v0 example ) do
-    actual = kata_event(V0_KATA_ID, 2)
-    expected = kata_event_k5ZTk0_2
-    assert_equal expected, actual
-    actual = kata_event(V0_KATA_ID, 3)
-    expected = kata_event_k5ZTk0_3
-    assert_equal expected, actual
+    assert_equal kata_event_k5ZTk0_2, kata_event(V0_KATA_ID, 2)
+    assert_equal kata_event_k5ZTk0_3, kata_event(V0_KATA_ID, 3)
   end
 
   version_test 0, '2R8', %w( v0 example via HTTP GET ) do
@@ -28,12 +24,8 @@ class KataEventTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 1, '1P3', %w( v1 example ) do
-    actual = kata_event(V1_KATA_ID, 1)
-    expected = kata_event_rUqcey_1
-    assert_equal expected, actual
-    actual = kata_event(V1_KATA_ID, 2)
-    expected = kata_event_rUqcey_2
-    assert_equal expected, actual
+    assert_equal kata_event_rUqcey_1, kata_event(V1_KATA_ID, 1)
+    assert_equal kata_event_rUqcey_2, kata_event(V1_KATA_ID, 2)
   end
 
   version_test 1, '1P5', %w( v1 example via HTTP GET ) do
