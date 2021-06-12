@@ -9,7 +9,7 @@ MAX = {
   warnings:0,
   skips:0,
 
-  duration:6,
+  duration:8,
 
   test: {
     lines: {

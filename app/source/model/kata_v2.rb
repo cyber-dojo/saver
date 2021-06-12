@@ -9,7 +9,7 @@ require_relative '../lib/tarfile_reader'
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
-# TODO: saver outages are recorded in events_summary.json
+# 5. saver outages are recorded in events_summary.json
 # TODO: options includes fork_button and starting_info_dialog
 # TODO: polyfill events_summary so all entries have an 'event' key
 # TODO: fill in readme content
@@ -103,14 +103,16 @@ class Kata_v2
       elsif filename === "status"
         result["status"] = content
       elsif filename === "events.json"
-        event = json_parse(content).last
+        event = json_parse(content)[index]
         result.merge!(event)
       elsif filename === "truncations.json"
         truncations = json_parse(content)
       end
     end
 
-    if result.has_key?('stdout')
+    if result["event"] == "outage"
+      ["stdout", "stderr", "status"].each { |f| result.delete(f) }
+    elsif result.has_key?('stdout')
       result['stdout']['truncated'] = truncations['stdout']
       result['stderr']['truncated'] = truncations['stderr']
     end
@@ -202,6 +204,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    saver_outages = nil
     repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
     git_ff_merge_worktree(repo_dir) do |worktree|
       # Update events in worktree
@@ -243,7 +246,9 @@ class Kata_v2
     end
     # Merge succeeded, tag
     shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
-    # TODO: add tags for saver outages
+    saver_outages.each do |n|
+      shell.assert_cd_exec(repo_dir, ["git tag #{n} HEAD"])      
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

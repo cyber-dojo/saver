@@ -17,6 +17,7 @@ module External
       exit_status = r.exitstatus
       unless success?(exit_status) && stderr.empty?
         diagnostic = {
+          command:command,
           stdout:stdout,
           stderr:stderr,
           exit_status:exit_status

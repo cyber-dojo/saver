@@ -134,4 +134,28 @@ class KataEventTest < TestBase
     assert_equal last, actual
   end
   
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, '4dK', %w(
+  |kata_event(id, index) retrieving saver outage tag  
+  |contains files from last real event
+  |and no stdout,stderr,status
+  ) do
+    files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
+    stdout = { "content" => "so", "truncated" => false }
+    stderr = { "content" => "se", "truncated" => true }
+    status = "0"
+    red_summary = { "colour" => "red" }
+    in_kata do |id|
+      kata_ran_tests(id, index=4, files, stdout, stderr, status, red_summary)
+      actual = kata_event(id, 3)
+      expected = {
+        "files" => files,
+        "index" => 3,
+        "event" => "outage"
+      }
+      assert_equal expected, actual
+    end
+  end
+  
 end
