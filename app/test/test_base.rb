@@ -26,6 +26,24 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
+  def in_group(&block)
+    manifest = custom_manifest
+    manifest["version"] = version
+    yield group_create([manifest], default_options)
+  end
+
+  def in_kata(gid=nil, &block)
+    if gid.nil?
+      manifest = custom_manifest
+      manifest["version"] = version
+      yield kata_create(manifest, default_options)
+    else
+      yield group_join(gid)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
   def self.disk_tests(id58_suffix, *lines, &block)
     test(id58_suffix, ["<disk:Real>"]+lines) do
       self.instance_exec(&block)

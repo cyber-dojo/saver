@@ -86,16 +86,4 @@ class KatasEventsTest < TestBase
     end
   end
 
-  private
-
-  def in_group(&block)
-    manifest = custom_manifest
-    manifest["version"] = version
-    yield group_create([manifest], default_options)
-  end
-
-  def in_kata(gid, &block)
-    yield group_join(gid)
-  end
-
 end

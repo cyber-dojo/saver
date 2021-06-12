@@ -160,12 +160,4 @@ class KataOptionTest < TestBase
     end
   end
 
-  private
-
-  def in_kata(&block)
-    manifest = custom_manifest
-    manifest["version"] = version
-    yield kata_create(manifest, default_options)
-  end
-
 end
