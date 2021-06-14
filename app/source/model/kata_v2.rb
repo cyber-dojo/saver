@@ -5,7 +5,7 @@ require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 
-# 1. Uses git repo to store kata
+# 1. Uses git repo to store date
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
@@ -46,7 +46,7 @@ class Kata_v2
     files_dir = "#{kata_dir(id)}/files"
     write_files(disk, files_dir, content_of(files))
 
-    shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
+    shell.assert_cd_exec(repo_dir(id), [
       "git init --quiet",
       "git config user.name '#{id}'",
       "git config user.email '#{id}@cyber-dojo.org'",
@@ -85,8 +85,7 @@ class Kata_v2
     end
 
     truncations = nil
-    kata_dir = '/' + disk.root_dir + kata_id_path(id)  # '/cyber-dojo/katas/R2/mR/cV
-    tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
+    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
       if filename[-1] === '/' # dir marker
@@ -171,8 +170,7 @@ class Kata_v2
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
-    repo_dir = '/' + disk.root_dir + kata_dir(id)
-    git_ff_merge_worktree(repo_dir) do |worktree|
+    git_ff_merge_worktree(repo_dir(id)) do |worktree|
       options = read_options(worktree)
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
@@ -204,8 +202,7 @@ class Kata_v2
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
     saver_outages = nil
-    repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
-    git_ff_merge_worktree(repo_dir) do |worktree|
+    git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
@@ -244,9 +241,9 @@ class Kata_v2
       ])
     end
     # Merge succeeded, tag
-    shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
+    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
     saver_outages.each do |n|
-      shell.assert_cd_exec(repo_dir, ["git tag #{n} HEAD"])      
+      shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])      
     end
   end
 
@@ -352,6 +349,11 @@ class Kata_v2
     disk.assert_all(commands)
   end
 
+  def repo_dir(id)
+    # eg /cyber-dojo/katas/R2/mR/cV
+    '/' + disk.root_dir + '/' + kata_dir(id)
+  end
+  
   def kata_dir(id)
     kata_id_path(id) # relative to /cyber-dojo/ eg '/katas/R2/mR/cV
   end
