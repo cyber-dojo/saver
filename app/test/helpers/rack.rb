@@ -60,7 +60,7 @@ module TestHelpersRack
     }
     assert_status 500, stdout, stderr
     assert_equal '', stderr, :stderr
-    assert_equal stdout, last_response.body+"\n", :stdout
+    refute_equal '', stdout, :stdout
     block.call(json_response_body)
   end
 

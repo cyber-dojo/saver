@@ -210,7 +210,7 @@ class Kata_v2
       events = read_events(worktree)
       last_index = events.last['index']
       unless index > last_index
-        raise "Out of sync event"
+        raise "Out of order event"
       end
       # Backfill saver outage events
       saver_outages = (last_index+1..index-1)

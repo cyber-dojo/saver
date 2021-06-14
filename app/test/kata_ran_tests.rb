@@ -88,7 +88,7 @@ class KataRanTestsTest < TestBase
       error = assert_raises(RuntimeError) {
         kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       }
-      assert_equal "Out of sync event", error.message
+      assert_equal "Out of order event", error.message
       [index=1, red_summary]
     }
   end

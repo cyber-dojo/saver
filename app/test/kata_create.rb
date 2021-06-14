@@ -8,18 +8,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'q32', %w(
-  |POST /kata_create(manifest)
-  |with empty options
-  |has status 200
-  |returns the id: of a new kata
-  |that exists in saver
-  |with a matching display_name
-  ) do
-    assert_kata_create_200({})
-  end
-
-  version_test 1, 'r32', %w(
+  versions3_test 'q32', %w(
   |POST /kata_create(manifest)
   |with empty options
   |has status 200
@@ -32,32 +21,27 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'q33', %w(
-  |POST /kata_create(manifest)
+  versions3_test 'q33', %w(
+  |POST /kata_create(manifest,options)
   |with good options
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
   |with a matching display_name
   ) do
-    on_off = [ "on", "off" ]
-    { "colour" => on_off,
-      "fork_button" => on_off,
-      "predict" => on_off,
-      "starting_info_dialog" => on_off,
-      "theme" => ["dark","light"]
-    }.each do |key,values|
-      values.each do |value|
-        options = { key => value }
-        manifest = assert_kata_create_200(options)
-        assert_equal value, manifest[key], key
-      end
-    end
+    options = { 
+      "colour" => "on",
+      "fork_button" => "off",
+      "predict" => "on",
+      "starting_info_dialog" => "off",
+      "theme" => "dark"
+    }
+    assert_kata_create_200(options)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'x32', %w(
+  versions3_test 'x32', %w(
   |POST /kata_create(manifest,options)
   |when options arg is not a Hash
   |has status 500
@@ -69,7 +53,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'x33', %w(
+  versions3_test 'x33', %w(
   |POST /kata_create(manifest,options)
   |when options has an unknown key
   |has status 500
@@ -80,7 +64,7 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'x34', %w(
+  versions3_test 'x34', %w(
   |POST /kata_create(manifest,options)
   |when options has an unknown value
   |has status 500
@@ -101,10 +85,7 @@ class KataCreateTest < TestBase
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
       assert_kata_exists(id, @display_name)
-      @manifest = kata_manifest(id)
-      assert_equal version, @manifest['version'], :version
     end
-    @manifest
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -116,7 +97,7 @@ class KataCreateTest < TestBase
        options: options
       }.to_json
     ) do |response|
-      assert_equal message, response["exception"]["message"]
+      assert_equal message, response["exception"]
     end
   end
 

@@ -79,20 +79,19 @@ class AppBase < Sinatra::Base
     else
       status(500)
     end
-    content_type('application/json')
-    info = {
+    message = utf8_clean(error.message)
+    $stdout.puts(json_pretty({
       exception: {
         path: utf8_clean(request.path),
         body: utf8_clean(request_body),
-        class: 'SaverService',
         backtrace: error.backtrace,
-        message: utf8_clean(error.message),
+        message: message,
         time: Time.now
       }
-    }
-    diagnostic = json_pretty(info)
-    puts(diagnostic)
-    body(diagnostic)
+    }))
+    $stdout.flush
+    content_type('application/json')
+    body(json_pretty({ exception: message }))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

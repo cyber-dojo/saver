@@ -50,7 +50,7 @@ class RackDispatchingTest < TestBase
   test 'E2A',
   'dispatch has 404 when method name is not found' do
     response,_stdout,_stderr = with_captured_stdout_stderr do
-      post_json '/xyz', '{}'
+      post_json '/xyz', ''
     end
     assert_equal 404, response.status
   end
@@ -58,7 +58,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2B',
-  'dispatch has 400 status when body is not JSON' do
+  'dispatch has 400 status when non-empty body is not JSON' do
     response,_stdout,_stderr = with_captured_stdout_stderr do
       get_json '/sha', 'abc'
     end
@@ -68,7 +68,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E2C',
-  'dispatch has 400 status when body is not JSON Hash' do
+  'dispatch has 400 status when non-empty body is not JSON Hash' do
     response,_stdout,_stderr = with_captured_stdout_stderr do
       get_json '/sha', '[]'
     end
@@ -84,7 +84,7 @@ class RackDispatchingTest < TestBase
     def prober.sha
       raise ArgumentError, 'wibble'
     end
-    assert_get_raises('sha', '{}', 500, 'wibble')
+    assert_get_raises('sha', '', 500, 'wibble')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -94,7 +94,7 @@ class RackDispatchingTest < TestBase
     def prober.sha
       raise SyntaxError, 'fubar'
     end
-    assert_get_raises('sha', '{}', 500, 'fubar')
+    assert_get_raises('sha', '', 500, 'fubar')
   end
 
   private
@@ -109,45 +109,49 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_get_raises(name, body, expected_status, expected_body)
-    assert_dispatch_raises(name, expected_status, expected_body) do
+  def assert_get_raises(name, body, expected_status, message)
+    assert_dispatch_raises(name, expected_status, message) do
       get_json '/'+name, body
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_dispatch_raises(name, expected_status, expected_body)
+  def assert_dispatch_raises(name, expected_status, message)
     response,stdout,stderr = with_captured_stdout_stderr do
       yield
     end
+    
     diagnostic = "stdout:#{stdout}:\nstderr:#{stderr}:"
+    refute_equal '', stdout, diagnostic
+    assert_equal '', stderr, diagnostic
 
-    assert_equal '', stdout, diagnostic
-    refute_equal '', stderr, diagnostic
-
-    actual_type = response.headers["Content-Type"]
-    actual_status = response.status
-    actual_body = response.body
-
-    assert_equal 'application/json', actual_type, diagnostic
-    assert_equal expected_status, actual_status, diagnostic
-
-    assert_exception_content(actual_body, name, expected_body)
-    assert_exception_content(stderr,      name, expected_body)
+    assert_exception_response(response, expected_status, message)
+    assert_exception_stdout(stdout, name, message) 
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_exception_content(s, name, message)
-    json = JSON.parse!(s)
+  def assert_exception_response(response, expected_status, expected_message)
+    expected_body = { "exception" => expected_message }
+    actual_type = response.headers["Content-Type"]
+    actual_status = response.status
+    actual_body = JSON.parse!(response.body)
+    
+    assert_equal 'application/json', actual_type, :exception_body_type
+    assert_equal expected_status, actual_status, :exception_body_status
+    assert_equal expected_body, actual_body, :exception_body_content
+  end
+  
+  def assert_exception_stdout(stdout, name, message)
+    json = JSON.parse!(stdout)
     exception = json['exception']
     refute_nil exception
     assert_equal '/'+name, exception['path'], "path:#{__LINE__}"
-    assert_equal 'SaverService', exception['class'], "exception['class']:#{__LINE__}"
     assert_equal message, exception['message'], "exception['message']:#{__LINE__}"
     assert_equal 'Array', exception['backtrace'].class.name, "exception['backtrace'].class.name:#{__LINE__}"
     assert_equal 'String', exception['backtrace'][0].class.name, "exception['backtrace'][0].class.name:#{__LINE__}"
+    assert exception.has_key?('time')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -158,7 +162,7 @@ class RackDispatchingTest < TestBase
     $stdout = StringIO.new('', 'w')
     $stderr = StringIO.new('', 'w')
     response = yield
-    return [ response, $stderr.string, $stdout.string ]
+    return [ response, $stdout.string, $stderr.string ]
   ensure
     $stderr = old_stderr
     $stdout = old_stdout
