@@ -10,9 +10,6 @@ require_relative '../lib/tarfile_reader'
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
 # 5. saver outages are recorded in events_summary.json
-# TODO: options includes fork_button and starting_info_dialog
-# TODO: polyfill events_summary so all entries have an 'event' key
-# TODO: fill in readme content
 
 class Kata_v2
 

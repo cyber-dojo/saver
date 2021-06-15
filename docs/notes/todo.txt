@@ -1,0 +1,13 @@
+Kata_V2
+
+add method to download tgz of repo
+fill in readme content
+options includes fork_button and starting_info_dialog
+polyfill events_summary so all entries have an 'event' key
+
+
+General
+
+make more test run on all 3 versions.
+rename version3_tests to drop the 3
+drop /cyber-dojo root dir from Disk. Disk is just disk and dirs come from app.
