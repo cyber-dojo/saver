@@ -178,6 +178,25 @@ class Kata_v2
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def download(id)
+    # If id == 'vqzjS7' then repo_dir(id) is '/cyber-dojo/katas/vq/zj/S7/'
+    # and the root-dir of the tar command is 'S7'. 
+    # So using --transform to create root-dir with a name
+    # matching the tzg filename itself.
+    # The true tgz filename has a random-id to support concurrent
+    # downloads of the same kata during a mob setting.
+    rid = random.alphanumeric(8)
+    tmp_dir = "/tmp"
+    year, month, day = *time.now
+    user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
+    true_name = "#{user_name}-#{rid}"
+    tgz_command = "tar -czf #{tmp_dir}/#{true_name}.tgz --transform s/^./#{user_name}/ ."
+    shell.assert_cd_exec(repo_dir(id), tgz_command)
+    [ tmp_dir, "#{true_name}.tgz", user_name ]
+  end
+
   private
 
   include IdPather
