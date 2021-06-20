@@ -116,7 +116,7 @@ class Model
     kata(id).download(id)
   end
     
-  CURRENT_VERSION = 1
+  CURRENT_VERSION = 2
 
   private
 
