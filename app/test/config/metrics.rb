@@ -24,11 +24,11 @@ MAX = {
 
   code: {
     lines: {
-       total:1227,
+       total:1229,
       missed:0,
     },
     branches: {
-       total:143,
+       total:145,
       missed:0,
     }
   }

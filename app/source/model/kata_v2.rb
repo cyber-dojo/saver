@@ -167,6 +167,9 @@ class Kata_v2
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
+    if option_get(id, name) === value
+      return
+    end
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       options = read_options(worktree)
       options[name] = value
