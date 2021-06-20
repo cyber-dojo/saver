@@ -85,7 +85,7 @@ class TestBase < Id58TestBase
   # - - - - - - - - - - - - - - - - - -
 
   def self.versions_test(id58_suffix, *lines, &block)
-    current_version = 1
+    current_version = 2
     versions = (0..current_version)
     versions.each do |version|
       version_test(version, id58_suffix, *lines, &block)
