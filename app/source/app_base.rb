@@ -2,6 +2,7 @@ require_relative 'silently'
 require 'sinatra/base'
 silently { require 'sinatra/contrib' } # N x "warning: method redefined"
 require_relative 'lib/json_adapter'
+require_relative 'lib/utf8_clean'
 require_relative 'request_error'
 require 'json'
 
@@ -42,6 +43,7 @@ class AppBase < Sinatra::Base
   private
 
   include JsonAdapter
+  include Utf8
 
   def json_result(klass_name, method_name)
     args = to_json_object(request_body)
@@ -49,7 +51,7 @@ class AppBase < Sinatra::Base
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
     content_type(:json)
-    utf8_clean({ method_name.to_s => result }.to_json)
+    { method_name.to_s => result }.to_json
   end
 
   def to_json_object(body)
@@ -79,11 +81,11 @@ class AppBase < Sinatra::Base
     else
       status(500)
     end
-    message = utf8_clean(error.message)
+    message = Utf8.clean(error.message)
     $stdout.puts(json_pretty({
       exception: {
-        path: utf8_clean(request.path),
-        body: utf8_clean(request_body),
+        path: Utf8.clean(request.path),
+        body: Utf8.clean(request_body),
         backtrace: error.backtrace,
         message: message,
         time: Time.now
@@ -100,14 +102,6 @@ class AppBase < Sinatra::Base
     body = request.body.read
     request.body.rewind # For idempotence
     body
-  end
-
-  def utf8_clean(s)
-    # If encoding is already utf-8 then encoding to utf-8 is a
-    # no-op and invalid byte sequences are not detected.
-    # Forcing an encoding change detects invalid byte sequences.
-    s = s.encode('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
-    s = s.encode('UTF-8', 'UTF-16')
   end
 
 end

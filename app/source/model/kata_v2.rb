@@ -4,6 +4,7 @@ require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
+require_relative '../lib/utf8_clean'
 
 # 1. Uses git repo to store date
 # 2. event.json has been dropped
@@ -310,7 +311,8 @@ class Kata_v2
 
   def read(disk, filename)
     command = disk.file_read_command(filename)
-    disk.assert(command)
+    content = disk.assert(command)
+    Utf8.clean(content)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
