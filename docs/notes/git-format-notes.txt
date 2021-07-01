@@ -9,7 +9,7 @@ I want the files stored in the v2 git repo to be exactly as I want them.
 And a download will literally just tgz the whole git repo.
 
 
-	/files/*
+  /files/*
 	  - holds all the text files the user sees in the browser.
 	    The files sent to runner and saved in runner's /sandbox dir.
       
@@ -29,7 +29,7 @@ And a download will literally just tgz the whole git repo.
     - does NOT hold visible_files
       files from tag 0 need to be added back when returning manifest()
     
-	/config/*
+  /config/*
 	  - the files holding the state of the options, eg
    		   is prediction on/off
          is theme light/dark
@@ -39,7 +39,7 @@ And a download will literally just tgz the whole git repo.
       This will mean more than the creation event 
       will need to be filtered in the diff view.
       
-	/events_summary.json    
+  /events_summary.json    
       This is the events SUMMARY file. Used by dashboard.
          viz: {colour,time,prediction,duration,index} for each event
 	    This is appended to for each test run. 
@@ -152,14 +152,6 @@ in its API which would return two chunks of information
 
 - tgz filename needs to include the exercise (if there is one)
 
-- What should the tgz filename be called?
-   individual: cyber-dojo-2021-03-14-DfH8sP-FizzBuzz
-     - where FizzBuzz is optional as exercise may be unnamed.
-                
-- tgz contents will need to include a README.md file. 
-  Provide info and instructions on pushing the repo to a remote, eg github?
-  $ git remote add origin git@github.com:user/repo.git
-  $ git push origin main  
 
 
 

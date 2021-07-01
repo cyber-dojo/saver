@@ -80,15 +80,17 @@ class KataRanTestsTest < TestBase
     }
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   version_test 2, 'Dk9', %w(
-  kata_ran_tests with an already used index raises
+  kata_ran_tests with an already used index raises "Out of order event" exception
   ) do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       error = assert_raises(RuntimeError) {
         kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       }
-      assert_equal "Out of sync event", error.message
+      assert_equal "Out of order event", error.message
       [index=1, red_summary]
     }
   end

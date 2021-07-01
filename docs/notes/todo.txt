@@ -1,0 +1,28 @@
+Kata_V2
+
+add method to download tgz of repo
+https://www.ruby-forum.com/t/sinatra-files-download/231614
+https://coderwall.com/p/xjlflg/upload-and-download-files-in-sinatra
+https://stackoverflow.com/questions/13338342/ruby-sinatra-app-for-downloading-a-file-as-streaming
+https://superuser.com/questions/901962/what-is-the-correct-mime-type-for-a-tar-gz-file
+http://sinatrarb.com/intro.html. (Sending files)
+
+fill in readme content
+options includes fork_button and starting_info_dialog
+polyfill events_summary so all entries have an 'event' key
+
+- What should the tgz filename be called?
+   individual: cyber-dojo-2021-03-14-DfH8sP-FizzBuzz
+     - where FizzBuzz is optional as exercise may be unnamed.
+                
+- tgz contents will need to include a README.md file. 
+  Provide info and instructions on pushing the repo to a remote, eg github?
+  $ git remote add origin git@github.com:user/repo.git
+  $ git push origin main  
+
+
+General
+
+make more test run on all 3 versions.
+rename version3_tests to drop the 3
+drop /cyber-dojo root dir from Disk. Disk is just disk and dirs come from app.

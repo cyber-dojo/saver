@@ -112,7 +112,11 @@ class Model
     kata(id).option_set(id, name, value)
   end
 
-  CURRENT_VERSION = 1
+  def kata_download(id:)
+    kata(id).download(id)
+  end
+    
+  CURRENT_VERSION = 2
 
   private
 

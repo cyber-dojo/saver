@@ -5,14 +5,11 @@ require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 
-# 1. Uses git repo to store kata
+# 1. Uses git repo to store date
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
 # 5. saver outages are recorded in events_summary.json
-# TODO: options includes fork_button and starting_info_dialog
-# TODO: polyfill events_summary so all entries have an 'event' key
-# TODO: fill in readme content
 
 class Kata_v2
 
@@ -46,7 +43,7 @@ class Kata_v2
     files_dir = "#{kata_dir(id)}/files"
     write_files(disk, files_dir, content_of(files))
 
-    shell.assert_cd_exec("/#{disk.root_dir}/#{kata_dir(id)}", [
+    shell.assert_cd_exec(repo_dir(id), [
       "git init --quiet",
       "git config user.name '#{id}'",
       "git config user.email '#{id}@cyber-dojo.org'",
@@ -85,8 +82,7 @@ class Kata_v2
     end
 
     truncations = nil
-    kata_dir = '/' + disk.root_dir + kata_id_path(id)  # '/cyber-dojo/katas/R2/mR/cV
-    tar_file = shell.assert_cd_exec(kata_dir, "git archive --format=tar #{index}")
+    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
       if filename[-1] === '/' # dir marker
@@ -171,8 +167,10 @@ class Kata_v2
     unless possibles.include?(value)
       fail "Cannot set theme to #{value}, only to one of #{possibles}"
     end
-    repo_dir = '/' + disk.root_dir + kata_dir(id)
-    git_ff_merge_worktree(repo_dir) do |worktree|
+    if option_get(id, name) === value
+      return
+    end
+    git_ff_merge_worktree(repo_dir(id)) do |worktree|
       options = read_options(worktree)
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
@@ -181,6 +179,25 @@ class Kata_v2
         "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
       ])
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def download(id)
+    # If id == 'vqzjS7' then repo_dir(id) is '/cyber-dojo/katas/vq/zj/S7/'
+    # and the root-dir of the tar command is 'S7'.
+    # So using --transform to create root-dir with a name
+    # matching the tzg filename itself.
+    # The true tgz filename has a random-id to support concurrent
+    # downloads of the same kata during a mob setting.
+    rid = random.alphanumeric(8)
+    tmp_dir = "/tmp"
+    year, month, day = *time.now
+    user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
+    true_name = "#{user_name}-#{rid}"
+    tgz_command = "tar -czf #{tmp_dir}/#{true_name}.tgz --transform s/^./#{user_name}/ ."
+    shell.assert_cd_exec(repo_dir(id), tgz_command)
+    [ tmp_dir, "#{true_name}.tgz", user_name ]
   end
 
   private
@@ -204,13 +221,12 @@ class Kata_v2
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
     saver_outages = nil
-    repo_dir = '/' + disk.root_dir + kata_dir(id) # /cyber-dojo/katas/R2/mR/cV
-    git_ff_merge_worktree(repo_dir) do |worktree|
+    git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
       unless index > last_index
-        raise "Out of sync event"
+        raise "Out of order event"
       end
       # Backfill saver outage events
       saver_outages = (last_index+1..index-1)
@@ -244,9 +260,9 @@ class Kata_v2
       ])
     end
     # Merge succeeded, tag
-    shell.assert_cd_exec(repo_dir, ["git tag #{index} HEAD"])
+    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
     saver_outages.each do |n|
-      shell.assert_cd_exec(repo_dir, ["git tag #{n} HEAD"])
+      shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
     end
   end
 
@@ -350,6 +366,11 @@ class Kata_v2
     # Eg [ 'a/b', 'a/b/c' ] which must be created in that order
     # because the make_dir command is not idempotent.
     disk.assert_all(commands)
+  end
+
+  def repo_dir(id)
+    # eg /cyber-dojo/katas/R2/mR/cV
+    '/' + disk.root_dir + '/' + kata_dir(id)
   end
 
   def kata_dir(id)

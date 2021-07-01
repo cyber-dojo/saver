@@ -168,7 +168,7 @@ class GroupCreateTest < TestBase
        options: options
       }.to_json
     ) do |response|
-      assert_equal message, response["exception"]["message"]
+      assert_equal message, response["exception"]
     end
   end
 

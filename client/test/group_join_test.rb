@@ -58,7 +58,8 @@ class GroupJoinTest < TestBase
     # See app/test/data/almost_full_group.V?.*.tgz
     gids = {
       0 => 'AWCQdE',
-      1 => 'X9UunP'
+      1 => 'X9UunP',
+      2 => 'U8Tt6y'      
     }
     gid = gids[version]
 

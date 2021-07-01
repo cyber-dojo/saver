@@ -1,7 +1,7 @@
 
 # Max code/test metrics values.
 # Used by check_test_metrics.rb
-# Called from run.sh
+# which is called from run.sh
 
 MAX = {
   failures:0,
@@ -13,7 +13,7 @@ MAX = {
 
   test: {
     lines: {
-       total:1565,
+       total:1818,
       missed:0,
     },
     branches: {
@@ -24,11 +24,11 @@ MAX = {
 
   code: {
     lines: {
-       total:963,
+       total:1229,
       missed:0,
     },
     branches: {
-       total:108,
+       total:145,
       missed:0,
     }
   }
