@@ -125,11 +125,11 @@ class KataEventTest < TestBase
     actual = kata_event(id, -1)
     assert_equal last, actual
   end
-  
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, '4dK', %w(
-  |kata_event(id, index) retrieving saver outage tag  
+  |kata_event(id, index) retrieving saver outage tag
   |contains files from last real event
   |and no stdout,stderr,status
   ) do
@@ -149,5 +149,5 @@ class KataEventTest < TestBase
       assert_equal expected, actual
     end
   end
-  
+
 end

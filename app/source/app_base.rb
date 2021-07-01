@@ -49,7 +49,7 @@ class AppBase < Sinatra::Base
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
     content_type(:json)
-    { method_name.to_s => result }.to_json
+    utf8_clean({ method_name.to_s => result }.to_json)
   end
 
   def to_json_object(body)
