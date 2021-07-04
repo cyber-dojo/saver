@@ -198,7 +198,8 @@ class Kata_v2
     true_name = "#{user_name}-#{rid}"
     tgz_command = "tar -czf #{tmp_dir}/#{true_name}.tgz --transform s/^./#{user_name}/ ."
     shell.assert_cd_exec(repo_dir(id), tgz_command)
-    [ tmp_dir, "#{true_name}.tgz", user_name ]
+    tgz_file_path = "#{tmp_dir}/#{true_name}.tgz"
+    [ tmp_dir, "#{true_name}.tgz", user_name, Base64.encode64(File.read(tgz_file_path)) ]
   end
 
   private
