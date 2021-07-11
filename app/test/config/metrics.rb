@@ -24,7 +24,7 @@ MAX = {
 
   code: {
     lines: {
-       total:1231,
+       total:1232,
       missed:0,
     },
     branches: {
