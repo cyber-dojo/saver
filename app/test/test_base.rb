@@ -8,6 +8,7 @@ require_relative 'helpers/disk'
 require_relative 'helpers/externals'
 require_relative 'helpers/model'
 require_relative 'helpers/rack'
+require_relative 'require_source'
 require 'json'
 
 class TestBase < Id58TestBase

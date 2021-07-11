@@ -39,7 +39,7 @@ class Kata_v2
       disk.file_create_command(manifest_filename(id), json_pretty(manifest)),
       disk.file_create_command(options_filename(id), json_pretty(options)),
       disk.file_create_command(events_filename(id), json_pretty(events)),
-      disk.file_create_command(readme_filename(id), readme)
+      disk.file_create_command(readme_filename(id), readme(manifest))
     ])
 
     files_dir = "#{kata_dir(id)}/files"
@@ -192,7 +192,7 @@ class Kata_v2
     # matching the tzg filename itself.
     year, month, day = *time.now
     user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
-    Dir.mktmpdir do | tmp_dir |
+    Dir.mktmpdir do |tmp_dir|
       tgz_command = "tar -czf #{tmp_dir}/#{user_name}.tgz --transform s/^./#{user_name}/ ."
       shell.assert_cd_exec(repo_dir(id), tgz_command)
       tgz_file_path = "#{tmp_dir}/#{user_name}.tgz"
@@ -213,22 +213,33 @@ class Kata_v2
     kata_id_path(id, "README.md")
   end
 
-  def readme
+  def readme(manifest)
+    id = manifest['id']
+    exercise = manifest['exercise']
+    display_name = manifest['display_name']
+
+    if exercise.nil?
+      info = "- Custom exercise: `#{display_name}`\n"
+    else
+      info = [
+        "- Exercise: `#{exercise}`",
+        "- Language & test-framework: `#{display_name}`",
+      ].join("\n")
+    end
     [
-    "# This a copy of [your cyber-dojo exercise](https://cyber-dojo.org/kata/edit/CGkJuS):",
-    "- Problem: `Print Diamond`",
-    "- Language & test-framework: `Bash, bash_unit`",
-    "## How to upload your cyber-dojo exercise to GitHub:",
-    "- Go to your github on browser.",
-    "- Create a new repo for your cyber-dojo practice. For example `cyber-dojo-2021-7-11-bR2hnf`",
-    "- Execute the instructions shown in GitHub to 'push an existing repository from the command line'",
-    "The instructions would look like this:",
-    "```",
-    "git remote add origin https://github.com/diegopego/cyber-dojo-2021-7-11-bR2hnf.git",
-    "git branch -M main",
-    "git push -u origin main",
-    "```",
-    "- You will need to type in your username and password."
+      "# This a copy of [your cyber-dojo exercise](https://cyber-dojo.org/kata/edit/#{id}):",
+      info,
+      "",
+      "## How to upload your cyber-dojo exercise to GitHub:",
+      "- Go to your github on browser.",
+      "- Create a new repo for your cyber-dojo practice. For example `cyber-dojo-2021-7-11-bR2hnf`",
+      "- Execute the instructions shown in GitHub to 'push an existing repository from the command line'",
+      "The instructions will look like this:",
+      "```",
+      "git remote add origin https://github.com/diegopego/cyber-dojo-2021-7-11-bR2hnf.git",
+      "git branch -M main",
+      "git push -u origin main",
+      "```",
     ].join("\n")
   end
 
