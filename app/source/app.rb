@@ -25,6 +25,7 @@ class App < AppBase
    get_json(:model,  :kata_manifest)
    get_json(:model,  :kata_events)
    get_json(:model,  :kata_event)
+   get_json(:model,  :kata_download)
    get_json(:model,  :katas_events)
 
   post_json(:model,  :kata_ran_tests)

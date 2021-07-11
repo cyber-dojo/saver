@@ -5,6 +5,7 @@ require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 require_relative '../lib/utf8_clean'
+require 'tmpdir'
 
 # 1. Uses git repo to store date
 # 2. event.json has been dropped
@@ -189,16 +190,14 @@ class Kata_v2
     # and the root-dir of the tar command is 'S7'.
     # So using --transform to create root-dir with a name
     # matching the tzg filename itself.
-    # The true tgz filename has a random-id to support concurrent
-    # downloads of the same kata during a mob setting.
-    rid = random.alphanumeric(8)
-    tmp_dir = "/tmp"
     year, month, day = *time.now
     user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
-    true_name = "#{user_name}-#{rid}"
-    tgz_command = "tar -czf #{tmp_dir}/#{true_name}.tgz --transform s/^./#{user_name}/ ."
-    shell.assert_cd_exec(repo_dir(id), tgz_command)
-    [ tmp_dir, "#{true_name}.tgz", user_name ]
+    Dir.mktmpdir do | tmp_dir |
+      tgz_command = "tar -czf #{tmp_dir}/#{user_name}.tgz --transform s/^./#{user_name}/ ."
+      shell.assert_cd_exec(repo_dir(id), tgz_command)
+      tgz_file_path = "#{tmp_dir}/#{user_name}.tgz"
+      [ "#{user_name}.tgz", Base64.encode64(File.read(tgz_file_path)) ]
+    end
   end
 
   private
@@ -215,7 +214,22 @@ class Kata_v2
   end
 
   def readme
-    "README"
+    [
+    "# This a copy of [your cyber-dojo exercise](https://cyber-dojo.org/kata/edit/CGkJuS):",
+    "- Problem: `Print Diamond`",
+    "- Language & test-framework: `Bash, bash_unit`",
+    "## How to upload your cyber-dojo exercise to GitHub:",
+    "- Go to your github on browser.",
+    "- Create a new repo for your cyber-dojo practice. For example `cyber-dojo-2021-7-11-bR2hnf`",
+    "- Execute the instructions shown in GitHub to 'push an existing repository from the command line'",
+    "The instructions would look like this:",
+    "```",
+    "git remote add origin https://github.com/diegopego/cyber-dojo-2021-7-11-bR2hnf.git",
+    "git branch -M main",
+    "git push -u origin main",
+    "```",
+    "- You will need to type in your username and password."
+    ].join("\n")
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
