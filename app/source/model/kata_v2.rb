@@ -129,7 +129,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, no prediction"
+    message = "ran tests, no prediction, got #{summary['colour']}"
     git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 

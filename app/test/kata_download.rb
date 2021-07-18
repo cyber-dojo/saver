@@ -36,6 +36,7 @@ class KataDownloadTest < TestBase
         shell.assert_cd_exec(dir_path, "[ -d .git ]")
         tags = shell.assert_cd_exec(dir_path, "git tag")
         assert_equal 3, tags.split("\n").count
+        assert_last_commit_message(dir_path, "2 ran tests, no prediction, got red")
         cyber_dojo_sh = shell.assert_cd_exec(dir_path, "cat files/cyber-dojo.sh")
         assert_equal "pytest *_test.rb", cyber_dojo_sh
         readme_md = shell.assert_cd_exec(dir_path, "cat README.md")
@@ -44,6 +45,13 @@ class KataDownloadTest < TestBase
         assert readme_md.include?(link)
       end
     end
+  end
+
+  def assert_last_commit_message(dir_path, expected)
+    latest_commits_messages = shell.assert_cd_exec(dir_path, "git log --abbrev-commit --pretty=oneline")
+    last_commits_message = latest_commits_messages.lines[0]
+    diagnostic = "\nexpected:#{expected}\n  actual:#{last_commits_message}"
+    assert last_commits_message.include?(expected), diagnostic
   end
 
   version_test 2, '75t', %w(
