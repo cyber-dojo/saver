@@ -13,7 +13,7 @@ class KataRanTestsTest < TestBase
   ) do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      assert_v2_last_commit_message(id, "1 ran tests, no prediction")
+      assert_v2_last_commit_message(id, "1 ran tests, no prediction, got red")
       [index, red_summary]
     }
   end
