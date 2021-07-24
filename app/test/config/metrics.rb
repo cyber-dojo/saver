@@ -13,7 +13,7 @@ MAX = {
 
   test: {
     lines: {
-       total:1854,
+       total:1860,
       missed:0,
     },
     branches: {
