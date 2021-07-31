@@ -37,13 +37,4 @@ class App < AppBase
    get_json(:model,  :kata_option_get)
   post_json(:model,  :kata_option_set)
 
-=begin
-  get '/download/:id' do |id|
-    tmp_dir, true_name, user_name = *@externals.model.kata_download(id)
-    send_file("#{tmp_dir}/#{true_name}", :filename => user_name, :type => 'Application/octet-stream')
-  ensure 
-    @externals.shell.cd_exec(tmp_dir, "rm #{filename}")
-  end
-=end
-  
 end
