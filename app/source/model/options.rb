@@ -1,5 +1,16 @@
 module Options
 
+  def default_options
+    {
+      'theme' => 'light',
+      'colour' => 'on',
+      'predict' => 'off',
+      'revert_red' => 'off',
+      'revert_amber' => 'off',
+      'revert_green' => 'off',
+    }
+  end
+
   def option_get(id, name)
     fail_unless_known_option(name)
     filename = kata_id_path(id, name)
@@ -73,7 +84,10 @@ module Options
     "fork_button",
     "colour",
     "predict",
-    "starting_info_dialog"
+    "starting_info_dialog",
+    "revert_red",
+    "revert_amber",
+    "revert_green"
   ]
 
 end

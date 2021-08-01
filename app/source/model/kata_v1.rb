@@ -1,3 +1,4 @@
+require_relative 'fork'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options'
@@ -129,6 +130,7 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  include Fork
   include Options
 
   private

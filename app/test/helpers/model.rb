@@ -26,6 +26,10 @@ module TestHelpersModel
     group_joined(id)
   end
 
+  def group_fork(id, index)
+    model.group_fork(id:id, index:index)
+  end
+
   # - - - - - - - - - - - - - - -
 
   def kata_create(manifest, options)
@@ -98,6 +102,10 @@ module TestHelpersModel
 
   def kata_option_set(id, name, value)
     model.kata_option_set(id:id, name:name, value:value)
+  end
+
+  def kata_fork(id, index)
+    model.kata_fork(id:id, index:index)
   end
 
   def default_options

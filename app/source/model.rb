@@ -16,7 +16,7 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
   def group_create(manifests:, options:)
-    # NB: No options are being passed yet.        
+    # NB: options is currently empty.
     manifest = manifests[0]
     version = from_manifest(manifest)
     group(version).create(manifest, options)
@@ -51,10 +51,14 @@ class Model
     group(id).joined(id)
   end
 
+  def group_fork(id:, index:)
+    kata(id).fork(Group_v2, id, index)
+  end
+
   #- - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:, options:)
-    # NB: No options are being passed yet.    
+    # NB: options is currently empty.
     version = from_manifest(manifest)
     kata(version).create(manifest, options)
   end
@@ -115,7 +119,11 @@ class Model
   def kata_download(id:)
     kata(id).download(id)
   end
-    
+
+  def kata_fork(id:, index:)
+    kata(id).fork(Kata_v2, id, index)
+  end
+
   CURRENT_VERSION = 2
 
   private
@@ -150,6 +158,8 @@ class Model
   end
 
   def from_manifest(manifest)
+    # All newly created groups and katas use the current version.
+    # Allow creation from previous versions for tests.
     (manifest['version'] || CURRENT_VERSION).to_i
   end
 

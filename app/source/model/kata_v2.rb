@@ -1,3 +1,4 @@
+require_relative 'fork'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options'
@@ -200,11 +201,15 @@ class Kata_v2
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  include Fork
+  include Options
+
   private
 
   include IdPather
   include JsonAdapter
-  include Options
   include PolyFiller
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -406,19 +411,6 @@ class Kata_v2
 
   def content_of(files)
     files.map{|filename,file| [filename,file['content']]}.to_h
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def default_options
-    {
-      'theme' => 'light',
-      'colour' => 'on',
-      'predict' => 'off',
-      'revert_red' => 'off',
-      'revert_amber' => 'off',
-      'revert_green' => 'off',
-    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

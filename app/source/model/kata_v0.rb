@@ -1,3 +1,4 @@
+require_relative 'fork'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'liner_v0'
@@ -124,6 +125,7 @@ class Kata_v0
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
+  include Fork
   include Options
 
   private
