@@ -36,6 +36,10 @@ module External
       @http.get(__method__, {id:id})
     end
 
+    def group_fork(id, index)
+      @http.post(__method__, {id:id, index:index})
+    end
+
     # - - - - - - - - - - - - - - - - - - -
 
     def kata_create(manifest, options)
@@ -45,10 +49,6 @@ module External
     def kata_exists?(id)
       @http.get(__method__, {id:id})
     end
-
-    #def kata_download(id)
-    #  @http.get(__method__, {id:id})
-    #end
 
     def kata_manifest(id)
       @http.get(__method__, {id:id})
@@ -72,6 +72,14 @@ module External
 
     def kata_option_set(id, name, value)
       @http.post(__method__, {id:id, name:name, value:value})
+    end
+
+    #def kata_download(id)
+    #  @http.get(__method__, {id:id})
+    #end
+
+    def kata_fork(id, index)
+      @http.post(__method__, {id:id, index:index})
     end
 
   end

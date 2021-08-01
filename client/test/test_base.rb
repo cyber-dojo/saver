@@ -48,6 +48,10 @@ class TestBase < Id58TestBase
     saver.group_joined(id)
   end
 
+  def group_fork(id, index)
+    saver.group_fork(id, index)
+  end
+
   # - - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest, options)
@@ -80,6 +84,10 @@ class TestBase < Id58TestBase
 
   def kata_option_set(name, value)
     saver.kata_option_set(id, name, value)
+  end
+
+  def kata_fork(id, index)
+    saver.kata_fork(id, index)
   end
 
   # - - - - - - - - - - - - - - - - - -

@@ -1,16 +1,5 @@
 module Options
 
-  def default_options
-    {
-      'theme' => 'light',
-      'colour' => 'on',
-      'predict' => 'off',
-      'revert_red' => 'off',
-      'revert_amber' => 'off',
-      'revert_green' => 'off',
-    }
-  end
-
   def option_get(id, name)
     fail_unless_known_option(name)
     filename = kata_id_path(id, name)
@@ -41,6 +30,17 @@ module Options
       disk.file_append_command(filename, "\n"+value)
     ])
     result
+  end
+
+  def default_options
+    {
+      'theme' => 'light',
+      'colour' => 'on',
+      'predict' => 'off',
+      'revert_red' => 'off',
+      'revert_amber' => 'off',
+      'revert_green' => 'off',
+    }
   end
 
   def fail_unless_known_option(name)
