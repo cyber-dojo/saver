@@ -8,10 +8,14 @@ source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
 
+export $(echo_versioner_env_vars)
+export $(merkely_echo_env_vars)
+
 # - - - - - - - - - - - - - - - - - - -
 merkely_log_evidence()
 {
-  write_evidence_json
+  local -r hostname="${1}"
+
 	docker run \
     --env MERKELY_COMMAND=log_evidence \
     --env MERKELY_OWNER=${MERKELY_OWNER} \
@@ -22,6 +26,7 @@ merkely_log_evidence()
     --env MERKELY_DESCRIPTION="server & client branch-coverage reports" \
     --env MERKELY_USER_DATA="$(evidence_json_path)" \
     --env MERKELY_CI_BUILD_URL=${CIRCLE_BUILD_URL} \
+    --env MERKELY_HOST="${hostname}" \
     --env MERKELY_API_TOKEN=${MERKELY_API_TOKEN} \
     --rm \
     --volume "$(evidence_json_path):$(evidence_json_path)" \
@@ -46,6 +51,7 @@ evidence_json_path()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
-merkely_log_evidence
+
+write_evidence_json
+merkely_log_evidence https://staging.app.merkely.com
+merkely_log_evidence https://app.merkely.com

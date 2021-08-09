@@ -8,9 +8,14 @@ source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
 source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
 
+export $(echo_versioner_env_vars)
+export $(merkely_echo_env_vars)
+
 # - - - - - - - - - - - - - - - - - - -
 merkely_log_artifact()
 {
+  local -r hostname="${1}"
+
 	docker run \
     --env MERKELY_COMMAND=log_artifact \
     --env MERKELY_OWNER=${MERKELY_OWNER} \
@@ -21,6 +26,7 @@ merkely_log_artifact()
     --env MERKELY_ARTIFACT_GIT_URL=https://github.com/${MERKELY_OWNER}/${MERKELY_PIPELINE}/commit/${COMMIT_SHA} \
     --env MERKELY_CI_BUILD_NUMBER=${CIRCLE_BUILD_NUM} \
     --env MERKELY_CI_BUILD_URL=${CIRCLE_BUILD_URL} \
+    --env MERKELY_HOST="${hostname}" \
     --env MERKELY_API_TOKEN=${MERKELY_API_TOKEN} \
     --rm \
     --volume /var/run/docker.sock:/var/run/docker.sock \
@@ -28,6 +34,6 @@ merkely_log_artifact()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
-merkely_log_artifact
+
+merkely_log_artifact https://staging.app.merkely.com
+merkely_log_artifact https://app.merkely.com
