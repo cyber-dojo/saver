@@ -15,17 +15,17 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-=begin
-  def group_create_custom(display_name:, version:)
+  def group_create_custom(display_name:)
+    version = CURRENT_VERSION
     manifest = build_custom_manifest(display_name, version)
     group(version).create(manifest, {})
   end
 
-  def group_create2(ltf_name:, exercise_name:, version:)
+  def group_create2(ltf_name:, exercise_name:)
+    version = CURRENT_VERSION
     manifest = build_manifest(ltf_name, exercise_name, version)
     group(version).create(manifest, {})
   end
-=end
 
   def group_create(manifests:, options:)
     # NB: options is currently empty.
@@ -69,17 +69,17 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-=begin
-  def kata_create_custom(display_name:, version:)
+  def kata_create_custom(display_name:)
+    version = CURRENT_VERSION
     manifest = build_custom_manifest(display_name, version)
     kata(version).create(manifest, {})
   end
 
-  def kata_create2(ltf_name:, exercise_name:, version:)
+  def kata_create2(ltf_name:, exercise_name:)
+    version = CURRENT_VERSION
     manifest = build_manifest(ltf_name, exercise_name, version)
     kata(version).create(manifest, {})
   end
-=end
 
   def kata_create(manifest:, options:)
     # NB: options is currently empty.
@@ -195,18 +195,16 @@ class Model
     @externals.disk
   end
 
-=begin
-
   def custom_start_points
-    externals.custom_start_points
+    @externals.custom_start_points
   end
 
   def exercises_start_points
-    externals.exercises_start_points
+    @externals.exercises_start_points
   end
 
   def languages_start_points
-    externals.languages_start_points
+    @externals.languages_start_points
   end
 
   # - - - - - - - - - - - - - - - - - - - -
@@ -227,7 +225,6 @@ class Model
     manifest['version'] = version
     manifest
   end
-=end
 
   GROUPS = [ Group_v0, Group_v1, Group_v2 ]
   KATAS = [ Kata_v0, Kata_v1, Kata_v2 ]

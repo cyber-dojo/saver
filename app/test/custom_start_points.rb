@@ -16,11 +16,6 @@ class CustomStartPointsTest < TestBase
     assert actual.size > 0
   end
 
-  test '2C8', 'manifests' do
-    actual = custom_start_points.manifests
-    assert actual.is_a?(Hash)
-  end
-
   test '2C9', 'manifest' do
     display_name = custom_start_points.display_names[0]
     manifest = custom_start_points.manifest(display_name)

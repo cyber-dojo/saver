@@ -19,7 +19,7 @@ class Externals
   end
 
   def prober
-    @prober ||= Prober.new
+    @prober ||= Prober.new(self)
   end
 
   def random

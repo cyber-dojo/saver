@@ -15,7 +15,7 @@ class ProbingTest < TestBase
   end
 
   test '602',
-  %w( ready? is always true ) do
+  %w( ready? is true when all start_points are ready ) do
     assert prober.ready?
   end
 

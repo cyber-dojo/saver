@@ -6,6 +6,31 @@ class GroupCreateTest < TestBase
     'f27'
   end
 
+  version_test 2, 'R5a', %w(
+  |POST /group_create_custom(display_name)
+  |has status 200
+  |returns the id: of a new group
+  |that exists in saver
+  |and a matching values
+  ) do
+    display_name = custom_start_points.display_names.sample
+    assert_group_create_custom_200(display_name)
+  end
+
+  version_test 2, 'R5b', %w(
+  |POST /group_create2(ltf_name, exercise_name)
+  |has status 200
+  |returns the id: of a new group
+  |that exists in saver
+  |and a matching values
+  ) do
+    ltf_name = languages_start_points.display_names.sample
+    exercise_name = exercises_start_points.display_names.sample
+    assert_group_create2_200(ltf_name, exercise_name)
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
   versions_test 'q31', %w(
   |POST /group_create(manifest)
   |with empty options
@@ -29,7 +54,6 @@ class GroupCreateTest < TestBase
   ) do
     assert_group_create_200({})
   end
-
 
   # - - - - - - - - - - - - - - - - - - -
 
@@ -144,6 +168,33 @@ class GroupCreateTest < TestBase
   end
 
   private
+
+  def assert_group_create_custom_200(display_name)
+    assert_json_post_200(
+      path = 'group_create_custom', {
+        display_name: display_name
+      }.to_json
+    ) do |response|
+      assert_equal [path], response.keys.sort, :keys
+      id = response[path]
+      assert_group_exists(id, display_name)
+    end
+  end
+
+  def assert_group_create2_200(ltf_name, exercise_name)
+    assert_json_post_200(
+      path = 'group_create2', {
+        ltf_name: ltf_name,
+        exercise_name: exercise_name
+      }.to_json
+    ) do |response|
+      assert_equal [path], response.keys.sort, :keys
+      id = response[path]
+      assert_group_exists(id, ltf_name, exercise_name)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_group_create_200(options)
     assert_json_post_200(

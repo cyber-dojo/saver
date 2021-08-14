@@ -8,6 +8,33 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
+  versions3_test 'h35', %w(
+  |POST /kata_create_custom(display_name)
+  |has status 200
+  |returns the id: of a new kata
+  |that exists in saver
+  |with a matching values
+  ) do
+    display_name = custom_start_points.display_names.sample
+    assert_kata_create_custom_200(display_name)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions3_test 'h36', %w(
+  |POST /kata_create2(ltf_name, exercise_name)
+  |has status 200
+  |returns the id: of a new kata
+  |that exists in saver
+  |with a matching values
+  ) do
+    ltf_name = languages_start_points.display_names.sample
+    exercise_name = exercises_start_points.display_names.sample
+    assert_kata_create2_200(ltf_name, exercise_name)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - -
+
   versions3_test 'q32', %w(
   |POST /kata_create(manifest)
   |with empty options
@@ -29,7 +56,7 @@ class KataCreateTest < TestBase
   |that exists in saver
   |with a matching display_name
   ) do
-    options = { 
+    options = {
       "colour" => "on",
       "fork_button" => "off",
       "predict" => "on",
@@ -74,6 +101,33 @@ class KataCreateTest < TestBase
   end
 
   private
+
+  def assert_kata_create_custom_200(display_name)
+    assert_json_post_200(
+      path = 'kata_create_custom', {
+        display_name: display_name
+      }.to_json
+    ) do |response|
+      assert_equal [path], response.keys.sort, :keys
+      id = response[path]
+      assert_kata_exists(id, display_name)
+    end
+  end
+
+  def assert_kata_create2_200(ltf_name, exercise_name)
+    assert_json_post_200(
+      path = 'kata_create2', {
+        ltf_name: ltf_name,
+        exercise_name: exercise_name
+      }.to_json
+    ) do |response|
+      assert_equal [path], response.keys.sort, :keys
+      id = response[path]
+      assert_kata_exists(id, ltf_name, exercise_name)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
 
   def assert_kata_create_200(options)
     assert_json_post_200(
