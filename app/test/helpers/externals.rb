@@ -1,4 +1,3 @@
-require_relative '../external/custom_start_points'
 require_relative '../require_source'
 require_source 'externals'
 
@@ -42,7 +41,15 @@ module TestHelpersExternals
   end
 
   def custom_start_points
-    External::CustomStartPoints.new
+    externals.custom_start_points
+  end
+
+  def exercises_start_points
+    externals.exercises_start_points
+  end
+
+  def languages_start_points
+    externals.languages_start_points
   end
 
 end

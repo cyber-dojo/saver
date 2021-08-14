@@ -1,13 +1,13 @@
-require_relative '../http_json/service'
+require_relative 'http_json/service'
 require_relative 'http'
 
 module External
 
-  class CustomStartPoints
+  class ExercisesStartPoints
 
     def initialize
-      service = 'custom-start-points'
-      port = ENV['CYBER_DOJO_CUSTOM_START_POINTS_PORT'].to_i
+      service = 'exercises-start-points'
+      port = ENV['CYBER_DOJO_EXERCISES_START_POINTS_PORT'].to_i
       http = External::Http.new
       @http = HttpJson::service(self.class.name, http, service, port)
     end
