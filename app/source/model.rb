@@ -15,6 +15,9 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
+  #def group_create_custom(display_name:)
+  #def group_create2(ltf_name:, exercise_name:)
+
   def group_create(manifests:, options:)
     # NB: options is currently empty.
     manifest = manifests[0]
@@ -56,6 +59,9 @@ class Model
   end
 
   #- - - - - - - - - - - - - - - - - -
+
+  #def kata_create_custom(display_name:)
+  #def kata_create2(ltf_name:, exercise_name:)
 
   def kata_create(manifest:, options:)
     # NB: options is currently empty.
