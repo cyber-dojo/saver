@@ -16,15 +16,13 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
 =begin
-  def group_create_custom(display_name:)
-    manifest = build_custom_manifest(display_name)
-    version = from_manifest(manifest)
+  def group_create_custom(display_name:, version:)
+    manifest = build_custom_manifest(display_name, version)
     group(version).create(manifest, {})
   end
 
-  def group_create2(ltf_name:, exercise_name:)
-    manifest = build_manifest(ltf_name, exercise_name)
-    version = from_manifest(manifest)
+  def group_create2(ltf_name:, exercise_name:, version:)
+    manifest = build_manifest(ltf_name, exercise_name, version)
     group(version).create(manifest, {})
   end
 =end
@@ -72,15 +70,13 @@ class Model
   #- - - - - - - - - - - - - - - - - -
 
 =begin
-  def kata_create_custom(display_name:)
-    manifest = build_custom_manifest(display_name)
-    version = from_manifest(manifest)
+  def kata_create_custom(display_name:, version:)
+    manifest = build_custom_manifest(display_name, version)
     kata(version).create(manifest, {})
   end
 
-  def kata_create2(ltf_name:, exercise_name:)
-    manifest = build_manifest(ltf_name, exercise_name)
-    version = from_manifest(manifest)
+  def kata_create2(ltf_name:, exercise_name:, version:)
+    manifest = build_manifest(ltf_name, exercise_name, version)
     kata(version).create(manifest, {})
   end
 =end
@@ -215,18 +211,21 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def build_custom_manifest(display_name)
-    custom_start_points.manifest(display_name)
+  def build_custom_manifest(display_name, version)
+    manifest = custom_start_points.manifest(display_name)
+    manifest['version'] = version
+    manifest
   end
 
-  def build_manifest(ltf_name, exercise_name)
-    result = languages_start_points.manifest(ltf_name)
+  def build_manifest(ltf_name, exercise_name, version)
+    manifest = languages_start_points.manifest(ltf_name)
     unless exercise_name.nil?
       exercise = exercises_start_points.manifest(exercise_name)
-      result['visible_files'].merge!(exercise['visible_files'])
-      result['exercise'] = exercise['display_name']
+      manifest['visible_files'].merge!(exercise['visible_files'])
+      manifest['exercise'] = exercise['display_name']
     end
-    result
+    manifest['version'] = version
+    manifest
   end
 =end
 
