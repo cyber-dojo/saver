@@ -15,8 +15,19 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-  #def group_create_custom(display_name:)
-  #def group_create2(ltf_name:, exercise_name:)
+=begin
+  def group_create_custom(display_name:)
+    manifest = build_custom_manifest(display_name)
+    version = from_manifest(manifest)
+    group(version).create(manifest, {})
+  end
+
+  def group_create2(ltf_name:, exercise_name:)
+    manifest = build_manifest(ltf_name, exercise_name)
+    version = from_manifest(manifest)
+    group(version).create(manifest, {})
+  end
+=end
 
   def group_create(manifests:, options:)
     # NB: options is currently empty.
@@ -60,8 +71,19 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-  #def kata_create_custom(display_name:)
-  #def kata_create2(ltf_name:, exercise_name:)
+=begin
+  def kata_create_custom(display_name:)
+    manifest = build_custom_manifest(display_name)
+    version = from_manifest(manifest)
+    kata(version).create(manifest, {})
+  end
+
+  def kata_create2(ltf_name:, exercise_name:)
+    manifest = build_manifest(ltf_name, exercise_name)
+    version = from_manifest(manifest)
+    kata(version).create(manifest, {})
+  end
+=end
 
   def kata_create(manifest:, options:)
     # NB: options is currently empty.
@@ -176,6 +198,37 @@ class Model
   def disk
     @externals.disk
   end
+
+=begin
+
+  def custom_start_points
+    externals.custom_start_points
+  end
+
+  def exercises_start_points
+    externals.exercises_start_points
+  end
+
+  def languages_start_points
+    externals.languages_start_points
+  end
+
+  # - - - - - - - - - - - - - - - - - - - -
+
+  def build_custom_manifest(display_name)
+    custom_start_points.manifest(display_name)
+  end
+
+  def build_manifest(ltf_name, exercise_name)
+    result = languages_start_points.manifest(ltf_name)
+    unless exercise_name.nil?
+      exercise = exercises_start_points.manifest(exercise_name)
+      result['visible_files'].merge!(exercise['visible_files'])
+      result['exercise'] = exercise['display_name']
+    end
+    result
+  end
+=end
 
   GROUPS = [ Group_v0, Group_v1, Group_v2 ]
   KATAS = [ Kata_v0, Kata_v1, Kata_v2 ]
