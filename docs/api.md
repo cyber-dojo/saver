@@ -145,9 +145,9 @@ for the katas that have joined a group. The group can be specified with the grou
 - - - -
 ## POST group_fork(id,index)
 Creates a new group whose starting files are a copy of the files in the kata with 
-the given `id` at the given `index`. The new group is not a fork in the git sense;
+the given `id` at the given `index`. The new group is *not* a fork in the git sense;
 that is, it is *not* a 'deep' copy, the history of commits (one per test event)
-that exist in the kata being forked are not copied.
+that exist in the kata being forked are *not* copied.
 - parameters 
   * **id:String**.
   * **index:int**
@@ -410,9 +410,9 @@ Set a theme (dark/light) or colour (on/off) option.
 - - - -
 ## POST kata_fork(id,index)
 Creates a new kata whose starting files are a copy of the files in the kata with 
-the given `id` at the given `index`. The new kata is not a fork in the git sense;
+the given `id` at the given `index`. The new kata is *not* a fork in the git sense;
 that is, it is *not* a 'deep' copy, the history of commits (one per test event)
-that exist in the kata being forked are not copied.
+that exist in the kata being forked are *not* copied.
 - parameters 
   * **id:String**.
   * **index:int**
