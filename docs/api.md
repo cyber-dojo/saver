@@ -143,6 +143,31 @@ for the katas that have joined a group. The group can be specified with the grou
   ```
 
 - - - -
+## POST group_fork(id,index)
+Creates a new group whose starting files are a copy of the files in the kata with 
+the given `id` at the given `index`. The new group is not a fork in the git sense;
+that is, it is *not* a 'deep' copy, the history of commits (one per test event)
+that exist in the kata being forked are not copied.
+- parameters 
+  * **id:String**.
+  * **index:int**
+- returns 
+  * the `id` of the created group.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us", "index":23}' \
+    --fail \    
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      http://${DOMAIN}:${PORT}/group_fork
+  ```
+  ```bash
+  {"group_fork":"a8gVRN"}
+  ```
+
+- - - -
 ## POST kata_create(manifest,options)
 Creates a new kata exercise from `manifest`, and returns its id.
 - parameters 
@@ -152,6 +177,7 @@ Creates a new kata exercise from `manifest`, and returns its id.
   Currently unused (and defaulted). For a planned feature.
 - returns 
   * the `id` of the created kata.
+
 
 - - - -
 ## GET kata_exists?(id)
@@ -380,6 +406,31 @@ Get a theme (dark/light) or colour (on/off) option.
 - - - -
 ## POST kata_option_set(id,name,value)
 Set a theme (dark/light) or colour (on/off) option.
+
+- - - -
+## POST kata_fork(id,index)
+Creates a new kata whose starting files are a copy of the files in the kata with 
+the given `id` at the given `index`. The new kata is not a fork in the git sense;
+that is, it is *not* a 'deep' copy, the history of commits (one per test event)
+that exist in the kata being forked are not copied.
+- parameters 
+  * **id:String**.
+  * **index:int**
+- returns 
+  * the `id` of the created kata.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us", "index":23}' \
+    --fail \    
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      http://${DOMAIN}:${PORT}/kata_fork
+  ```
+  ```bash
+  {"kata_fork":"a8gVRN"}
+  ```
 
 - - - -
 ## GET alive?

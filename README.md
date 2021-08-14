@@ -43,7 +43,7 @@ Group
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
 * [GET group_joined(id)](docs/api.md#get-group_joinedid)
 * [GET group_manifest(id)](docs/api.md#get-group_manifestid)
-
+* [POST group_fork(id,index)](docs/api.md#post-group_forkidindex)
 
 Kata
 ----
@@ -60,6 +60,7 @@ Kata
 * [POST kata_checked_out(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_checked_outidindexfilesstdoutstderrstatussummary)
 * [GET kata_option_get(id,name)](docs/api.md#get-kata_option_getidname)
 * [POST kata_option_set(id,name,value)](docs/api.md#post-kata_option_setidnamevalue)
+* [POST kata_fork(id,index)](docs/api.md#post-kata_forkidindex)
 
 
 Probe
