@@ -33,6 +33,17 @@ class KataCreateTest < TestBase
     assert_kata_create2_200(ltf_name, exercise_name)
   end
 
+  versions3_test 'h37', %w(
+  |POST /kata_create2(ltf_name, exercise_name=nil)
+  |has status 200
+  |returns the id: of a new kata
+  |that exists in saver
+  |with a matching values
+  ) do
+    ltf_name = languages_start_points.display_names.sample
+    assert_kata_create2_200(ltf_name, '')
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   versions3_test 'q32', %w(

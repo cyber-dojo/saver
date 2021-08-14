@@ -217,7 +217,7 @@ class Model
 
   def build_manifest(ltf_name, exercise_name, version)
     manifest = languages_start_points.manifest(ltf_name)
-    unless exercise_name.nil?
+    unless exercise_name === ''
       exercise = exercises_start_points.manifest(exercise_name)
       manifest['visible_files'].merge!(exercise['visible_files'])
       manifest['exercise'] = exercise['display_name']
