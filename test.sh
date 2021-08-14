@@ -112,7 +112,8 @@ run_tests()
       - "$(basename "${CONTAINER_COVERAGE_DIR}")" \
         | tar Cxf "${HOST_COVERAGE_DIR}/" -
 
-  echo "Coverage dir: ${HOST_COVERAGE_DIR}/${type}"
+  echo Coverage written to
+  echo "${HOST_COVERAGE_DIR}/${type}/index.html"
   if [ "${status}" == 0 ]; then
     echo "Test status: PASSED"
   else
