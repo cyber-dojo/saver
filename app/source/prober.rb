@@ -14,7 +14,7 @@ class Prober
 
   def ready?
     start_points = [custom_start_points, exercises_start_points, languages_start_points]
-    start_points.all? {|start_point| start_point.ready? }
+    start_points.all?(&:ready?)
   end
 
   private
