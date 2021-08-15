@@ -112,9 +112,8 @@ class KataRanTestsTest < TestBase
   private
 
   def in_kata
-    manifest = custom_manifest
-    manifest['version'] = version
-    gid = group_create([manifest], default_options)
+    display_name = custom_start_points.display_names.sample
+    gid = group_create_custom(version, display_name)
     id = group_join(gid)
     index = 1
     files = {
@@ -144,7 +143,7 @@ class KataRanTestsTest < TestBase
     }
     status = "1"
 
-    index, summary = *yield(id, files, stdout, stderr, status)
+    index, summary = *yield(id, files, stdout, stderr, status) # <<<<<<<
 
     actual = kata_event(id, index)
     assert_equal files, actual["files"], :files

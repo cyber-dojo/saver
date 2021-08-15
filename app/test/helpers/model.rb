@@ -1,7 +1,11 @@
 module TestHelpersModel
 
-  def group_create(manifests, options)
-    model.group_create(manifests:manifests, options:options)
+  def group_create_custom(version, display_name)
+    model.group_create_custom(version:version, display_name:display_name)
+  end
+
+  def group_create(version, ltf_name, exercise_name)
+    model.group_create(version:version, ltf_name:ltf_name, exercise_name:exercise_name)
   end
 
   def group_exists?(id)
@@ -11,8 +15,6 @@ module TestHelpersModel
   def group_manifest(id)
     model.group_manifest(id:id)
   end
-
-  AVATAR_INDEXES = (0..63).to_a
 
   def group_join(id, indexes = AVATAR_INDEXES.shuffle)
     model.group_join(id:id, indexes:indexes)
@@ -30,10 +32,16 @@ module TestHelpersModel
     model.group_fork(id:id, index:index)
   end
 
+  AVATAR_INDEXES = (0..63).to_a
+
   # - - - - - - - - - - - - - - -
 
-  def kata_create(manifest, options)
-    model.kata_create(manifest:manifest, options:options)
+  def kata_create_custom(version, display_name)
+    model.kata_create_custom(version:version, display_name:display_name)
+  end
+
+  def kata_create(version, ltf_name, exercise_name)
+    model.kata_create(version:version, ltf_name:ltf_name, exercise_name:exercise_name)
   end
 
   def kata_exists?(id)
@@ -106,10 +114,6 @@ module TestHelpersModel
 
   def kata_fork(id, index)
     model.kata_fork(id:id, index:index)
-  end
-
-  def default_options
-    {} # For group_create() and kata_create()
   end
 
   # - - - - - - - - - - - - - - -

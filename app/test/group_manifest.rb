@@ -32,41 +32,19 @@ class GroupManifestTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'Q61', %w(
-  retrieved group_manifest matches saved group_manifest
+  retrieved group_manifest has created and version keys
   ) do
     now = [2019,3,17, 7,13,36,3428]
     externals.instance_exec {
       @time = TimeStub.new(now)
     }
-    manifest = custom_manifest
-    id = group_create([manifest], default_options)
-    saved = group_manifest(id)
-    manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key], key
+    in_group do |id|
+      manifest = group_manifest(id)
+      assert manifest.keys.include?('created'), :created_key
+      assert_equal now, manifest['created'], :created
+      assert manifest.keys.include?('version'), :version_key
+      assert_equal version, manifest['version'], :version
     end
-    assert saved.keys.include?('created'), :created_key
-    assert_equal now, saved['created'], :created
-    assert saved.keys.include?('version'), :version_key
-    assert_equal version, saved['version'], :version
-  end
-
-  version_test 2, 'R61', %w(
-  retrieved group_manifest matches saved group_manifest
-  ) do
-    now = [2019,3,17, 7,13,36,3428]
-    externals.instance_exec {
-      @time = TimeStub.new(now)
-    }
-    manifest = custom_manifest
-    id = group_create([manifest], default_options)
-    saved = group_manifest(id)
-    manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key], key
-    end
-    assert saved.keys.include?('created'), :created_key
-    assert_equal now, saved['created'], :created
-    assert saved.keys.include?('version'), :version_key
-    assert_equal version, saved['version'], :version
   end
 
 end

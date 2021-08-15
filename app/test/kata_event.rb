@@ -114,13 +114,11 @@ class KataEventTest < TestBase
   |even when only the creation event exists
   ) do
     display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    post_json '/kata_create', {
-      manifest:manifest,
-      options:default_options
+    post_json '/kata_create_custom', {
+      version: version,
+      display_name: display_name
     }.to_json
-    id = json_response_body['kata_create']
+    id = json_response_body['kata_create_custom']
     last = kata_event(id, 0)
     actual = kata_event(id, -1)
     assert_equal last, actual

@@ -18,7 +18,7 @@ class GroupCreateTest < TestBase
   end
 
   versions_test 'R5b', %w(
-  |POST /group_create2(version, ltf_name, exercise_name)
+  |POST /group_create(version, ltf_name, exercise_name)
   |has status 200
   |returns the id: of a new group
   |that exists in saver
@@ -26,145 +26,28 @@ class GroupCreateTest < TestBase
   ) do
     ltf_name = languages_start_points.display_names.sample
     exercise_name = exercises_start_points.display_names.sample
-    assert_group_create2_200(ltf_name, exercise_name)
+    assert_group_create_200(ltf_name, exercise_name)
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'q31', %w(
-  |POST /group_create(manifest)
-  |with empty options
-  |has status 200
-  |returns the id: of a new group
-  |that exists in saver
-  |with version 1
-  |and a matching display_name
-  ) do
-    assert_group_create_200({})
-  end
-
-  version_test 2, 'c27', %w(
-  |POST /group_create(manifest)
-  |with empty options
-  |has status 200
-  |returns the id: of a new group
-  |that exists in saver
-  |with version 1
-  |and a matching display_name
-  ) do
-    assert_group_create_200({})
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  version_test 1, 'q32', %w(
-  |POST /group_create(manifest)
-  |with good options
-  |has status 200
-  |returns the id: of a new group
-  |that exists in saver
-  |with version 1
-  |and a matching display_name
-  ) do
-    on_off = [ "on", "off" ]
-    { "colour" => on_off,
-      "fork_button" => on_off,
-      "predict" => on_off,
-      "starting_info_dialog" => on_off,
-      "theme" => ["dark","light"]
-    }.each do |key,values|
-      values.each do |value|
-        options = { key => value }
-        manifest = assert_group_create_200(options)
-        assert_equal value, manifest[key]
-      end
-    end
-  end
-
-  version_test 2, 'y32', %w(
-  |POST /group_create(manifest)
-  |with good options
-  |has status 200
-  |returns the id: of a new group
-  |that exists in saver
-  |with version 1
-  |and a matching display_name
-  ) do
-    on_off = [ "on", "off" ]
-    { "colour" => on_off,
-      "fork_button" => on_off,
-      "predict" => on_off,
-      "starting_info_dialog" => on_off,
-      "theme" => ["dark","light"]
-    }.each do |key,values|
-      values.each do |value|
-        options = { key => value }
-        manifest = assert_group_create_200(options)
-        assert_equal value, manifest[key]
-      end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  version_test 1, 'x32', %w(
-  |POST /group_create(manifest,options)
-  |with options not a Hash
+  versions_test 'R5c', %w(
+  |POST /group_create_custom(version, display_name)
+  |with unknown display_name
   |has status 500
   ) do
-    [nil, 42, false, []].each do |bad|
-      assert_group_create_500_exception(bad, "options is not a Hash")
-    end
+    display_name = 'unknown'
+    assert_group_create_custom_500(display_name)
   end
 
-  version_test 2, 'y32', %w(
-  |POST /group_create(manifest,options)
-  |with options not a Hash
+  versions_test 'R5d', %w(
+  |POST /group_create(version, ltf_name, exercise_name)
+  |with unknown ltf_name
   |has status 500
   ) do
-    [nil, 42, false, []].each do |bad|
-      assert_group_create_500_exception(bad, "options is not a Hash")
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  version_test 1, 'x33', %w(
-  |POST /group_create(manifest,options)
-  |with unknown option key
-  |has status 500
-  ) do
-    expected = 'options:{"wibble": 42} unknown key: "wibble"'
-    assert_group_create_500_exception({"wibble":42}, expected)
-  end
-
-  version_test 2, 'y33', %w(
-  |POST /group_create(manifest,options)
-  |with unknown option key
-  |has status 500
-  ) do
-    expected = 'options:{"wibble": 42} unknown key: "wibble"'
-    assert_group_create_500_exception({"wibble":42}, expected)
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  version_test 1, 'x34', %w(
-  |POST /group_create(manifest,options)
-  |with unknown option value
-  |has status 500
-  ) do
-    expected = 'options:{"fork_button": 42} unknown value: 42'
-    assert_group_create_500_exception({"fork_button":42}, expected)
-  end
-
-  version_test 2, 'y34', %w(
-  |POST /group_create(manifest,options)
-  |with unknown option value
-  |has status 500
-  ) do
-    expected = 'options:{"fork_button": 42} unknown value: 42'
-    assert_group_create_500_exception({"fork_button":42}, expected)
+    ltf_name = 'unknown'
+    exercise_name = exercises_start_points.display_names.sample
+    assert_group_create_500(ltf_name, exercise_name)
   end
 
   private
@@ -176,7 +59,7 @@ class GroupCreateTest < TestBase
         display_name: display_name
       }.to_json
     ) do |response|
-      assert_equal [path], response.keys.sort, :keys
+      assert_equal [path], response.keys, :keys
       id = response[path]
       assert_group_exists(id, display_name)
       manifest = group_manifest(id)
@@ -184,15 +67,15 @@ class GroupCreateTest < TestBase
     end
   end
 
-  def assert_group_create2_200(ltf_name, exercise_name)
+  def assert_group_create_200(ltf_name, exercise_name)
     assert_json_post_200(
-      path = 'group_create2', {
+      path = 'group_create', {
         version: version,
         ltf_name: ltf_name,
         exercise_name: exercise_name
       }.to_json
     ) do |response|
-      assert_equal [path], response.keys.sort, :keys
+      assert_equal [path], response.keys, :keys
       id = response[path]
       assert_group_exists(id, ltf_name, exercise_name)
       manifest = group_manifest(id)
@@ -202,30 +85,26 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  def assert_group_create_200(options)
-    assert_json_post_200(
-      path = 'group_create', {
-        manifests: [custom_manifest],
-        options: options
+  def assert_group_create_custom_500(display_name)
+    assert_json_post_500(
+      path='group_create_custom', {
+        version: version,
+        display_name: display_name
       }.to_json
     ) do |response|
-      assert_equal [path], response.keys.sort, :keys
-      id = response[path]
-      assert_group_exists(id, @display_name)
-      @manifest = group_manifest(id)
-      assert_equal version, @manifest['version']
+      assert_equal ["exception"], response.keys, :keys
     end
-    @manifest
   end
 
-  def assert_group_create_500_exception(options, message)
+  def assert_group_create_500(ltf_name, exercise_name)
     assert_json_post_500(
       path='group_create', {
-       manifests: [custom_manifest],
-       options: options
+        version: version,
+        ltf_name: ltf_name,
+        exercise_name: exercise_name
       }.to_json
     ) do |response|
-      assert_equal message, response["exception"]
+      assert_equal ["exception"], response.keys, :keys
     end
   end
 

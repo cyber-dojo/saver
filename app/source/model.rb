@@ -25,11 +25,9 @@ class Model
     group(version).create(manifest, {})
   end
 
-  def group_create(manifests:, options:)
-    # NB: options is currently empty.
-    manifest = manifests[0]
-    version = from_manifest(manifest)
-    group(version).create(manifest, options)
+  def group_create(version:, ltf_name:, exercise_name:)
+    manifest = build_manifest(version, ltf_name, exercise_name)
+    group(version).create(manifest, {})
   end
 
   def group_exists?(id:)
@@ -77,10 +75,9 @@ class Model
     kata(version).create(manifest, {})
   end
 
-  def kata_create(manifest:, options:)
-    # NB: options is currently empty.
-    version = from_manifest(manifest)
-    kata(version).create(manifest, options)
+  def kata_create(version:, ltf_name:, exercise_name:)
+    manifest = build_manifest(version, ltf_name, exercise_name)
+    kata(version).create(manifest, {})
   end
 
   def kata_exists?(id:)

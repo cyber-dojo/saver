@@ -47,24 +47,26 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '14a', %w(
+  versions_test '14a', %w(
   kata-id generator will skip id that already exists as a group
   ) do
-    group_id = group_create([custom_manifest], default_options)
-    id = 'x67WpA'
-    id_generator = stubbed_id_generator(group_id + id)
-    assert_equal id, id_generator.kata_id
+    in_group do |group_id|
+      id = "x67Wp#{version}"
+      id_generator = stubbed_id_generator(group_id + id)
+      assert_equal id, id_generator.kata_id
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '14b', %w(
+  versions_test '14b', %w(
   group-id generator will skip id that already exists as a kata
   ) do
-    kata_id = kata_create(custom_manifest, default_options)
-    id = 'hY86s3'
-    id_generator = stubbed_id_generator(kata_id + id)
-    assert_equal id, id_generator.group_id
+    in_kata do |kata_id|
+      id = "hY86s#{version}"
+      id_generator = stubbed_id_generator(kata_id + id)
+      assert_equal id, id_generator.group_id
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - -

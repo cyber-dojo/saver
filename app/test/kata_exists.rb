@@ -21,8 +21,9 @@ class KataExistsTest < TestBase
   |kata_exists? is true,
   |for a well-formed id that exists
   ) do
-    id = kata_create(custom_manifest, default_options)
-    assert kata_exists?(id), :created_in_test
+    in_kata do |id|
+      assert kata_exists?(id), :created_in_test
+    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

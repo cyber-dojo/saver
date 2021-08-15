@@ -47,11 +47,9 @@ class GroupJoinedTest < TestBase
   versions_test'xD4', %w(
   empty Hash is returned for a kata-id not in a group
   ) do
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    id = kata_create(manifest, default_options)
-    assert_equal({}, group_joined(id))
+    in_kata do |id|
+      assert_equal({}, group_joined(id))
+    end
   end
 
   private

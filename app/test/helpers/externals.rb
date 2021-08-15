@@ -33,13 +33,6 @@ module TestHelpersExternals
 
   # - - - - - - - - - - - - - - - - -
 
-  def custom_manifest
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(@display_name)
-    manifest['version'] = version
-    manifest
-  end
-
   def custom_start_points
     externals.custom_start_points
   end

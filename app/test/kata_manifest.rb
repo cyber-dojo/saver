@@ -36,6 +36,8 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+=begin
+  #TODO: need to find manifests where the optional entries are not present
   versions_test '5s2', %w(
   optional entries are polyfilled ) do
     m = custom_manifest
@@ -50,27 +52,24 @@ class KataManifestTest < TestBase
     assert_equal 10, manifest['max_seconds']
     assert_equal [], manifest['progress_regexs']
   end
-
+=end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'Q62', %w(
-  retrieved kata_manifest matches saved kata_manifest
+  retrieved kata_manifest has created and version keys
   ) do
     now = [2018,11,30, 9,34,56,6453]
     externals.instance_exec {
       @time = TimeStub.new(now)
     }
-    manifest = custom_manifest
-    id = kata_create(manifest, default_options)
-    saved = kata_manifest(id)
-    manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key], key
+    in_kata do |id|
+      saved = kata_manifest(id)
+      assert saved.keys.include?('created'), :created_key
+      assert_equal now, saved['created'], :created
+      assert saved.keys.include?('version'), :version_key
+      assert_equal version, saved['version'], :version
     end
-    assert saved.keys.include?('created'), :created_key
-    assert_equal now, saved['created'], :created
-    assert saved.keys.include?('version'), :version_key
-    assert_equal version, saved['version'], :version
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -82,22 +81,23 @@ class KataManifestTest < TestBase
   ) do
     now = [2021,5,31, 10,3,51,6553]
     externals.instance_exec { @time = TimeStub.new(now) }
-    manifest = manifest_Tennis_refactoring_Python_unitttest
-    manifest['version'] = 2
-
-    id = kata_create(manifest, default_options)
-
-    manifest["created"] = now
-    manifest["exercise"] = ""
-    manifest["highlight_filenames"] = []
-    manifest["id"] = id
-    manifest["max_seconds"] = 10
-    manifest["progress_regexs"] = []
-    manifest["tab_size"] = 4
-
+    display_name = "Tennis refactoring, Python unitttest"
+    id = kata_create_custom(version, display_name)
     actual = kata_manifest(id)
-
-    assert_equal manifest, actual
+    expected = {
+      'image_name' => "cyberdojofoundation/python_unittest:b8333d3",
+      'display_name' => "Tennis refactoring, Python unitttest",
+      'filename_extension' => [".py"],
+      'version' => 2,
+      'created' => now,
+      'exercise' => '',
+      'highlight_filenames' => [],
+      'id' => id,
+      'max_seconds' => 10,
+      'progress_regexs' => [],
+      'tab_size' => 4
+    }
+    assert_equal expected, actual
   end
 
 end
