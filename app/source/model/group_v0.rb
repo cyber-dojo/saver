@@ -2,6 +2,7 @@ require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v0'
 require_relative 'liner_v0'
+require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 
@@ -14,9 +15,7 @@ class Group_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, _options)
-    # Groups created in cyber-dojo are now always version 1.
-    # The ability to create version 0 groups is retained for testing.
+  def create(manifest)
     manifest = manifest.clone
     manifest['version'] = 0
     manifest['created'] = time.now
@@ -48,7 +47,7 @@ class Group_v0
     else
       index = indexes[result_index]
       manifest['group_index'] = index
-      kata_id = @kata.create(manifest, {})
+      kata_id = @kata.create(manifest)
       disk.assert(disk.file_create_command(kata_id_filename(id, index), kata_id))
       kata_id
     end
@@ -79,6 +78,7 @@ class Group_v0
   include IdPather
   include JsonAdapter
   include Liner_v0
+  include Options
   include PolyFiller
 
   # - - - - - - - - - - - - - - - - - - -

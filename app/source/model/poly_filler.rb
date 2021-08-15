@@ -13,6 +13,9 @@ module PolyFiller
     manifest['tab_size'] ||= 4
     manifest['max_seconds'] ||= 10
     manifest['progress_regexs'] ||= []
+    default_options.each do |key,value|
+      manifest[key] ||= value
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

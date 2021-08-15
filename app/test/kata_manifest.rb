@@ -95,7 +95,13 @@ class KataManifestTest < TestBase
       'id' => id,
       'max_seconds' => 10,
       'progress_regexs' => [],
-      'tab_size' => 4
+      'tab_size' => 4,
+      'theme' => "light",
+      'colour' => "on",
+      'predict' => "off",
+      'revert_red' => "off",
+      'revert_amber' => "off",
+      'revert_green' => "off"
     }
     assert_equal expected, actual
   end

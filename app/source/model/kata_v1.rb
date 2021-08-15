@@ -34,9 +34,8 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, options)
-    fail_unless_known_options(options)
-    manifest.merge!(options)
+  def create(manifest)
+    manifest.merge!(default_options)
     manifest['version'] = 1
     manifest['created'] = time.now
     id = manifest['id'] = IdGenerator.new(@externals).kata_id

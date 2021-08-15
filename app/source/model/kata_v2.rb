@@ -22,8 +22,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, options)
-    fail_unless_known_options(options)
+  def create(manifest)
     manifest['version'] = 2
     manifest['created'] = time.now
     events = [{
@@ -32,13 +31,12 @@ class Kata_v2
       'time'  => manifest['created']
     }]
     files = manifest.delete('visible_files')
-    options = default_options.merge(options)
 
     # IdGenerator makes the kata dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
     disk.assert_all([
       disk.file_create_command(manifest_filename(id), json_pretty(manifest)),
-      disk.file_create_command(options_filename(id), json_pretty(options)),
+      disk.file_create_command(options_filename(id), json_pretty(default_options)),
       disk.file_create_command(events_filename(id), json_pretty(events)),
       disk.file_create_command(readme_filename(id), readme(manifest))
     ])

@@ -17,17 +17,19 @@ class Model
 
   def group_create_custom(version:, display_name:)
     manifest = build_custom_manifest(version, display_name)
-    group(version).create(manifest, {})
+    group(version).create(manifest)
   end
 
+  # :nocov:
   def group_create2(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
-    group(version).create(manifest, {})
+    group(version).create(manifest)
   end
+  # :nocov:
 
   def group_create(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
-    group(version).create(manifest, {})
+    group(version).create(manifest)
   end
 
   def group_exists?(id:)
@@ -67,17 +69,19 @@ class Model
 
   def kata_create_custom(version:, display_name:)
     manifest = build_custom_manifest(version, display_name)
-    kata(version).create(manifest, {})
+    kata(version).create(manifest)
   end
 
+  # :nocov:
   def kata_create2(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
-    kata(version).create(manifest, {})
+    kata(version).create(manifest)
   end
+  # :nocov:
 
   def kata_create(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
-    kata(version).create(manifest, {})
+    kata(version).create(manifest)
   end
 
   def kata_exists?(id:)
@@ -172,12 +176,6 @@ class Model
     content = disk.assert(disk.file_read_command(path))
     manifest = json_parse(content)
     manifest['version'].to_i # nil.to_i == 0
-  end
-
-  def from_manifest(manifest)
-    # All newly created groups and katas use the current version.
-    # Allow creation from previous versions for tests.
-    (manifest['version'] || CURRENT_VERSION).to_i
   end
 
   def id?(id)

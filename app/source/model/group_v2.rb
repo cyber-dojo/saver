@@ -19,9 +19,8 @@ class Group_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create(manifest, options)
-    fail_unless_known_options(options)
-    manifest.merge!(options)
+  def create(manifest)
+    manifest.merge!(default_options)
     manifest['version'] = 2
     manifest['created'] = time.now
     id = manifest['id'] = IdGenerator.new(@externals).group_id
@@ -57,7 +56,7 @@ class Group_v2
     else
       index = indexes[result_index]
       manifest['group_index'] = index
-      kata_id = @kata.create(manifest, {})
+      kata_id = @kata.create(manifest)
       disk.assert(katas_append_command(id, "#{kata_id} #{index}\n"))
       kata_id
     end

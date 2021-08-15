@@ -66,7 +66,7 @@ class GroupForkTest < TestBase
       end
 
       forked_manifest = group_manifest(fid)
-      %w( id created theme colour predict revert_red revert_amber revert_green ).each do |key|
+      %w( id created ).each do |key|
         forked_manifest.delete(key)
       end
       forked_files = forked_manifest.delete('visible_files')

@@ -8,7 +8,7 @@ module Fork
     # but leave no trace of that in the manifest.
     m.delete('group_id')
     m.delete('group_index')
-    forker.new(@externals).create(m, default_options)
+    forker.new(@externals).create(m)
   end
 
 end
