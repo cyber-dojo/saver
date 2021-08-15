@@ -20,13 +20,6 @@ class Model
     group(version).create(manifest)
   end
 
-  # :nocov:
-  def group_create2(version:, ltf_name:, exercise_name:)
-    manifest = build_manifest(version, ltf_name, exercise_name)
-    group(version).create(manifest)
-  end
-  # :nocov:
-
   def group_create(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
     group(version).create(manifest)
@@ -71,13 +64,6 @@ class Model
     manifest = build_custom_manifest(version, display_name)
     kata(version).create(manifest)
   end
-
-  # :nocov:
-  def kata_create2(version:, ltf_name:, exercise_name:)
-    manifest = build_manifest(version, ltf_name, exercise_name)
-    kata(version).create(manifest)
-  end
-  # :nocov:
 
   def kata_create(version:, ltf_name:, exercise_name:)
     manifest = build_manifest(version, ltf_name, exercise_name)
