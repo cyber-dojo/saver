@@ -6,8 +6,8 @@ class GroupCreateTest < TestBase
     'f27'
   end
 
-  version_test 2, 'R5a', %w(
-  |POST /group_create_custom(display_name)
+  versions_test 'R5a', %w(
+  |POST /group_create_custom(version, display_name)
   |has status 200
   |returns the id: of a new group
   |that exists in saver
@@ -17,8 +17,8 @@ class GroupCreateTest < TestBase
     assert_group_create_custom_200(display_name)
   end
 
-  version_test 2, 'R5b', %w(
-  |POST /group_create2(ltf_name, exercise_name)
+  versions_test 'R5b', %w(
+  |POST /group_create2(version, ltf_name, exercise_name)
   |has status 200
   |returns the id: of a new group
   |that exists in saver
@@ -172,18 +172,22 @@ class GroupCreateTest < TestBase
   def assert_group_create_custom_200(display_name)
     assert_json_post_200(
       path = 'group_create_custom', {
+        version: version,
         display_name: display_name
       }.to_json
     ) do |response|
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
       assert_group_exists(id, display_name)
+      manifest = group_manifest(id)
+      assert_equal version, manifest['version']
     end
   end
 
   def assert_group_create2_200(ltf_name, exercise_name)
     assert_json_post_200(
       path = 'group_create2', {
+        version: version,
         ltf_name: ltf_name,
         exercise_name: exercise_name
       }.to_json
@@ -191,6 +195,8 @@ class GroupCreateTest < TestBase
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
       assert_group_exists(id, ltf_name, exercise_name)
+      manifest = group_manifest(id)
+      assert_equal version, manifest['version']
     end
   end
 

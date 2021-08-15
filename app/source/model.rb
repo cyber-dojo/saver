@@ -15,15 +15,13 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-  def group_create_custom(display_name:)
-    version = CURRENT_VERSION
-    manifest = build_custom_manifest(display_name, version)
+  def group_create_custom(version:, display_name:)
+    manifest = build_custom_manifest(version, display_name)
     group(version).create(manifest, {})
   end
 
-  def group_create2(ltf_name:, exercise_name:)
-    version = CURRENT_VERSION
-    manifest = build_manifest(ltf_name, exercise_name, version)
+  def group_create2(version:, ltf_name:, exercise_name:)
+    manifest = build_manifest(version, ltf_name, exercise_name)
     group(version).create(manifest, {})
   end
 
@@ -69,15 +67,13 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-  def kata_create_custom(display_name:)
-    version = CURRENT_VERSION
-    manifest = build_custom_manifest(display_name, version)
+  def kata_create_custom(version:, display_name:)
+    manifest = build_custom_manifest(version, display_name)
     kata(version).create(manifest, {})
   end
 
-  def kata_create2(ltf_name:, exercise_name:)
-    version = CURRENT_VERSION
-    manifest = build_manifest(ltf_name, exercise_name, version)
+  def kata_create2(version:, ltf_name:, exercise_name:)
+    manifest = build_manifest(version, ltf_name, exercise_name)
     kata(version).create(manifest, {})
   end
 
@@ -209,13 +205,13 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def build_custom_manifest(display_name, version)
+  def build_custom_manifest(version, display_name)
     manifest = custom_start_points.manifest(display_name)
     manifest['version'] = version
     manifest
   end
 
-  def build_manifest(ltf_name, exercise_name, version)
+  def build_manifest(version, ltf_name, exercise_name)
     manifest = languages_start_points.manifest(ltf_name)
     unless exercise_name === ''
       exercise = exercises_start_points.manifest(exercise_name)

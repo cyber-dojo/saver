@@ -8,21 +8,21 @@ class KataCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'h35', %w(
-  |POST /kata_create_custom(display_name)
+  versions_test 'h35', %w(
+  |POST /kata_create_custom(version, display_name)
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
   |with a matching values
   ) do
     display_name = custom_start_points.display_names.sample
-    assert_kata_create_custom_200(display_name)
+    assert_kata_create_custom_200(version, display_name)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'h36', %w(
-  |POST /kata_create2(ltf_name, exercise_name)
+  versions_test 'h36', %w(
+  |POST /kata_create2(version, ltf_name, exercise_name)
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
@@ -30,18 +30,18 @@ class KataCreateTest < TestBase
   ) do
     ltf_name = languages_start_points.display_names.sample
     exercise_name = exercises_start_points.display_names.sample
-    assert_kata_create2_200(ltf_name, exercise_name)
+    assert_kata_create2_200(version, ltf_name, exercise_name)
   end
 
-  versions3_test 'h37', %w(
-  |POST /kata_create2(ltf_name, exercise_name=nil)
+  versions_test 'h37', %w(
+  |POST /kata_create2(version, ltf_name, exercise_name=nil)
   |has status 200
   |returns the id: of a new kata
   |that exists in saver
   |with a matching values
   ) do
     ltf_name = languages_start_points.display_names.sample
-    assert_kata_create2_200(ltf_name, '')
+    assert_kata_create2_200(version, ltf_name, '')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - -
@@ -113,21 +113,25 @@ class KataCreateTest < TestBase
 
   private
 
-  def assert_kata_create_custom_200(display_name)
+  def assert_kata_create_custom_200(version, display_name)
     assert_json_post_200(
       path = 'kata_create_custom', {
+        version: version,
         display_name: display_name
       }.to_json
     ) do |response|
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
       assert_kata_exists(id, display_name)
+      manifest = kata_manifest(id)
+      assert_equal version, manifest['version']
     end
   end
 
-  def assert_kata_create2_200(ltf_name, exercise_name)
+  def assert_kata_create2_200(version, ltf_name, exercise_name)
     assert_json_post_200(
       path = 'kata_create2', {
+        version: version,
         ltf_name: ltf_name,
         exercise_name: exercise_name
       }.to_json
@@ -135,6 +139,8 @@ class KataCreateTest < TestBase
       assert_equal [path], response.keys.sort, :keys
       id = response[path]
       assert_kata_exists(id, ltf_name, exercise_name)
+      manifest = kata_manifest(id)
+      assert_equal version, manifest['version']
     end
   end
 
