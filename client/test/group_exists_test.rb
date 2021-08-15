@@ -19,10 +19,15 @@ class GroupExistsTest < TestBase
 
   versions_test '861', %w(
   |group_exists? is true,
-  |for a well-formed id from previous group_create
+  |for a well-formed id
+  |from previous group_create or group_create_custom
   ) do
-    id = group_create(custom_manifest, default_options)
-    assert group_exists?(id), :created_in_test
+    in_group do |id|
+      assert group_exists?(id), :in_group
+    end
+    in_group_custom do |id|
+      assert group_exists?(id), :in_group_custom
+    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

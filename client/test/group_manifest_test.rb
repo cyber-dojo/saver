@@ -32,17 +32,14 @@ class GroupManifestTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'Q61', %w(
-  retrieved group_manifest matches saved group_manifest
+  group_manifest has created and version keys
   ) do
-    manifest = custom_manifest
-    id = group_create(manifest, default_options)
-    saved = group_manifest(id)
-    manifest.keys.each do |key|
-      assert_equal manifest[key], saved[key],  key
+    in_group do |id|
+      manifest = group_manifest(id)
+      assert manifest.keys.include?('created'), :created_key
+      assert manifest.keys.include?('version'), :version_key
+      assert_equal version, manifest['version'], :version
     end
-    assert saved.keys.include?('created'), :created_key
-    assert saved.keys.include?('version'), :version_key
-    assert_equal version, saved['version'], :version
   end
 
 end

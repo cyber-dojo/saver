@@ -19,10 +19,15 @@ class KataExistsTest < TestBase
 
   versions_test '761', %w(
   |kata_exists? is true,
-  |for a well-formed id that exists
+  |for a well-formed id
+  |from previous kata_create() or kata_create_custom()
   ) do
-    id = kata_create(custom_manifest, default_options)
-    assert kata_exists?(id), :created_in_test
+    in_kata do |id|
+      assert kata_exists?(id), :in_kata
+    end
+    in_kata_custom do |id|
+      assert kata_exists?(id), :in_kata_custom
+    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

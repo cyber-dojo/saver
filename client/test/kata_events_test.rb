@@ -120,13 +120,11 @@ class KataEventsTest < TestBase
   |kata_event(id, index=-1) retrieves the most recent event
   |even when only the creation event exists
   ) do
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    id = kata_create(manifest, default_options)
-    last = kata_event(id, 0)
-    actual = kata_event(id, -1)
-    assert_equal last, actual
+    in_kata do |id|
+      last = kata_event(id, 0)
+      actual = kata_event(id, -1)
+      assert_equal last, actual
+    end
   end
 
   # . . . . . . . . . . . .
@@ -153,13 +151,11 @@ class KataEventsTest < TestBase
   |kata_event(id, index=-1) retrieves the most recent event
   |even when only the creation event exists
   ) do
-    display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    id = kata_create(manifest, default_options)
-    last = kata_event(id, 0)
-    actual = kata_event(id, -1)
-    assert_equal last, actual
+    in_kata do |id|
+      last = kata_event(id, 0)
+      actual = kata_event(id, -1)
+      assert_equal last, actual
+    end
   end
 
 end

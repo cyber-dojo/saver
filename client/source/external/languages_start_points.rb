@@ -3,11 +3,11 @@ require_relative 'http'
 
 module External
 
-  class CustomStartPoints
+  class LanguagesStartPoints
 
     def initialize
-      service = 'custom-start-points'
-      port = ENV['CYBER_DOJO_CUSTOM_START_POINTS_PORT'].to_i
+      service = 'languages-start-points'
+      port = ENV['CYBER_DOJO_LANGUAGES_START_POINTS_PORT'].to_i
       http = External::Http.new
       @http = HttpJsonHash::service(self.class.name, http, service, port)
     end

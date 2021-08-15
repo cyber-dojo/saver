@@ -17,7 +17,7 @@ class Id58TestBase < MiniTest::Test
   # - - - - - - - - - - - - - - - - - - - - - -
 
   # :nocov:
-  def self.test(id58_suffix, *lines, &test_block)
+  def self.test(id58_suffix, *lines, version, &test_block)
     source = test_block.source_location
     source_file = File.basename(source[0])
     source_line = source[1].to_s
@@ -28,6 +28,7 @@ class Id58TestBase < MiniTest::Test
         ENV['ID58'] = id58
         @id58 = id58
         @name58 = name58
+        @version = version
         id58_setup
         begin
           t1 = Time.now
@@ -133,6 +134,10 @@ class Id58TestBase < MiniTest::Test
 
   def name58
     @name58
+  end
+
+  def version
+    @version
   end
   # :nocov:
 

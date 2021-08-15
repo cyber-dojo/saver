@@ -16,8 +16,19 @@ module External
 
     # - - - - - - - - - - - - - - - - - - -
 
-    def group_create(manifests, options)
-      @http.post(__method__, {manifests:manifests, options:options})
+    def group_create_custom(version, display_name)
+      @http.post(__method__, {
+        version:version,
+        display_name:display_name
+      })
+    end
+
+    def group_create(version, ltf_name, exercise_name)
+      @http.post(__method__, {
+        version:version,
+        ltf_name:ltf_name,
+        exercise_name:exercise_name
+      })
     end
 
     def group_exists?(id)
@@ -42,8 +53,19 @@ module External
 
     # - - - - - - - - - - - - - - - - - - -
 
-    def kata_create(manifest, options)
-      @http.post(__method__, {manifest:manifest, options:options})
+    def kata_create_custom(version, display_name)
+      @http.post(__method__, {
+        version:version,
+        display_name:display_name
+      })
+    end
+
+    def kata_create(version, ltf_name, exercise_name)
+      @http.post(__method__, {
+        version:version,
+        ltf_name:ltf_name,
+        exercise_name:exercise_name
+      })
     end
 
     def kata_exists?(id)
@@ -74,13 +96,13 @@ module External
       @http.post(__method__, {id:id, name:name, value:value})
     end
 
-    #def kata_download(id)
-    #  @http.get(__method__, {id:id})
-    #end
-
     def kata_fork(id, index)
       @http.post(__method__, {id:id, index:index})
     end
+
+    #def kata_download(id)
+    #  @http.get(__method__, {id:id})
+    #end
 
   end
 

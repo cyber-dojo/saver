@@ -7,7 +7,9 @@ class KataOptionTest < TestBase
   end
 
   def id58_setup
-    @id = kata_create(custom_manifest, default_options)
+    ltf_name = any_languages_start_points_display_name
+    exercise_name = any_exercises_start_points_display_name
+    @id = kata_create(version, ltf_name, exercise_name)
   end
 
   attr_reader :id

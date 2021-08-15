@@ -150,7 +150,7 @@ module KataTestData
     }
   end
 
-
+=begin
   def manifest_Tennis_refactoring_Python_unitttest
     {
       "display_name" => "Tennis refactoring, Python unitttest",
@@ -172,6 +172,7 @@ module KataTestData
        }
     }.clone
   end
+=end
 
 =begin
   def print_cmp(expected, actual)

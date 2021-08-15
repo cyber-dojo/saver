@@ -22,14 +22,14 @@ class TestBase < Id58TestBase
     externals.saver
   end
 
-  def default_options
-    {}
-  end
-
   # - - - - - - - - - - - - - - - - - -
 
-  def group_create(manifest, options)
-    saver.group_create([manifest], options)
+  def group_create_custom(version, display_name)
+    saver.group_create_custom(version, display_name)
+  end
+
+  def group_create(version, ltf_name, exercise_name)
+    saver.group_create(version, ltf_name, exercise_name)
   end
 
   def group_exists?(id)
@@ -54,8 +54,12 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  def kata_create(manifest, options)
-    saver.kata_create(manifest, options)
+  def kata_create_custom(version, display_name)
+    saver.kata_create_custom(version, display_name)
+  end
+
+  def kata_create(version, ltf_name, exercise_name)
+    saver.kata_create(version, ltf_name, exercise_name)
   end
 
   def kata_exists?(id)
@@ -102,30 +106,67 @@ class TestBase < Id58TestBase
 
   def self.version_test(version, id58_suffix, *lines, &block)
     lines.unshift("<version:#{version}>")
-    test(id58_suffix, *lines) do
-      @version = version
+    test(id58_suffix, *lines, version) do
       self.instance_eval(&block)
     end
   end
 
-  def version
-    @version
+  def in_group_custom
+    display_name = any_custom_start_points_display_name
+    id = group_create_custom(version, display_name)
+    yield id, display_name
   end
 
-  def custom_manifest
-    @display_name = custom_start_points.display_names.sample
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    manifest
+  def in_group
+    ltf_name = any_languages_start_points_display_name
+    exercise_name = any_exercises_start_points_display_name
+    id = group_create(version, ltf_name, exercise_name)
+    yield id, ltf_name, exercise_name
+  end
+
+  def in_kata_custom
+    display_name = any_custom_start_points_display_name
+    id = kata_create_custom(version, display_name)
+    yield id, display_name
+  end
+
+  def in_kata
+    ltf_name = any_languages_start_points_display_name
+    exercise_name = any_exercises_start_points_display_name
+    id = kata_create(version, ltf_name, exercise_name)
+    yield id, ltf_name, exercise_name
+  end
+
+  def any_custom_start_points_display_name
+    custom_start_points.display_names.sample
+  end
+
+  def any_exercises_start_points_display_name
+    exercises_start_points.display_names.sample
+  end
+
+  def any_languages_start_points_display_name
+    languages_start_points.display_names.sample
   end
 
   def custom_start_points
     externals.custom_start_points
   end
 
-  def display_name
-    @display_name
+  def exercises_start_points
+    externals.exercises_start_points
   end
+
+  def languages_start_points
+    externals.languages_start_points
+  end
+
+  #def custom_manifest
+  #  @display_name = custom_start_points.display_names.sample
+  #  manifest = custom_start_points.manifest(display_name)
+  #  manifest['version'] = version
+  #  manifest
+  #end
 
   # - - - - - - - - - - - - - - - - - -
 
