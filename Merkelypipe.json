@@ -1,7 +1,7 @@
 {
     "owner": "cyber-dojo",
     "name": "saver",
-    "description": "Microservice for Group//Kata model+persistence HTTP API",
+    "description": "Group/Kata model+persistence HTTP API",
     "visibility": "public",
     "template": [
         "artifact",
