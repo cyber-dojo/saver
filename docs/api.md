@@ -1,27 +1,61 @@
 # API 
 - [(JSON-in)](#json-in) All methods pass their argument in a json hash in the HTTP request body.
 - [(JSON-out)](#json-out) All methods return a json hash in the HTTP response body.
-- Paths on *not* REST-ful, GET is used for queries, POST is used for modifiers.
+- GET is used for queries.
+- POST is used for modifiers.
+- Paths are *not* REST-ful.
+
 
 - - - -
-## POST group_create(manifests,options)
-Creates a new group exercise from `manifests[0]`, and returns its id.
+## POST group_create(ltf_name,exercise_name)
+Creates a new group from the manifests associated with the given `ltf_name` and `exercise_name` and returns its id.
 - parameters 
-  * **manifests:[Hash,...]**.
-  For example, a [custom-start-points](https://github.com/cyber-dojo/custom-start-points) manifest.  
-  * **options:Hash**.
+  * **lft_name:String** one of [languages-start-points](https://github.com/cyber-dojo/languages-start-points) `display_names`.
+  * **exercise_name:String** one of [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) `display_names` or the empty string if there is no exercise.
 - returns 
   * the `id` of the created group.
 - notes
-  * manifests - At present only `[0]` is used.
-    Will allow a group to have more than one exercise.
-  * options - At present unused and defaulted to {}.
-    Will allow settings such as theme (light|dark) and colour-syntax (on|off) 
-    to be defaulted at creation.
+- example
+  ```bash
+  $ curl \
+    --data '{"ltf_name":"C#, NUnit", "exercise_name":"Fizz Buzz"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      http://${DOMAIN}:${PORT}/group_create
+  ```
+  ```bash
+  {"group_create":"dFg8Us"}
+  ```
+
+
+- - - -
+## POST group_create_custom(display_name)
+Creates a new group from the manifest associated with the given `display_name` and returns its id.
+- parameters 
+  * **display_name:String** one of [custom-start-points](https://github.com/cyber-dojo/custom-start-points) `display_names`.
+- returns 
+  * the `id` of the created group.
+- notes
+- example
+  ```bash
+  $ curl \
+    --data '{"display_name":"Java Countdown, Round 1"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      http://${DOMAIN}:${PORT}/group_create_custom
+  ```
+  ```bash
+  {"group_create_custom":"dFg8Us"}
+  ```
+
 
 - - - -
 ## GET group_exists?(id)
-Determines if a group exercise with the given `id` exists.
+Determines if a group with the given `id` exists.
 - parameters 
   * **id:String**.
 - returns 
@@ -40,9 +74,10 @@ Determines if a group exercise with the given `id` exists.
   {"group_exists?":true}
   ```
 
+
 - - - -
 ## GET group_manifest(id)
-Gets the manifest used to create the group exercise with the given `id`.
+Gets the manifest used to create the group with the given `id`.
 - parameters
   * **id:String**.
 - returns
@@ -84,6 +119,7 @@ Gets the manifest used to create the group exercise with the given `id`.
   }  
   ```
 
+
 - - - -
 ## POST group_join(id,indexes)
 Creates a new kata in the group with the given `id` and returns the kata's id.
@@ -107,11 +143,12 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
   {"group_join":"a8gVRN"}
   ```
 
+
 - - - -
 ## GET group_joined(id)
-Returns the kata-id and kata-events keyed against the kata's avatar-index (0-63)
-for the katas that have joined a group. The group can be specified with the group's `id`
-**or** with the `id` of any kata in the group.
+Returns the kata-id and kata-events-summary keyed against the kata's avatar-index (0-63)
+for the katas that have joined a group. The id can be the group's `id`
+**or** the `id` of any kata in the group.
 - parameters 
   * **id:String**.
 - returns 
@@ -142,6 +179,7 @@ for the katas that have joined a group. The group can be specified with the grou
   }
   ```
 
+
 - - - -
 ## POST group_fork(id,index)
 Creates a new group whose starting files are a copy of the files in the kata with 
@@ -167,16 +205,52 @@ that exist in the kata being forked are *not* copied.
   {"group_fork":"a8gVRN"}
   ```
 
+
 - - - -
-## POST kata_create(manifest,options)
-Creates a new kata exercise from `manifest`, and returns its id.
+## POST kata_create(ltf_name,exercise_name)
+Creates a new kata from the manifests associated with the given `ltf_name` and `exercise_name` and returns its id.
 - parameters 
-  * **manifest:Hash**.
-  For example, a [custom-start-points](https://github.com/cyber-dojo/custom-start-points) manifest.  
-  * **options:Hash**.
-  Currently unused (and defaulted). For a planned feature.
+  * **lft_name:String** one of [languages-start-points](https://github.com/cyber-dojo/languages-start-points) `display_names`.
+  * **exercise_name:String** one of [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) `display_names` or the empty string if there is no exercise.
 - returns 
   * the `id` of the created kata.
+- notes
+- example
+  ```bash
+  $ curl \
+    --data '{"ltf_name":"C#, NUnit", "exercise_name":"Fizz Buzz"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      http://${DOMAIN}:${PORT}/kata_create
+  ```
+  ```bash
+  {"kata_create":"dFg8Us"}
+  ```
+
+
+- - - -
+## POST kata_create_custom(display_name)
+Creates a new kata from the manifest associated with the given `display_name` and returns its id.
+- parameters 
+  * **display_name:String** one of [custom-start-points](https://github.com/cyber-dojo/custom-start-points) `display_names`.
+- returns 
+  * the `id` of the created kata.
+- notes
+- example
+  ```bash
+  $ curl \
+    --data '{"display_name":"Java Countdown, Round 1"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      http://${DOMAIN}:${PORT}/kata_create_custom
+  ```
+  ```bash
+  {"kata_create_custom":"dFg8Us"}
+  ```
 
 
 - - - -
@@ -199,6 +273,7 @@ Determines if a kata exercise with the given `id` exists.
   ```bash
   {"kata_exists?":false}
   ```
+
 
 - - - -
 ## GET kata_manifest(id)
@@ -338,6 +413,7 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
    }
    ```
 
+
 - - - -
 ## GET katas_events(ids,indexes)
 Gets the full details for the kata events with the given `ids` and `indexes`.
@@ -383,29 +459,36 @@ A Batch-Method for kata_event(id,index).
 ## POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)
 Record a test event with no prediction.
 
+
 - - - -
 ## POST kata_predicted_right(id,index,files,stdout,stderr,status,summary)
 Record a test event with a correct prediction.
+
 
 - - - -
 ## POST kata_predicted_wrong(id,index,files,stdout,stderr,status,summary)
 Record a test event with an incorrect prediction.
 
+
 - - - -
 ## POST kata_reverted(id,index,files,stdout,stderr,status,summary)
 Revert back to a previous traffic-light.
+
 
 - - - -
 ## POST kata_checked_out(id,index,files,stdout,stderr,status,summary)
 Checkout a traffic-light from a different avatar.
 
+
 - - - -
 ## GET kata_option_get(id,name)
-Get a theme (dark/light) or colour (on/off) option.
+Get a theme (dark/light) or colour (on/off) or prediction (on/off) option.
+
 
 - - - -
 ## POST kata_option_set(id,name,value)
-Set a theme (dark/light) or colour (on/off) option.
+Set a theme (dark/light) or colour (on/off) or prediction (on/off) option.
+
 
 - - - -
 ## POST kata_fork(id,index)
@@ -432,6 +515,7 @@ that exist in the kata being forked are *not* copied.
   {"kata_fork":"a8gVRN"}
   ```
 
+
 - - - -
 ## GET alive?
 Tests if the service is alive.  
@@ -447,6 +531,7 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
   ```bash
   {"alive?":true}
   ```
+
 
 - - - -
 ## GET ready?
@@ -465,6 +550,7 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
   {"ready?":false}
   ```
 
+
 - - - -
 ## GET sha
 The git commit sha used to create the Docker image.
@@ -480,12 +566,12 @@ The git commit sha used to create the Docker image.
   {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
   ```
 
+
 - - - -
 ## JSON in
 - All methods pass their argument in a json hash in the http request body.
   * For `alive?`,`ready?` and `sha` you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
-  * For `assert` and `run` the key must be `"command"`.
-  * For `assert_all`, `run_all`, `run_until_true`, `run_until_false` the key must be `"commands"`.
+
 
 - - - -
 ## JSON out      

@@ -38,7 +38,8 @@ Options:
 
 Group
 -----
-* [POST group_create(manifests,options)](docs/api.md#post-group_createmanifestsoptions)
+* [POST group_create(ltf_name,exercise_name)](docs/api.md#post-group_createltf_nameexercise_name)
+* [POST group_create_custom(display_name)](docs/api.md#post-group_create_customdisplay_name)
 * [GET group_exists?(id)](docs/api.md#get-group_existsid)
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
 * [GET group_joined(id)](docs/api.md#get-group_joinedid)
@@ -47,7 +48,8 @@ Group
 
 Kata
 ----
-* [POST kata_create(manifest,options)](docs/api.md#post-kata_createmanifestoptions)
+* [POST kata_create(ltf_name,exercise_name)](docs/api.md#post-kata_createltf_nameexercise_name)
+* [POST kata_create_custom(display_name)](docs/api.md#post-kata_create_customdisplay_name)
 * [GET kata_exists?(id)](docs/api.md#get-kata_existsid)
 * [GET kata_events(id)](docs/api.md#get-kata_eventsid)
 * [GET kata_event(id,index)](docs/api.md#get-kata_eventidindex)
