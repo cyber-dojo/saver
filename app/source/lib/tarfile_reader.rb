@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'rubygems/package'  # Gem::Package::TarReader
 require 'stringio'
 require_relative 'utf8_clean'
