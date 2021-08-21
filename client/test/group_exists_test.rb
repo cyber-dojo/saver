@@ -25,9 +25,6 @@ class GroupExistsTest < TestBase
     in_group do |id|
       assert group_exists?(id), :in_group
     end
-    in_group_custom do |id|
-      assert group_exists?(id), :in_group_custom
-    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

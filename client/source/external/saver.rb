@@ -16,19 +16,8 @@ module External
 
     # - - - - - - - - - - - - - - - - - - -
 
-    def group_create_custom(version, display_name)
-      @http.post(__method__, {
-        version:version,
-        display_name:display_name
-      })
-    end
-
-    def group_create(version, ltf_name, exercise_name)
-      @http.post(__method__, {
-        version:version,
-        ltf_name:ltf_name,
-        exercise_name:exercise_name
-      })
+    def group_create(manifest)
+      @http.post(__method__, { manifest:manifest })
     end
 
     def group_exists?(id)
@@ -53,19 +42,8 @@ module External
 
     # - - - - - - - - - - - - - - - - - - -
 
-    def kata_create_custom(version, display_name)
-      @http.post(__method__, {
-        version:version,
-        display_name:display_name
-      })
-    end
-
-    def kata_create(version, ltf_name, exercise_name)
-      @http.post(__method__, {
-        version:version,
-        ltf_name:ltf_name,
-        exercise_name:exercise_name
-      })
+    def kata_create(manifest)
+      @http.post(__method__, { manifest:manifest })
     end
 
     def kata_exists?(id)

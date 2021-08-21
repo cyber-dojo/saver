@@ -25,9 +25,6 @@ class KataExistsTest < TestBase
     in_kata do |id|
       assert kata_exists?(id), :in_kata
     end
-    in_kata_custom do |id|
-      assert kata_exists?(id), :in_kata_custom
-    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

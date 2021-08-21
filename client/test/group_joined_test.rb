@@ -50,9 +50,6 @@ class GroupJoinedTest < TestBase
     in_kata do |id|
       assert_equal({}, group_joined(id), :in_kata)
     end
-    in_kata_custom do |id|
-      assert_equal({}, group_joined(id), :in_kata_custom)
-    end
   end
 
   private

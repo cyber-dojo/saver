@@ -14,9 +14,6 @@ class GroupJoinTest < TestBase
     in_group do |id|
       assert_equal({}, joined(id))
     end
-    in_group_custom do |id|
-      assert_equal({}, joined(id))
-    end
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
