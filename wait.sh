@@ -95,10 +95,10 @@ echo_docker_log()
 containers_wait()
 {
   exit_non_zero_unless_healthy $(server_container) $(server_name)
-  exit_non_zero_unless_clean   $(server_container)
+  #exit_non_zero_unless_clean   $(server_container)
 
   exit_non_zero_unless_healthy $(client_container) $(client_name)
-  exit_non_zero_unless_clean   $(client_container)
+  #exit_non_zero_unless_clean   $(client_container)
 }
 
 # - - - - - - - - - - - - - - - - - - - -

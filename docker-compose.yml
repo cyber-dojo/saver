@@ -51,7 +51,7 @@ services:
       - exercises-start-points
 
   custom-start-points:
-    image: cyberdojo/custom-start-points:513f842
+    image: cyberdojo/custom-start-points:970bd78
     container_name: test_saver_custom_start_points
     user: nobody
     env_file: [ .env ]
@@ -60,7 +60,7 @@ services:
     tmpfs: /tmp
 
   languages-start-points:
-    image: cyberdojo/languages-start-points:f7e6555
+    image: cyberdojo/languages-start-points:119899a
     container_name: test_saver_languages_start_points
     user: nobody
     env_file: [ .env ]
@@ -69,7 +69,7 @@ services:
     tmpfs: /tmp
 
   exercises-start-points:
-    image: cyberdojo/exercises-start-points:0d14dad
+    image: cyberdojo/exercises-start-points:af27502
     container_name: test_saver_exercises_start_points
     user: nobody
     env_file: [ .env ]

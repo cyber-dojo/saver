@@ -50,6 +50,14 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
+  def custom_manifest2
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = version
+    manifest
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
   def self.disk_tests(id58_suffix, *lines, &block)
     test(id58_suffix, ["<disk:Real>"]+lines) do
       self.instance_exec(&block)

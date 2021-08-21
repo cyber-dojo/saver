@@ -12,6 +12,7 @@ class App < AppBase
 
   # - - - - - - - - - - - - - - - - -
 
+  post_json(:model, :group_create2)
   post_json(:model, :group_create_custom)
   post_json(:model, :group_create)
    get_json(:model, :group_exists?)
@@ -22,6 +23,7 @@ class App < AppBase
 
    # - - - - - - - - - - - - - - - - -
 
+  post_json(:model, :kata_create2)
   post_json(:model, :kata_create_custom)
   post_json(:model, :kata_create)
    get_json(:model, :kata_download)

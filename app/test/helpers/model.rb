@@ -1,5 +1,9 @@
 module TestHelpersModel
 
+  #def group_create2(manifest)
+  #  model.group_create2(manifest:manifest)
+  #end
+
   def group_create_custom(version, display_name)
     model.group_create_custom(version:version, display_name:display_name)
   end
@@ -35,6 +39,10 @@ module TestHelpersModel
   AVATAR_INDEXES = (0..63).to_a
 
   # - - - - - - - - - - - - - - -
+
+  #def kata_create2(manifest)
+  #  model.kata_create2(manifest:manifest)
+  #end
 
   def kata_create_custom(version, display_name)
     model.kata_create_custom(version:version, display_name:display_name)
