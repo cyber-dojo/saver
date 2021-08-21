@@ -7,18 +7,22 @@
 
 
 - - - -
-## POST group_create(ltf_name,exercise_name)
-Creates a new group from the manifests associated with the given `ltf_name` and `exercise_name` and returns its id.
+## POST group_create(manifest)
+Creates a new group from the given `manifest` and returns its id.
 - parameters 
-  * **lft_name:String** one of [languages-start-points](https://github.com/cyber-dojo/languages-start-points) `display_names`.
-  * **exercise_name:String** one of [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) `display_names` or the empty string if there is no exercise.
+  * **manifest:Hash** created by 
+  [creator](https://github.com/cyber-dojo/creator) 
+  from
+  [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and
+  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) or
+  [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
 - returns 
   * the `id` of the created group.
 - notes
 - example
   ```bash
   $ curl \
-    --data '{"ltf_name":"C#, NUnit", "exercise_name":"Fizz Buzz"}' \
+    --data '{"manifest":...}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -27,29 +31,6 @@ Creates a new group from the manifests associated with the given `ltf_name` and 
   ```
   ```bash
   {"group_create":"dFg8Us"}
-  ```
-
-
-- - - -
-## POST group_create_custom(display_name)
-Creates a new group from the manifest associated with the given `display_name` and returns its id.
-- parameters 
-  * **display_name:String** one of [custom-start-points](https://github.com/cyber-dojo/custom-start-points) `display_names`.
-- returns 
-  * the `id` of the created group.
-- notes
-- example
-  ```bash
-  $ curl \
-    --data '{"display_name":"Java Countdown, Round 1"}' \
-    --fail \
-    --header 'Content-type: application/json' \
-    --silent \
-    --request GET \
-      http://${DOMAIN}:${PORT}/group_create_custom
-  ```
-  ```bash
-  {"group_create_custom":"dFg8Us"}
   ```
 
 
@@ -207,18 +188,22 @@ that exist in the kata being forked are *not* copied.
 
 
 - - - -
-## POST kata_create(ltf_name,exercise_name)
-Creates a new kata from the manifests associated with the given `ltf_name` and `exercise_name` and returns its id.
+## POST kata_create(manifest)
+Creates a new kata from the given `manifest` and returns its id.
 - parameters 
-  * **lft_name:String** one of [languages-start-points](https://github.com/cyber-dojo/languages-start-points) `display_names`.
-  * **exercise_name:String** one of [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) `display_names` or the empty string if there is no exercise.
+  * **manifest:Hash** created by 
+  [creator](https://github.com/cyber-dojo/creator) 
+  from
+  [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and
+  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) or
+  [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
 - returns 
   * the `id` of the created kata.
 - notes
 - example
   ```bash
   $ curl \
-    --data '{"ltf_name":"C#, NUnit", "exercise_name":"Fizz Buzz"}' \
+    --data '{"manifest":...}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -227,29 +212,6 @@ Creates a new kata from the manifests associated with the given `ltf_name` and `
   ```
   ```bash
   {"kata_create":"dFg8Us"}
-  ```
-
-
-- - - -
-## POST kata_create_custom(display_name)
-Creates a new kata from the manifest associated with the given `display_name` and returns its id.
-- parameters 
-  * **display_name:String** one of [custom-start-points](https://github.com/cyber-dojo/custom-start-points) `display_names`.
-- returns 
-  * the `id` of the created kata.
-- notes
-- example
-  ```bash
-  $ curl \
-    --data '{"display_name":"Java Countdown, Round 1"}' \
-    --fail \
-    --header 'Content-type: application/json' \
-    --silent \
-    --request GET \
-      http://${DOMAIN}:${PORT}/kata_create_custom
-  ```
-  ```bash
-  {"kata_create_custom":"dFg8Us"}
   ```
 
 
