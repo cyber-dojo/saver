@@ -9,11 +9,11 @@ MAX = {
   warnings:0,
   skips:0,
 
-  duration:60,
+  duration:100,
 
   test: {
     lines: {
-       total:1743,
+       total:1731,
       missed:0,
     },
     branches: {
@@ -24,7 +24,7 @@ MAX = {
 
   code: {
     lines: {
-       total:1246,
+       total:1238,
       missed:10,
     },
     branches: {

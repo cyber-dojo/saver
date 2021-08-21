@@ -15,11 +15,6 @@ class Model
 
   #- - - - - - - - - - - - - - - - - -
 
-  def group_create2(manifest:)
-    version = from_manifest(manifest)
-    group(version).create(manifest)
-  end
-
   def group_create(manifest:)
     version = from_manifest(manifest)
     group(version).create(manifest)
@@ -59,11 +54,6 @@ class Model
   end
 
   #- - - - - - - - - - - - - - - - - -
-
-  def kata_create2(manifest:)
-    version = from_manifest(manifest)
-    kata(version).create(manifest)
-  end
 
   def kata_create(manifest:)
     version = from_manifest(manifest)
