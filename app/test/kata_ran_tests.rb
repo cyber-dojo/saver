@@ -112,8 +112,7 @@ class KataRanTestsTest < TestBase
   private
 
   def in_kata
-    display_name = custom_start_points.display_names.sample
-    gid = group_create_custom(version, display_name)
+    gid = group_create(manifest_Tennis_refactoring_Python_unitttest)
     id = group_join(gid)
     index = 1
     files = {

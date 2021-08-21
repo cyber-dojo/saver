@@ -37,7 +37,7 @@ class KataManifestTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 =begin
-  #TODO: need to find manifests where the optional entries are not present
+  #TODO: need to use manifests where the optional entries are not present
   versions_test '5s2', %w(
   optional entries are polyfilled ) do
     m = custom_manifest
@@ -81,8 +81,8 @@ class KataManifestTest < TestBase
   ) do
     now = [2021,5,31, 10,3,51,6553]
     externals.instance_exec { @time = TimeStub.new(now) }
-    display_name = "Tennis refactoring, Python unitttest"
-    id = kata_create_custom(version, display_name)
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    id = kata_create(manifest)
     actual = kata_manifest(id)
     expected = {
       'image_name' => "cyberdojofoundation/python_unittest:b8333d3",

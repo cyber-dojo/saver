@@ -23,9 +23,6 @@ services:
       - ./client/source:/app/source:ro
       - ./client/test:/app/test:ro
     depends_on:
-      - custom-start-points
-      - languages-start-points
-      - exercises-start-points
       - server
 
   server:
@@ -45,35 +42,4 @@ services:
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
       - /tmp:uid=19663,gid=65533
-    depends_on:
-      - custom-start-points
-      - languages-start-points
-      - exercises-start-points
-
-  custom-start-points:
-    image: cyberdojo/custom-start-points:970bd78
-    container_name: test_saver_custom_start_points
-    user: nobody
-    env_file: [ .env ]
-    read_only: true
-    restart: "no"
-    tmpfs: /tmp
-
-  languages-start-points:
-    image: cyberdojo/languages-start-points:119899a
-    container_name: test_saver_languages_start_points
-    user: nobody
-    env_file: [ .env ]
-    read_only: true
-    restart: "no"
-    tmpfs: /tmp
-
-  exercises-start-points:
-    image: cyberdojo/exercises-start-points:af27502
-    container_name: test_saver_exercises_start_points
-    user: nobody
-    env_file: [ .env ]
-    read_only: true
-    restart: "no"
-    tmpfs: /tmp
 

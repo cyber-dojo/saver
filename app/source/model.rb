@@ -20,13 +20,8 @@ class Model
     group(version).create(manifest)
   end
 
-  def group_create_custom(version:, display_name:)
-    manifest = build_custom_manifest(version, display_name)
-    group(version).create(manifest)
-  end
-
-  def group_create(version:, ltf_name:, exercise_name:)
-    manifest = build_manifest(version, ltf_name, exercise_name)
+  def group_create(manifest:)
+    version = from_manifest(manifest)
     group(version).create(manifest)
   end
 
@@ -70,13 +65,8 @@ class Model
     kata(version).create(manifest)
   end
 
-  def kata_create_custom(version:, display_name:)
-    manifest = build_custom_manifest(version, display_name)
-    kata(version).create(manifest)
-  end
-
-  def kata_create(version:, ltf_name:, exercise_name:)
-    manifest = build_manifest(version, ltf_name, exercise_name)
+  def kata_create(manifest:)
+    version = from_manifest(manifest)
     kata(version).create(manifest)
   end
 
@@ -188,36 +178,7 @@ class Model
     @externals.disk
   end
 
-  def custom_start_points
-    @externals.custom_start_points
-  end
-
-  def exercises_start_points
-    @externals.exercises_start_points
-  end
-
-  def languages_start_points
-    @externals.languages_start_points
-  end
-
   # - - - - - - - - - - - - - - - - - - - -
-
-  def build_custom_manifest(version, display_name)
-    manifest = custom_start_points.manifest(display_name)
-    manifest['version'] = version
-    manifest
-  end
-
-  def build_manifest(version, ltf_name, exercise_name)
-    manifest = languages_start_points.manifest(ltf_name)
-    unless exercise_name === ''
-      exercise = exercises_start_points.manifest(exercise_name)
-      manifest['visible_files'].merge!(exercise['visible_files'])
-      manifest['exercise'] = exercise['display_name']
-    end
-    manifest['version'] = version
-    manifest
-  end
 
   GROUPS = [ Group_v0, Group_v1, Group_v2 ]
   KATAS = [ Kata_v0, Kata_v1, Kata_v2 ]

@@ -64,9 +64,6 @@ containers_up()
 {
   create_space_limited_volume
 
-  service_up custom-start-points
-  service_up languages-start-points
-  service_up exercises-start-points
   service_up $(server_name)
   service_up $(client_name)
 }

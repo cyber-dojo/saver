@@ -28,29 +28,20 @@ class TestBase < Id58TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   def in_group(&block)
-    @display_name = languages_start_points.display_names.sample
-    @exercise_name = exercises_start_points.display_names.sample
-    yield group_create(version, @display_name, @exercise_name)
+    yield group_create(custom_manifest)
   end
 
   def in_kata(gid=nil, &block)
     if gid.nil?
-      @display_name = languages_start_points.display_names.sample
-      @exercise_name = exercises_start_points.display_names.sample
-      yield kata_create(version, @display_name, @exercise_name)
+      yield kata_create(custom_manifest)
     else
       yield group_join(gid)
     end
   end
 
-  def custom_manifest
-    display_name = custom_start_points.display_names.sample
-    custom_start_points.manifest(display_name)
-  end
-
   # - - - - - - - - - - - - - - - - - - -
 
-  def custom_manifest2
+  def custom_manifest
     manifest = manifest_Tennis_refactoring_Python_unitttest
     manifest['version'] = version
     manifest

@@ -1,15 +1,7 @@
 module TestHelpersModel
 
-  #def group_create2(manifest)
-  #  model.group_create2(manifest:manifest)
-  #end
-
-  def group_create_custom(version, display_name)
-    model.group_create_custom(version:version, display_name:display_name)
-  end
-
-  def group_create(version, ltf_name, exercise_name)
-    model.group_create(version:version, ltf_name:ltf_name, exercise_name:exercise_name)
+  def group_create(manifest)
+    model.group_create(manifest:manifest)
   end
 
   def group_exists?(id)
@@ -40,16 +32,8 @@ module TestHelpersModel
 
   # - - - - - - - - - - - - - - -
 
-  #def kata_create2(manifest)
-  #  model.kata_create2(manifest:manifest)
-  #end
-
-  def kata_create_custom(version, display_name)
-    model.kata_create_custom(version:version, display_name:display_name)
-  end
-
-  def kata_create(version, ltf_name, exercise_name)
-    model.kata_create(version:version, ltf_name:ltf_name, exercise_name:exercise_name)
+  def kata_create(manifest)
+    model.kata_create(manifest:manifest)
   end
 
   def kata_exists?(id)
@@ -122,27 +106,6 @@ module TestHelpersModel
 
   def kata_fork(id, index)
     model.kata_fork(id:id, index:index)
-  end
-
-  # - - - - - - - - - - - - - - -
-  # - - - - - - - - - - - - - - -
-
-  def assert_group_exists(id, display_name, exercise_name='')
-    refute_nil id, :id
-    assert group_exists?(id), "!group_exists?(#{id})"
-    manifest = group_manifest(id)
-    assert_equal display_name, manifest['display_name'], manifest.keys.sort
-    assert_equal exercise_name, manifest['exercise'], :exercise
-  end
-
-  # - - - - - - - - - - - - - - -
-
-  def assert_kata_exists(id, display_name, exercise_name='')
-    refute_nil id, :id
-    assert kata_exists?(id), "!kata_exists?(#{id})"
-    manifest = kata_manifest(id)
-    assert_equal display_name, manifest['display_name'], manifest.keys.sort
-    assert_equal exercise_name, manifest['exercise'], :exercise
   end
 
 end

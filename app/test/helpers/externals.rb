@@ -31,18 +31,4 @@ module TestHelpersExternals
     externals.time
   end
 
-  # - - - - - - - - - - - - - - - - -
-
-  def custom_start_points
-    externals.custom_start_points
-  end
-
-  def exercises_start_points
-    externals.exercises_start_points
-  end
-
-  def languages_start_points
-    externals.languages_start_points
-  end
-
 end

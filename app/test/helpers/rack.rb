@@ -54,16 +54,6 @@ module TestHelpersRack
     block.call(json_response_body)
   end
 
-  def assert_json_post_500(path, body, &block)
-    stdout,stderr = capture_stdout_stderr {
-      post_json '/'+path, body
-    }
-    assert_status 500, stdout, stderr
-    assert_equal '', stderr, :stderr
-    refute_equal '', stdout, :stdout
-    block.call(json_response_body)
-  end
-
   def assert_status(expected, stdout, stderr)
     actual = last_response.status
     # :nocov:

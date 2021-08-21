@@ -113,12 +113,10 @@ class KataEventTest < TestBase
   |kata_event(id, index=-1) retrieves the most recent event
   |even when only the creation event exists
   ) do
-    display_name = custom_start_points.display_names.sample
-    post_json '/kata_create_custom', {
-      version: version,
-      display_name: display_name
+    post_json '/kata_create', {
+      manifest: manifest_Tennis_refactoring_Python_unitttest
     }.to_json
-    id = json_response_body['kata_create_custom']
+    id = json_response_body['kata_create']
     last = kata_event(id, 0)
     actual = kata_event(id, -1)
     assert_equal last, actual
