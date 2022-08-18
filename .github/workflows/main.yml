@@ -31,7 +31,7 @@ jobs:
     with:
       CIRCLE_BUILD_NUM: ${{github.run_number}}
       CIRCLE_BUILD_URL: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
-      BUILD_COMMAND: build.sh
+      BUILD_COMMAND: "scripts/merkely_declare_pipeline.sh && ./build.sh && ./up.sh && ./wait.sh && ./test.sh && ./scripts/images_push.sh && ./scripts/merkely_log_artifact.sh && ./scripts/merkely_log_evidence.sh"
       tag: ${{ needs.pre-build.outputs.tag }}
       AWS_ACCOUNT_ID: 244531986313
       AWS_REGION: eu-central-1
