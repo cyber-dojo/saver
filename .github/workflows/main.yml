@@ -33,14 +33,14 @@ jobs:
       CIRCLE_BUILD_URL: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
       #disable tests for now due to "the input device is not a TTY" error
       #BUILD_COMMAND: "scripts/merkely_declare_pipeline.sh && ./build.sh && ./up.sh && ./wait.sh && ./test.sh && ./scripts/images_push.sh && ./scripts/merkely_log_artifact.sh && ./scripts/merkely_log_evidence.sh"
-      BUILD_COMMAND: "scripts/merkely_declare_pipeline.sh && ./build.sh && ./up.sh && ./wait.sh && ./scripts/images_push.sh && ./scripts/merkely_log_artifact.sh"
+      BUILD_COMMAND: "scripts/merkely_declare_pipeline.sh && ./build.sh && ./up.sh && ./wait.sh && ./test.sh && ./scripts/images_push.sh && ./scripts/merkely_log_artifact.sh"
       tag: ${{ needs.pre-build.outputs.tag }}
       AWS_ACCOUNT_ID: 244531986313
       AWS_REGION: eu-central-1
       ecr_registry: 244531986313.dkr.ecr.eu-central-1.amazonaws.com
       service_name: saver
       gh_actions_iam_role_name: gh_actions_services
-  
+
   deploy-staging:
     needs: [pre-build, build-test-push]
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/deploy.yml@master
