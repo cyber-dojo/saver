@@ -29,9 +29,7 @@ jobs:
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
     with:
-      CIRCLE_BUILD_NUM: ${{github.run_number}}
-      CIRCLE_BUILD_URL: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
-      BUILD_COMMAND: "scripts/merkely_declare_pipeline.sh && ./build.sh && ./up.sh && ./wait.sh && ./test.sh && ./scripts/images_push.sh && ./scripts/merkely_log_artifact.sh && ./scripts/merkely_log_evidence.sh"
+      BUILD_COMMAND: ./build_test_publish.sh
       tag: ${{ needs.pre-build.outputs.tag }}
       AWS_ACCOUNT_ID: 244531986313
       AWS_REGION: eu-central-1
@@ -53,8 +51,8 @@ jobs:
       environment_name: staging
       cyber_dojo_env_name: beta
       cyber_dojo_env_name_aws: aws-beta
-      kosli_staging_host: https://staging.app.merkely.com
-      kosli_production_host: https://app.merkely.com
+      kosli_staging_host: https://staging.app.kosli.com
+      kosli_production_host: https://app.kosli.com
       circle_sha1: ${{ github.sha }}
       circle_build_url: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}
 
@@ -72,7 +70,7 @@ jobs:
       environment_name: production
       cyber_dojo_env_name: prod
       cyber_dojo_env_name_aws: aws-prod
-      kosli_staging_host: https://staging.app.merkely.com
-      kosli_production_host: https://app.merkely.com
+      kosli_staging_host: https://staging.app.kosli.com
+      kosli_production_host: https://app.kosli.com
       circle_sha1: ${{ github.sha }}
       circle_build_url: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}

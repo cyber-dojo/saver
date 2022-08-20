@@ -1,18 +1,17 @@
 #!/bin/bash -Eeu
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-
-source "${SCRIPTS_DIR}/config.sh"
-source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
+pushd "${ROOT_DIR}/scripts"
+source "./config.sh"
+source "./echo_versioner_env_vars.sh"
+source "./kosli_echo_env_vars.sh"
+source "./kosli_fingerprint.sh"
+popd
 
 export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
+export $(kosli_echo_env_vars)
 
 # - - - - - - - - - - - - - - - - - - -
-merkely_log_evidence()
+kosli_log_evidence()
 {
   local -r hostname="${1}"
 
@@ -20,12 +19,12 @@ merkely_log_evidence()
     --env MERKELY_COMMAND=log_evidence \
     --env MERKELY_OWNER=${MERKELY_OWNER} \
     --env MERKELY_PIPELINE=${MERKELY_PIPELINE} \
-    --env MERKELY_FINGERPRINT=$(merkely_fingerprint) \
+    --env MERKELY_FINGERPRINT=$(kosli_fingerprint) \
     --env MERKELY_EVIDENCE_TYPE=branch-coverage \
     --env MERKELY_IS_COMPLIANT=TRUE \
     --env MERKELY_DESCRIPTION="server & client branch-coverage reports" \
     --env MERKELY_USER_DATA="$(evidence_json_path)" \
-    --env MERKELY_CI_BUILD_URL=${CIRCLE_BUILD_URL} \
+    --env MERKELY_CI_BUILD_URL=${CI_BUILD_URL} \
     --env MERKELY_HOST="${hostname}" \
     --env MERKELY_API_TOKEN=${MERKELY_API_TOKEN} \
     --rm \
@@ -53,5 +52,5 @@ evidence_json_path()
 # - - - - - - - - - - - - - - - - - - -
 
 write_evidence_json
-merkely_log_evidence https://staging.app.merkely.com
-merkely_log_evidence https://app.merkely.com
+kosli_log_evidence https://staging.app.kosli.com
+kosli_log_evidence https://app.kosli.com

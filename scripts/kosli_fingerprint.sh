@@ -1,6 +1,6 @@
 #!/bin/bash -Eeu
 
-merkely_fingerprint()
+kosli_fingerprint()
 {
   echo "docker://$(server_image):$(image_tag)"
 }

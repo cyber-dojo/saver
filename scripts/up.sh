@@ -1,12 +1,11 @@
 #!/bin/bash -Eeu
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-
-source "${SCRIPTS_DIR}/augmented_docker_compose.sh"
-source "${SCRIPTS_DIR}/config.sh"
-source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
-source "${SCRIPTS_DIR}/exit_non_zero_unless_installed.sh"
+pushd "${ROOT_DIR}/scripts"
+source "./augmented_docker_compose.sh"
+source "./config.sh"
+source "./echo_versioner_env_vars.sh"
+source "./exit_non_zero_unless_installed.sh"
+popd
 
 # - - - - - - - - - - - - - - - - - - - -
 # I would like to specify this size-limited tmpfs volume in

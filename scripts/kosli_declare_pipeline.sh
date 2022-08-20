@@ -1,18 +1,17 @@
 #!/bin/bash -Eeu
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-
-source "${SCRIPTS_DIR}/config.sh"
-source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
+pushd "${ROOT_DIR}/scripts"
+source "./config.sh"
+source "./echo_versioner_env_vars.sh"
+source "./kosli_echo_env_vars.sh"
+source "./kosli_fingerprint.sh"
+popd
 
 export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
+export $(kosli_echo_env_vars)
 
 # - - - - - - - - - - - - - - - - - - -
-merkely_declare_pipeline()
+kosli_declare_pipeline()
 {
   local -r hostname="${1}"
 
@@ -29,5 +28,5 @@ merkely_declare_pipeline()
 
 # - - - - - - - - - - - - - - - - - - -
 
-merkely_declare_pipeline https://staging.app.merkely.com
-merkely_declare_pipeline https://app.merkely.com
+kosli_declare_pipeline https://staging.app.kosli.com
+kosli_declare_pipeline https://app.kosli.com

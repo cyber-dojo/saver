@@ -1,22 +1,21 @@
 #!/bin/bash -Eeu
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-
-source "${SCRIPTS_DIR}/config.sh"
-source "${SCRIPTS_DIR}/echo_versioner_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_echo_env_vars.sh"
-source "${SCRIPTS_DIR}/merkely_fingerprint.sh"
+pushd "${ROOT_DIR}/scripts"
+source "./config.sh"
+source "./echo_versioner_env_vars.sh"
+source "./kosli_echo_env_vars.sh"
+source "./kosli_fingerprint.sh"
+popd
 
 # - - - - - - - - - - - - - - - - - - -
-merkely_approve_deployment()
+kosli_approve_deployment()
 {
   docker pull $(server_image):$(image_tag)
 	docker run \
     --env MERKELY_COMMAND=approve_deployment \
     --env MERKELY_OWNER=${MERKELY_OWNER} \
     --env MERKELY_PIPELINE=${MERKELY_PIPELINE} \
-    --env MERKELY_FINGERPRINT=$(merkely_fingerprint) \
+    --env MERKELY_FINGERPRINT=$(kosli_fingerprint) \
     --env MERKELY_OLDEST_SRC_COMMITISH=origin/production \
     --env MERKELY_NEWEST_SRC_COMMITISH=${COMMIT_SHA} \
     --env MERKELY_DESCRIPTION="Approval created in CircleCI" \
@@ -36,5 +35,5 @@ merkely_approve_deployment()
 
 # - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
-export $(merkely_echo_env_vars)
-merkely_approve_deployment
+export $(kosli_echo_env_vars)
+kosli_approve_deployment

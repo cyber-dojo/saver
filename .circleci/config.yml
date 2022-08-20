@@ -10,14 +10,7 @@ jobs:
       - run:
           name: Build, test, push image to dockerhub (tagged)
           command: |
-            ./scripts/merkely_declare_pipeline.sh
-            ./build.sh
-            ./up.sh
-            ./wait.sh
-            ./test.sh
-            ./scripts/images_push.sh
-            ./scripts/merkely_log_artifact.sh
-            ./scripts/merkely_log_evidence.sh
+            ./build_test_publish.sh
 
 
   deploy-to-beta:
@@ -37,7 +30,7 @@ jobs:
       - checkout
       - run:
           name: Log deployment to beta in Merkely
-          command: ./scripts/merkely_log_deployment.sh beta
+          command: ./scripts/kosli_log_deployment.sh beta
 
 
   merkely-approve-deployment:
@@ -48,7 +41,7 @@ jobs:
       - run:
           name: Approve deployment in Merkely
           command: |
-            ./scripts/merkely_approve_deployment.sh
+            ./scripts/kosli_approve_deployment.sh
 
 
   deploy-to-prod:
@@ -68,7 +61,7 @@ jobs:
       - checkout
       - run:
           name: Log deployment to prod in Merkely
-          command: ./scripts/merkely_log_deployment.sh prod
+          command: ./scripts/kosli_log_deployment.sh prod
 
 
   push-latest:

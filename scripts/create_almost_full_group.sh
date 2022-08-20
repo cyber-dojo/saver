@@ -3,9 +3,9 @@
 # Ensure server-container is up before running this script.
 # $ ./up.sh
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-source "${SCRIPTS_DIR}/config.sh"
+pushd "${ROOT_DIR}/scripts"
+source "./config.sh"
+popd
 
 readonly version="${1:-}"
 
