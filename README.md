@@ -1,4 +1,5 @@
 
+![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)
 [![CircleCI](https://circleci.com/gh/cyber-dojo/saver.svg?style=svg)](https://circleci.com/gh/cyber-dojo/saver)
 
 - The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
