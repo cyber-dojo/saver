@@ -1,20 +1,17 @@
 #!/bin/bash -Eeu
 
-export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly SCRIPTS_DIR="${ROOT_DIR}/scripts"
-
 pushd "${ROOT_DIR}/scripts"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"
-source "./kosli_echo_env_vars.sh"
-source "./kosli_fingerprint.sh"
+source "./merkely_echo_env_vars.sh"
+source "./merkely_fingerprint.sh"
 popd
 
 export $(echo_versioner_env_vars)
-export $(kosli_echo_env_vars)
+export $(merkely_echo_env_vars)
 
 # - - - - - - - - - - - - - - - - - - -
-kosli_log_deployment()
+merkely_log_deployment()
 {
   local -r environment="${1}"
   local -r hostname="${2}"
