@@ -18,7 +18,7 @@ fi
 ./build.sh
 ./up.sh
 ./wait.sh
-./test.sh
+./test.sh "$@"
 
 if ! on_ci; then
   echo Not on CI, so not pushing image, not logging to Kosli

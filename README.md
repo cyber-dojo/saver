@@ -8,17 +8,13 @@
 
 Development
 -----------
-To build the images, bring up the containers, and wait till they are alive and healthy:
+To build the images, bring up the containers, and wait till they are alive and healthy, and run the tests:
 ```bash
-$ ./build.sh && ./up.sh && ./wait.sh
-````
+$ ./build_test_publish.sh
+```
 
-To run the tests:
-```bash
-$ ./test.sh --help
 ```
-```
-Use: ./test.sh [server|client] [ID...]
+Use: ./build_test_publish.sh [server|client] [ID...]
 
 No options runs all server tests, then all client tests
 
@@ -29,7 +25,7 @@ Options:
    -h|--help   show this help
 ```
 
-* The [build.sh](build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
+* The [scripts/build.sh](scripts/build.sh) script (re)creates [docker-compose.yml](docker-compose.yml)
 * In [docker-compose.yml](docker-compose.yml), the source and test dirs are volume-mounted over their image counterparts.
 * These overlays keeps the dev-cycle fast by reducing the need to build/up/wait.
 * You need to build/up/wait when:
