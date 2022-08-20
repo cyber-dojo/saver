@@ -37,5 +37,6 @@ kosli_log_deployment()
 # - - - - - - - - - - - - - - - - - - -
 docker pull $(server_image):$(image_tag)
 
-kosli_log_deployment "${1}" https://staging.app.kosli.com
-kosli_log_deployment "${1}" https://app.kosli.com
+readonly ENVIRONMENT="${1}"
+readonly HOSTNAME="${2}"
+kosli_log_deployment "${ENVIRONMENT}" "${HOSTNAME}"
