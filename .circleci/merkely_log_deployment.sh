@@ -23,7 +23,7 @@ kosli_log_deployment()
     --env MERKELY_COMMAND=log_deployment \
     --env MERKELY_OWNER=${MERKELY_OWNER} \
     --env MERKELY_PIPELINE=${MERKELY_PIPELINE} \
-    --env MERKELY_FINGERPRINT=$(merkely_fingerprint) \
+    --env MERKELY_FINGERPRINT=$(kosli_fingerprint) \
     --env MERKELY_DESCRIPTION="Deployed to ${environment} in CircleCI pipeline" \
     --env MERKELY_ENVIRONMENT="${environment}" \
     --env MERKELY_CI_BUILD_URL=${CIRCLE_BUILD_URL} \
