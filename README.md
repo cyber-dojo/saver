@@ -1,5 +1,4 @@
-
-![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)
+[![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)](https://github.com/cyber-dojo/saver/actions)
 
 - The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
 - A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
