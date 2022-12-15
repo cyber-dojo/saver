@@ -3,10 +3,7 @@ set -Eeu
 
 pushd "${ROOT_DIR}/sh"
 source "./config.sh"
-source "./echo_versioner_env_vars.sh"
 popd
-
-export $(echo_versioner_env_vars)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
 on_ci_publish_images()
