@@ -140,9 +140,9 @@ write_coverage_json()
 {
   {
     echo '{ "server":'
-    cat "$(root_dir)/test/server/reports/coverage.json"
+    cat "$(root_dir)/tmp/coverage/server/coverage.json"
     echo ', "client":'
-    cat "$(root_dir)/test/client/reports/coverage.json"
+    cat "$(root_dir)/tmp/coverage/client/coverage.json"
     echo '}'
   } > "$(coverage_json_path)"
 }
@@ -150,5 +150,5 @@ write_coverage_json()
 # - - - - - - - - - - - - - - - - - - -
 coverage_json_path()
 {
-  echo "$(root_dir)/test/evidence.json"
+  echo "$(root_dir)/tmp/evidence.json"
 }
