@@ -125,6 +125,7 @@ root_dir()
 {
   git rev-parse --show-toplevel
 }
+export -f root_dir
 
 # - - - - - - - - - - - - - - - - - - -
 on_ci()
