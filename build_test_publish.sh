@@ -9,13 +9,14 @@ source "./kosli.sh"
 
 on_ci_kosli_declare_pipeline
 
+set -x
 ./build.sh
+on_ci_publish_images
+on_ci_kosli_report_artifact_creation
+
 ./up.sh
 ./wait.sh
 ./test.sh "$@"
-
-on_ci_publish_images
-on_ci_kosli_report_artifact_creation
 on_ci_kosli_report_coverage_evidence
 on_ci_kosli_assert_artifact
 
