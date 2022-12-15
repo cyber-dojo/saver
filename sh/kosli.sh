@@ -24,12 +24,14 @@ kosli_report_artifact_creation()
 {
   local -r hostname="${1}"
 
-  cd "$(root_dir)"  # So we don't need --repo-root flag
+  pushd "$(root_dir)"  # So we don't need --repo-root flag
 
   kosli pipeline artifact report creation \
     "$(artifact_name)" \
       --artifact-type docker \
       --host "${hostname}"
+
+  popd
 }
 
 # - - - - - - - - - - - - - - - - - - -
