@@ -1,6 +1,7 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
-pushd "${ROOT_DIR}/scripts"
+pushd "${ROOT_DIR}/sh"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"
 popd
@@ -8,8 +9,13 @@ popd
 export $(echo_versioner_env_vars)
 
 # - - - - - - - - - - - - - - - - - - - - - - - -
-images_push()
+on_ci_publish_images()
 {
+  if ! on_ci ; then
+    echo "Not on CI so not pushing images to registry"
+    return
+  fi
+
   local -r tag="${1:-}"
   echo
   # DOCKER_USER, DOCKER_PASS are in the ci context
@@ -25,5 +31,3 @@ images_push()
   docker logout
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - -
-images_push "${1:-}"

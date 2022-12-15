@@ -1,6 +1,6 @@
 This cyber-dojo/ dir holds saver test data.
 It is tar-piped into the saver container in 
-scripts/copy_in_saver_test_data.sh
+sh/copy_in_saver_test_data.sh
 
 saver data, version 0
 ---------------------

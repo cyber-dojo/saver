@@ -1,9 +1,10 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
 # Ensure server-container is up before running this script.
 # $ ./up.sh
 
-pushd "${ROOT_DIR}/scripts"
+pushd "${ROOT_DIR}/sh"
 source "./config.sh"
 popd
 

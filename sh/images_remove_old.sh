@@ -1,4 +1,5 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
 # Tagging images from the commit-sha can build up
 # a very large amount of images over time. Their

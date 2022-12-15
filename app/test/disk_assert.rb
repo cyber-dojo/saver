@@ -43,7 +43,7 @@ class DiskAssertTest < TestBase
   'raises when no space left on device' do
     externals.instance_exec {
       # See docker-compose.yml
-      # See scripts/containers_up.sh create_space_limited_volume()
+      # See sh/containers_up.sh create_space_limited_volume()
       @disk = External::Disk.new('one_k')
     }
     dirname = '166'

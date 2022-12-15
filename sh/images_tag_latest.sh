@@ -1,4 +1,5 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
 # The cyberdojo/versioner refresh-env.sh script
 # https://github.com/cyber-dojo/versioner/blob/master/sh/refresh-env.sh

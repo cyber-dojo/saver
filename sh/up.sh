@@ -1,6 +1,7 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
-pushd "${ROOT_DIR}/scripts"
+pushd "${ROOT_DIR}/sh"
 source "./augmented_docker_compose.sh"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"

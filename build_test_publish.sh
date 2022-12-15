@@ -2,30 +2,21 @@
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-on_ci()
-{
-  [ -n "${CI:-}" ]
-}
+pushd "${ROOT_DIR}/sh"
 
-pushd "${ROOT_DIR}/scripts"
+source "./on_ci_publish_images.sh"
+source "./kosli.sh"
 
-if ! on_ci; then
-  echo Not on CI, so not declaring Kosli piepline
-else
-  ./kosli_declare_pipeline.sh
-fi
+on_ci_kosli_declare_pipeline
 
 ./build.sh
 ./up.sh
 ./wait.sh
 ./test.sh "$@"
 
-if ! on_ci; then
-  echo Not on CI, so not pushing image, not logging to Kosli
-else
-  ./images_push.sh
-  ./kosli_log_artifact.sh
-  ./kosli_log_evidence.sh
-fi
+on_ci_publish_images
+on_ci_kosli_report_artifact_creation
+on_ci_kosli_report_coverage_evidence
+on_ci_kosli_assert_artifact
 
 popd
