@@ -338,7 +338,7 @@ Gets the summary of all current events for the kata with the given `id`.
 Gets the full details for the kata event whose kata has the given `id` whose event has the given `index`.
 - parameters 
   * **id:String**.
-  * **index:int**.
+  * **index:int**. Negative values count backwards, -1 is the last index.
 - returns 
   * the event with the given `id` and `index`.
 - example
