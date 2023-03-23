@@ -1,4 +1,4 @@
-FROM cyberdojo/sinatra-base:4777620
+FROM cyberdojo/sinatra-base:bbb7973
 LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq

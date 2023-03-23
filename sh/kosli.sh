@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeu
 
-export KOSLI_OWNER=cyber-dojo
+export KOSLI_ORG=cyber-dojo
 export KOSLI_FLOW=saver
 
 readonly KOSLI_HOST_STAGING=https://staging.app.kosli.com
@@ -41,7 +41,7 @@ kosli_report_coverage_evidence()
   kosli report evidence artifact generic "$(artifact_name)" \
       --artifact-type docker \
       --description "server & client branch-coverage reports" \
-      --evidence-type "branch-coverage" \
+      --name "branch-coverage" \
       --user-data "$(coverage_json_path)" \
       --host "${hostname}"
 }
