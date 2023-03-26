@@ -1,5 +1,6 @@
 require_relative 'test_base'
 require_source 'model/kata_v2'
+require 'base64'
 require 'tmpdir'
 
 class KataDownloadTest < TestBase

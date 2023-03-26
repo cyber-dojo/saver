@@ -22,14 +22,19 @@ module External
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
     def dir_make(dirname)
-      # Returns true iff key's dir does not already exist and
+      # Returns true iff dirname does not already exist and
       # is made. Can't find a Ruby library method for this
       # (FileUtils.mkdir_p does not tell) so using shell.
       #   -p creates intermediate dirs as required.
       #   -v verbose mode, output each dir actually made
       command = "mkdir -vp '#{path_name(dirname)}'"
       stdout,stderr,r = Open3.capture3(command)
-      stdout != '' && stderr === '' && r.exitstatus === 0
+      status = r.exitstatus
+      # puts("command=:#{command}:")
+      # puts("stdout=:#{stdout}: :#{stdout.class}: --> #{stdout != ''}")
+      # puts("stderr=:#{stderr}: :#{stderr.class}: --> #{stderr == ''}")
+      # puts("status=:#{status}: :#{status.class}: --> #{status == 0}")
+      stdout != '' && stderr == '' && status == 0
     end
 
     # - - - - - - - - - - - - - - - - - - - - - - - -

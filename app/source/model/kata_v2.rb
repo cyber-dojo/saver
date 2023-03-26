@@ -6,6 +6,7 @@ require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 require_relative '../lib/utf8_clean'
+require 'base64'
 require 'tmpdir'
 
 # 1. Uses git repo to store date

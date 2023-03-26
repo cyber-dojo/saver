@@ -34,7 +34,7 @@ class ShellTest < TestBase
     error = assert_raises { shell.assert_cd_exec('zzzz', 'echo -n Hello') }
     json = JSON.parse(error.message)
     assert_equal '', json['stdout']
-    expected_stderr = "sh: cd: line 1: can't cd to zzzz: No such file or directory\n"
+    expected_stderr = "sh: cd: line 0: can't cd to zzzz: No such file or directory\n"
     assert json['stderr'].end_with?(expected_stderr), json['stderr']
     assert_equal 2,  json['exit_status']
   end

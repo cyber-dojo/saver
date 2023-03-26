@@ -47,7 +47,19 @@ class IdGenerator
         next
       end
       dir_make_command = disk.dir_make_command(method(pather).call(id))
-      disk.assert(dir_make_command)
+
+      # begin
+         disk.assert(dir_make_command)
+      #   puts("generated_id --> #{id}")
+      # rescue => exception
+      #   puts("\nEXCEPTION BACKTRACE....")
+      #   puts(" for #{dir_exists_command}")
+      #   puts(" for #{dir_make_command}")
+      #   #TODO?: show listing of dir that should exits
+      #   puts exception.backtrace
+      #   raise
+      # end
+
       return id
     end
   end
