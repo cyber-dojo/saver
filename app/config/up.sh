@@ -15,9 +15,6 @@ if [ ! -d /${dir} ]; then
   echo "The ${service_name} service needs to volume-mount /${dir}"
   echo "Please run:"
   echo "  \$ [sudo] ${cmd}"
-  echo "If you are running on Docker-Toolbox remember"
-  echo "to run this on the target VM. For example:"
-  echo "  \$ docker-machine ssh ${vm_target} sudo ${cmd}"
   exit 1
 fi
 
@@ -31,9 +28,6 @@ if [ $? -ne 0 ] ; then
   echo "group=${group} (gid=${gid})"
   echo "Please run:"
   echo "  $ [sudo] ${cmd}"
-  echo "If you are running on Docker-Toolbox remember"
-  echo "to run this on the target VM. For example:"
-  echo "  \$ docker-machine ssh ${vm_target} sudo ${cmd}"
   exit 2
 else
   rmdir /${dir}/${probe}
@@ -52,15 +46,6 @@ fi
 
 export RUBYOPT='-W2'
 
-#rackup             \
-#  --warn           \
-#  --host 0.0.0.0   \
-#  --port 4537      \
-#  --server thin    \
-#  --env production \
-#    /app/config/config.ru
-
-#readonly PORT="${CYBER_DOJO_K8S_PORT:-${CYBER_DOJO_SAVER_PORT}}"
 readonly PORT="${CYBER_DOJO_SAVER_PORT}"
 
 puma \
