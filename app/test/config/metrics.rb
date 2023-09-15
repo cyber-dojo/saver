@@ -13,7 +13,7 @@ MAX = {
 
   test: {
     lines: {
-       total:1731,
+       total:1756,
       missed:0,
     },
     branches: {
@@ -24,7 +24,7 @@ MAX = {
 
   code: {
     lines: {
-       total:1238,
+       total:1243,
       missed:10,
     },
     branches: {

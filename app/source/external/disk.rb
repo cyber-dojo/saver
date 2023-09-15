@@ -30,10 +30,6 @@ module External
       command = "mkdir -vp '#{path_name(dirname)}'"
       stdout,stderr,r = Open3.capture3(command)
       status = r.exitstatus
-      # puts("command=:#{command}:")
-      # puts("stdout=:#{stdout}: :#{stdout.class}: --> #{stdout != ''}")
-      # puts("stderr=:#{stderr}: :#{stderr.class}: --> #{stderr == ''}")
-      # puts("status=:#{status}: :#{status.class}: --> #{status == 0}")
       stdout != '' && stderr == '' && status == 0
     end
 

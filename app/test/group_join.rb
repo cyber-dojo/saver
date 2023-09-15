@@ -52,7 +52,7 @@ class GroupJoinTest < TestBase
   versions3_test '6A6', %w(
     when 64 avatars have joined the group is full
   ) do
-    # Precreated almost full groups.
+    # Pre-created almost full groups.
     # See sh/create_almost_full_group.sh
     # See test.sh copy_in_saver_test_data()
     # See app/test/data/almost_full_group.v?.tgz
@@ -62,6 +62,7 @@ class GroupJoinTest < TestBase
       2 => 'U8Tt6y'
     }
     gid = gids[version]
+    assert group_joined(gid).size == 63, version
 
     last = group_join(gid)
     refute_nil last, :not_full

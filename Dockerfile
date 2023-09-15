@@ -1,4 +1,4 @@
-FROM cyberdojo/sinatra-base:bbb7973
+FROM cyberdojo/sinatra-base:396f3d2
 LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
@@ -11,10 +11,10 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-COPY . /
-RUN chown -R saver:nogroup /app
+#COPY . /
+#RUN chown -R saver:nogroup /app
 # Note: The following does not (yet) work on circleci
-# COPY --chown=saver:nogroup . /
+COPY --chown=saver:nogroup . /
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}

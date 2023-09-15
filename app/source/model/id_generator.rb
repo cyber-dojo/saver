@@ -42,23 +42,18 @@ class IdGenerator
       if reserved?(id)
         next
       end
+      # Ensure group IDs and kata IDs do not clash with each other
       dir_exists_command = disk.dir_exists_command(method(not_pather).call(id))
       if disk.run(dir_exists_command)
         next
       end
-      dir_make_command = disk.dir_make_command(method(pather).call(id))
 
-      # begin
-         disk.assert(dir_make_command)
-      #   puts("generated_id --> #{id}")
-      # rescue => exception
-      #   puts("\nEXCEPTION BACKTRACE....")
-      #   puts(" for #{dir_exists_command}")
-      #   puts(" for #{dir_make_command}")
-      #   #TODO?: show listing of dir that should exits
-      #   puts exception.backtrace
-      #   raise
-      # end
+      dir_make_command = disk.dir_make_command(method(pather).call(id))
+      begin
+        disk.assert(dir_make_command)
+      rescue
+        next
+      end
 
       return id
     end

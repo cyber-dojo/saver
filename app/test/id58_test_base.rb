@@ -2,7 +2,7 @@ require_relative 'require_source'
 require 'minitest/autorun'
 require 'rack/test'
 
-class Id58TestBase < MiniTest::Test
+class Id58TestBase < Minitest::Test
 
   def initialize(arg)
     @id58 = nil
@@ -16,7 +16,6 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # :nocov:
   def self.test(id58_suffix, *lines, &test_block)
     source_file, source_line = *self.location(&test_block)
     id58 = checked_id58(id58_suffix.to_s, lines)
@@ -71,7 +70,7 @@ class Id58TestBase < MiniTest::Test
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  MiniTest.after_run do
+  Minitest.after_run do
     slow = @@timings.select{ |_name,secs| secs > 0.000 }
     sorted = slow.sort_by{ |name,secs| -secs }.to_h
     max_shown = 5
@@ -148,6 +147,5 @@ class Id58TestBase < MiniTest::Test
   def name58
     @name58
   end
-  # :nocov:
 
 end
