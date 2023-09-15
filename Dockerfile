@@ -11,9 +11,6 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-#COPY . /
-#RUN chown -R saver:nogroup /app
-# Note: The following does not (yet) work on circleci
 COPY --chown=saver:nogroup . /
 
 ARG COMMIT_SHA

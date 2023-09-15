@@ -28,7 +28,7 @@ services:
     container_name: $(client_container)
     user: $(client_user)
     env_file: [ .env ]
-    read_only: true
+    # read_only: true
     restart: 'no'
     tmpfs: /tmp
     volumes:
@@ -45,7 +45,7 @@ services:
     user: $(server_user)
     container_name: $(server_container)
     env_file: [ .env ]
-    read_only: true
+    # read_only: true
     restart: "no"
     volumes:
       - $(server_context)/app/source:/app/source:ro
