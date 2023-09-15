@@ -16,7 +16,7 @@ services:
     container_name: test_saver_client
     user: nobody
     env_file: [ .env ]
-    read_only: true
+    # read_only: true
     restart: 'no'
     tmpfs: /tmp
     volumes:
@@ -33,7 +33,7 @@ services:
     user: saver
     container_name: test_saver_server
     env_file: [ .env ]
-    read_only: true
+    # read_only: true
     restart: "no"
     volumes:
       - ./app/source:/app/source:ro

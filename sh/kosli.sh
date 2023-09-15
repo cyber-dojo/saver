@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -Eeu
 
-export KOSLI_ORG=cyber-dojo
 export KOSLI_FLOW=saver
-
-readonly KOSLI_HOST_STAGING=https://staging.app.kosli.com
-readonly KOSLI_HOST_PRODUCTION=https://app.kosli.com
+# KOSLI_ORG is set in CI
+# KOSLI_API_TOKEN is set in CI
+# KOSLI_HOST_STAGING is set in CI
+# KOSLI_HOST_PRODUCTION is set in CI
+# SNYK_TOKEN is set in CI
 
 # - - - - - - - - - - - - - - - - - - -
 kosli_create_flow()
