@@ -2,6 +2,7 @@
 set -Eeu
 
 export KOSLI_FLOW=saver
+
 # KOSLI_ORG is set in CI
 # KOSLI_API_TOKEN is set in CI
 # KOSLI_HOST_STAGING is set in CI
@@ -14,10 +15,10 @@ kosli_create_flow()
   local -r hostname="${1}"
 
   kosli create flow "${KOSLI_FLOW}" \
-    --description "Group/Kata model+persistence" \
-    --host "${hostname}" \
-    --template artifact,branch-coverage \
-    --visibility public
+    --description="Group/Kata model+persistence" \
+    --host="${hostname}" \
+    --template=artifact,branch-coverage,snyk-scan \
+    --visibility=public
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -28,8 +29,8 @@ kosli_report_artifact()
   pushd "$(root_dir)"  # So we don't need --repo-root flag
 
   kosli report artifact "$(artifact_name)" \
-      --artifact-type docker \
-      --host "${hostname}"
+      --artifact-type=docker \
+      --host="${hostname}"
 
   popd
 }
@@ -40,11 +41,23 @@ kosli_report_coverage_evidence()
   local -r hostname="${1}"
 
   kosli report evidence artifact generic "$(artifact_name)" \
-      --artifact-type docker \
-      --description "server & client branch-coverage reports" \
-      --name "branch-coverage" \
-      --user-data "$(coverage_json_path)" \
-      --host "${hostname}"
+      --artifact-type=docker \
+      --description="server & client branch-coverage reports" \
+      --name=branch-coverage \
+      --user-data="$(coverage_json_path)" \
+      --host="${hostname}"
+}
+
+# - - - - - - - - - - - - - - - - - - -
+kosli_report_snyk_evidence()
+{
+  local -r hostname="${1}"
+
+  kosli report evidence artifact snyk "$(artifact_name)" \
+      --artifact-type=docker \
+      --host="${hostname}" \
+      --name=snyk-scan \
+      --scan-results="$(root_dir)/snyk.json"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -53,8 +66,8 @@ kosli_assert_artifact()
   local -r hostname="${1}"
 
   kosli assert artifact "$(artifact_name)" \
-      --artifact-type docker \
-      --host "${hostname}"
+      --artifact-type=docker \
+      --host="${hostname}"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -68,10 +81,10 @@ kosli_expect_deployment()
   docker pull "$(artifact_name)"
 
   kosli expect deployment "$(artifact_name)" \
-    --artifact-type docker \
-    --description "Deployed to ${environment} in Github Actions pipeline" \
-    --environment "${environment}" \
-    --host "${hostname}"
+    --artifact-type=docker \
+    --description="Deployed to ${environment} in Github Actions pipeline" \
+    --environment="${environment}" \
+    --host="${hostname}"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -99,6 +112,21 @@ on_ci_kosli_report_coverage_evidence()
     write_coverage_json
     kosli_report_coverage_evidence "${KOSLI_HOST_STAGING}"
     kosli_report_coverage_evidence "${KOSLI_HOST_PRODUCTION}"
+  fi
+}
+
+# - - - - - - - - - - - - - - - - - - -
+on_ci_kosli_report_snyk_scan_evidence()
+{
+  if on_ci; then
+    set +e
+    snyk container test "$(artifact_name)" \
+      --json-file-output="$(root_dir)/snyk.json" \
+      --policy-path="$(root_dir)/.snyk"
+    set -e
+
+    kosli_report_snyk_evidence "${KOSLI_HOST_STAGING}"
+    kosli_report_snyk_evidence "${KOSLI_HOST_PRODUCTION}"
   fi
 }
 

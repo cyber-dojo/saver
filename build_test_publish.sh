@@ -19,6 +19,7 @@ on_ci_kosli_report_artifact
 ./wait.sh
 ./test.sh "$@"
 on_ci_kosli_report_coverage_evidence
+on_ci_kosli_report_snyk_scan_evidence
 on_ci_kosli_assert_artifact
 
 popd
