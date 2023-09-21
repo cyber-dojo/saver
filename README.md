@@ -1,8 +1,9 @@
 [![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)](https://github.com/cyber-dojo/saver/actions)
 
-- The source for the [cyberdojo/saver](https://hub.docker.com/r/cyberdojo/saver/tags) Docker image.
-- A docker-containerized micro-service for [cyber-dojo](https://cyber-dojo.org).
+- A [docker-containerized](https://hub.docker.com/r/cyberdojo/saver/tags) micro-service for [https://cyber-dojo.org](http://cyber-dojo.org).
 - An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
+- A [Kolsi](https://www.kosli.com/) showcase for a [CI flow](https://app.kosli.com/cyber-dojo/flows/saver/artifacts/) and an [aws production environment](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/)
+
 
 Development
 -----------
