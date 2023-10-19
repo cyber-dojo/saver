@@ -17,24 +17,21 @@ env:
   AWS_ACCOUNT_ID: 772819027869
 
 jobs:
-  pre-build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Prepare
-      id: prep
-      run: |
-        TAG=$(echo $GITHUB_SHA | head -c7)
-        echo "image_tag=${TAG}" >> ${GITHUB_ENV}
 
   build-test-push:
-    needs: [pre-build]
     runs-on: ubuntu-latest
     env:
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: Prepare
+        id: prep
+        run: |
+          TAG=$(echo $GITHUB_SHA | head -c7)
+          echo "image_tag=${TAG}" >> ${GITHUB_ENV}
+
       - name: Build
         run: |
           ./sh/build.sh
