@@ -39,6 +39,8 @@ jobs:
         run: |
           ./sh/build.sh
           echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
+          docker image ls 
+          echo ":${{ env.image_tag }}:"
           docker push cyberdojo/saver:${{ env.image_tag }}
           docker logout
       
