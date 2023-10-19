@@ -43,15 +43,16 @@ jobs:
         uses: kosli-dev/setup-cli-action@v2
         with:
           version:
-            "2.6.11"
+            ${{ env.KOSLI_CLI_VERSION }}
 
       - name: Create Kosli flow (staging)
         env:
           KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
           KOSLI_HOST: ${{ env.KOSLI_STAGING }}
           KOSLI_TEMPLATE: ${{ env.KOSLI_TEMPLATE }}
-        run: 
-          kosli create flow ${{ env.KOSLI_FLOW }} 
+        run: |
+          kosli create flow ${{ env.KOSLI_FLOW }} \
+            --description "Group/Kata model+persistence"
 
       - name: Report image to Kosli
         env:
@@ -59,6 +60,6 @@ jobs:
           KOSLI_HOST: ${{ env.KOSLI_STAGING }}
         run: |
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
-          --artifact-type docker \
-          --flow ${{ env.KOSLI_FLOW }} 
+            --artifact-type docker \
+            --flow ${{ env.KOSLI_FLOW }} 
         
