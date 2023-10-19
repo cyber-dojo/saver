@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -Eeu
 
+export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 pushd "${ROOT_DIR}/sh"
 source "./augmented_docker_compose.sh"
 source "./config.sh"
