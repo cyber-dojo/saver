@@ -19,15 +19,13 @@ env:
 jobs:
   pre-build:
     runs-on: ubuntu-latest
-    outputs:
-      image_tag: ${{ steps.prep.outputs.image_tag }}
     steps:
     - uses: actions/checkout@v3
     - name: Prepare
       id: prep
       run: |
         TAG=$(echo $GITHUB_SHA | head -c7)
-        echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
+        echo "image_tag=${TAG}" >> ${GITHUB_ENV}
 
   build-test-push:
     needs: [pre-build]
