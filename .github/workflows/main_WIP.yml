@@ -1,9 +1,20 @@
-name: Main
+name: Main_WIP
 
 on:
   push:
     branches:
       - main
+
+env: 
+  KOSLI_ORG: kosli
+  KOSLI_FLOW: saver
+  KOSLI_STAGING: https://staging.app.kosli.com
+  KOSLI_PRODUCTION: https://app.kosli.com
+  KOSLI_CLI_VERSION: "2.6.11"
+  KOSLI_TEMPLATE: "artifact"
+  # KOSLI_DRY_RUN: "True"
+  AWS_REGION: eu-central-1
+  AWS_ACCOUNT_ID: 772819027869
 
 jobs:
   pre-build:
@@ -21,8 +32,38 @@ jobs:
   build-test-push:
     needs: [pre-build]
     runs-on: ubuntu-latest
+    env:
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
     steps:
       - uses: actions/checkout@v3
       - name: Build
-        run:
+        run: |
           ./sh/build.sh
+          echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
+          docker push cyberdojo/saver:${{ env.image_tag }}
+          docker logout
+      
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            "2.6.11"
+
+      - name: Create Kosli flow (staging)
+        env:
+          KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+          KOSLI_HOST: ${{ env.KOSLI_STAGING }}
+          KOSLI_TEMPLATE: ${{ env.KOSLI_TEMPLATE }}
+        run: 
+          kosli create flow ${{ env.KOSLI_FLOW }} 
+
+      - name: Report image to Kosli
+        env:
+          KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+          KOSLI_HOST: ${{ env.KOSLI_STAGING }}
+        run: |
+          kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
+          --artifact-type docker \
+          --flow ${{ env.KOSLI_FLOW }} 
+        
