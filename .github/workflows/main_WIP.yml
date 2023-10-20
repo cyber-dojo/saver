@@ -8,13 +8,12 @@ on:
 env: 
   KOSLI_ORG: cyber-dojo
   KOSLI_FLOW: saver
-  KOSLI_STAGING: https://staging.app.kosli.com
-  KOSLI_PRODUCTION: https://app.kosli.com
+  KOSLI_HOST: https://staging.app.kosli.com
   KOSLI_CLI_VERSION: "2.6.11"
   KOSLI_TEMPLATE: "artifact"
   # KOSLI_DRY_RUN: "True"
-  AWS_REGION: eu-central-1
-  AWS_ACCOUNT_ID: 772819027869
+  # AWS_REGION: eu-central-1
+  # AWS_ACCOUNT_ID: 772819027869
 
 jobs:
 
@@ -45,10 +44,9 @@ jobs:
           version:
             ${{ env.KOSLI_CLI_VERSION }}
 
-      - name: Create Kosli flow (staging)
+      - name: Create Kosli flow
         env:
           KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-          KOSLI_HOST: ${{ env.KOSLI_STAGING }}
           KOSLI_TEMPLATE: ${{ env.KOSLI_TEMPLATE }}
         run: |
           kosli create flow ${{ env.KOSLI_FLOW }} \
@@ -57,7 +55,6 @@ jobs:
       - name: Report image to Kosli
         env:
           KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-          KOSLI_HOST: ${{ env.KOSLI_STAGING }}
         run: |
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
             --artifact-type docker \
