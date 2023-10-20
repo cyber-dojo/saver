@@ -85,20 +85,20 @@ jobs:
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
             --artifact-type docker
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
-        with:
-          aws-region: ${{ inputs.AWS_REGION }}
-          role-duration-seconds: 2400
-          role-session-name: ${{ github.event.repository.name }}
-          role-to-assume: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.gh_actions_iam_role_name }}
-
-      - name: Login to Amazon ECR (Elastic Container Registry)
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Push image to private ECR
-        run: |
-          docker tag cyberdojo/saver:${{ env.image_tag }} 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
-          docker push 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
-          docker logout
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v1-node16
+#        with:
+#          aws-region: ${{ inputs.AWS_REGION }}
+#          role-duration-seconds: 2400
+#          role-session-name: ${{ github.event.repository.name }}
+#          role-to-assume: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.gh_actions_iam_role_name }}
+#
+#      - name: Login to Amazon ECR (Elastic Container Registry)
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v1
+#
+#      - name: Push image to private ECR
+#        run: |
+#          docker tag cyberdojo/saver:${{ env.image_tag }} 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
+#          docker push 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
+#          docker logout
