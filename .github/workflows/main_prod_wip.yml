@@ -19,3 +19,6 @@ jobs:
     with:
       KOSLI_HOST: https://app.kosli.com
       KOSLI_CLI_VERSION: "2.6.11"
+      AWS_ACCOUNT_ID: 244531986313
+      AWS_REGION: eu-central-1
+      gh_actions_iam_role_name: gh_actions_services

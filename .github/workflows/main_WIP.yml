@@ -10,13 +10,22 @@ on:
       KOSLI_API_TOKEN:
         required: true
       SNYK_TOKEN:
-        required: false # change to true once Snyk is added to all pipelines
+        required: true
 
     inputs:
       KOSLI_HOST:
         required: true
         type: string
       KOSLI_CLI_VERSION:
+        required: true
+        type: string
+      AWS_ACCOUNT_ID:
+        required: true
+        type: string
+      AWS_REGION:
+        required: true
+        type: string
+      gh_actions_iam_role_name:
         required: true
         type: string
 
@@ -29,8 +38,6 @@ env:
   KOSLI_CLI_VERSION: ${{ inputs.KOSLI_CLI_VERSION }} # "2.6.11"
   KOSLI_TEMPLATE: "artifact"
   # KOSLI_DRY_RUN: "True"
-  # AWS_REGION: eu-central-1
-  # AWS_ACCOUNT_ID: 772819027869
 
 jobs:
 
@@ -41,6 +48,8 @@ jobs:
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0      # Get full history for Kosli commit-interval harvesting
 
       - name: Prepare
         id: prep
@@ -51,10 +60,7 @@ jobs:
       - name: Build
         run: |
           ./sh/build.sh
-          echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
-          docker push cyberdojo/saver:${{ env.image_tag }}
-          docker logout
-      
+
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
@@ -72,3 +78,27 @@ jobs:
         run: |
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
             --artifact-type docker
+
+      - name: Push image to public registry (dockerhub)
+        run: |
+          echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
+          docker push cyberdojo/saver:${{ env.image_tag }}
+          docker logout
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-region: ${{ inputs.AWS_REGION }}
+          role-duration-seconds: 2400
+          role-session-name: ${{ github.event.repository.name }}
+          role-to-assume: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.gh_actions_iam_role_name }}
+
+      - name: Login to Amazon ECR (Elastic Container Registry)
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push image to private ECR
+        run: |
+          docker tag cyberdojo/saver:${{ env.image_tag }} 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
+          docker push 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
+          docker logout
