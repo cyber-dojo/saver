@@ -2,6 +2,16 @@ name: Main (Work in Progress)
 
 on:
   workflow_call:
+    secrets:
+      DOCKER_PASS:
+        required: true
+      DOCKER_USER:
+        required: true
+      KOSLI_API_TOKEN:
+        required: true
+      SNYK_TOKEN:
+        required: false # change to true once Snyk is added to all pipelines
+
     inputs:
       KOSLI_HOST:
         required: true
