@@ -24,6 +24,7 @@ on:
 env: 
   KOSLI_ORG: cyber-dojo
   KOSLI_FLOW: saver
+  KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_HOST: ${{ inputs.KOSLI_HOST }}               # https://app.kosli.com
   KOSLI_CLI_VERSION: ${{ inputs.KOSLI_CLI_VERSION }} # "2.6.11"
   KOSLI_TEMPLATE: "artifact"
@@ -62,15 +63,12 @@ jobs:
 
       - name: Create Kosli flow
         env:
-          KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
           KOSLI_TEMPLATE: ${{ env.KOSLI_TEMPLATE }}
         run: |
           kosli create flow ${{ env.KOSLI_FLOW }} \
             --description "Group/Kata model+persistence"
 
       - name: Report image to Kosli
-        env:
-          KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
         run: |
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
             --artifact-type docker
