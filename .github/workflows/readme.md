@@ -9,3 +9,7 @@ has been designed to accept the KOSLI_HOST as a on:workflow_call:input
 and there will be two workflow yml files; one to run the core workflow
 with KOSLI_HOST set to https://staging.app.kosli.com, and one to run
 the core workflow with KOSLI_HOST set to https://app.kosli.com
+
+While this core workflow is being built, we have set main.yml
+so it does _not_ run on a push. So if you are doing a genuine
+commit and push you will need to manually trigger main.yml

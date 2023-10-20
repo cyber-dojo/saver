@@ -1,9 +1,12 @@
-name: Main Staging (WIP)
+name: Main Staging (Work in Progress)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
+#on:
+#  push:
+#    branches:
+#      - main
 
 jobs:
   build-test-push:

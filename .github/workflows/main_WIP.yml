@@ -1,4 +1,4 @@
-name: Main_WIP
+name: Main (Work in Progress)
 
 on:
   workflow_call:
