@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-test-push:
-    uses: cyber-dojo/saver/.github/workflows/main_WIP.yml@v0.0.1
+    uses: cyber-dojo/saver/.github/workflows/main_WIP.yml@main
     with:
       KOSLI_HOST: https://staging.app.kosli.com
       KOSLI_CLI_VERSION: "2.6.11"
