@@ -1,0 +1,13 @@
+name: Main Staging (WIP)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-push:
+    uses: cyber-dojo/saver/.github/workflows/main_WIP.yml
+    with:
+      KOSLI_HOST: https://staging.app.kosli.com
+      KOSLI_CLI_VERSION: "2.6.11"

@@ -1,15 +1,21 @@
 name: Main_WIP
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      KOSLI_HOST:
+        required: true
+        type: string
+      KOSLI_CLI_VERSION:
+        required: true
+        type: string
+
 
 env: 
   KOSLI_ORG: cyber-dojo
   KOSLI_FLOW: saver
-  KOSLI_HOST: https://staging.app.kosli.com
-  KOSLI_CLI_VERSION: "2.6.11"
+  KOSLI_HOST: ${{ inputs.KOSLI_HOST }}               # https://app.kosli.com
+  KOSLI_CLI_VERSION: ${{ inputs.KOSLI_CLI_VERSION }} # "2.6.11"
   KOSLI_TEMPLATE: "artifact"
   # KOSLI_DRY_RUN: "True"
   # AWS_REGION: eu-central-1
@@ -57,6 +63,4 @@ jobs:
           KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
         run: |
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
-            --artifact-type docker \
-            --flow ${{ env.KOSLI_FLOW }} 
-        
+            --artifact-type docker
