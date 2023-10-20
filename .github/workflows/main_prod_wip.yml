@@ -1,0 +1,16 @@
+name: Main Production (Work in Progress)
+
+on:
+  workflow_dispatch:
+
+#on:
+#  push:
+#    branches:
+#      - main
+
+jobs:
+  build-test-push:
+    uses: cyber-dojo/saver/.github/workflows/main_WIP.yml@main
+    with:
+      KOSLI_HOST: https://app.kosli.com
+      KOSLI_CLI_VERSION: "2.6.11"
