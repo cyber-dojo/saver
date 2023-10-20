@@ -74,16 +74,16 @@ jobs:
           kosli create flow ${{ env.KOSLI_FLOW }} \
             --description "Group/Kata model+persistence"
 
-      - name: Report image to Kosli
-        run: |
-          kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
-            --artifact-type docker
-
       - name: Push image to public registry (dockerhub)
         run: |
           echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
           docker push cyberdojo/saver:${{ env.image_tag }}
           docker logout
+
+      - name: Report image to Kosli
+        run: |
+          kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
+            --artifact-type docker
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
