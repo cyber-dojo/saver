@@ -1,4 +1,4 @@
-name: Main Staging (Work in Progress)
+name: Main Production (Work in Progress)
 
 on:
   workflow_dispatch:
@@ -10,11 +10,11 @@ on:
 
 jobs:
   build-test-push:
-    uses: cyber-dojo/saver/.github/workflows/main_WIP.yml@main
+    uses: cyber-dojo/saver/.github/workflows/main.yml@main
     secrets:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     with:
-      KOSLI_HOST: https://staging.app.kosli.com
+      KOSLI_HOST: https://app.kosli.com
