@@ -35,7 +35,7 @@ env:
 
 jobs:
 
-  build-test-push:
+  build-test-deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -118,13 +118,13 @@ jobs:
           docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
           docker logout
 
-#      - name: Report expected aws-beta deployment to Kosli
-#        run:
-#          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
-#            --artifact-type=docker
-#            --description="Deployed to aws-beta in Github Actions pipeline"
-#            --environment=aws-beta
-#
+      - name: Report expected aws-beta deployment to Kosli
+        run:
+          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
+            --artifact-type=docker
+            --description="Deployed to aws-beta in Github Actions pipeline"
+            --environment=aws-beta
+
 #      - name: Deploy to aws-beta
 #        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
 #        with:
