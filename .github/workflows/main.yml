@@ -110,14 +110,14 @@ jobs:
       - name: Login to Amazon ECR (Elastic Container Registry)
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-#
-#      - name: Push image to private ECRs
-#        run: |
-#          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
-#          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
-#          docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
-#          docker push ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
-#          docker logout
+
+      - name: Push image to private ECRs
+        run: |
+          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
+          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
+          docker logout
 
 #      - name: Report expected aws-beta deployment to Kosli
 #        run:
