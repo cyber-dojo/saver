@@ -7,8 +7,8 @@ on:
         required: true
       DOCKER_USER:
         required: true
-#      KOSLI_API_TOKEN:
-#        required: true
+      KOSLI_API_TOKEN:
+        required: true
       SNYK_TOKEN:
         required: true
 
@@ -95,7 +95,6 @@ jobs:
             --artifact-type=docker 
             --name=snyk-scan 
             --scan-results=snyk.json
-
 
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v1-node16
