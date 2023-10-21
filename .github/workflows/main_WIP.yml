@@ -7,8 +7,8 @@ on:
         required: true
       DOCKER_USER:
         required: true
-      KOSLI_API_TOKEN:
-        required: true
+#      KOSLI_API_TOKEN:
+#        required: true
       SNYK_TOKEN:
         required: true
 
