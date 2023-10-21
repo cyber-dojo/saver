@@ -9,7 +9,7 @@ on:
 #      - main
 
 jobs:
-  build-test-deploy-dispatcher:
+  build-test-deploy:
     uses: cyber-dojo/saver/.github/workflows/main.yml@main
     secrets:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
