@@ -69,8 +69,8 @@ jobs:
 
       - name: Create Kosli flow
         run:
-          kosli create flow ${{ env.KOSLI_FLOW }} \
-            --description "Group/Kata model+persistence" \
+          kosli create flow ${{ env.KOSLI_FLOW }} 
+            --description="Group/Kata model+persistence" 
             --template=artifact,snyk-scan
 
       - name: Push image to public registry (dockerhub)
@@ -81,7 +81,7 @@ jobs:
 
       - name: Report image to Kosli
         run:
-          kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
+          kosli report artifact cyberdojo/saver:${{ env.image_tag }} 
             --artifact-type=docker
 
       # Snyk image scan ------------------
@@ -98,9 +98,9 @@ jobs:
 
       - name: Report Snyk scan results evidence to Kosli
         run:
-          kosli report evidence artifact snyk cyberdojo/saver:${{ env.image_tag }} \
-            --artifact-type=docker \
-            --name=snyk-scan \
+          kosli report evidence artifact snyk cyberdojo/saver:${{ env.image_tag }} 
+            --artifact-type=docker 
+            --name=snyk-scan 
             --scan-results=snyk.json
 
 
