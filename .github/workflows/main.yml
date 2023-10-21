@@ -35,8 +35,11 @@ env:
 
 jobs:
 
-  build-test-push:
+  build-test-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     env:
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
