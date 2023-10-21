@@ -16,27 +16,21 @@ on:
       KOSLI_HOST:
         required: true
         type: string
-      KOSLI_CLI_VERSION:
-        required: true
-        type: string
-      AWS_ACCOUNT_ID:
-        required: true
-        type: string
-      AWS_REGION:
-        required: true
-        type: string
-      gh_actions_iam_role_name:
-        required: true
-        type: string
 
 
 env: 
   KOSLI_ORG: cyber-dojo
   KOSLI_FLOW: saver
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-  KOSLI_HOST: ${{ inputs.KOSLI_HOST }}               # https://app.kosli.com
-  KOSLI_CLI_VERSION: ${{ inputs.KOSLI_CLI_VERSION }} # "2.6.11"
+  KOSLI_HOST: ${{ inputs.KOSLI_HOST }}  # https://app.kosli.com
+  KOSLI_CLI_VERSION: "2.6.11"
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  AWS_ACCOUNT_ID_BETA: 244531986313
+  ECR_REGISTRY_BETA: 244531986313.dkr.ecr.eu-central-1.amazonaws.com
+  AWS_ACCOUNT_ID_PROD: 274425519734
+  ECR_REGISTRY_PROD: 274425519734.dkr.ecr.eu-central-1.amazonaws.com
+  AWS_REGION: eu-central-1
+  GH_ACTIONS_IAM_ROLE_NAME: gh_actions_services
   # KOSLI_DRY_RUN: "True"
 
 jobs:
@@ -53,9 +47,8 @@ jobs:
 
       - name: Prepare
         id: prep
-        run: |
-          TAG=$(echo $GITHUB_SHA | head -c7)
-          echo "image_tag=${TAG}" >> ${GITHUB_ENV}
+        run:
+          echo "IMAGE_TAG=$(echo $GITHUB_SHA | head -c7)" >> ${GITHUB_ENV}
 
       - name: Build
         run:
@@ -76,12 +69,12 @@ jobs:
       - name: Push image to public registry (dockerhub)
         run: |
           echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
-          docker push cyberdojo/saver:${{ env.image_tag }}
+          docker push cyberdojo/saver:${{ env.IMAGE_TAG }}
           docker logout
 
       - name: Report image to Kosli
         run:
-          kosli report artifact cyberdojo/saver:${{ env.image_tag }} 
+          kosli report artifact cyberdojo/saver:${{ env.IMAGE_TAG }} 
             --artifact-type=docker
 
       # Snyk image scan ------------------
@@ -91,14 +84,14 @@ jobs:
       - name: Run Snyk to check Docker image for vulnerabilities
         continue-on-error: true
         run:
-           snyk container test cyberdojo/saver:${{ env.image_tag }}
+           snyk container test cyberdojo/saver:${{ env.IMAGE_TAG }}
             --file=Dockerfile
             --json-file-output=snyk.json
             --policy-path=.snyk
 
       - name: Report Snyk scan results evidence to Kosli
         run:
-          kosli report evidence artifact snyk cyberdojo/saver:${{ env.image_tag }} 
+          kosli report evidence artifact snyk cyberdojo/saver:${{ env.IMAGE_TAG }} 
             --artifact-type=docker 
             --name=snyk-scan 
             --scan-results=snyk.json
@@ -107,17 +100,63 @@ jobs:
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v1-node16
 #        with:
-#          aws-region: ${{ inputs.AWS_REGION }}
+#          aws-region: ${{ env.AWS_REGION }}
 #          role-duration-seconds: 2400
 #          role-session-name: ${{ github.event.repository.name }}
-#          role-to-assume: arn:aws:iam::${{ inputs.AWS_ACCOUNT_ID }}:role/${{ inputs.gh_actions_iam_role_name }}
+#          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
 #
 #      - name: Login to Amazon ECR (Elastic Container Registry)
 #        id: login-ecr
 #        uses: aws-actions/amazon-ecr-login@v1
 #
-#      - name: Push image to private ECR
+#      - name: Push image to private ECRs
 #        run: |
-#          docker tag cyberdojo/saver:${{ env.image_tag }} 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
-#          docker push 244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ env.image_tag }}
+#          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
+#          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
+#          docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
+#          docker push ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
 #          docker logout
+
+#      - name: Report expected aws-beta deployment to Kosli
+#        run:
+#          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
+#            --artifact-type=docker
+#            --description="Deployed to aws-beta in Github Actions pipeline"
+#            --environment=aws-beta
+
+#      - name: Deploy to aws-beta
+#        permissions:
+#          id-token: write
+#          contents: write
+#        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+#        with:
+#          aws_region: ${{ env.AWS_REGION }}
+#          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
+#          aws_default_region: ${{ env.AWS_REGION }}
+#          aws_role_duration: 900
+#          working_directory: deployment/terraform/
+#          tf_apply: 'true'
+#          tf_version: v1.4.5
+#          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
+
+#      - name: Report expected aws-prod deployment to Kosli
+#        run:
+#          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
+#            --artifact-type=docker
+#            --description="Deployed to aws-prod in Github Actions pipeline"
+#            --environment=aws-prod
+
+#      - name: Deploy to aws-prod
+#        permissions:
+#          id-token: write
+#          contents: write
+#        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+#        with:
+#          aws_region: ${{ env.AWS_REGION }}
+#          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_PROD }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
+#          aws_default_region: ${{ env.AWS_REGION }}
+#          aws_role_duration: 900
+#          working_directory: deployment/terraform/
+#          tf_apply: 'true'
+#          tf_version: v1.4.5
+#          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}"}'
