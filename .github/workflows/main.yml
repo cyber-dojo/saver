@@ -99,6 +99,7 @@ jobs:
             --name=snyk-scan 
             --scan-results=snyk.json
 
+      # Deploy to aws-beta ------------------
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -111,36 +112,32 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push image to private ECRs
+      - name: Push image to private ECR for beta
         run: |
           docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
-          docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
           docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
-          docker push ${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}
           docker logout
 
-#      - name: Report expected aws-beta deployment to Kosli
-#        run:
-#          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
-#            --artifact-type=docker
-#            --description="Deployed to aws-beta in Github Actions pipeline"
-#            --environment=aws-beta
+      - name: Report expected aws-beta deployment to Kosli
+        run:
+          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
+            --artifact-type=docker
+            --description="Deployed to aws-beta in Github Actions pipeline"
+            --environment=aws-beta
 
-#      - name: Deploy to aws-beta
-#        permissions:
-#          id-token: write
-#          contents: write
-#        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
-#        with:
-#          aws_region: ${{ env.AWS_REGION }}
-#          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
-#          aws_default_region: ${{ env.AWS_REGION }}
-#          aws_role_duration: 900
-#          working_directory: deployment/terraform/
-#          tf_apply: 'true'
-#          tf_version: v1.4.5
-#          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
+      - name: Deploy to aws-beta
+        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+        with:
+          aws_region: ${{ env.AWS_REGION }}
+          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
+          aws_default_region: ${{ env.AWS_REGION }}
+          aws_role_duration: 900
+          working_directory: deployment/terraform/
+          tf_apply: 'true'
+          tf_version: v1.4.5
+          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
 
+      # Deploy to aws-beta ------------------
 #      - name: Report expected aws-prod deployment to Kosli
 #        run:
 #          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
@@ -149,9 +146,6 @@ jobs:
 #            --environment=aws-prod
 
 #      - name: Deploy to aws-prod
-#        permissions:
-#          id-token: write
-#          contents: write
 #        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
 #        with:
 #          aws_region: ${{ env.AWS_REGION }}
