@@ -36,7 +36,7 @@ env:
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_HOST: ${{ inputs.KOSLI_HOST }}               # https://app.kosli.com
   KOSLI_CLI_VERSION: ${{ inputs.KOSLI_CLI_VERSION }} # "2.6.11"
-  KOSLI_TEMPLATE: "artifact"
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   # KOSLI_DRY_RUN: "True"
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
           echo "image_tag=${TAG}" >> ${GITHUB_ENV}
 
       - name: Build
-        run: |
+        run:
           ./sh/build.sh
 
       - name: Setup Kosli CLI
@@ -68,11 +68,10 @@ jobs:
             ${{ env.KOSLI_CLI_VERSION }}
 
       - name: Create Kosli flow
-        env:
-          KOSLI_TEMPLATE: ${{ env.KOSLI_TEMPLATE }}
-        run: |
+        run:
           kosli create flow ${{ env.KOSLI_FLOW }} \
-            --description "Group/Kata model+persistence"
+            --description "Group/Kata model+persistence" \
+            --template=artifact,snyk-scan
 
       - name: Push image to public registry (dockerhub)
         run: |
@@ -81,9 +80,29 @@ jobs:
           docker logout
 
       - name: Report image to Kosli
-        run: |
+        run:
           kosli report artifact cyberdojo/saver:${{ env.image_tag }} \
-            --artifact-type docker
+            --artifact-type=docker
+
+      # Snyk image scan ------------------
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        continue-on-error: true
+        run:
+           snyk container test cyberdojo/saver:${{ env.image_tag }}
+            --file=Dockerfile
+            --json-file-output=snyk.json
+            --policy-path=.snyk
+
+      - name: Report Snyk scan results evidence to Kosli
+        run:
+          kosli report evidence artifact snyk cyberdojo/saver:${{ env.image_tag }} \
+            --artifact-type=docker \
+            --name=snyk-scan \
+            --scan-results=snyk.json
+
 
 #      - name: Configure AWS credentials
 #        uses: aws-actions/configure-aws-credentials@v1-node16
