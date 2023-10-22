@@ -1,4 +1,4 @@
-name: Main (Work in Progress)
+name: Main reports to https://staging.app.kosli.com (Work in Progress)
 
 on:
   workflow_dispatch:
@@ -133,21 +133,19 @@ jobs:
 
   deploy-to-aws-beta:
     needs: [build-test-push]
-    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: write
-    steps:
-      - uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
-        with:
-          aws_region: ${{ env.AWS_REGION }}
-          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
-          aws_default_region: ${{ env.AWS_REGION }}
-          aws_role_duration: 900
-          working_directory: deployment/terraform/
-          tf_apply: 'true'
-          tf_version: v1.4.5
-          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
+    uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+    with:
+      aws_region: ${{ env.AWS_REGION }}
+      aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
+      aws_default_region: ${{ env.AWS_REGION }}
+      aws_role_duration: 900
+      working_directory: deployment/terraform/
+      tf_apply: 'true'
+      tf_version: v1.4.5
+      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
 
 
 #      - name: Report expected aws-prod deployment to Kosli
