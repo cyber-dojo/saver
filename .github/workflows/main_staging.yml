@@ -36,6 +36,18 @@ env:
 
 jobs:
 
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.prep.outputs.image_tag }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Prepare
+      id: prep
+      run: |
+        TAG=$(echo $GITHUB_SHA | head -c7)
+        echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
+
   build-test-push:
     runs-on: ubuntu-latest
     permissions:
@@ -138,14 +150,14 @@ jobs:
       contents: write
     uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
     with:
-      aws_region: ${{ env.AWS_REGION }}
-      aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
-      aws_default_region: ${{ env.AWS_REGION }}
+      aws_region: eu-central-1
+      aws_role_arn: arn:aws:iam::244531986313:role/gh_actions_services
+      aws_default_region: eu-central-1
       aws_role_duration: 900
       working_directory: deployment/terraform/
       tf_apply: 'true'
       tf_version: v1.4.5
-      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}"}'
+      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ needs.pre-build.outputs.image_tag }}"}'
 
 
 #      - name: Report expected aws-prod deployment to Kosli
