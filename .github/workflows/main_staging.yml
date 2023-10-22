@@ -2,22 +2,6 @@ name: Main reports to https://staging.app.kosli.com (Work in Progress)
 
 on:
   workflow_dispatch:
-#  workflow_call:
-#    secrets:
-#      DOCKER_PASS:
-#        required: true
-#      DOCKER_USER:
-#        required: true
-#      KOSLI_API_TOKEN:
-#        required: true
-#      SNYK_TOKEN:
-#        required: true
-#
-#    inputs:
-#      KOSLI_HOST:
-#        required: true
-#        type: string
-
 
 env: 
   KOSLI_ORG: cyber-dojo
