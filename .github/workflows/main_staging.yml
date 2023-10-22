@@ -49,6 +49,7 @@ jobs:
         echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
 
   build-test-push:
+    needs: [pre-build]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
