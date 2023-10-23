@@ -2,6 +2,11 @@ name: Tests built image, deploys to aws-beta and aws-prod
 
 on:
   workflow_call:
+    secrets:
+      KOSLI_API_TOKEN:
+        required: true
+      SNYK_TOKEN:
+        required: true
     inputs:
       KOSLI_HOST:
         required: true
@@ -24,7 +29,7 @@ env:
 
 jobs:
 
-  pre-build:
+  pre-test:
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.prep.outputs.image_tag }}
@@ -37,7 +42,7 @@ jobs:
         echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
 
   test:
-    needs: [pre-build]
+    needs: [pre-test]
     runs-on: ubuntu-latest
 #    permissions:
 #      id-token: write
@@ -142,7 +147,7 @@ jobs:
 
 
   deploy-to-aws-beta:
-    needs: [pre-build, test, push-image-to-beta-ecr]
+    needs: [pre-test, test, push-image-to-beta-ecr]
     permissions:
       id-token: write
       contents: write
@@ -155,24 +160,5 @@ jobs:
       working_directory: deployment/terraform/
       tf_apply: 'true'
       tf_version: v1.4.5
-      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ needs.pre-build.outputs.image_tag }}"}'
+      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ needs.pre-test.outputs.image_tag }}"}'
 
-
-#      - name: Report expected aws-prod deployment to Kosli
-#        run:
-#          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
-#            --artifact-type=docker
-#            --description="Deployed to aws-prod in Github Actions pipeline"
-#            --environment=aws-prod
-
-#      - name: Deploy to aws-prod
-#        uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
-#        with:
-#          aws_region: ${{ env.AWS_REGION }}
-#          aws_role_arn: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_PROD }}:role/${{ env.GH_ACTIONS_IAM_ROLE_NAME }}
-#          aws_default_region: ${{ env.AWS_REGION }}
-#          aws_role_duration: 900
-#          working_directory: deployment/terraform/
-#          tf_apply: 'true'
-#          tf_version: v1.4.5
-#          tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "${{ env.ECR_REGISTRY_PROD }}/saver:${{ env.IMAGE_TAG }}"}'
