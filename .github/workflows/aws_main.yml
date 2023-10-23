@@ -52,11 +52,11 @@ jobs:
     - name: Prepare  # deploy-to-aws-beta: with: can only use ${{ needs.X.outputs.... }}
       id: with_vars
       run: |
-        echo "image_tag=${{ env.IMAGE_TAG }}" >> ${GITHUB_OUTPUT}
-        echo "aws_account_id_beta=${{ env.AWS_ACCOUNT_ID_BETA }}" >> ${GITHUB_OUTPUT}
-        echo "ecr_registry_beta=${{ env.ECR_REGISTRY_BETA }}" >> >> ${GITHUB_OUTPUT}
-        echo "aws_account_id_prod=${{ env.AWS_ACCOUNT_ID_PROD }}" >> ${GITHUB_OUTPUT}
-        echo "ecr_registry_prod=${{ env.ECR_REGISTRY_PROD }}" >> ${GITHUB_OUTPUT}
+        echo "image_tag=${{ env.IMAGE_TAG }}"                               >> ${GITHUB_OUTPUT}
+        echo "aws_account_id_beta=${{ env.AWS_ACCOUNT_ID_BETA }}"           >> ${GITHUB_OUTPUT}
+        echo "ecr_registry_beta=${{ env.ECR_REGISTRY_BETA }}"               >> ${GITHUB_OUTPUT}
+        echo "aws_account_id_prod=${{ env.AWS_ACCOUNT_ID_PROD }}"           >> ${GITHUB_OUTPUT}
+        echo "ecr_registry_prod=${{ env.ECR_REGISTRY_PROD }}"               >> ${GITHUB_OUTPUT}
         echo "gh_actions_iam_role_name=${{ env.GH_ACTIONS_IAM_ROLE_NAME }}" >> ${GITHUB_OUTPUT}
 
   test:

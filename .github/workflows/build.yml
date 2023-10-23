@@ -17,8 +17,8 @@ jobs:
       id: with_vars
       run: |
         echo "image_tag=$(echo $GITHUB_SHA | head -c7)" >> ${GITHUB_OUTPUT}
-        echo "aws_account_id_beta=244531986313" >> ${GITHUB_OUTPUT} 
-        echo "aws_account_id_prod=274425519734" >> ${GITHUB_OUTPUT} 
+        echo "aws_account_id_beta=244531986313"         >> ${GITHUB_OUTPUT} 
+        echo "aws_account_id_prod=274425519734"         >> ${GITHUB_OUTPUT} 
 
   build:
     needs: [with-vars]
