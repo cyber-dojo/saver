@@ -44,9 +44,6 @@ jobs:
   test:
     needs: [pre-test]
     runs-on: ubuntu-latest
-#    permissions:
-#      id-token: write
-#      contents: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -54,7 +51,7 @@ jobs:
 
       - name: Prepare
         id: prep
-        run: 
+        run:
           echo "IMAGE_TAG=$(echo $GITHUB_SHA | head -c7)" >> ${GITHUB_ENV}
 
       - name: Setup Kosli CLI
@@ -117,9 +114,9 @@ jobs:
   push-image-to-beta-ecr:
     needs: [test]
     runs-on: ubuntu-latest
-#    permissions:
-#      id-token: write
-#      contents: write
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -133,7 +130,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push image to private ECR for beta
+      - name: Push image to private beta-ECR
         run: |
           docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
           docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
