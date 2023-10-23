@@ -54,8 +54,9 @@ jobs:
 
       - name: Prepare
         id: prep
-        run:
+        run: |
           echo "IMAGE_TAG=$(echo $GITHUB_SHA | head -c7)" >> ${GITHUB_ENV}
+          docker pull cyberdojo/saver:${{ env.IMAGE_TAG }}
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
