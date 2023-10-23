@@ -5,19 +5,23 @@ on:
 
 jobs:
 
-  pre-build:
+  with-vars:
     runs-on: ubuntu-latest
     outputs:
-      image_tag: ${{ steps.prep.outputs.image_tag }}
+      image_tag: ${{ steps.with_vars.outputs.image_tag }}
+      aws_account_id_beta: ${{ steps.with_vars.outputs.aws_account_id_beta }}
+      aws_account_id_prod: ${{ steps.with_vars.outputs.aws_account_id_prod }}
     steps:
     - uses: actions/checkout@v3
     - name: Prepare
-      id: prep
+      id: with_vars
       run: |
-        TAG=$(echo $GITHUB_SHA | head -c7)
-        echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
+        echo "image_tag=$(echo $GITHUB_SHA | head -c7)" >> ${GITHUB_OUTPUT}
+        echo "aws_account_id_beta=244531986313" >> ${GITHUB_OUTPUT} 
+        echo "aws_account_id_prod=274425519734" >> ${GITHUB_OUTPUT} 
 
   build:
+    needs: [with-vars]
     runs-on: ubuntu-latest
     env:
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
@@ -32,20 +36,20 @@ jobs:
       - name: Push image to public registry (dockerhub)
         run: |
           echo "${DOCKER_PASS}" | docker login --username "${DOCKER_USER}" --password-stdin
-          docker push cyberdojo/saver:$(echo $GITHUB_SHA | head -c7)
+          docker push cyberdojo/saver:${{ needs.with-vars.outputs.image_tag }}
           docker logout
 
   kosli-staging:
-    needs: [pre-build, build]
+    needs: [with-vars, build]
     uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
     secrets:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     with:
       KOSLI_HOST: https://staging.app.kosli.com
-      IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
-      AWS_ACCOUNT_ID_BETA: 244531986313
-      AWS_ACCOUNT_ID_PROD: 274425519734
+      IMAGE_TAG: ${{ needs.with-vars.outputs.image_tag }}
+      AWS_ACCOUNT_ID_BETA: ${{ needs.with-vars.outputs.aws_account_id_beta }}
+      AWS_ACCOUNT_ID_PROD: ${{ needs.with-vars.outputs.aws_account_id_prod }}
 
 
 #  kosli-production:
@@ -56,6 +60,6 @@ jobs:
 #      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 #    with:
 #      KOSLI_HOSTNAME: https://app.kosli.com
-#      IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
-#      AWS_ACCOUNT_ID_BETA: 244531986313
-#      AWS_ACCOUNT_ID_PROD: 274425519734
+#      IMAGE_TAG: ${{ needs.with-vars.outputs.image_tag }}
+#      AWS_ACCOUNT_ID_BETA: ${{ needs.with-vars.outputs.aws_account_id_beta }}
+#      AWS_ACCOUNT_ID_PROD: ${{ needs.with-vars.outputs.aws_account_id_prod }}
