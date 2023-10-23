@@ -141,7 +141,7 @@ jobs:
             --environment=aws-beta
 
 
- deploy-to-aws-beta:
+  deploy-to-aws-beta:
    needs: [pre-build, build-test-push]
    permissions:
      id-token: write
