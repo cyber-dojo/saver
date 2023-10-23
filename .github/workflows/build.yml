@@ -53,7 +53,7 @@ jobs:
 
 
 #  kosli-production:
-#    needs: [pre-build, build]
+#    needs: [with-vars, build]
 #    uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
 #    secrets:
 #      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
