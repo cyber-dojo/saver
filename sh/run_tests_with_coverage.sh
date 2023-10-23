@@ -15,5 +15,6 @@ fi
 ./up.sh
 ./wait.sh
 ./test.sh "$@"
+write_coverage_json
 
 popd
