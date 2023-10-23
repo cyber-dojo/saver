@@ -44,6 +44,8 @@ jobs:
     with:
       KOSLI_HOST: https://staging.app.kosli.com
       IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
+      AWS_ACCOUNT_ID_BETA: 244531986313
+      AWS_ACCOUNT_ID_PROD: 274425519734
 
 
 #  kosli-production:
@@ -55,3 +57,5 @@ jobs:
 #    with:
 #      KOSLI_HOSTNAME: https://app.kosli.com
 #      IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
+#      AWS_ACCOUNT_ID_BETA: 244531986313
+#      AWS_ACCOUNT_ID_PROD: 274425519734
