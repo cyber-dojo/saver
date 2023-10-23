@@ -142,11 +142,12 @@ jobs:
 
 
   deploy-to-aws-beta:
-   needs: [pre-build, build-test-push]
+  #  needs: [pre-build, build-test-push]
+   needs: [build-test-push]
    permissions:
      id-token: write
      contents: write
-   uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+   uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.11
    with:
      aws_region: eu-central-1
      aws_role_arn: arn:aws:iam::244531986313:role/gh_actions_services
