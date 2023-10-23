@@ -4,12 +4,11 @@ by the fact that cyber-dojo Flows are unusual in that they need to
 repeat every Kosli step twice; once to report to https://staging.app.kosli.com
 and once again to report to https://app.kosli.com
 A normal customer CI workflow yml file would only report to the latter.
-To resolve this the core workflow (currently called main_WIP.yml)
-has been designed to accept the KOSLI_HOST as a on:workflow_call:input
-and there will be two workflow yml files; one to run the core workflow
-with KOSLI_HOST set to https://staging.app.kosli.com, and one to run
-the core workflow with KOSLI_HOST set to https://app.kosli.com
+To resolve this the workflow is split into two parts;
+1) build.yml which builds the image and pushes it to its public dockerhub registry
+2) aws_main.yml which is called twice;
+   once from build.yml's kosli-staging: job, which reports only to https://staging.app.kosli.com
+   once from build.yml's kosli-production: job, which reports only to https://app.kosli.com
 
-While this core workflow is being built, we have set main.yml
-so it does _not_ run on a push. So if you are doing a genuine
-commit and push you will need to manually trigger main.yml
+While these workflows are being built, _no_ workflows run on a push. 
+If you are doing a genuine (non CI) commit you will need to manually trigger old_main.yml
