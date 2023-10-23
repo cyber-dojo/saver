@@ -5,6 +5,18 @@ on:
 
 jobs:
 
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.prep.outputs.image_tag }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Prepare
+      id: prep
+      run: |
+        TAG=$(echo $GITHUB_SHA | head -c7)
+        echo "image_tag=${TAG}" >> ${GITHUB_OUTPUT}
+
   build:
     runs-on: ubuntu-latest
     env:
@@ -24,17 +36,22 @@ jobs:
           docker logout
 
   kosli-staging:
-    needs: [build]
+    needs: [pre-build, build]
     uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
     secrets:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     with:
       KOSLI_HOST: https://staging.app.kosli.com
+      IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
 
 
 #  kosli-production:
-#    needs: [build]
+#    needs: [pre-build, build]
 #    uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
+#    secrets:
+#      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+#      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 #    with:
 #      KOSLI_HOSTNAME: https://app.kosli.com
+#      IMAGE_TAG: ${{ needs.pre-build.outputs.image_tag }}
