@@ -51,9 +51,13 @@ services:
       - $(server_context)/app/source:/app/source:ro
       - $(server_context)/app/test:/app/test:ro
       - one_k:/one_k:rw
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          mode: 01777
+          size: 10485760  # 10MB
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
-      - /tmp:uid=19663,gid=65533
 
 EOF
 }
