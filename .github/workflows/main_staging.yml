@@ -61,7 +61,7 @@ jobs:
         run:
           kosli create flow ${{ env.KOSLI_FLOW }} 
             --description="Group/Kata model+persistence" 
-            --template=artifact,snyk-scan
+            --template=artifact,branch-coverage,snyk-scan
 
       - name: Build
         run:
@@ -79,17 +79,17 @@ jobs:
             --artifact-type=docker
 
       # Run tests with coverage ------------------
-#      - name: Run tests and create branch coverage json file
-#        run:
-#          ./sh/run_tests_with_coverage.sh
+      - name: Run tests and create branch coverage json file
+        run:
+          ./sh/run_tests_with_coverage.sh
 
-#      - name: Report branch coverage to Kosli
-#        run:
-#          kosli report evidence artifact generic cyberdojo/saver:${{ env.IMAGE_TAG }}
-#              --artifact-type=docker
-#              --description="server & client branch-coverage reports"
-#              --name=branch-coverage
-#              --user-data=./tmp/evidence.json
+      - name: Report branch coverage to Kosli
+        run:
+          kosli report evidence artifact generic cyberdojo/saver:${{ env.IMAGE_TAG }}
+              --artifact-type=docker
+              --description="server & client branch-coverage reports"
+              --name=branch-coverage
+              --user-data=./tmp/evidence.json
 
       # Snyk image scanning ------------------
       - name: Setup Snyk
@@ -141,21 +141,21 @@ jobs:
             --environment=aws-beta
 
 
-  deploy-to-aws-beta:
-    needs: [build-test-push]
-    permissions:
-      id-token: write
-      contents: write
-    uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
-    with:
-      aws_region: eu-central-1
-      aws_role_arn: arn:aws:iam::244531986313:role/gh_actions_services
-      aws_default_region: eu-central-1
-      aws_role_duration: 900
-      working_directory: deployment/terraform/
-      tf_apply: 'true'
-      tf_version: v1.4.5
-      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ needs.pre-build.outputs.image_tag }}"}'
+#  deploy-to-aws-beta:
+#    needs: [build-test-push]
+#    permissions:
+#      id-token: write
+#      contents: write
+#    uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.7
+#    with:
+#      aws_region: eu-central-1
+#      aws_role_arn: arn:aws:iam::244531986313:role/gh_actions_services
+#      aws_default_region: eu-central-1
+#      aws_role_duration: 900
+#      working_directory: deployment/terraform/
+#      tf_apply: 'true'
+#      tf_version: v1.4.5
+#      tf_additional_env_vars: '{"TF_VAR_TAGGED_IMAGE": "244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ needs.pre-build.outputs.image_tag }}"}'
 
 
 #      - name: Report expected aws-prod deployment to Kosli
