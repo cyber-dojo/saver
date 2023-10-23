@@ -136,6 +136,7 @@ jobs:
 
       - name: Push image to private beta-ECR
         run: |
+          docker pull cyberdojo/saver:${{ env.IMAGE_TAG }}
           docker tag cyberdojo/saver:${{ env.IMAGE_TAG }} ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
           docker push ${{ env.ECR_REGISTRY_BETA }}/saver:${{ env.IMAGE_TAG }}
           docker logout
