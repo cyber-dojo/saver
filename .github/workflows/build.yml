@@ -27,7 +27,7 @@ jobs:
     needs: [build]
     uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
     with:
-      KOSLI_HOSTNAME: https://staging.app.kosli.com
+      KOSLI_HOST: https://staging.app.kosli.com
 
 #  kosli-production:
 #    needs: [build]
