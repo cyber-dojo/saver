@@ -53,7 +53,7 @@ services:
       - one_k:/one_k:rw
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533
-      - /tmp:uid=19663,gid=65533
+      - /tmp
 
 EOF
 }
