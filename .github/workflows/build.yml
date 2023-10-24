@@ -51,15 +51,14 @@ jobs:
       AWS_ACCOUNT_ID_BETA: ${{ needs.with-vars.outputs.aws_account_id_beta }}
       AWS_ACCOUNT_ID_PROD: ${{ needs.with-vars.outputs.aws_account_id_prod }}
 
-
-#  kosli-production:
-#    needs: [with-vars, build]
-#    uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
-#    secrets:
-#      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-#      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-#    with:
-#      KOSLI_HOSTNAME: https://app.kosli.com
-#      IMAGE_TAG: ${{ needs.with-vars.outputs.image_tag }}
-#      AWS_ACCOUNT_ID_BETA: ${{ needs.with-vars.outputs.aws_account_id_beta }}
-#      AWS_ACCOUNT_ID_PROD: ${{ needs.with-vars.outputs.aws_account_id_prod }}
+  kosli-production:
+    needs: [with-vars, build]
+    uses: cyber-dojo/saver/.github/workflows/aws_main.yml@main
+    secrets:
+      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    with:
+      KOSLI_HOSTNAME: https://app.kosli.com
+      IMAGE_TAG: ${{ needs.with-vars.outputs.image_tag }}
+      AWS_ACCOUNT_ID_BETA: ${{ needs.with-vars.outputs.aws_account_id_beta }}
+      AWS_ACCOUNT_ID_PROD: ${{ needs.with-vars.outputs.aws_account_id_prod }}

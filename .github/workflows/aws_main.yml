@@ -49,7 +49,7 @@ jobs:
       ecr_registry_prod: ${{ steps.with_vars.outputs.ecr_registry_prod }}
       gh_actions_iam_role_name: ${{ steps.with_vars.outputs.gh_actions_iam_role_name }}
     steps:
-    - name: Prepare  # deploy-to-aws-beta: with: can only use ${{ needs.X.outputs.... }}
+    - name: Prepare outputs for fivexl deployment workflow # it can't use ${{ env.VAR }}
       id: with_vars
       run: |
         echo "image_tag=${{ env.IMAGE_TAG }}"                               >> ${GITHUB_OUTPUT}
@@ -212,7 +212,7 @@ jobs:
 #          version:
 #            ${{ env.KOSLI_CLI_VERSION }}
 #
-#      - name: Report expected aws-beta deployment to Kosli
+#      - name: Report expected aws-prod deployment to Kosli
 #        run:
 #          kosli expect deployment cyberdojo/saver:${{ env.IMAGE_TAG }}
 #            --artifact-type=docker
