@@ -14,15 +14,7 @@ if ! on_ci; then
 fi
 ./up.sh
 ./wait.sh
-
-max_retry=3
-counter=0
-until ./test.sh "$@"
-do
-  [[ counter -eq $max_retry ]] && exit 1
-  ((counter++))
-done
-
+./test.sh "$@"
 write_coverage_json
 
 popd
