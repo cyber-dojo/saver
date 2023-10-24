@@ -1,0 +1,27 @@
+1. Install terraform
+$ brew tap hashicorp/tap
+$ brew install hashicorp/tap/terraform
+
+2. Download tf.sh wrapper
+$ curl https://releases.fivexl.io/tf/v0.2.1/tf.sh --output tf.sh && chmod +x ./tf.sh
+
+3. Now it's possible to unlock the state.
+Inside the deployment/terraform directory run this command:
+$ tf.sh force-unlock <state-lock-id>
+
+You can find state lock ID in the CI error message:
+Error: Error acquiring the state lock
+
+Error message: ConditionalCheckFailedException: The conditional request
+failed
+Lock Info:
+  ID:        c9cc5264-88ee-46ec-4507-ba929c37b97e
+  Path:      terraform-state-9d7e951c290ec5bbe6506e0ddb064808764bc636/terraform/saver/main.tfstate
+  Operation: OperationTypeApply
+  Who:       runner@fv-az1108-930
+  Version:   1.4.5
+  Created:   2023-10-23 12:36:51.178192343 +0000 UTC
+
+So in this case the command would be:
+
+$ tf.sh force-unlock c9cc5264-88ee-46ec-4507-ba929c37b97e
