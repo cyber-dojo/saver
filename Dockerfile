@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=cyberdojo/sinatra-base:76dd1ca
+ARG BASE_IMAGE=cyberdojo/sinatra-base:ba15209
 FROM ${BASE_IMAGE}
 LABEL maintainer=jon@jaggersoft.com
 
@@ -16,12 +16,10 @@ COPY --chown=saver:nogroup . /
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
-ENV COMMIT_SHA=${COMMIT_SHA}
 
 # ARGs are reset after FROM See https://github.com/moby/moby/issues/34129
 ARG BASE_IMAGE
 ENV BASE_IMAGE=${BASE_IMAGE}
-
 
 USER saver
 HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /app/config/healthcheck.sh
