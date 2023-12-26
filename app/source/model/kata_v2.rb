@@ -119,6 +119,7 @@ class Kata_v2
       result['stdout'] = { 'content': '', 'truncated': false}
       result['stderr'] = { 'content': '', 'truncated': false}
       result['status'] = 0
+      result['colour'] = 'red'
     end
 
     result

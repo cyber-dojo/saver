@@ -149,10 +149,11 @@ class KataEventTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, '9De', %w(
-  |kata_event(id, index=0) polyfills stdout,stderr,status
+  |kata_event(id, index=0) polyfills stdout,stderr,status,colour
   |because these are needed now that the initial index=0 traffic-light
   |is shown on the main kata/edit page allowing you to click the
   |index=0 traffic-light and thus get a review/diff page for index=0
+  |You also need 'colour' when reverting back to index=0 traffic-light
   ) do
     in_kata do |id|
       actual = kata_event(id, 0)
@@ -162,6 +163,8 @@ class KataEventTest < TestBase
       assert_equal expected, actual["stderr"]
       expected = 0
       assert_equal expected, actual["status"]
+      expected = "red"
+      assert_equal expected, actual["colour"]
     end
   end
 
