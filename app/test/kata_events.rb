@@ -61,7 +61,7 @@ class KataEventsTest < TestBase
       kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
       actual = kata_events(id)
       expected = [
-        { "index" => 0, "time" => t0, "event" => "created" },
+        { "index" => 0, "time" => t0, "colour" => "red", "event" => "created" },
         { "index" => 1, "time" => t1, "colour" => "red" },
         { "index" => 2, "time" => t2, "colour" => "red" },
         { "index" => 3, "time" => t3, "colour" => "red" }
@@ -88,11 +88,23 @@ class KataEventsTest < TestBase
       kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
       actual = kata_events(id)
       expected = [
-        { "index" => 0, "time" => t0, "event" => "created" },
+        { "index" => 0, "time" => t0, "colour" => "red", "event" => "created" },
         { "index" => 1, "time" => t1, "colour" => "red" },
         { "index" => 2, "event" => "outage" },
         { "index" => 3, "time" => t3, "colour" => "red" }
       ]
+      assert_equal expected, actual
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'eh4', %w( polyfill colour for index==0 ) do
+    t0 = [2021,6,12, 6,9,51,899055]
+    externals.instance_exec { @time = TimeStub.new(t0) }
+    in_kata do |id|
+      actual = kata_events(id)
+      expected = [{ "index" => 0, "time" => t0, "colour" => "red", "event" => "created" }]
       assert_equal expected, actual
     end
   end

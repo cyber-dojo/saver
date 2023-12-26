@@ -71,6 +71,7 @@ class Kata_v2
   def events(id)
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
+    result[0]["colour"] = "red"
     result
   end
 
@@ -112,6 +113,12 @@ class Kata_v2
     elsif result.has_key?('stdout')
       result['stdout']['truncated'] = truncations['stdout']
       result['stderr']['truncated'] = truncations['stderr']
+    end
+
+    if index === 0
+      result['stdout'] = { 'content': '', 'truncated': false}
+      result['stderr'] = { 'content': '', 'truncated': false}
+      result['status'] = 0
     end
 
     result
