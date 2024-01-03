@@ -99,7 +99,7 @@ class KataEventsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'eh4', %w( polyfill colour for index==0 ) do
+  version_test 2, 'eh4', %w( polyfill colour red for index==0 creation event ) do
     t0 = [2021,6,12, 6,9,51,899055]
     externals.instance_exec { @time = TimeStub.new(t0) }
     in_kata do |id|
