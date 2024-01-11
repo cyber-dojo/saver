@@ -71,7 +71,7 @@ class Kata_v2
   def events(id)
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
-    result[0]["colour"] = "create"
+    result[0]["colour"] = "red"
     result
   end
 
@@ -119,7 +119,7 @@ class Kata_v2
       result['stdout'] = { 'content': '', 'truncated': false}
       result['stderr'] = { 'content': '', 'truncated': false}
       result['status'] = 0
-      result['colour'] = 'create'
+      result['colour'] = 'red'
     end
 
     result
