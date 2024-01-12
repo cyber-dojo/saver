@@ -163,7 +163,7 @@ class KataEventTest < TestBase
       assert_equal expected, actual["stderr"]
       expected = 0
       assert_equal expected, actual["status"]
-      expected = "red"
+      expected = "create"
       assert_equal expected, actual["colour"]
     end
   end
