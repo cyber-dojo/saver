@@ -10,7 +10,7 @@ export KOSLI_ORG=cyber-dojo-trails
 # SNYK_TOKEN is set in CI
 
 # - - - - - - - - - - - - - - - - - - -
-kosli_create_trail()
+kosli_begin_trail()
 {
   local -r hostname="${1}"
   local -r api_token="${2}"
