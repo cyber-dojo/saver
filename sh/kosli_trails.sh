@@ -18,7 +18,7 @@ kosli_create_trail()
   echo "KOSLI_ORG=:${KOSLI_ORG}:"
 
   kosli create flow "${KOSLI_FLOW}" \
-    --dry-run \
+    --debug \
     --description="Group/Kata model+persistence" \
     --host="${hostname}" \
     --api-token="${api_token}" \
@@ -29,6 +29,7 @@ kosli_create_trail()
   echo Now trying to begin Kosli trail...
 
   kosli begin trail "${GITHUB_SHA}" \
+    --debug \
     --repo-root="$(repo_root)"
 
   echo ...Kosli trail was begun
