@@ -22,15 +22,8 @@ kosli_create_trail()
     --template-file="$(repo_root)/.kosli.yml" \
     --visibility=public
 
-  echo Flow was created
-  echo Now trying to begin the trail
-  pwd
-  echo "repo_root=:$(repo_root):"
-  git log
-
-  kosli begin trail "${GITHUB_SHA}"
-
-  echo Kosli trail was begun...
+  kosli begin trail "${GITHUB_SHA}" \
+    --repo-root="$(repo_root)"
 }
 
 # - - - - - - - - - - - - - - - - - - -
