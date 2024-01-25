@@ -128,7 +128,7 @@ on_ci_kosli_attest_artifact()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-on_ci_kosli_report_coverage_evidence()
+on_ci_kosli_attest_coverage_evidence()
 {
   if on_ci; then
     write_coverage_json
@@ -138,7 +138,7 @@ on_ci_kosli_report_coverage_evidence()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-on_ci_kosli_report_snyk_scan_evidence()
+on_ci_kosli_attest_snyk_scan_evidence()
 {
   if on_ci; then
     set +e
