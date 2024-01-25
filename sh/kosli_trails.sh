@@ -19,10 +19,18 @@ kosli_create_trail()
     --description="Group/Kata model+persistence" \
     --host="${hostname}" \
     --api-token="${api_token}" \
-    --template-file="$(repo_dir)/.kosli.yml" \
+    --template-file="$(repo_root)/.kosli.yml" \
     --visibility=public
 
+  echo Flow was created
+  echo Now trying to begin the trail
+  pwd
+  echo "repo_root=:$(repo_root):"
+  git log
+
   kosli begin trail "${GITHUB_SHA}"
+
+  echo Kosli trail was begun...
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -168,7 +176,7 @@ artifact_name()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-repo_dir()
+repo_root()
 {
   git rev-parse --show-toplevel
 }
