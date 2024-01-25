@@ -24,8 +24,7 @@ kosli_begin_trail()
 
   kosli begin trail "${GITHUB_SHA}" \
     --host="${hostname}" \
-    --api-token="${api_token}" \
-    --repo-root="$(repo_root)"
+    --api-token="${api_token}"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -61,7 +60,6 @@ kosli_attest_coverage_evidence()
     --host="${hostname}" \
     --api-token="${api_token}" \
     --trail="${GITHUB_SHA}"
-
 }
 
 # - - - - - - - - - - - - - - - - - - -
