@@ -18,6 +18,7 @@ on_ci_kosli_attest_artifact
 ./up.sh
 ./wait.sh
 ./test.sh "$@"
+set +x
 on_ci_kosli_attest_coverage_evidence
 on_ci_kosli_attest_snyk_scan_evidence
 on_ci_kosli_assert_artifact
