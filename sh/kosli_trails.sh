@@ -19,7 +19,7 @@ kosli_create_trail()
     --description="Group/Kata model+persistence" \
     --host="${hostname}" \
     --api-token="${api_token}" \
-    --template-file=.kosli.yml \
+    --template-file="$(repo_dir)/.kosli.yml" \
     --visibility=public
 
   kosli begin trail "${GITHUB_SHA}"
@@ -168,6 +168,11 @@ artifact_name()
 }
 
 # - - - - - - - - - - - - - - - - - - -
+repo_dir()
+{
+  git rev-parse --show-toplevel
+}
+
 root_dir()
 {
   git rev-parse --show-toplevel
