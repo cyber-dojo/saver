@@ -3,8 +3,8 @@ set -Eeu
 
 export KOSLI_FLOW=saver
 export KOSLI_ORG=cyber-dojo-trails
-# KOSLI_API_TOKEN_TRAILS is set in CI
-# KOSLI_API_TOKEN_TRAILS_STAGING is set in CI
+# KOSLI_API_TOKEN is set in CI
+# KOSLI_API_TOKEN_STAGING is set in CI
 # KOSLI_HOST_STAGING is set in CI
 # KOSLI_HOST_PRODUCTION is set in CI
 # SNYK_TOKEN is set in CI
@@ -110,8 +110,8 @@ kosli_expect_deployment()
 on_ci_kosli_create_trail()
 {
   if on_ci; then
-    kosli_create_trail "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_TRAILS_STAGING}"
-    kosli_create_trail "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN_TRAILS}"
+    kosli_create_trail "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_create_trail "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
@@ -119,8 +119,8 @@ on_ci_kosli_create_trail()
 on_ci_kosli_report_artifact()
 {
   if on_ci; then
-    kosli_attest_artifact "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_TRAILS_STAGING}"
-    kosli_attest_artifact "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN_TRAILS}"
+    kosli_attest_artifact "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_attest_artifact "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
@@ -129,8 +129,8 @@ on_ci_kosli_report_coverage_evidence()
 {
   if on_ci; then
     write_coverage_json
-    kosli_attest_coverage_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_TRAILS_STAGING}"
-    kosli_attest_coverage_evidence "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN_TRAILS}"
+    kosli_attest_coverage_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_attest_coverage_evidence "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
@@ -144,8 +144,8 @@ on_ci_kosli_report_snyk_scan_evidence()
       --policy-path="$(root_dir)/.snyk"
     set -e
 
-    kosli_attest_snyk_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_TRAILS_STAGING}"
-    kosli_attest_snyk_evidence "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN_TRAILS}"
+    kosli_attest_snyk_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_attest_snyk_evidence "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
@@ -153,8 +153,8 @@ on_ci_kosli_report_snyk_scan_evidence()
 on_ci_kosli_assert_artifact()
 {
   if on_ci; then
-    kosli_assert_artifact "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_TRAILS_STAGING}"
-    kosli_assert_artifact "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN_TRAILS}"
+    kosli_assert_artifact "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_assert_artifact "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
