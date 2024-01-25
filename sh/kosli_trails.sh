@@ -15,26 +15,17 @@ kosli_create_trail()
   local -r hostname="${1}"
   local -r api_token="${2}"
 
-  echo "KOSLI_ORG=:${KOSLI_ORG}:"
-
   kosli create flow "${KOSLI_FLOW}" \
-    --debug \
     --description="Group/Kata model+persistence" \
     --host="${hostname}" \
     --api-token="${api_token}" \
     --template-file="$(repo_root)/.kosli.yml" \
     --visibility=public
 
-  echo "Flow ${KOSLI_FLOW} was created"
-  echo Now trying to begin Kosli trail...
-
   kosli begin trail "${GITHUB_SHA}" \
     --host="${hostname}" \
     --api-token="${api_token}" \
-    --debug \
     --repo-root="$(repo_root)"
-
-  echo ...Kosli trail was begun
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -119,16 +110,16 @@ kosli_expect_deployment()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-on_ci_kosli_create_trail()
+on_ci_kosli_begin_trail()
 {
   if on_ci; then
-    kosli_create_trail "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
-    kosli_create_trail "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
+    kosli_begin_trail "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
+    kosli_begin_trail "${KOSLI_HOST_PRODUCTION}" "${KOSLI_API_TOKEN}"
   fi
 }
 
 # - - - - - - - - - - - - - - - - - - -
-on_ci_kosli_report_artifact()
+on_ci_kosli_attest_artifact()
 {
   if on_ci; then
     kosli_attest_artifact "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
