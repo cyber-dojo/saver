@@ -15,7 +15,10 @@ kosli_create_trail()
   local -r hostname="${1}"
   local -r api_token="${2}"
 
+  echo "KOSLI_ORG=:${KOSLI_ORG}:"
+
   kosli create flow "${KOSLI_FLOW}" \
+    --dry-run \
     --description="Group/Kata model+persistence" \
     --host="${hostname}" \
     --api-token="${api_token}" \
