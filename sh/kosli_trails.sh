@@ -29,6 +29,8 @@ kosli_create_trail()
   echo Now trying to begin Kosli trail...
 
   kosli begin trail "${GITHUB_SHA}" \
+    --host="${hostname}" \
+    --api-token="${api_token}" \
     --debug \
     --repo-root="$(repo_root)"
 
