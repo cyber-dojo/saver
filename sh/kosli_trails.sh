@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeu
 
-export KOSLI_FLOW=saver
-export KOSLI_ORG=cyber-dojo-trails
+export KOSLI_FLOW=saver-service
+export KOSLI_ORG=cyber-dojo
 # KOSLI_API_TOKEN is set in CI
 # KOSLI_API_TOKEN_STAGING is set in CI
 # KOSLI_HOST_STAGING is set in CI
@@ -51,10 +51,9 @@ kosli_attest_coverage_evidence()
   local -r hostname="${1}"
   local -r api_token="${2}"
 
-  #  --description="server & client branch-coverage reports" \
-
   kosli attest generic "$(artifact_name)" \
     --artifact-type=docker \
+    --description="server & client branch-coverage reports" \
     --name=saver.branch-coverage \
     --user-data="$(coverage_json_path)" \
     --host="${hostname}" \

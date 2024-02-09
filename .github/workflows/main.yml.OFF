@@ -1,4 +1,4 @@
-name: Main - reports Trails to https://app.kosli.com
+name: Main
 
 on:
   push:
