@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -Eeu
 
-export KOSLI_FLOW=saver
-export KOSLI_ORG=cyber-dojo-trails
+export KOSLI_ORG=cyber-dojo
+export KOSLI_FLOW=saver-ci
+export KOSLI_TRAIL="${GITHUB_SHA}"
+
 # KOSLI_API_TOKEN is set in CI
 # KOSLI_API_TOKEN_STAGING is set in CI
 # KOSLI_HOST_STAGING is set in CI
@@ -22,7 +24,7 @@ kosli_begin_trail()
     --template-file="$(repo_root)/.kosli.yml" \
     --visibility=public
 
-  kosli begin trail "${GITHUB_SHA}" \
+  kosli begin trail "${KOSLI_TRAIL}" \
     --host="${hostname}" \
     --api-token="${api_token}"
 }
@@ -39,8 +41,7 @@ kosli_attest_artifact()
     --artifact-type=docker \
     --host="${hostname}" \
     --api-token="${api_token}" \
-    --name=saver \
-    --trail="${GITHUB_SHA}"
+    --name=saver
 
   popd
 }
@@ -51,15 +52,13 @@ kosli_attest_coverage_evidence()
   local -r hostname="${1}"
   local -r api_token="${2}"
 
-  #  --description="server & client branch-coverage reports" \
-
   kosli attest generic "$(artifact_name)" \
     --artifact-type=docker \
+    --description="server & client branch-coverage reports" \
     --name=saver.branch-coverage \
     --user-data="$(coverage_json_path)" \
     --host="${hostname}" \
-    --api-token="${api_token}" \
-    --trail="${GITHUB_SHA}"
+    --api-token="${api_token}"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -73,8 +72,7 @@ kosli_attest_snyk_evidence()
     --host="${hostname}" \
     --api-token="${api_token}" \
     --name=saver.snyk-scan \
-    --scan-results="$(root_dir)/snyk.json" \
-    --trail="${GITHUB_SHA}"
+    --scan-results="$(root_dir)/snyk.json"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -85,25 +83,6 @@ kosli_assert_artifact()
 
   kosli assert artifact "$(artifact_name)" \
     --artifact-type=docker \
-    --host="${hostname}" \
-    --api-token="${api_token}"
-}
-
-# - - - - - - - - - - - - - - - - - - -
-kosli_expect_deployment()
-{
-  local -r environment="${1}"
-  local -r hostname="${2}"
-  local -r api_token="${3}"
-
-  # In .github/workflows/main.yml deployment is its own job
-  # and the image must be present to get its sha256 fingerprint.
-  docker pull "$(artifact_name)"
-
-  kosli expect deployment "$(artifact_name)" \
-    --artifact-type=docker \
-    --description="Deployed to ${environment} in Github Actions pipeline" \
-    --environment="${environment}" \
     --host="${hostname}" \
     --api-token="${api_token}"
 }
