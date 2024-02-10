@@ -2,7 +2,7 @@
 set -Eeu
 
 export KOSLI_ORG=cyber-dojo
-export KOSLI_FLOW=saver-service
+export KOSLI_FLOW=saver-ci
 export KOSLI_TRAIL="${GITHUB_SHA}"
 
 # KOSLI_API_TOKEN is set in CI
