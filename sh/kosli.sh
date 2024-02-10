@@ -140,27 +140,6 @@ on_ci_kosli_assert_artifact()
 }
 
 # - - - - - - - - - - - - - - - - - - -
-# Until cyber-dojo/reusable-actions-workflows/.github/workflows/kosli_deploy.yml@v0.0.5 is updated
-# this is still needed, even though [expect deployment] is no longer needed for snapshot compliance.
-kosli_expect_deployment()
-{
-  local -r environment="${1}"
-  local -r hostname="${2}"
-  local -r api_token="${3}"
-
-  # In .github/workflows/main.yml deployment is its own job
-  # and the image must be present to get its sha256 fingerprint.
-  docker pull "$(artifact_name)"
-
-  kosli expect deployment "$(artifact_name)" \
-    --artifact-type=docker \
-    --description="Deployed to ${environment} in Github Actions pipeline" \
-    --environment="${environment}" \
-    --host="${hostname}" \
-    --api-token="${api_token}"
-}
-
-# - - - - - - - - - - - - - - - - - - -
 artifact_name()
 {
   source "$(root_dir)/sh/echo_versioner_env_vars.sh"
