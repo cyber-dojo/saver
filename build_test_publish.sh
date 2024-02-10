@@ -3,7 +3,7 @@
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "${ROOT_DIR}/sh/on_ci_publish_images.sh"
-source "${ROOT_DIR}/sh/kosli_trails.sh"
+source "${ROOT_DIR}/sh/kosli.sh"
 source "${ROOT_DIR}/sh/echo_versioner_env_vars.sh"
 export $(echo_versioner_env_vars)
 
