@@ -99,8 +99,8 @@ class AppBase < Sinatra::Base
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def request_body
-    body = request.body.read
     request.body.rewind # For idempotence
+    body = request.body.read
     body
   end
 
