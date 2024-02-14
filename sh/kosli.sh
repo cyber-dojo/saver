@@ -71,6 +71,7 @@ kosli_attest_snyk_evidence()
     --artifact-type=docker \
     --host="${hostname}" \
     --api-token="${api_token}" \
+    --attachments="$(repo_root)/.snyk" \
     --name=saver.snyk-scan \
     --scan-results="$(root_dir)/snyk.json"
 }
