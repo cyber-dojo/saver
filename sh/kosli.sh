@@ -71,7 +71,7 @@ kosli_attest_snyk_evidence()
     --artifact-type=docker \
     --host="${hostname}" \
     --api-token="${api_token}" \
-    --attachments="$(repo_root)/snyk.policy" \
+    --attachments="$(repo_root)/.snyk" \
     --name=saver.snyk-scan \
     --scan-results="$(root_dir)/snyk.json"
 }
@@ -125,7 +125,7 @@ on_ci_kosli_attest_snyk_scan_evidence()
       --file=Dockerfile \
       --sarif \
       --sarif-file-output=snyk.json \
-      --policy-path="$(root_dir)/snyk.policy"
+      --policy-path="$(root_dir)/.snyk"
     set -e
 
     kosli_attest_snyk_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
