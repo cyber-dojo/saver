@@ -14,6 +14,7 @@ source "./images_build.sh"
 source "./images_check_sha_env_var.sh"
 source "./images_remove_old.sh"
 source "./images_tag_latest.sh"
+source "./lib.sh"
 popd
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

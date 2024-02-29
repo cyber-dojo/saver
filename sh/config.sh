@@ -12,8 +12,8 @@ image_tag() { echo -n ${COMMIT_SHA:0:7}; }
 
 export COMMIT_TAG=$(image_tag)
 
-SERVER_IMAGE="CYBER_DOJO_${SERVICE_NAME_UPPER}_IMAGE" # from cyberdojo/versioner
-SERVER_PORT="CYBER_DOJO_${SERVICE_NAME_UPPER}_PORT"   # from cyberdojo/versioner
+export SERVER_IMAGE="CYBER_DOJO_${SERVICE_NAME_UPPER}_IMAGE" # from cyberdojo/versioner
+export SERVER_PORT="CYBER_DOJO_${SERVICE_NAME_UPPER}_PORT"   # from cyberdojo/versioner
 
 server_image()     { echo -n "${!SERVER_IMAGE}"; }
 server_port()      { echo -n "${!SERVER_PORT}"; }

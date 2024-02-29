@@ -3,7 +3,7 @@ set -Eeu
 
 create_docker_compose_yml()
 {
-  echo_docker_compose_yml > ${ROOT_DIR}/docker-compose.yml
+  echo_docker_compose_yml > $(repo_root)/docker-compose.yml
 }
 
 echo_docker_compose_yml()

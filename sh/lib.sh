@@ -1,10 +1,9 @@
 
-# - - - - - - - - - - - - - - - - - - -
-root_dir()
+repo_root()
 {
   git rev-parse --show-toplevel
 }
-export -f root_dir
+export -f repo_root
 
 # - - - - - - - - - - - - - - - - - - -
 on_ci()
@@ -18,9 +17,9 @@ write_coverage_json()
 {
   {
     echo '{ "server":'
-    cat "$(root_dir)/tmp/coverage/server/coverage.json"
+    cat "$(repo_root)/tmp/coverage/server/coverage.json"
     echo ', "client":'
-    cat "$(root_dir)/tmp/coverage/client/coverage.json"
+    cat "$(repo_root)/tmp/coverage/client/coverage.json"
     echo '}'
   } > "$(coverage_json_path)"
 }
@@ -29,6 +28,6 @@ export -f write_coverage_json
 # - - - - - - - - - - - - - - - - - - -
 coverage_json_path()
 {
-  echo "$(root_dir)/tmp/evidence.json"
+  echo "$(repo_root)/tmp/evidence.json"
 }
 export -f coverage_json_path

@@ -1,6 +1,10 @@
 require_relative 'require_source'
+#require 'English'
 require 'minitest/autorun'
+#require 'minitest/ci'
 require 'rack/test'
+
+#Minitest::Ci.report_dir = "#{ENV.fetch('COVERAGE_ROOT')}/junit"
 
 class Id58TestBase < Minitest::Test
 

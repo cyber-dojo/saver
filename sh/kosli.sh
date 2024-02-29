@@ -35,7 +35,7 @@ kosli_attest_artifact()
   local -r hostname="${1}"
   local -r api_token="${2}"
 
-  pushd "$(root_dir)"  # So we don't need --repo-root flag
+  pushd "$(repo_root)"  # So we don't need --repo-root flag
 
   kosli attest artifact "$(artifact_name)" \
     --artifact-type=docker \
@@ -73,7 +73,7 @@ kosli_attest_snyk_evidence()
     --api-token="${api_token}" \
     --attachments="$(repo_root)/.snyk" \
     --name=saver.snyk-scan \
-    --scan-results="$(root_dir)/snyk.json"
+    --scan-results="$(repo_root)/snyk.json"
 }
 
 # - - - - - - - - - - - - - - - - - - -
@@ -125,7 +125,7 @@ on_ci_kosli_attest_snyk_scan_evidence()
       --file=Dockerfile \
       --sarif \
       --sarif-file-output=snyk.json \
-      --policy-path="$(root_dir)/.snyk"
+      --policy-path="$(repo_root)/.snyk"
     set -e
 
     kosli_attest_snyk_evidence "${KOSLI_HOST_STAGING}"    "${KOSLI_API_TOKEN_STAGING}"
@@ -145,22 +145,10 @@ on_ci_kosli_assert_artifact()
 # - - - - - - - - - - - - - - - - - - -
 artifact_name()
 {
-  source "$(root_dir)/sh/echo_versioner_env_vars.sh"
+  source "$(repo_root)/sh/echo_versioner_env_vars.sh"
   export $(echo_versioner_env_vars)
   echo "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
 }
-
-# - - - - - - - - - - - - - - - - - - -
-repo_root()
-{
-  git rev-parse --show-toplevel
-}
-
-root_dir()
-{
-  git rev-parse --show-toplevel
-}
-export -f root_dir
 
 # - - - - - - - - - - - - - - - - - - -
 on_ci()
@@ -173,9 +161,9 @@ write_coverage_json()
 {
   {
     echo '{ "server":'
-    cat "$(root_dir)/tmp/coverage/server/coverage.json"
+    cat "$(repo_root)/tmp/coverage/server/coverage.json"
     echo ', "client":'
-    cat "$(root_dir)/tmp/coverage/client/coverage.json"
+    cat "$(repo_root)/tmp/coverage/client/coverage.json"
     echo '}'
   } > "$(coverage_json_path)"
 }
@@ -183,5 +171,5 @@ write_coverage_json()
 # - - - - - - - - - - - - - - - - - - -
 coverage_json_path()
 {
-  echo "$(root_dir)/tmp/evidence.json"
+  echo "$(repo_root)/tmp/evidence.json"
 }
