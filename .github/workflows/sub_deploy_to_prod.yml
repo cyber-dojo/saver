@@ -74,7 +74,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
-    uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.18
+    uses: fivexl/gh-workflow-tf-plan-apply/.github/workflows/base.yml@v0.0.19
     with:
       aws_region: ${{ needs.variables.outputs.aws_region }}
       aws_role_arn: arn:aws:iam::${{ needs.variables.outputs.aws_account_id }}:role/${{ needs.variables.outputs.gh_actions_iam_role_name }}
@@ -88,7 +88,8 @@ jobs:
       tf_upload_artifact_name_suffix: "_prod"
       tf_upload_artifact_state_file: 'true'
       tf_upload_artifact_plan: 'true'
-      tf_state_file_path_on_s3: "terraform/${{ needs.variables.outputs.service_name }}/main.tfstate"
+      tf_state_file_dir_on_s3: "terraform/${{ needs.variables.outputs.service_name }}"
+      tf_state_file_name: "${{ needs.variables.outputs.service_name }}.tfstate"
 
   trail-attest-terraform:
     needs: deploy-to-aws-prod
@@ -156,7 +157,7 @@ jobs:
       - name: Attest tf state artifact (production)
         run: |
           kosli attest artifact \
-            --artifact-type file ./main.tfstate \
+            --artifact-type file ./${{ needs.variables.outputs.service_name }}.tfstate \
             --name state-prod \
             --flow ${{ env.KOSLI_FLOW }} \
             --trail ${{ env.KOSLI_TRAIL }} \
@@ -166,7 +167,7 @@ jobs:
       - name: Attest tf state artifact (staging)
         run: |
           kosli attest artifact \
-            --artifact-type file ./main.tfstate \
+            --artifact-type file ./${{ needs.variables.outputs.service_name }}.tfstate \
             --name state-prod \
             --flow ${{ env.KOSLI_FLOW }} \
             --trail ${{ env.KOSLI_TRAIL }} \
