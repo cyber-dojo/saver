@@ -28,22 +28,22 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-#      - name: Create Kosli Flow
-#        run:
-#          kosli create flow "${{ env.KOSLI_FLOW }}"
-#            --description="Group/Kata model+persistence" \
-#            --template-file=.kosli.yml
-#
-#      - name: Begin Kosli Trail
-#        run:
-#          kosli begin trail "${{ env.KOSLI_TRAIL }}"
-#
-#      - name: Set outputs
-#        id: variables
-#        run: |
-#          IMAGE_TAG=${GITHUB_SHA:0:7}
-#          echo "image_tag=${IMAGE_TAG}" >> ${GITHUB_OUTPUT}
-#          echo "image_name=cyberdojo/saver:${IMAGE_TAG}" >> ${GITHUB_OUTPUT}
+      - name: Create Kosli Flow
+        run:
+          kosli create flow "${{ env.KOSLI_FLOW }}"
+            --description="Group/Kata model+persistence" \
+            --template-file=.kosli.yml
+
+      - name: Begin Kosli Trail
+        run:
+          kosli begin trail "${{ env.KOSLI_TRAIL }}"
+
+      - name: Set outputs
+        id: variables
+        run: |
+          IMAGE_TAG=${GITHUB_SHA:0:7}
+          echo "image_tag=${IMAGE_TAG}" >> ${GITHUB_OUTPUT}
+          echo "image_name=cyberdojo/saver:${IMAGE_TAG}" >> ${GITHUB_OUTPUT}
 
 
 #  pull-request:
@@ -122,17 +122,17 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-#      - name: Attest image to Kosli Trail
-#        run:
-#          kosli attest artifact "${IMAGE_NAME}"
-#            --artifact-type=docker
-#            --name=saver
-#
-#      - name: Set outputs
-#        id: variables
-#        run: |
-#          FINGERPRINT=$(kosli fingerprint "${IMAGE_NAME}" --artifact-type=docker)
-#          echo "kosli_fingerprint=${FINGERPRINT}" >> ${GITHUB_OUTPUT}
+      - name: Attest image to Kosli Trail
+        run:
+          kosli attest artifact "${IMAGE_NAME}"
+            --artifact-type=docker
+            --name=saver
+
+      - name: Set outputs
+        id: variables
+        run: |
+          FINGERPRINT=$(kosli fingerprint "${IMAGE_NAME}" --artifact-type=docker)
+          echo "kosli_fingerprint=${FINGERPRINT}" >> ${GITHUB_OUTPUT}
 
 
   unit-tests:
@@ -163,17 +163,17 @@ jobs:
 #          kosli attest junit "${IMAGE_NAME}"
 #              --name=saver.unit-test
 #              --results-dir=test/reports/junit
-#
-#      - name: Attest branch-coverage results to Kosli Trail
-#        env:
-#          KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
-#          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
-#        run:
-#          kosli attest generic "${IMAGE_NAME}"
-#              --attachments=./test/reports/evidence.json
-#              --compliant=${KOSLI_COMPLIANT}
-#              --description="server & client branch-coverage"
-#              --name=saver.branch-coverage
+
+      - name: Attest branch-coverage results to Kosli Trail
+        env:
+          KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
+          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
+        run:
+          kosli attest generic "${IMAGE_NAME}"
+              --attachments=./test/reports/evidence.json
+              --compliant=${KOSLI_COMPLIANT}
+              --description="server & client branch-coverage"
+              --name=saver.branch-coverage
 
 
   snyk-container-scan:
@@ -205,13 +205,13 @@ jobs:
             --sarif-file-output="${SARIF_FILENAME}" \
             --policy-path=.snyk
           set -e
-#
-#          mkdir "${KOSLI_ATTACHMENTS}"
-#          cp .snyk "${KOSLI_ATTACHMENTS}"
-#
-#          kosli attest snyk "${IMAGE_NAME}" \
-#            --name=saver.snyk-container-scan \
-#            --scan-results="${SARIF_FILENAME}"
+
+          mkdir "${KOSLI_ATTACHMENTS}"
+          cp .snyk "${KOSLI_ATTACHMENTS}"
+
+          kosli attest snyk "${IMAGE_NAME}" \
+            --name=saver.snyk-container-scan \
+            --scan-results="${SARIF_FILENAME}"
 
 
   snyk-code-scan:
@@ -244,12 +244,12 @@ jobs:
             .
           set -e
 
-#          mkdir "${KOSLI_ATTACHMENTS}"
-#          cp .snyk "${KOSLI_ATTACHMENTS}"
-#
-#          kosli attest snyk "${IMAGE_NAME}" \
-#            --name=saver.snyk-code-scan \
-#            --scan-results="${SARIF_FILENAME}"
+          mkdir "${KOSLI_ATTACHMENTS}"
+          cp .snyk "${KOSLI_ATTACHMENTS}"
+
+          kosli attest snyk "${IMAGE_NAME}" \
+            --name=saver.snyk-code-scan \
+            --scan-results="${SARIF_FILENAME}"
 
 
   sdlc-control-gate:
@@ -286,98 +286,98 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-#      - name: Report approval of deployment to Kosli
-#        run:
-#          kosli report approval ${IMAGE_NAME}
-#            --approver="${{ github.actor }}"
+      - name: Report approval of deployment to Kosli
+        run:
+          kosli report approval ${IMAGE_NAME}
+            --approver="${{ github.actor }}"
 
 
-#  wait-for-deploy-to-beta:
-#    needs: [approve-deployment-to-beta, kosli-trail]
-#    runs-on: ubuntu-latest
-#    env:
-#      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
-#      KOSLI_ENVIRONMENT: aws-beta
-#    steps:
-#      - name: Setup Kosli CLI
-#        uses: kosli-dev/setup-cli-action@v2
-#        with:
-#          version: ${{ vars.KOSLI_CLI_VERSION }}
-#
-#      - uses: actions/checkout@v4
-#
-#      - name: Wait for deployment to aws-beta in main.yml
-#        run:
-#          ./sh/wait_for_deployment.sh
-#              "${IMAGE_NAME}"
-#              "${{ env.KOSLI_HOST }}"
-#              "${{ env.KOSLI_API_TOKEN }}"
-#              "${{ env.KOSLI_ORG }}"
-#              "${KOSLI_ENVIRONMENT}"
+  wait-for-deploy-to-beta:
+    needs: [approve-deployment-to-beta, kosli-trail]
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
+      KOSLI_ENVIRONMENT: aws-beta
+    steps:
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - uses: actions/checkout@v4
+
+      - name: Wait for deployment to aws-beta in main.yml
+        run:
+          ./sh/wait_for_deployment.sh
+              "${IMAGE_NAME}"
+              "${{ env.KOSLI_HOST }}"
+              "${{ env.KOSLI_API_TOKEN }}"
+              "${{ env.KOSLI_ORG }}"
+              "${KOSLI_ENVIRONMENT}"
 
 
-#  approve-deployment-to-prod:
-#    needs: [wait-for-deploy-to-beta, kosli-trail, wait-for-image]
-#    runs-on: ubuntu-latest
-#    env:
-#      IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
-#      KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
-#      KOSLI_ENVIRONMENT: aws-prod
-#    steps:
-#      - uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Setup Kosli CLI
-#        uses: kosli-dev/setup-cli-action@v2
-#        with:
-#          version: ${{ vars.KOSLI_CLI_VERSION }}
-#
-#      - name: Report approval of deployment to Kosli
-#        run:
-#          kosli report approval ${IMAGE_NAME}
-#            --approver="${{ github.actor }}"
+  approve-deployment-to-prod:
+    needs: [wait-for-deploy-to-beta, kosli-trail, wait-for-image]
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
+      KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
+      KOSLI_ENVIRONMENT: aws-prod
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Report approval of deployment to Kosli
+        run:
+          kosli report approval ${IMAGE_NAME}
+            --approver="${{ github.actor }}"
 
 
-#  wait-for-deploy-to-prod:
-#    needs: [approve-deployment-to-prod, kosli-trail]
-#    runs-on: ubuntu-latest
-#    env:
-#      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
-#      KOSLI_ENVIRONMENT: aws-prod
-#    steps:
-#      - name: Setup Kosli CLI
-#        uses: kosli-dev/setup-cli-action@v2
-#        with:
-#          version: ${{ vars.KOSLI_CLI_VERSION }}
-#
-#      - uses: actions/checkout@v4
-#
-#      - name: Wait for deployment to aws-prod in main.yml
-#        run:
-#          ./sh/wait_for_deployment.sh
-#              "${IMAGE_NAME}"
-#              "${{ env.KOSLI_HOST }}"
-#              "${{ env.KOSLI_API_TOKEN }}"
-#              "${{ env.KOSLI_ORG }}"
-#              "${KOSLI_ENVIRONMENT}"
+  wait-for-deploy-to-prod:
+    needs: [approve-deployment-to-prod, kosli-trail]
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
+      KOSLI_ENVIRONMENT: aws-prod
+    steps:
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - uses: actions/checkout@v4
+
+      - name: Wait for deployment to aws-prod in main.yml
+        run:
+          ./sh/wait_for_deployment.sh
+              "${IMAGE_NAME}"
+              "${{ env.KOSLI_HOST }}"
+              "${{ env.KOSLI_API_TOKEN }}"
+              "${{ env.KOSLI_ORG }}"
+              "${KOSLI_ENVIRONMENT}"
     
 
-#  push-latest:
-#    needs: [wait-for-deploy-to-prod, kosli-trail]
-#    runs-on: ubuntu-latest
-#    env:
-#      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - uses: docker/login-action@v3
-#        with:
-#          username: ${{ secrets.DOCKER_USER }}
-#          password: ${{ secrets.DOCKER_PASS }}
-#
-#      - name: Tag image to :latest and push to Dockerhub Registry
-#        run: |
-#          docker pull "${IMAGE_NAME}"
-#          docker tag "${IMAGE_NAME}" cyberdojo/saver:latest
-#          docker push cyberdojo/saver:latest
+  push-latest:
+    needs: [wait-for-deploy-to-prod, kosli-trail]
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Tag image to :latest and push to Dockerhub Registry
+        run: |
+          docker pull "${IMAGE_NAME}"
+          docker tag "${IMAGE_NAME}" cyberdojo/saver:latest
+          docker push cyberdojo/saver:latest
