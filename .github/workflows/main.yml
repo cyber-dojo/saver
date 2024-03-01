@@ -157,6 +157,7 @@ jobs:
 
       - name: Run tests with branch-coverage
         run: |
+          set -x
           if make test ; then
             echo "KOSLI_COMPLIANT=true" >> ${GITHUB_ENV}
           else
