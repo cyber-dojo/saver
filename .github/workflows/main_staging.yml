@@ -140,40 +140,27 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
+      KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run tests with branch-coverage
-        run: |
-          if make test ; then
-            echo "KOSLI_COMPLIANT=true" >> ${GITHUB_ENV}
-          else
-            echo "KOSLI_COMPLIANT=false" >> ${GITHUB_ENV}
-          fi
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-#      - name: Attest junit test results to Kosli Trail
-#        env:
-#          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
-#        run:
+      - name: Run tests with branch-coverage
+        run:
+          make test
+
 #          kosli attest junit "${IMAGE_NAME}"
 #              --name=saver.unit-test
 #              --results-dir=test/reports/junit
 
-      - name: Attest branch-coverage results to Kosli Trail
-        env:
-          KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
-          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
-        run:
-          kosli attest generic "${IMAGE_NAME}"
-              --attachments=./tmp/coverage
-              --compliant=${KOSLI_COMPLIANT}
-              --description="server & client branch-coverage"
-              --name=saver.branch-coverage
+          kosli attest generic "${IMAGE_NAME}" \
+              --attachments=./tmp/coverage \
+              --description="server & client branch-coverage" \
+              --name=saver.branch-coverage \
               --user-data=./tmp/evidence.json
 
 
