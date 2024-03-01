@@ -2,7 +2,6 @@
 set -Eeu
 
 pushd "${ROOT_DIR}/sh"
-source "./augmented_docker_compose.sh"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"
 source "./exit_non_zero_unless_installed.sh"
@@ -43,7 +42,7 @@ service_up()
 {
   local -r service_name="${1}"
   echo
-  augmented_docker_compose \
+  docker compose \
     up \
     --detach \
     "${service_name}"
@@ -53,7 +52,7 @@ service_up()
 containers_down()
 {
   echo
-  augmented_docker_compose \
+  docker compose \
     down \
     --remove-orphans \
     --volumes

@@ -4,7 +4,7 @@ set -Eeu
 images_build()
 {
   echo
-  augmented_docker_compose \
+  docker compose \
     build \
     --build-arg COMMIT_SHA=${COMMIT_SHA}
 }
