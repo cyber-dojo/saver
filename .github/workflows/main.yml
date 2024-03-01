@@ -181,16 +181,13 @@ jobs:
         env:
           KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
-        run: |
-          pwd
-          ls -al ./tmp
-          ls -al ./tmp/coverage          
-          kosli attest generic "${IMAGE_NAME}" \
-              --attachments=./tmp/coverage \
-              --compliant=${KOSLI_COMPLIANT} \
-              --description="server & client branch-coverage" \
-              --name=saver.branch-coverage \
-              --user-data="$(cat ./tmp/evidence.json)"
+        run:
+          kosli attest generic "${IMAGE_NAME}"
+              --attachments=./tmp/coverage
+              --compliant=${KOSLI_COMPLIANT}
+              --description="server & client branch-coverage"
+              --name=saver.branch-coverage
+              --user-data=./tmp/evidence.json
 
 
   snyk-container-scan:
