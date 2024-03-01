@@ -9,10 +9,17 @@ all: image test snyk
 test:
 	${PWD}/sh/run_tests_with_coverage.sh
 
-snyk: image
-	snyk container test ${IMAGE_NAME}
-        --file=Dockerfile
-        --json-file-output=snyk.json
+snyk-container: image
+	snyk container test ${IMAGE_NAME} \
+        --file=Dockerfile \
+		--sarif \
+		--sarif-file-output=snyk.container.scan.json \
+        --policy-path=.snyk
+
+snyk-code:
+	snyk code test \
+		--sarif \
+		--sarif-file-output=snyk.code.scan.json \
         --policy-path=.snyk
 
 image:
