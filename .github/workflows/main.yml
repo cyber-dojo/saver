@@ -32,7 +32,7 @@ jobs:
       - name: Create Kosli Flow
         run:
           kosli create flow "${{ env.KOSLI_FLOW }}"
-            --description="Group/Kata model+persistence" \
+            --description="Group/Kata model+persistence"
             --template-file=.kosli.yml
 
       - name: Begin Kosli Trail
