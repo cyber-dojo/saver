@@ -103,7 +103,7 @@ jobs:
 #          exit ${STATUS}
 
 
-  build-image:
+  wait-for-image:
     needs: [kosli-trail]
     runs-on: ubuntu-latest
     env:
@@ -136,7 +136,7 @@ jobs:
 
 
   unit-tests:
-    needs: [build-image, kosli-trail]
+    needs: [wait-for-image, kosli-trail]
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
@@ -158,7 +158,7 @@ jobs:
 #
 #      - name: Attest junit test results to Kosli Trail
 #        env:
-#          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+#          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
 #        run:
 #          kosli attest junit "${IMAGE_NAME}"
 #              --name=saver.unit-test
@@ -167,7 +167,7 @@ jobs:
 #      - name: Attest branch-coverage results to Kosli Trail
 #        env:
 #          KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
-#          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+#          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
 #        run:
 #          kosli attest generic "${IMAGE_NAME}"
 #              --attachments=./test/reports/evidence.json
@@ -177,7 +177,7 @@ jobs:
 
 
   snyk-container-scan:
-    needs: [build-image, kosli-trail]
+    needs: [wait-for-image, kosli-trail]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -193,7 +193,7 @@ jobs:
       - name: Run Snyk container scan and report results to Kosli Trail
         env:
           IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
-          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
           KOSLI_ATTACHMENTS: /tmp/kosli_attachments
           SARIF_FILENAME:    snyk.container.scan.json
           SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
@@ -214,36 +214,36 @@ jobs:
 #            --scan-results="${SARIF_FILENAME}"
 
 
-#  snyk-code-scan:
-#    needs: [build-image, kosli-trail]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Setup Kosli CLI
-#        uses: kosli-dev/setup-cli-action@v2
-#        with:
-#          version: ${{ vars.KOSLI_CLI_VERSION }}
-#
-#      - name: Setup Snyk
-#        uses: snyk/actions/setup@master
-#
-#      - name: Run Snyk code scan and report results to Kosli Trail
-#        env:
-#          IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
-#          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
-#          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
-#          SARIF_FILENAME:    snyk.code.scan.json
-#          SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
-#        run: |
-#          set +e
-#          snyk code test \
-#            --sarif \
-#            --sarif-file-output="${SARIF_FILENAME}" \
-#            --policy-path=.snyk \
-#            .
-#          set -e
-#
+  snyk-code-scan:
+    needs: [wait-for-image, kosli-trail]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk code scan and report results to Kosli Trail
+        env:
+          IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
+          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
+          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
+          SARIF_FILENAME:    snyk.code.scan.json
+          SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
+        run: |
+          set +e
+          snyk code test \
+            --sarif \
+            --sarif-file-output="${SARIF_FILENAME}" \
+            --policy-path=.snyk \
+            .
+          set -e
+
 #          mkdir "${KOSLI_ATTACHMENTS}"
 #          cp .snyk "${KOSLI_ATTACHMENTS}"
 #
@@ -253,7 +253,7 @@ jobs:
 
 
   sdlc-control-gate:
-    needs: [unit-tests, snyk-container-scan, kosli-trail, build-image]
+    needs: [unit-tests, snyk-container-scan, snyk-code-scan, kosli-trail, wait-for-image]
     runs-on: ubuntu-latest
     steps:
       - name: Setup Kosli CLI
@@ -264,17 +264,17 @@ jobs:
       - name: Kosli SDLC gate to short-circuit the Trail
         env:
           IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
-          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+          KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
         run:
           kosli assert artifact ${IMAGE_NAME}
 
 
   approve-deployment-to-beta:
-    needs: [sdlc-control-gate, kosli-trail, build-image]
+    needs: [sdlc-control-gate, kosli-trail, wait-for-image]
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
-      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+      KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
       KOSLI_ENVIRONMENT: aws-beta
     steps:
       - uses: actions/checkout@v4
@@ -292,7 +292,7 @@ jobs:
 #            --approver="${{ github.actor }}"
 
 
-#  deploy-to-beta:
+#  wait-for-deploy-to-beta:
 #    needs: [approve-deployment-to-beta, kosli-trail]
 #    runs-on: ubuntu-latest
 #    env:
@@ -317,11 +317,11 @@ jobs:
 
 
 #  approve-deployment-to-prod:
-#    needs: [deploy-to-beta, kosli-trail, build-image]
+#    needs: [wait-for-deploy-to-beta, kosli-trail, wait-for-image]
 #    runs-on: ubuntu-latest
 #    env:
 #      IMAGE_NAME:        ${{ needs.kosli-trail.outputs.image_name }}
-#      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
+#      KOSLI_FINGERPRINT: ${{ needs.wait-for-image.outputs.kosli_fingerprint }}
 #      KOSLI_ENVIRONMENT: aws-prod
 #    steps:
 #      - uses: actions/checkout@v4
@@ -339,7 +339,7 @@ jobs:
 #            --approver="${{ github.actor }}"
 
 
-#  deploy-to-prod:
+#  wait-for-deploy-to-prod:
 #    needs: [approve-deployment-to-prod, kosli-trail]
 #    runs-on: ubuntu-latest
 #    env:
@@ -364,7 +364,7 @@ jobs:
     
 
 #  push-latest:
-#    needs: [deploy-to-prod, kosli-trail]
+#    needs: [wait-for-deploy-to-prod, kosli-trail]
 #    runs-on: ubuntu-latest
 #    env:
 #      IMAGE_NAME: ${{ needs.kosli-trail.outputs.image_name }}
