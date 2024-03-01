@@ -6,7 +6,7 @@ IMAGE_NAME := cyberdojo/saver:${SHORT_SHA}
 
 all: image test snyk
 
-test: image
+test:
 	${PWD}/sh/run_tests_with_coverage.sh
 
 snyk: image
