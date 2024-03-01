@@ -162,7 +162,7 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Run tests with branch-coverage
-        run:
+        run: |
           make test
           
 #          kosli attest junit "${IMAGE_NAME}"
