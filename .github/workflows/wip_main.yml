@@ -1,4 +1,4 @@
-name: Main - reports Trails to https://app.kosli.com
+name: WIP Main - reports Trails to https://app.kosli.com
 
 on:
   push:
@@ -162,6 +162,9 @@ jobs:
           else
             echo "KOSLI_COMPLIANT=false" >> ${GITHUB_ENV}
           fi
+          ls -al ./tmp
+          ls -al ./tmp/coverage
+          
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -182,7 +185,7 @@ jobs:
 #          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
 #        run:
 #          kosli attest generic "${IMAGE_NAME}"
-#              --attachments=./test/reports/evidence.json
+#              --attachments=./tmp/coverage/evidence.json
 #              --compliant=${KOSLI_COMPLIANT}
 #              --description="server & client branch-coverage"
 #              --name=saver.branch-coverage

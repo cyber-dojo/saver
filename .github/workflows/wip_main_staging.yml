@@ -1,4 +1,4 @@
-name: Main - reports Trails to https://staging.app.kosli.com
+name: WIP Main - reports Trails to https://staging.app.kosli.com
 
 on:
   push:
