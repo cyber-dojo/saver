@@ -186,10 +186,11 @@ jobs:
           ls -al ./tmp
           ls -al ./tmp/coverage          
           kosli attest generic "${IMAGE_NAME}" \
-              --attachments=./tmp/coverage/evidence.json \
+              --attachments=./tmp/coverage \
               --compliant=${KOSLI_COMPLIANT} \
               --description="server & client branch-coverage" \
-              --name=saver.branch-coverage
+              --name=saver.branch-coverage \
+              --user-data="$(cat ./tmp/evidence.json)"
 
 
   snyk-container-scan:
