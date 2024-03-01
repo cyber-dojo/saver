@@ -4,7 +4,7 @@ trail:
   artifacts:
     - name: saver
       attestations:
-        - name: snyk-scan
+        - name: snyk-container-scan
           type: snyk
         - name: branch-coverage
           type: generic

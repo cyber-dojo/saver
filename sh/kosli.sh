@@ -72,7 +72,7 @@ kosli_attest_snyk_evidence()
     --host="${hostname}" \
     --api-token="${api_token}" \
     --attachments="$(repo_root)/.snyk" \
-    --name=saver.snyk-scan \
+    --name=saver.snyk-container-scan \
     --scan-results="$(repo_root)/snyk.json"
 }
 
