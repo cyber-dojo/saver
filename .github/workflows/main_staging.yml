@@ -152,16 +152,15 @@ jobs:
       - name: Run tests with branch-coverage
         run: |
           make test
-
-#          kosli attest junit "${IMAGE_NAME}"
-#              --name=saver.unit-test
-#              --results-dir=test/reports/junit
-
           kosli attest generic "${IMAGE_NAME}" \
               --attachments=./tmp/coverage \
               --description="server & client branch-coverage" \
               --name=saver.branch-coverage \
               --user-data=./tmp/evidence.json
+
+#          kosli attest junit "${IMAGE_NAME}"
+#              --name=saver.unit-test
+#              --results-dir=test/reports/junit
 
 
   snyk-container-scan:
