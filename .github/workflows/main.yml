@@ -182,6 +182,9 @@ jobs:
           KOSLI_COMPLIANT: ${{ env.KOSLI_COMPLIANT }}
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.kosli_fingerprint }}
         run:
+          pwd
+          ls -al ./tmp
+          ls -al ./tmp/coverage          
           kosli attest generic "${IMAGE_NAME}"
               --attachments=./tmp/coverage/evidence.json
               --compliant=${KOSLI_COMPLIANT}
