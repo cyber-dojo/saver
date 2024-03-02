@@ -2,9 +2,7 @@
 SHORT_SHA := $(shell git rev-parse HEAD | head -c7)
 IMAGE_NAME := cyberdojo/saver:${SHORT_SHA}
 
-.PHONY: all test snyk image
-
-all: image test snyk
+.PHONY: image test snyk-container snyk-code
 
 test:
 	${PWD}/sh/run_tests_with_coverage.sh
