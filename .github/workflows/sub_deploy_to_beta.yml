@@ -22,7 +22,6 @@ env:
   KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
 
-
 jobs:
 
   variables:
