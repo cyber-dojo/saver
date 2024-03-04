@@ -11,6 +11,8 @@ trail:
     - name: state-prod
     - name: saver
       attestations:
+        - name: pull-request
+          type: pull_request
         - name: snyk-container-scan
           type: snyk
         - name: snyk-code-scan
