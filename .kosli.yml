@@ -1,14 +1,7 @@
 version: 1
 
 trail:
-  attestations:
-    - name: tf-plan-beta
-      type: generic
-    - name: tf-plan-prod
-      type: generic
   artifacts:
-    - name: state-beta
-    - name: state-prod
     - name: saver
       attestations:
         - name: pull-request
