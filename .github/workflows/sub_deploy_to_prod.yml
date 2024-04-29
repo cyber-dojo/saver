@@ -64,15 +64,14 @@ jobs:
 #      tf_state_file_name: "${{ needs.variables.outputs.service_name }}.tfstate"
 
   trail-attest-terraform:
-    needs: deploy-to-aws-prod
-    if: false  # WIP
+    needs: [deploy-to-aws-prod]
     permissions:
       actions: write
       contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: Setup kosli cli
         uses: kosli-dev/setup-cli-action@v2
