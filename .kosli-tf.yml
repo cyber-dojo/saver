@@ -1,0 +1,8 @@
+version: 1
+
+trail:
+  attestations:
+    - name: tf-plan
+      type: generic
+  artifacts:
+    - name: tf-state

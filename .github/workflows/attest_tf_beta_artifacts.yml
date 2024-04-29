@@ -1,0 +1,120 @@
+name: Attest terraform beta artifacts to https://app.kosli.com
+
+on:
+  workflow_call:
+    secrets:
+      KOSLI_API_TOKEN:
+        required: true
+
+
+env:
+  KOSLI_ORG: ${{ vars.KOSLI_ORG }}
+  KOSLI_FLOW: "saver-ci-tf"
+  KOSLI_TRAIL: "beta-${{ github.sha }}"
+  KOSLI_HOST: ${{ vars.KOSLI_HOST }}
+
+
+jobs:
+  variables:
+    runs-on: ubuntu-latest
+    outputs:
+      service_name: ${{ steps.vars.outputs.service_name }}
+    steps:
+    - name: Prepare outputs
+      id: vars
+      run: echo "service_name=${{ github.event.repository.name }}" >> ${GITHUB_OUTPUT}
+
+  trail-attest-terraform:
+    needs: [variables]
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup kosli cli
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Create Kosli Flow for Terraform artifacts
+        run:
+          kosli create flow "${{ env.KOSLI_FLOW }}" 
+            --description="Terraform human-readable plan and state file fingerprint" 
+            --template-file=.kosli-tf.yml
+            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+
+      - name: Begin Kosli Terraform Trail
+        env: 
+          KOSLI_FLOW: ${{ env.KOSLI_FLOW }}
+        run:
+          kosli begin trail "${{ env.KOSLI_TRAIL }}"
+            --description="${{ github.actor }} - $(git log -1 --pretty=%B)"
+            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+
+      - name: Download a plan artifact
+        uses: actions/download-artifact@v4.1.1
+        with:
+          name: tf_artifacts_plan_beta
+
+      - name: Download a state file artifact
+        uses: actions/download-artifact@v4.1.1
+        with:
+          name: tf_artifacts_state_file_beta
+
+      - name: Attest tf plan to Kosli trail
+        run:
+          kosli attest generic
+            --name=tf-plan
+            --flow=${{ env.KOSLI_FLOW }}
+            --trail=${{ env.KOSLI_TRAIL }}
+            --attachments=./tfplan
+            --host=${{ env.KOSLI_HOST }}
+            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+
+      - name: Delete tf plan artifact
+        run: |
+          # Get the list of artifacts
+          artifact_id=$(curl -s -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository}}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name == "tf_artifacts_${{ matrix.environment }}").id')
+
+          # Delete each artifact
+          curl -L \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository}}/actions/artifacts/${artifact_id}
+
+      - name: Attest tf state artifact
+        run: |
+          kosli attest artifact ./${{ needs.variables.outputs.service_name }}.tfstate \
+            --artifact-type=file \
+            --name=tf-state \
+            --flow=${{ env.KOSLI_FLOW }} \
+            --trail=${{ env.KOSLI_TRAIL }} \
+            --host=${{ env.KOSLI_HOST }} \
+            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+
+      - name: Delete tf state file artifact
+        run: |
+          # Get the list of artifacts
+          artifact_id=$(curl -s -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository}}/actions/runs/${{ github.run_id }}/artifacts | jq -r '.artifacts[] | select(.name == "tf_artifacts_state_file_${{ matrix.environment }}").id')
+
+          # Delete each artifact
+          curl -L \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository}}/actions/artifacts/${artifact_id}
