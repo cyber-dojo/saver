@@ -142,8 +142,6 @@ jobs:
     permissions:
       id-token: write
       contents: write
-#    env:
-#      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
     outputs:
       artifact_digest: ${{ steps.variables.outputs.artifact_digest }}
     steps:
@@ -183,7 +181,6 @@ jobs:
           context: .
           push: true
           tags: ${{ needs.variables.outputs.image_name }}
-#          tags: "${{ env.IMAGE_TAGS }}"
           build-args:
             COMMIT_SHA=${{ github.sha }}
 
@@ -193,6 +190,8 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest image evidence to Kosli Trail
+        env:
+          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
         run: |
           KOSLI_FINGERPRINT=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')          
           kosli attest artifact "${IMAGE_NAME}"
@@ -215,9 +214,6 @@ jobs:
   unit-tests:
     needs: [variables, build-image]
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
-      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -227,6 +223,9 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Run tests with branch-coverage
+        env:
+          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run: |
           make test
           kosli attest generic "${IMAGE_NAME}" \
@@ -335,10 +334,6 @@ jobs:
     environment:
       name: staging
       url: https://beta.cyber-dojo.org
-    env:
-      IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
-      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-      KOSLI_ENVIRONMENT: aws-beta
     steps:
       - uses: actions/checkout@v4.1.1
         with:
@@ -350,6 +345,10 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest approval of deployment to Kosli
+        env:
+          IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+          KOSLI_ENVIRONMENT: aws-beta
         run:
           kosli report approval ${IMAGE_NAME}
             --approver="${{ github.actor }}"
@@ -370,10 +369,6 @@ jobs:
     environment:
       name: production
       url: https://cyber-dojo.org
-    env:
-      IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
-      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-      KOSLI_ENVIRONMENT: aws-prod
     steps:
       - uses: actions/checkout@v4.1.1
         with:
@@ -385,6 +380,10 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest approval of deployment to Kosli
+        env:
+          IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+          KOSLI_ENVIRONMENT: aws-prod
         run:
           kosli report approval ${IMAGE_NAME}
             --approver="${{ github.actor }}"
@@ -412,9 +411,6 @@ jobs:
     permissions:
       id-token: write
       contents: write
-    env:
-      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
-      IMAGE_TAG: ${{ needs.variables.outputs.image_tag }}
     steps:
 #      - uses: actions/checkout@v4.1.1
 
@@ -437,6 +433,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Tag image to :latest and push to Dockerhub Registry
+        env:
+          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
+          IMAGE_TAG: ${{ needs.variables.outputs.image_tag }}
         run: |
           docker pull "${IMAGE_NAME}"
           docker tag "${IMAGE_NAME}" cyberdojo/${{ env.SERVICE_NAME }}:${IMAGE_TAG}
