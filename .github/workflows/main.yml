@@ -139,6 +139,9 @@ jobs:
   build-image:
     needs: [variables, kosli-trail]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
 #    env:
 #      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
     outputs:
@@ -406,6 +409,9 @@ jobs:
   push-latest:
     needs: [deploy-to-prod, variables]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: read
+      contents: read
     env:
       IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
       IMAGE_TAG: ${{ needs.variables.outputs.image_tag }}
