@@ -432,9 +432,6 @@ jobs:
 
       - name: Tag image to :latest and push to Dockerhub Registry
         run: |
-#          PUBLIC_IMAGE_NAME=cyberdojo/${{ needs.variables.outputs.service_name }}:${{ inputs.IMAGE_TAG }}
-#          PRIVATE_IMAGE_NAME=${{ needs.variables.outputs.ecr_registry }}/${{ needs.variables.outputs.service_name }}:${{ inputs.IMAGE_TAG }}
-
           docker pull "${IMAGE_NAME}"
           docker tag "${IMAGE_NAME}" cyberdojo/${{ env.SERVICE_NAME }}:${IMAGE_TAG}
           docker tag "${IMAGE_NAME}" cyberdojo/${{ env.SERVICE_NAME }}:latest
