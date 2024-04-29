@@ -193,13 +193,13 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest image evidence to Kosli Trail
-        run:
+        run: |
           KOSLI_FINGERPRINT=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')          
           kosli attest artifact "${IMAGE_NAME}"
             --name=saver
             --trail="${GITHUB_SHA}"
 
-      - name: Make the image digest available for the following jobs
+      - name: Make the image digest available to following jobs
         id: variables
         run: |
           DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
