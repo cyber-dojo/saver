@@ -363,15 +363,15 @@ jobs:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
-  attest-beta-tf-artifacts:
-    needs: [deploy-to-beta]
-    uses: ./.github/workflows/attest_tf_beta_artifacts.yml
-    secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+  # attest-beta-tf-artifacts:
+  #   needs: [deploy-to-beta]
+  #   uses: ./.github/workflows/attest_tf_beta_artifacts.yml
+  #   secrets:
+  #     KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   approve-deployment-to-prod:
-    needs: [attest-beta-tf-artifacts, variables, build-image]
+    needs: [deploy-to-beta, variables, build-image]
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -405,11 +405,11 @@ jobs:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
-  attest-prod-tf-artifacts:
-    needs: [deploy-to-prod]
-    uses: ./.github/workflows/attest_tf_prod_artifacts.yml
-    secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+  # attest-prod-tf-artifacts:
+  #   needs: [deploy-to-prod]
+  #   uses: ./.github/workflows/attest_tf_prod_artifacts.yml
+  #   secrets:
+  #     KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   # The cyberdojo/versioner refresh-env.sh script
@@ -420,7 +420,7 @@ jobs:
   #   - use the 1st 7 chars of the SHA as a latest-equivalent tag from dockerhub
 
   push-latest:
-    needs: [attest-prod-tf-artifacts, variables]
+    needs: [deploy-to-prod, variables]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
