@@ -189,20 +189,20 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest image evidence to Kosli Trail
-        env:
-          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
-        run: |
-          KOSLI_FINGERPRINT=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')          
-          kosli attest artifact "${IMAGE_NAME}"
-            --name=saver
-            --trail="${GITHUB_SHA}"
-
-      - name: Make the image digest available to following jobs
+      - name: Make the image digest available to following steps and jobs
         id: variables
         run: |
           DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
-          echo "artifact_digest=${DIGEST}" >> ${GITHUB_OUTPUT}
+          echo "artifact_digest=${DIGEST}"   >> ${GITHUB_OUTPUT}
+          echo "KOSLI_FINGERPRINT=${DIGEST}" >> ${GITHUB_ENV}
+
+      - name: Attest image evidence to Kosli Trail
+        env:
+          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
+          KOSLI_FINGERPRINT: ${{ env.KOSLI_FINGERPRINT }}
+        run:
+          kosli attest artifact "${IMAGE_NAME}"
+            --name=saver
 
 #      - name: Set outputs
 #        id: variables
@@ -251,20 +251,20 @@ jobs:
 
       - name: Run Snyk container scan and report results to Kosli Trail
         env:
-          IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
+          IMAGE_NAME:      ${{ needs.variables.outputs.image_name }}
+          SARIF_FILENAME:  snyk.container.scan.json
+          SNYK_TOKEN:      ${{ secrets.SNYK_TOKEN }}
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
           KOSLI_ATTACHMENTS: /tmp/kosli_attachments
-          SARIF_FILENAME:    snyk.container.scan.json
-          SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
         run: |
           set +e          
           snyk container test ${IMAGE_NAME} \
             --file=Dockerfile \
+            --policy-path=.snyk \
             --sarif \
-            --sarif-file-output="${SARIF_FILENAME}" \
-            --policy-path=.snyk
+            --sarif-file-output="${SARIF_FILENAME}"
           set -e
-          
+                    
           mkdir "${KOSLI_ATTACHMENTS}"
           cp .snyk "${KOSLI_ATTACHMENTS}"
 
@@ -290,16 +290,16 @@ jobs:
       - name: Run Snyk code scan and report results to Kosli Trail
         env:
           IMAGE_NAME:        ${{ needs.variables.outputs.image_name }}
-          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
           SARIF_FILENAME:    snyk.code.scan.json
           SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
         run: |
           set +e
           snyk code test \
+            --policy-path=.snyk \
             --sarif \
             --sarif-file-output="${SARIF_FILENAME}" \
-            --policy-path=.snyk \
             .
           set -e
 
