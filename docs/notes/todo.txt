@@ -1,7 +1,10 @@
+Update makefile so you can pass selected test-IDs
+(like you can still do in the other repos)
+
 Move code from creator to saver
 ===============================
 
-Currently the creator service is resonsible for 
+Currently the creator service is responsible for
 - showing LTF and problem names
 - getting the manifests for both choices
 - combining the manifests
@@ -12,7 +15,7 @@ It would be better if
   it would create the manifest itself from the start-points services
 
 Further, it would be better if
-- saver offered fork options for group/kata aswell.
+- saver offered fork options for group/kata as-well.
 - group_fork(id)
 - kata_fork(id)
 
