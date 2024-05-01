@@ -13,7 +13,7 @@ env:
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
-  IMAGE_TAR_FILENAME: /tmp/${{ env.SERVICE_NAME }}:${{ github.sha }}.tar
+  IMAGE_TAR_FILENAME: /tmp/${{ github.event.repository.name }}:${{ github.sha }}.tar
 
 jobs:
 
