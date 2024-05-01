@@ -7,7 +7,7 @@ exit_zero_if_show_help()
   local -r MY_NAME=./test.sh
   if [ "${1:-}" == '-h' ] || [ "${1:-}" == '--help' ]; then
     echo
-    echo "Use: ${MY_NAME} [$(server_name)|$(client_name)] [ID...]"
+    echo "Use: ./build_test.sh [$(server_name)|$(client_name)] [ID...]"
     echo
     echo "No options runs all $(server_name) tests, then all $(client_name) tests"
     echo

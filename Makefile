@@ -8,7 +8,7 @@ IMAGE_NAME := ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE_NA
 .PHONY: image test snyk-container snyk-code
 
 test: image
-	${PWD}/sh/run_tests_with_coverage.sh
+	${PWD}/sh/run_tests_with_coverage.sh "${TARGET}"
 
 snyk-container: image
 	snyk container test ${IMAGE_NAME} \
