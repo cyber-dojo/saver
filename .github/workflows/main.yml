@@ -175,7 +175,8 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
 
       - name: Tar Docker image
-        run:
+        run: |
+          docker pull ${{ env.IMAGE_NAME }}          
           docker image save ${{ env.IMAGE_NAME }} --output ${{ env.IMAGE_TAR_FILENAME }}
 
       - name: Cache Docker image
