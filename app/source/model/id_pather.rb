@@ -17,7 +17,3 @@ module IdPather
   end
 
 end
-
-# [*] This sometimes fails test_Ws5761()
-# test/kata_exists.rb:24:  in_kata do ... end
-# NoMethodError: undefined method `[]' for nil

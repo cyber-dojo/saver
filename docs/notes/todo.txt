@@ -1,10 +1,19 @@
 Update makefile so you can pass selected test-IDs
+===============================
 (like you can still do in the other repos)
+
+
+Find out why app/source/model/id_pather.rb sometimes fails
+===============================
+eg, test_Ws5761()
+  test/kata_exists.rb:24:  in_kata do ... end
+  NoMethodError: undefined method `[]' for nil
+
 
 Move code from creator to saver
 ===============================
 
-Currently the creator service is responsible for
+Currently, the creator service is responsible for
 - showing LTF and problem names
 - getting the manifests for both choices
 - combining the manifests
