@@ -7,9 +7,17 @@
 
 
 # Development
-To build the images, bring up the containers, wait till they are alive and healthy, and run the tests:
+
 ```bash
+# To build the images, bring up the containers, wait till they are alive and healthy, and...
+# ...run all the tests:
 $ ./build_test.sh
+
+# ...run only a specific test
+$ ./build_test.sh A6D062
+
+# ...run only tests with a common test prefix
+$ ./build_test.sh A6D
 ```
 
 # API
