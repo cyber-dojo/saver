@@ -185,24 +185,21 @@ jobs:
           path: ${{ env.IMAGE_TAR_FILENAME }}
           key: ${{ env.IMAGE_NAME }}
 
-      - name: Make the image digest available to following steps and jobs
-        id: variables
-        run: |
-          DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
-          echo "artifact_digest=${DIGEST}"   >> ${GITHUB_OUTPUT}
-          echo "KOSLI_FINGERPRINT=${DIGEST}" >> ${GITHUB_ENV}
-
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest image evidence to Kosli Trail
-        env:
-          KOSLI_FINGERPRINT: ${{ env.KOSLI_FINGERPRINT }}
-        run:
-          kosli attest artifact "${IMAGE_NAME}"
+        id: variables
+        run: |
+          DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
+
+          kosli attest artifact "${IMAGE_NAME}" \
+            --fingerprint="${DIGEST}" \
             --name=saver
+
+          echo "artifact_digest=${DIGEST}" >> ${GITHUB_OUTPUT}          
 
 
   unit-tests:
