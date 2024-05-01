@@ -29,6 +29,10 @@ jobs:
       image_name: ${{ steps.vars.outputs.image_name }}
       image_name_previous: ${{ steps.vars.outputs.image_name_previous }}
     steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 10
+
       - name: Prepare outputs for workflow jobs
         id: vars
         run: |
