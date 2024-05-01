@@ -161,8 +161,6 @@ jobs:
           context: .
           push: true
           tags: ${{ env.IMAGE_NAME }}
-          cache-from: type=registry
-          cache-to: type=inline,mode=max
           build-args:
             COMMIT_SHA=${{ github.sha }}
 
