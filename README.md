@@ -6,16 +6,17 @@
   deploying, with Continuous Compliance, to [staging](https://app.kosli.com/cyber-dojo/environments/aws-beta/snapshots/) and [production](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/) AWS environments.
 
 
-Development
 -----------
+# Development
 To build the images, bring up the containers, wait till they are alive and healthy, and run the tests:
 ```bash
 $ ./build_test.sh
 ```
 
-
-Group
 -----
+# API
+## Group
+
 * [POST group_create(manifest)](docs/api.md#post-group_createmanifest)
 * [GET group_exists?(id)](docs/api.md#get-group_existsid)
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
@@ -23,8 +24,8 @@ Group
 * [GET group_manifest(id)](docs/api.md#get-group_manifestid)
 * [POST group_fork(id,index)](docs/api.md#post-group_forkidindex)
 
-Kata
-----
+## Kata
+
 * [POST kata_create(manifest)](docs/api.md#post-kata_createmanifest)
 * [GET kata_exists?(id)](docs/api.md#get-kata_existsid)
 * [GET kata_events(id)](docs/api.md#get-kata_eventsid)
@@ -41,8 +42,8 @@ Kata
 * [POST kata_fork(id,index)](docs/api.md#post-kata_forkidindex)
 
 
-Probe
------
+## Probe
+
 - [GET alive?](docs/api.md#get-alive)  
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
