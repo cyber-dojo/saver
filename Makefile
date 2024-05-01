@@ -1,10 +1,13 @@
 
 SHORT_SHA := $(shell git rev-parse HEAD | head -c7)
-IMAGE_NAME := cyberdojo/saver:${SHORT_SHA}
+AWS_ACCOUNT_ID := 244531986313
+AWS_REGION := eu-central-1
+SERVICE_NAME := saver
+IMAGE_NAME := ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE_NAME}:${SHORT_SHA}
 
 .PHONY: image test snyk-container snyk-code
 
-test:
+test: image
 	${PWD}/sh/run_tests_with_coverage.sh
 
 snyk-container: image
