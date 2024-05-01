@@ -24,8 +24,7 @@ jobs:
       - name: Show test image name
         run: |
           echo "TEST_IMAGE_NAME=:${TEST_IMAGE_NAME}:"
-          echo ${{ github.sha[0] }}
-          ${{ github.sha[0:7] }}
+          echo "${{ github.sha[0] }}${{ github.sha[1] }}${{ github.sha[2] }}"
           exit 42
 
   setup:
