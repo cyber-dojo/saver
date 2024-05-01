@@ -13,6 +13,7 @@ env:
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
+  IMAGE_TAR_FILENAME: /tmp/${{ env.SERVICE_NAME }}:${{ github.sha }}.tar
 
 jobs:
 
@@ -127,6 +128,8 @@ jobs:
   build-image:
     needs: [variables, kosli-trail]
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
     permissions:
       id-token: write
       contents: write
@@ -154,14 +157,21 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ needs.variables.outputs.image_name }}
+          tags: ${{ env.IMAGE_NAME }}
+          cache-from: type=registry
+          cache-to: type=inline,mode=max
           build-args:
             COMMIT_SHA=${{ github.sha }}
 
-      - name: Setup Kosli CLI
-        uses: kosli-dev/setup-cli-action@v2
+      - name: Tar Docker image
+        run:
+          docker image save ${{ env.IMAGE_NAME }} --output ${{ env.IMAGE_TAR_FILENAME }}
+
+      - name: Cache Docker image
+        uses: actions/cache@v4.0.0
         with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
+          path: ${{ env.IMAGE_TAR_FILENAME }}
+          key: ${{ env.IMAGE_NAME }}
 
       - name: Make the image digest available to following steps and jobs
         id: variables
@@ -170,9 +180,13 @@ jobs:
           echo "artifact_digest=${DIGEST}"   >> ${GITHUB_OUTPUT}
           echo "KOSLI_FINGERPRINT=${DIGEST}" >> ${GITHUB_ENV}
 
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
       - name: Attest image evidence to Kosli Trail
         env:
-          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
           KOSLI_FINGERPRINT: ${{ env.KOSLI_FINGERPRINT }}
         run:
           kosli attest artifact "${IMAGE_NAME}"
@@ -182,6 +196,8 @@ jobs:
   unit-tests:
     needs: [variables, build-image]
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
     steps:
       - uses: actions/checkout@v4.1.1
 
@@ -190,17 +206,29 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
+      - name: Retrieve Docker image from cache
+        uses: actions/cache@v4.0.0
+        with:
+          path: ${{ env.IMAGE_TAR_FILENAME }}
+          key: ${{ env.IMAGE_NAME }}
+
+      - name: Load Docker image
+        run: docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
+
       - name: Run tests with branch-coverage
-        env:
-          IMAGE_NAME: ${{ needs.variables.outputs.image_name }}
-          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-        run: |
+        run:
           make test
-          kosli attest generic "${IMAGE_NAME}" \
-              --attachments=./tmp/coverage \
-              --description="server & client branch-coverage" \
-              --name=saver.branch-coverage \
+
+      - name: Attest results to Kosli
+        env:
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+        run:
+          kosli attest generic "${IMAGE_NAME}" 
+              --attachments=./tmp/coverage 
+              --description="server & client branch-coverage" 
+              --name=saver.branch-coverage 
               --user-data=./tmp/evidence.json
+
 
 
   snyk-container-scan:
