@@ -10,19 +10,7 @@ Development
 -----------
 To build the images, bring up the containers, wait till they are alive and healthy, and run the tests:
 ```bash
-$ ./build_test_publish.sh
-```
-
-```
-Use: ./build_test_publish.sh [server|client] [ID...]
-
-No options runs all server tests, then all client tests
-
-Options:
-   server      only run unit-tests from inside the server container
-   client      only run integration-tests from inside the client container
-   ID...       run only the tests matching the given IDs
-   -h|--help   show this help
+$ ./build_test.sh
 ```
 
 
