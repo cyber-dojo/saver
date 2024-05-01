@@ -6,14 +6,12 @@
   deploying, with Continuous Compliance, to [staging](https://app.kosli.com/cyber-dojo/environments/aws-beta/snapshots/) and [production](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/) AWS environments.
 
 
------------
 # Development
 To build the images, bring up the containers, wait till they are alive and healthy, and run the tests:
 ```bash
 $ ./build_test.sh
 ```
 
------
 # API
 ## Group
 
@@ -48,5 +46,5 @@ $ ./build_test.sh
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
 
-- - - -
+
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
