@@ -355,13 +355,6 @@ jobs:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
-  # attest-beta-tf-artifacts:
-  #   needs: [deploy-to-beta]
-  #   uses: ./.github/workflows/attest_tf_beta_artifacts.yml
-  #   secrets:
-  #     KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-
-
   approve-deployment-to-prod:
     needs: [setup, build-image, deploy-to-beta]
     runs-on: ubuntu-latest
@@ -395,13 +388,6 @@ jobs:
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
     secrets:
       KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-
-
-  # attest-prod-tf-artifacts:
-  #   needs: [deploy-to-prod]
-  #   uses: ./.github/workflows/attest_tf_prod_artifacts.yml
-  #   secrets:
-  #     KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   # The cyberdojo/versioner refresh-env.sh script
