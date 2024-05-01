@@ -14,18 +14,8 @@ env:
   KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
   IMAGE_TAR_FILENAME: /tmp/${{ github.event.repository.name }}:${{ github.sha }}.tar
-  TEST_IMAGE_NAME: '244531986313.dkr.ecr.eu-central-1.amazonaws.com/saver:${{ (github.sha)[0] }}'
 
 jobs:
-
-  show:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Show test image name
-        run: |
-          echo "TEST_IMAGE_NAME=:${TEST_IMAGE_NAME}:"
-          echo "${{ (github.sha)[0] }}"
-          exit 42
 
   setup:
     runs-on: ubuntu-latest
