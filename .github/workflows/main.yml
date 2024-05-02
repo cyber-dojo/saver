@@ -210,11 +210,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
-      - name: Setup Kosli CLI
-        uses: kosli-dev/setup-cli-action@v2
-        with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
-
       - name: Retrieve Docker image from cache
         uses: actions/cache@v4.0.0
         with:
@@ -227,6 +222,11 @@ jobs:
       - name: Run tests with branch-coverage
         run:
           make test
+
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest results to Kosli
         env:
