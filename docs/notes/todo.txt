@@ -1,7 +1,3 @@
-Update makefile so you can pass selected test-IDs
-===============================
-(like you can still do in the other repos)
-
 
 Find out why app/source/model/id_pather.rb sometimes fails
 ===============================
