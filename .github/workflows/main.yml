@@ -180,7 +180,8 @@ jobs:
           key: ${{ needs.setup.outputs.image_name }}
 
       - name: Load Docker image
-        run: docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
+        run:
+          docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
       - name: Run tests with branch-coverage
         run:
@@ -210,6 +211,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
+      - name: Retrieve Docker image from cache
+        uses: actions/cache@v4.0.0
+        with:
+          path: ${{ env.IMAGE_TAR_FILENAME }}
+          key: ${{ needs.setup.outputs.image_name }}
+
+      - name: Load Docker image
+        run:
+          docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
+
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
@@ -224,7 +235,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk container test ${IMAGE_NAME}
-            -d
             --file=Dockerfile
             --policy-path=.snyk
             --sarif
