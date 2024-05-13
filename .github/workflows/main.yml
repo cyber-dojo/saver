@@ -223,10 +223,10 @@ jobs:
           IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
-          snyk container test ${IMAGE_NAME} \
-            --file=Dockerfile \
-            --policy-path=.snyk \
-            --sarif \
+          snyk container test ${IMAGE_NAME} 
+            --file=Dockerfile 
+            --policy-path=.snyk 
+            --sarif 
             --sarif-file-output="${SARIF_FILENAME}"
 
       - name: Report Snyk container scan results to Kosli Trail
@@ -262,10 +262,10 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
-          snyk code test \
-            --policy-path=.snyk \
-            --sarif \
-            --sarif-file-output="${SARIF_FILENAME}" \
+          snyk code test 
+            --policy-path=.snyk 
+            --sarif 
+            --sarif-file-output="${SARIF_FILENAME}"
 
       - name: Report Snyk code scan results to Kosli Trail
         if: ${{ success() || failure() }}
