@@ -61,6 +61,8 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
 
       - name: Create Kosli Flow
         run:
@@ -172,6 +174,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
 
       - name: Retrieve Docker image from cache
         uses: actions/cache@v4.0.0
@@ -210,6 +214,8 @@ jobs:
       SARIF_FILENAME: snyk.container.scan.json
     steps:
       - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
 
       - name: Retrieve Docker image from cache
         uses: actions/cache@v4.0.0
@@ -260,6 +266,8 @@ jobs:
       SARIF_FILENAME: snyk.code.scan.json
     steps:
       - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 1
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
