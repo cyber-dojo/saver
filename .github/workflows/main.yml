@@ -46,7 +46,7 @@ jobs:
           IMAGE_NAME="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG}"
           IMAGE_NAME_PREVIOUS="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG_PREVIOUS}"
           
-          echo "aws_account_id=${AWS_ID}"                     >> ${GITHUB_OUTPUT}
+          echo "aws_account_id=${AWS_ACCOUNT_ID}"             >> ${GITHUB_OUTPUT}          
           echo "ecr_registry=${ECR_REGISTRY}"                 >> ${GITHUB_OUTPUT}
           echo "aws_region=${AWS_REGION}"                     >> ${GITHUB_OUTPUT}
           echo "gh_actions_iam_role_name=gh_actions_services" >> ${GITHUB_OUTPUT}
