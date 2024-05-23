@@ -103,5 +103,5 @@ containers_wait()
 
 # - - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
-exit_non_zero_unless_installed docker docker-compose
+exit_non_zero_unless_installed docker
 containers_wait

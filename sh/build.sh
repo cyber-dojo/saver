@@ -17,7 +17,7 @@ popd
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
-exit_non_zero_unless_installed docker docker-compose
+exit_non_zero_unless_installed docker
 
 images_build
 images_check_sha_env_var

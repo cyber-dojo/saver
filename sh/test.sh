@@ -165,5 +165,5 @@ copy_in_saver_test_data()
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
 exit_zero_if_show_help "$@"
-exit_non_zero_unless_installed docker docker-compose
+exit_non_zero_unless_installed docker
 containers_run_tests "$@"
