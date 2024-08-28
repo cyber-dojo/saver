@@ -20,7 +20,6 @@ and returns its id.
   [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
 - returns 
   * the `id` of the created group.
-- notes
 - example
   ```bash
   $ curl \
@@ -203,7 +202,6 @@ and returns its id.
   [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
 - returns 
   * the `id` of the created kata.
-- notes
 - example
   ```bash
   $ curl \
