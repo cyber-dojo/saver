@@ -56,12 +56,12 @@ jobs:
             --api-token=${{ secrets.KOSLI_API_TOKEN }}
 
       - name: Download a plan artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@v4.1.8
         with:
           name: tf_artifacts_plan_beta
 
       - name: Download a state file artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@v4.1.8
         with:
           name: tf_artifacts_state_file_beta
 
