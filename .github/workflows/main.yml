@@ -137,7 +137,7 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest image evidence to Kosli Trail
+      - name: Attest image evidence to Kosli Trail and make Digest available to following jobs
         id: variables
         run: |
           DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
@@ -172,11 +172,13 @@ jobs:
           make test
 
       - name: Setup Kosli CLI
+        if: success() || failure()
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest results to Kosli
+        if: success() || failure()
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
@@ -207,11 +209,6 @@ jobs:
         run:
           docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
-      - name: Setup Kosli CLI
-        uses: kosli-dev/setup-cli-action@v2
-        with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
-
       - name: Setup Snyk
         uses: snyk/actions/setup@master
 
@@ -226,13 +223,19 @@ jobs:
             --sarif
             --sarif-file-output="${SARIF_FILENAME}"
 
-      - name: Report Snyk container scan results to Kosli Trail
+      - name: Setup Kosli CLI
+        if: ${{ success() || failure() }}
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Attest Snyk container scan results to Kosli Trail
         if: ${{ success() || failure() }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
           KOSLI_ATTACHMENTS: /tmp/kosli_attachments
         run: |
-          mkdir "${KOSLI_ATTACHMENTS}"
+          mkdir -p "${KOSLI_ATTACHMENTS}"
           cp .snyk "${KOSLI_ATTACHMENTS}"
           kosli attest snyk \
             --name=saver.snyk-container-scan \
@@ -249,11 +252,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Kosli CLI
-        uses: kosli-dev/setup-cli-action@v2
-        with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
-
       - name: Setup Snyk
         uses: snyk/actions/setup@master
 
@@ -266,13 +264,19 @@ jobs:
             --sarif
             --sarif-file-output="${SARIF_FILENAME}"
 
-      - name: Report Snyk code scan results to Kosli Trail
+      - name: Setup Kosli CLI
+        if: ${{ success() || failure() }}
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Attest Snyk code scan results to Kosli Trail
         if: ${{ success() || failure() }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
           KOSLI_ATTACHMENTS: /tmp/kosli_attachments
         run: |
-          mkdir "${KOSLI_ATTACHMENTS}"
+          mkdir -p "${KOSLI_ATTACHMENTS}"
           cp .snyk "${KOSLI_ATTACHMENTS}"
           kosli attest snyk \
             --name=saver.snyk-code-scan \
