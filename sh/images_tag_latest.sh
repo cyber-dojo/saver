@@ -14,6 +14,7 @@ set -Eeu
 images_tag_latest()
 {
   docker tag "$(server_image):$(image_tag)" "$(server_image):latest"
+  docker tag "$(server_image):$(image_tag)" cyberdojo/saver:$(image_tag)
   docker tag "$(client_image):$(image_tag)" "$(client_image):latest"
 }
 
