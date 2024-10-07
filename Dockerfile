@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=cyberdojo/sinatra-base:f20eob5
+ARG BASE_IMAGE=cyberdojo/sinatra-base:f20e0b5
 FROM ${BASE_IMAGE}
 # ARGs are reset after FROM See https://github.com/moby/moby/issues/34129
 ARG BASE_IMAGE
