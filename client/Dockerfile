@@ -1,4 +1,4 @@
-FROM cyberdojo/sinatra-base:f20eob5
+FROM cyberdojo/sinatra-base:f20e0b5
 LABEL maintainer=jon@jaggersoft.com
 
 WORKDIR /app
