@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # False
+  # KOSLI_DRY_RUN: true                              # Repo override
   KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
   KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo
   KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}                 # saver-ci
@@ -31,8 +31,9 @@ jobs:
       image_tag: ${{ steps.vars.outputs.image_tag }}
       image_name: ${{ steps.vars.outputs.image_name }}
       image_name_previous: ${{ steps.vars.outputs.image_name_previous }}
+      kosli_dry_run: ${{ steps.vars.outputs.kosli_dry_run }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
@@ -56,16 +57,29 @@ jobs:
           echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}
           echo "image_name_previous=${IMAGE_NAME_PREVIOUS}"   >> ${GITHUB_OUTPUT}
 
+          if [ "${{ vars.KOSLI_DRY_RUN }}" == "true" ] ; then      # Org override
+            value=true   
+          elif [ "${{ env.KOSLI_DRY_RUN }}" != "" ] ; then         # Repo override
+            value="${{ env.KOSLI_DRY_RUN }}"  
+          elif [ "${{ github.ref }}" == 'refs/heads/main' ] ; then # Branch check
+            value=false
+          else
+            value=true                                             # Default
+          fi
+          echo "kosli_dry_run=${value}" >> ${GITHUB_OUTPUT}
+
 
   pull-request:
-    needs: [setup]
     runs-on: ubuntu-latest
+    needs: [setup]
+    env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     permissions:
       id-token: write
       contents: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
@@ -74,7 +88,7 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest pull-request evidence to Kosli Trail
+      - name: Attest pull-request evidence to Kosli
         run:
           kosli attest pullrequest github
             --github-token=${{ secrets.GITHUB_TOKEN }}
@@ -86,13 +100,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     permissions:
       id-token: write
       contents: write
     outputs:
       artifact_digest: ${{ steps.variables.outputs.artifact_digest }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
@@ -127,17 +142,19 @@ jobs:
           docker image save ${{ env.IMAGE_NAME }} --output ${{ env.IMAGE_TAR_FILENAME }}
 
       - name: Cache Docker image
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: ${{ env.IMAGE_TAR_FILENAME }}
           key: ${{ env.IMAGE_NAME }}
 
       - name: Setup Kosli CLI
+        if: success() || failure()
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest image evidence to Kosli Trail and make Digest available to following jobs
+      - name: Attest image evidence to Kosli and make Digest available to following jobs
+        if: success() || failure()
         id: variables
         run: |
           DIGEST=$( echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
@@ -150,15 +167,17 @@ jobs:
 
 
   unit-tests:
-    needs: [setup, build-image]
     runs-on: ubuntu-latest
+    needs: [setup, build-image]
+    env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Retrieve Docker image from cache
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: ${{ env.IMAGE_TAR_FILENAME }}
           key: ${{ needs.setup.outputs.image_name }}
@@ -167,7 +186,7 @@ jobs:
         run:
           docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
-      - name: Run tests with branch-coverage
+      - name: Run tests with coverage
         run:
           make test
 
@@ -190,17 +209,18 @@ jobs:
 
 
   snyk-container-scan:
-    needs: [setup, build-image]
     runs-on: ubuntu-latest
+    needs: [setup, build-image]
     env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
       SARIF_FILENAME: snyk.container.scan.json
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Retrieve Docker image from cache
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: ${{ env.IMAGE_TAR_FILENAME }}
           key: ${{ needs.setup.outputs.image_name }}
@@ -229,26 +249,25 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest Snyk container scan results to Kosli Trail
+      - name: Attest Snyk container scan results to Kosli
         if: ${{ success() || failure() }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
-        run: |
-          mkdir -p "${KOSLI_ATTACHMENTS}"
-          cp .snyk "${KOSLI_ATTACHMENTS}"
-          kosli attest snyk \
-            --name=saver.snyk-container-scan \
+          KOSLI_ATTACHMENTS: .snyk
+        run:
+          kosli attest snyk
+            --name=saver.snyk-container-scan
             --scan-results="${SARIF_FILENAME}"
 
 
   snyk-code-scan:
-    needs: [build-image]
     runs-on: ubuntu-latest
+    needs: [setup, build-image]
     env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
       SARIF_FILENAME: snyk.code.scan.json
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
@@ -270,22 +289,22 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest Snyk code scan results to Kosli Trail
+      - name: Attest Snyk code scan results to Kosli
         if: ${{ success() || failure() }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-          KOSLI_ATTACHMENTS: /tmp/kosli_attachments
-        run: |
-          mkdir -p "${KOSLI_ATTACHMENTS}"
-          cp .snyk "${KOSLI_ATTACHMENTS}"
-          kosli attest snyk \
-            --name=saver.snyk-code-scan \
+          KOSLI_ATTACHMENTS: .snyk
+        run:
+          kosli attest snyk
+            --name=saver.snyk-code-scan
             --scan-results="${SARIF_FILENAME}"
 
 
   sdlc-control-gate:
-    needs: [setup, build-image, pull-request, unit-tests, snyk-container-scan, snyk-code-scan]
     runs-on: ubuntu-latest
+    needs: [setup, build-image, pull-request, unit-tests, snyk-container-scan, snyk-code-scan]
+    env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     steps:
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -301,15 +320,17 @@ jobs:
 
 
   approve-deployment-to-beta:
-    needs: [setup, build-image, sdlc-control-gate]
     runs-on: ubuntu-latest
+    needs: [setup, build-image, sdlc-control-gate]
+    env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     environment:
       name: staging
       url: https://beta.cyber-dojo.org
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -336,15 +357,17 @@ jobs:
 
 
   approve-deployment-to-prod:
-    needs: [setup, build-image, deploy-to-beta]
     runs-on: ubuntu-latest
+    needs: [setup, build-image, deploy-to-beta]
+    env:
+      KOSLI_DRY_RUN: ${{ needs.setup.outputs.kosli_dry_run }}
     environment:
       name: production
       url: https://cyber-dojo.org
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
