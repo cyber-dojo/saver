@@ -2,9 +2,9 @@
 
 - A [docker-containerized](https://hub.docker.com/r/cyberdojo/saver/tags) micro-service for [https://cyber-dojo.org](http://cyber-dojo.org).
 - An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
-- A [Kosli CI flow](https://app.kosli.com/cyber-dojo/flows/saver-ci/trails/) 
+- Demonstrates a [Kosli](https://www.kosli.com/) instrumented [GitHub CI workflow](https://app.kosli.com/cyber-dojo/flows/saver-ci/trails/) 
   deploying, with Continuous Compliance, to [staging](https://app.kosli.com/cyber-dojo/environments/aws-beta/snapshots/) and [production](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/) AWS environments.
-
+- Uses patterns from https://www.kosli.com/blog/using-kosli-attest-in-github-action-workflows-some-tips/
 
 # Development
 
