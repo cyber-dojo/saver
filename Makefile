@@ -13,6 +13,9 @@ image:
 test: image
 	${PWD}/sh/run_tests_with_coverage.sh "${TARGET}"
 
+lint:
+	docker run --rm --volume "${PWD}:/app" cyberdojo/rubocop --raise-cop-error
+
 snyk-container: image
 	snyk container test ${IMAGE_NAME} \
         --file=Dockerfile \
