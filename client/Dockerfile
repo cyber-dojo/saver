@@ -1,11 +1,8 @@
-FROM cyberdojo/sinatra-base:f20e0b5
+FROM cyberdojo/sinatra-base:11ddc45
 LABEL maintainer=jon@jaggersoft.com
 
 WORKDIR /app
 COPY . .
-RUN chown -R nobody:nogroup /app
-# Note: The following does not (yet) work on circleci
-# COPY --chown=nobody:nogroup . /app
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
