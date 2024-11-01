@@ -112,6 +112,7 @@ run_tests()
       > /dev/null
 
   docker compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
+  exit_non_zero_unless_started_cleanly "${TYPE}"
   copy_in_saver_test_data
   run_tests_in_container "$@"
 }
