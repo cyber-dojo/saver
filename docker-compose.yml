@@ -6,35 +6,32 @@ volumes:
 services:
 
   client:
+    depends_on: [ server ]
     build:
+      context: source/client
       args: [ COMMIT_SHA ]
-      context: ./client
-    image: cyberdojo/saver-client:${COMMIT_TAG}
-    container_name: test_saver_client
-    user: nobody
+    image: ${CYBER_DOJO_SAVER_CLIENT_IMAGE}:${CYBER_DOJO_SAVER_TAG}
+    user: ${CYBER_DOJO_SAVER_CLIENT_USER}
+    container_name: ${CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME}
     env_file: [ .env ]
-    # read_only: true
-    restart: 'no'
+    read_only: true
+    restart: no
     tmpfs: /tmp
     volumes:
-      - ./client/source:/app/source:ro
-      - ./client/test:/app/test:ro
-    depends_on:
-      - server
+      - ./test/client:/saver/test:ro
 
   server:
     build:
-      args: [ COMMIT_SHA ]
       context: .
-    image: ${CYBER_DOJO_SAVER_IMAGE}:${COMMIT_TAG}
-    user: saver
-    container_name: test_saver_server
+      args: [ COMMIT_SHA ]
+    image: ${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}
+    user: ${CYBER_DOJO_SAVER_SERVER_USER}
+    container_name: ${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}
     env_file: [ .env ]
-    # read_only: true
-    restart: "no"
+    read_only: true
+    restart: no
     volumes:
-      - ./app/source:/app/source:ro
-      - ./app/test:/app/test:ro
+      - ./test/server:/saver/test:ro
       - one_k:/one_k:rw
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533

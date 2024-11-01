@@ -1,30 +1,33 @@
 
-SHORT_SHA := $(shell git rev-parse HEAD | head -c7)
-AWS_ACCOUNT_ID := 244531986313
-AWS_REGION := eu-central-1
-SERVICE_NAME := saver
-IMAGE_NAME := ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE_NAME}:${SHORT_SHA}
+all_server: image_server test_server coverage_server
 
-.PHONY: image test snyk-container snyk-code
+image_server:
+	${PWD}/bin/build_image.sh server
 
-image:
-	${PWD}/sh/build.sh
+test_server:
+	${PWD}/bin/run_tests.sh server
 
-test: image
-	${PWD}/sh/run_tests_with_coverage.sh "${TARGET}"
+coverage_server:
+	${PWD}/bin/check_coverage.sh server
 
-lint:
+
+all_client: image_client test_client coverage_client
+
+image_client:
+	${PWD}/bin/build_image.sh client
+
+test_client:
+	${PWD}/bin/run_tests.sh client
+
+coverage_client:
+	${PWD}/bin/check_coverage.sh client
+
+
+rubocop-lint:
 	docker run --rm --volume "${PWD}:/app" cyberdojo/rubocop --raise-cop-error
 
-snyk-container: image
-	snyk container test ${IMAGE_NAME} \
-        --file=Dockerfile \
-		--sarif \
-		--sarif-file-output=snyk.container.scan.json \
-        --policy-path=.snyk
+snyk-container-scan:
+	${PWD}/bin/snyk_container_scan.sh
 
-snyk-code:
-	snyk code test \
-		--sarif \
-		--sarif-file-output=snyk.code.scan.json \
-        --policy-path=.snyk
+snyk-code-scan:
+	${PWD}/bin/snyk_code_scan.sh

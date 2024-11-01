@@ -11,13 +11,13 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-COPY . /
+WORKDIR /saver
+COPY source/server/ .
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
 
 USER saver
-HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /app/config/healthcheck.sh
+HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /saver/config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
-CMD [ "/app/config/up.sh" ]
-WORKDIR /app
+CMD [ "/saver/config/up.sh" ]
