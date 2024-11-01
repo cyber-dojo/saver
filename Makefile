@@ -7,18 +7,18 @@ IMAGE_NAME := ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE_NA
 
 
 image_server:
-	${PWD}/sh/build.sh
+	${PWD}/bin/build_image.sh server
 
 test_server:
-	${PWD}/sh/run_tests_with_coverage.sh server
+	${PWD}/bin/run_tests.sh server
 
 coverage_server:
-	${PWD}/sh/check_coverage.sh server
+	${PWD}/bin/check_coverage.sh server
 
 
 
-lint:
-	docker run --rm --volume "${PWD}:/app" cyberdojo/rubocop --raise-cop-error
+rubocop-lint:
+	docker run --rm --volume "${PWD}/source/server:/app" cyberdojo/rubocop --raise-cop-error
 
 snyk-container:
 	snyk container test ${IMAGE_NAME} \

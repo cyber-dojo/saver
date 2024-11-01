@@ -3,7 +3,7 @@ set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-source "${ROOT_DIR}/sh/lib.sh"
+source "${ROOT_DIR}/bin/lib.sh"
 
 show_help()
 {

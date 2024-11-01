@@ -3,7 +3,7 @@ set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-pushd "${ROOT_DIR}/sh"
+pushd "${ROOT_DIR}/bin"
 source "./config.sh"
 source "./echo_env_vars.sh"
 source "./echo_versioner_env_vars.sh"

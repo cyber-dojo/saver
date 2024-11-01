@@ -24,5 +24,3 @@ STATUS=${PIPESTATUS[0]}
 set -e
 
 exit "${STATUS}"
-
-#ruby "${MY_DIR}/check_test_metrics.rb" "${TEST_LOG}"

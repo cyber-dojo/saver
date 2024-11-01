@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeu
 
-pushd "${ROOT_DIR}/sh"
+pushd "${ROOT_DIR}/bin"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"
 source "./exit_non_zero_unless_installed.sh"
