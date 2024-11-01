@@ -8,17 +8,16 @@ services:
   client:
     build:
       args: [ COMMIT_SHA ]
-      context: ./client
+      context: source/client
     image: cyberdojo/saver-client:${COMMIT_TAG}
     container_name: test_saver_client
     user: nobody
     env_file: [ .env ]
     # read_only: true
-    restart: 'no'
+    restart: no
     tmpfs: /tmp
     volumes:
-      - ./client/source:/app/source:ro
-      - ./client/test:/app/test:ro
+      - ./test/client:/saver/test:ro
     depends_on:
       - server
 
@@ -31,10 +30,9 @@ services:
     container_name: test_saver_server
     env_file: [ .env ]
     # read_only: true
-    restart: "no"
+    restart: no
     volumes:
-      - ./app/source:/app/source:ro
-      - ./app/test:/app/test:ro
+      - ./test/server:/saver/test:ro
       - one_k:/one_k:rw
     tmpfs:
       - /cyber-dojo:uid=19663,gid=65533

@@ -87,7 +87,7 @@ run_tests()
     --env COVERAGE_TEST_TAB_NAME=${COVERAGE_TEST_TAB_NAME} \
     --user "${user}" \
     "${cid}" \
-      sh -c "/app/test/config/run.sh ${TEST_LOG} ${*:4}"
+      sh -c "/saver/test/config/run.sh ${TEST_LOG} ${*:4}"
   local status=$?
   set -e
 
@@ -142,7 +142,7 @@ reset_dirs_inside_containers()
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 copy_in_saver_test_data()
 {
-  local -r TEST_DATA_DIR="${ROOT_DIR}/app/test/data"
+  local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
 
   # You cannot docker cp to a tmpfs, so tar-piping...
   cd "${TEST_DATA_DIR}/cyber-dojo" \
