@@ -54,6 +54,18 @@ jobs:
           echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}
           echo "image_name_previous=${IMAGE_NAME_PREVIOUS}"   >> ${GITHUB_OUTPUT}
 
+      - name: Setup Kosli CLI
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version: ${{ vars.KOSLI_CLI_VERSION }}
+
+      - name: Attest pull-request evidence to Kosli
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run:
+          kosli begin trail "${{ env.KOSLI_TRAIL }}"
+            --flow="${{ env.KOSLI_FLOW }}"
+            --template-file=.kosli.yml
+
 
   pull-request:
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -205,9 +217,14 @@ jobs:
         run:
           docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
-      - name: Run tests with coverage
+      - name: Run unit tests
         run:
-          make test
+          make test_server
+
+      - name: Get unit test coverage
+        id: coverage
+        run:
+          make coverage_server
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -215,16 +232,25 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest evidence to Kosli
+      - name: Attest JUnit test evidence to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
-          kosli attest generic
-              --attachments=./tmp/coverage 
-              --description="server & client branch-coverage" 
-              --name=saver.branch-coverage 
-              --user-data=./tmp/evidence.json
+          kosli attest junit
+              --name=saver.unit-test 
+              --results-dir=./reports/server/junit
+
+      - name: Attest coverage evidence to Kosli
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
+        env:
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+        run: |
+          KOSLI_COMPLIANT=$([ "${{ steps.coverage.outcome }}" == 'success' ] && echo true || echo false)
+          kosli attest generic \
+              --description="unit-test branch-coverage and metrics" \
+              --name=saver.unit-test-branch-coverage \
+              --user-data="./reports/server/coverage.json"          
 
 
   snyk-container-scan:
