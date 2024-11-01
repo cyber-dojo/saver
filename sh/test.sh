@@ -62,13 +62,13 @@ run_tests()
   reset_dirs_inside_containers
   copy_in_saver_test_data
 
-  local -r user="${1}"
-  local -r cid="${2}"
-  local -r type="${3}" # client|server
+  local -r USER="${1}"
+  local -r CONTAINER_NAME="${2}"
+  local -r TYPE="${3}" # client|server
 
   echo
   echo '=================================='
-  echo "Running ${type} tests"
+  echo "Running ${TYPE} tests"
   echo '=================================='
 
   local -r CONTAINER_COVERAGE_DIR="/tmp/reports"
@@ -78,38 +78,40 @@ run_tests()
   docker exec \
     --env COVERAGE_CODE_TAB_NAME=app \
     --env COVERAGE_TEST_TAB_NAME=test \
-    --user "${user}" \
-    "${cid}" \
-      sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${type} ${*:4}"
-  local status=$?
+    --user "${USER}" \
+    "${CONTAINER_NAME}" \
+      sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${TYPE} ${*:4}"
+  local STATUS=$?
   set -e
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # Extract test-results and metrics data from the container.
-  # You can't [docker cp] from a tmpfs, so tar-piping coverage out
+  local -r HOST_REPORTS_DIR="${ROOT_DIR}/reports/${TYPE}" # where to tar-pipe files to
 
-  local -r HOST_COVERAGE_DIR="${ROOT_DIR}/tmp/coverage"
+  rm -rf "${HOST_REPORTS_DIR}" &> /dev/null || true
+  mkdir -p "${HOST_REPORTS_DIR}" &> /dev/null || true
 
-  rm -rf "${HOST_COVERAGE_DIR}" &> /dev/null || true
-  mkdir -p "${HOST_COVERAGE_DIR}"
+  docker exec --user "${USER}" \
+    "${CONTAINER_NAME}" \
+    tar Ccf "${CONTAINER_COVERAGE_DIR}" - . \
+        | tar Cxf "${HOST_REPORTS_DIR}/" -
 
-  docker exec \
-    "${cid}" \
-    tar Ccf \
-      "$(dirname "${CONTAINER_COVERAGE_DIR}")" \
-      - "$(basename "${CONTAINER_COVERAGE_DIR}")" \
-        | tar Cxf "${HOST_COVERAGE_DIR}/" -
+  # Check we generated the expected files.
+  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/${TEST_LOG}"
+  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/index.html"
+  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/coverage.json"
 
-  echo Coverage written to
-  echo "${HOST_COVERAGE_DIR}/${type}/index.html"
-  if [ "${status}" == 0 ]; then
-    echo "Test status: PASSED"
-  else
-    echo "Test status: FAILED"
-  fi
+  echo "${TYPE} test branch-coverage report is at:"
+  echo "${HOST_REPORTS_DIR}/index.html"
+  echo
+  echo "${TYPE} test status == ${STATUS}"
   echo
 
-  return ${status}
+  if [ "${STATUS}" != 0 ]; then
+    echo Docker logs "${CONTAINER_NAME}"
+    echo
+    docker logs "${CONTAINER_NAME}" 2>&1
+  fi
+
+  return ${STATUS}
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -

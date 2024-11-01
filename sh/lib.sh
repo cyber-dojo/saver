@@ -31,3 +31,13 @@ coverage_json_path()
   echo "$(repo_root)/tmp/evidence.json"
 }
 export -f coverage_json_path
+
+exit_non_zero_unless_file_exists()
+{
+  local -r filename="${1}"
+  if [ ! -f "${filename}" ]; then
+    stderr "${filename} does not exist"
+    exit 42
+  fi
+}
+export -f exit_non_zero_unless_file_exists
