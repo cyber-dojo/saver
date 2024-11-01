@@ -138,10 +138,15 @@ copy_in_saver_test_data()
     && tar --no-xattrs -c . \
     | docker exec -i "$(server_container)" tar x -C /cyber-dojo
 
-  docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/almost_full_group.v0.AWCQdE.tgz"
-  docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz"
-  docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/almost_full_group.v2.U8Tt6y.tgz"
-  docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/rG63fy.tgz"
+  local -r tar_files=(
+    almost_full_group.v0.AWCQdE.tgz
+    almost_full_group.v1.X9UunP.tgz
+    almost_full_group.v2.U8Tt6y.tgz
+    rG63fy.tgz
+  )
+  for tar_file in ${tar_files[*]}; do
+    docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/${tar_file}"
+  done
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
