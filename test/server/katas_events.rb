@@ -6,8 +6,6 @@ class KatasEventsTest < TestBase
     'LS5'
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 0, '2R6', %w( v0 example ) do
     actual = katas_events([V0_KATA_ID,V0_KATA_ID], [2,3])
     expected = {
@@ -18,8 +16,6 @@ class KatasEventsTest < TestBase
     }
     assert_equal expected, actual
   end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 1, '1P3', %w( v1 example ) do
     actual = katas_events([V1_KATA_ID,V1_KATA_ID], [1,2])
@@ -32,15 +28,11 @@ class KatasEventsTest < TestBase
     assert_equal expected, actual
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 2, '1P4', %w( v2 example ) do
-
     now = [2018,11,30, 9,34,56,6453]
     externals.instance_exec {
-      @time = TimeStub.new(now,now,now,now,now,now,now)
+      @time = TimeStub.new(now, now, now, now, now, now, now)
     }
-
     files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
     stdout = { "content" => "so", "truncated" => false }
     stderr = { "content" => "se", "truncated" => true }

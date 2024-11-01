@@ -1,0 +1,27 @@
+
+Added junit output creation. Getting error
+3.4.0/lib/minitest/ci_plugin.rb:115:in `+': TimeStub can't be coerced into Integer (TypeError)
+
+        total_time += result.time
+
+I think this is because time is being stubbed in a test and not restored.
+No. It wasn't that.
+It was test/server/helpers/externals.rb
+  module TestHelpersExternals
+    def externals
+      @externals ||= Externals.new
+    end
+    ...
+    def time
+      externals.time
+    end
+  end
+
+which was included a class scope in test/server/test_base.rb
+class TestBase < Id58TestBase
+  include TestHelpersExternals
+  ...
+
+I have commented out TestHelpersExternals.time so I can get MiniTest::Ci JUnit reporting.
+
+

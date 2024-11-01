@@ -60,17 +60,17 @@ class KataManifestTest < TestBase
   retrieved kata_manifest has created and version keys
   ) do
     now = [2018,11,30, 9,34,56,6453]
-    externals.instance_exec {
-      @time = TimeStub.new(now)
-    }
-    in_kata do |id|
-      saved = kata_manifest(id)
-      assert saved.keys.include?('created'), :created_key
-      assert_equal now, saved['created'], :created
-      assert saved.keys.include?('version'), :version_key
-      assert_equal version, saved['version'], :version
-    end
-  end
+      externals.instance_exec {
+        @time = TimeStub.new(now)
+      }
+      in_kata do |id|
+        saved = kata_manifest(id)
+        assert saved.keys.include?('created'), :created_key
+        assert_equal now, saved['created'], :created
+        assert saved.keys.include?('version'), :version_key
+        assert_equal version, saved['version'], :version
+      end
+   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

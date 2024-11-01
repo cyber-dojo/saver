@@ -1,3 +1,4 @@
+require 'rack/test'
 require_relative '../require_source'
 require_source 'app'
 

@@ -6,8 +6,6 @@ class GroupManifestTest < TestBase
     '5Zt'
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 0, '472', %w(
   already existing group_manifest {test-data copied into saver}
   ) do
@@ -28,8 +26,6 @@ class GroupManifestTest < TestBase
     assert_equal [2019,1,19,12,41,0,406370], manifest['created'], :created
     assert_equal 'chy6BJ', manifest['id'], :id
   end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'Q61', %w(
   retrieved group_manifest has created and version keys

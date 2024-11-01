@@ -27,8 +27,9 @@ module TestHelpersExternals
     externals.shell
   end
 
-  def time
-    externals.time
-  end
+  #def time
+  #  This interferes with MiniTest::Ci
+  #  externals.time
+  #end
 
 end

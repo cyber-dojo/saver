@@ -67,24 +67,20 @@ run_tests()
   local -r type="${3}" # client|server
 
   echo
+  echo '=================================='
   echo "Running ${type} tests"
-  echo
+  echo '=================================='
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  # Run tests and test-result metrics inside the container.
-
-  local -r CONTAINER_COVERAGE_DIR="/tmp/${type}"
-
+  local -r CONTAINER_COVERAGE_DIR="/tmp/reports"
   local -r TEST_LOG=test.log
 
   set +e
   docker exec \
-    --env COVERAGE_ROOT=${CONTAINER_COVERAGE_DIR} \
     --env COVERAGE_CODE_TAB_NAME=app \
     --env COVERAGE_TEST_TAB_NAME=test \
     --user "${user}" \
     "${cid}" \
-      sh -c "/saver/test/config/run.sh ${TEST_LOG} ${*:4}"
+      sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${type} ${*:4}"
   local status=$?
   set -e
 

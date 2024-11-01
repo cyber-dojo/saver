@@ -6,8 +6,6 @@ class KataEventsTest < TestBase
     'D9w'
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 0, 'f5S', %w(
   already existing kata_events() summary {test-data copied into saver}
   is "polyfilled" to make it look like version=1
@@ -25,8 +23,6 @@ class KataEventsTest < TestBase
     assert_equal expected, actual
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 1, 'rp8', %w(
   already existing kata_events() summary {test-data copied into saver}
   ) do
@@ -41,8 +37,6 @@ class KataEventsTest < TestBase
     ]
     assert_equal expected, actual
   end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'ds0', %w( kata_events v2 ) do
     files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
@@ -70,8 +64,6 @@ class KataEventsTest < TestBase
     end
   end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   version_test 2, 'ds1', %w( saver outages are recorded as backfilled events ) do
     files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
     stdout = { "content" => "so", "truncated" => false }
@@ -96,8 +88,6 @@ class KataEventsTest < TestBase
       assert_equal expected, actual
     end
   end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'eh4', %w( polyfill colour 'create' for index==0 creation event ) do
     t0 = [2021,6,12, 6,9,51,899055]

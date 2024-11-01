@@ -24,9 +24,6 @@ class TestBase < Id58TestBase
   include TestHelpersModel
   include TestHelpersRack
 
-
-  # - - - - - - - - - - - - - - - - - - -
-
   def in_group(&block)
     yield group_create(custom_manifest)
   end
@@ -39,15 +36,11 @@ class TestBase < Id58TestBase
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - -
-
   def custom_manifest
     manifest = manifest_Tennis_refactoring_Python_unitttest
     manifest['version'] = version
     manifest
   end
-
-  # - - - - - - - - - - - - - - - - - - -
 
   def self.disk_tests(id58_suffix, *lines, &block)
     test(id58_suffix, ["<disk:Real>"]+lines) do
@@ -58,8 +51,6 @@ class TestBase < Id58TestBase
       self.instance_eval(&block)
     end
   end
-
-  # - - - - - - - - - - - - - - - - - - -
 
   def self.versions_test(id58_suffix, *lines, &block)
     versions = (0..Model::CURRENT_VERSION)

@@ -1,10 +1,10 @@
-require_relative 'require_source'
-#require 'English'
+# frozen_string_literal: true
+require 'English'
 require 'minitest/autorun'
-#require 'minitest/ci'
-require 'rack/test'
+require 'minitest/ci'
+require_relative 'require_source'
 
-#Minitest::Ci.report_dir = "#{ENV.fetch('COVERAGE_ROOT')}/junit"
+Minitest::Ci.report_dir = "#{ENV.fetch('COVERAGE_ROOT')}/junit"
 
 class Id58TestBase < Minitest::Test
 
@@ -17,8 +17,6 @@ class Id58TestBase < Minitest::Test
   @@args = (ARGV.sort.uniq - ['--']) # eg 2m4
   @@seen_ids = {}
   @@timings = {}
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def self.test(id58_suffix, *lines, &test_block)
     source_file, source_line = *self.location(&test_block)
@@ -72,27 +70,23 @@ class Id58TestBase < Minitest::Test
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  Minitest.after_run do
-    slow = @@timings.select{ |_name,secs| secs > 0.000 }
-    sorted = slow.sort_by{ |name,secs| -secs }.to_h
-    max_shown = 5
-    size = sorted.size < max_shown ? sorted.size : max_shown
-    puts
-    if size != 0
-      puts "Slowest #{size} tests in /app/test/ are..."
-    end
-    sorted.each.with_index { |(name,secs),index|
-      puts "%3.4f %-72s" % [secs,name]
-      if index === size
-        break
-      end
-    }
-    puts
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
+#   Minitest.after_run do
+#     slow = @@timings.select{ |_name,secs| secs > 0.000 }
+#     sorted = slow.sort_by{ |name,secs| -secs }.to_h
+#     max_shown = 5
+#     size = sorted.size < max_shown ? sorted.size : max_shown
+#     puts
+#     if size != 0
+#       puts "Slowest #{size} tests in /app/test/ are..."
+#     end
+#     sorted.each.with_index { |(name,secs),index|
+#       puts "%3.4f %-72s" % [secs,name]
+#       if index === size
+#         break
+#       end
+#     }
+#     puts
+#   end
 
   ID58_ALPHABET = %w{
     0 1 2 3 4 5 6 7 8 9
@@ -134,15 +128,11 @@ class Id58TestBase < Minitest::Test
     @@seen_ids[id58] > 3
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def id58_setup
   end
 
   def id58_teardown
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def id58
     @id58
