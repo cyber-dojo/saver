@@ -1,0 +1,9 @@
+
+Record of tests that fail with "undefined method `[]' for nil"
+
+LS51P4
+D9wds1
+D2k761
+Gw41s9
+Sp4Dk7
+e09h35

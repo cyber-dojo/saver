@@ -135,20 +135,16 @@ copy_in_saver_test_data()
 
   # You cannot docker cp to a tmpfs, so tar-piping...
   cd "${TEST_DATA_DIR}/cyber-dojo" \
-    && tar -c . \
+    && tar --no-xattrs -c . \
     | docker exec -i "$(server_container)" tar x -C /cyber-dojo
 
-  cat "${TEST_DATA_DIR}/almost_full_group.v0.AWCQdE.tgz" \
-    | docker exec -i "$(server_container)" tar -zxf - -C /
+  cat "${TEST_DATA_DIR}/almost_full_group.v0.AWCQdE.tgz" | docker exec -i "$(server_container)" tar -zxf - -C /
 
-  cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" \
-    | docker exec -i "$(server_container)" tar -zxf - -C /
+  cat "${TEST_DATA_DIR}/almost_full_group.v1.X9UunP.tgz" | docker exec -i "$(server_container)" tar -zxf - -C /
 
-  cat "${TEST_DATA_DIR}/almost_full_group.v2.U8Tt6y.tgz" \
-    | docker exec -i "$(server_container)" tar -zxf - -C /
+  cat "${TEST_DATA_DIR}/almost_full_group.v2.U8Tt6y.tgz" | docker exec -i "$(server_container)" tar -zxf - -C /
 
-  cat "${TEST_DATA_DIR}/rG63fy.tgz" \
-    | docker exec -i "$(server_container)" tar -zxf - -C /
+  cat "${TEST_DATA_DIR}/rG63fy.tgz"                      | docker exec -i "$(server_container)" tar -zxf - -C /
 }
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
