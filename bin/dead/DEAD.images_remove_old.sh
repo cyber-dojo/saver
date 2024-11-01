@@ -12,7 +12,7 @@ set -Eeu
 # cache requires the latest image is tagged to :latest
 
 # - - - - - - - - - - - - - - - - - - - - - -
-images_remove_old()
+remove_old_images()
 {
   echo Removing old images
   local -r dils=$(docker image ls --format "{{.Repository}}:{{.Tag}}")

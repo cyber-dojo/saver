@@ -82,3 +82,35 @@ copy_in_saver_test_data()
     docker exec -i "${CID}" tar -zxf - -C / < "${TEST_DATA_DIR}/${tar_file}"
   done
 }
+
+remove_old_images()
+{
+  # Tagging images from the commit-sha can build up
+  # a very large amount of images over time. Their
+  # sheer number can slow things down: eg
+  #   o) filtering a [docker image ls]
+  #   o) occasional [docker ps -aq | xargs docker image rm]
+  # I prefer to remove old images Continuously.
+  #
+  # Removing old images and not busting the image layer
+  # cache requires the latest image is tagged to :latest
+
+  echo Removing old images
+  local -r dil=$(docker image ls --format "{{.Repository}}:{{.Tag}}" | grep saver)
+  remove_all_but_latest "${dil}" "${CYBER_DOJO_SAVER_CLIENT_IMAGE}"
+  remove_all_but_latest "${dil}" "${CYBER_DOJO_SAVER_IMAGE}"
+  remove_all_but_latest "${dil}" cyberdojo/saver
+}
+
+remove_all_but_latest()
+{
+  local -r docker_image_ls="${1}"
+  local -r name="${2}"
+  for image_name in $(echo "${docker_image_ls}" | grep "${name}:")
+  do
+    if [ "${image_name}" != "${name}:latest" ]; then
+      docker image rm "${image_name}"
+    fi
+  done
+  docker system prune --force
+}
