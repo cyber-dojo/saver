@@ -13,7 +13,8 @@ SimpleCov.start do
   add_group(test_tab) { |the| the.filename.start_with?("/saver/test/") }
 end
 
-SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+formatters = [
   SimpleCov::Formatter::HTMLFormatter,
   SimpleCov::Formatter::JSONFormatter,
-])
+]
+SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(formatters)

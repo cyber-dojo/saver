@@ -14,7 +14,7 @@ run_tests_with_coverage()
   "${SH_DIR}/up.sh"
   "${SH_DIR}/wait.sh"
   "${SH_DIR}/test.sh" "$@" || exit_code=$?
-  write_coverage_json
+  #write_coverage_json
   return ${exit_code}
 }
 

@@ -158,7 +158,7 @@ table_data.each do |name,value,op,limit|
     puts
     next
   end
-  #puts "name=#{name}, value=#{value}, op=#{op}, limit=#{limit}"
+  # puts "name=#{name}, value=#{value}, op=#{op}, limit=#{limit}"
   result = eval("#{value} #{op} #{limit}")
   puts "%s | %s %s %s | %s" % [
     name.rjust(25), value.to_s.rjust(5), "  #{op}", limit.to_s.rjust(5), coloured(result)

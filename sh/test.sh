@@ -75,25 +75,18 @@ run_tests()
 
   local -r CONTAINER_COVERAGE_DIR="/tmp/${type}"
 
-  local -r COVERAGE_CODE_TAB_NAME=app
-  local -r COVERAGE_TEST_TAB_NAME=test
-
   local -r TEST_LOG=test.log
 
   set +e
   docker exec \
     --env COVERAGE_ROOT=${CONTAINER_COVERAGE_DIR} \
-    --env COVERAGE_CODE_TAB_NAME=${COVERAGE_CODE_TAB_NAME} \
-    --env COVERAGE_TEST_TAB_NAME=${COVERAGE_TEST_TAB_NAME} \
+    --env COVERAGE_CODE_TAB_NAME=app \
+    --env COVERAGE_TEST_TAB_NAME=test \
     --user "${user}" \
     "${cid}" \
       sh -c "/saver/test/config/run.sh ${TEST_LOG} ${*:4}"
   local status=$?
   set -e
-
-  if [ "${status}" == 255 ]; then
-    exit 42 # ^C
-  fi
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Extract test-results and metrics data from the container.
@@ -101,8 +94,8 @@ run_tests()
 
   local -r HOST_COVERAGE_DIR="${ROOT_DIR}/tmp/coverage"
 
+  rm -rf "${HOST_COVERAGE_DIR}" &> /dev/null || true
   mkdir -p "${HOST_COVERAGE_DIR}"
-  rm -rf "${HOST_COVERAGE_DIR}/*"
 
   docker exec \
     "${cid}" \

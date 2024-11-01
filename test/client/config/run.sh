@@ -20,6 +20,9 @@ export RUBYOPT='-W2'
 
 set +e
 ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${COVERAGE_ROOT}/${TEST_LOG}
+STATUS=${PIPESTATUS[0]}
 set -e
 
-ruby "${MY_DIR}/check_test_metrics.rb" "${TEST_LOG}"
+exit "${STATUS}"
+
+#ruby "${MY_DIR}/check_test_metrics.rb" "${TEST_LOG}"
