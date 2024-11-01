@@ -134,9 +134,7 @@ copy_in_saver_test_data()
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
 
   # You cannot docker cp to a tmpfs, so tar-piping...
-  cd "${TEST_DATA_DIR}/cyber-dojo" \
-    && tar --no-xattrs -c . \
-    | docker exec -i "$(server_container)" tar x -C /cyber-dojo
+  tar --no-xattrs -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "$(server_container)" tar x -C /cyber-dojo
 
   local -r tar_files=(
     almost_full_group.v0.AWCQdE.tgz
