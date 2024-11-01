@@ -10,8 +10,8 @@ SimpleCov.start do
   code_tab = ENV['COVERAGE_CODE_TAB_NAME']
   test_tab = ENV['COVERAGE_TEST_TAB_NAME']
   # add_group('debug') { |the| puts(the.filename); false }
-  add_group(code_tab) { |the| the.filename.start_with?("/app/source/" ) }
-  add_group(test_tab) { |the| the.filename.start_with?("/app/test/") }
+  add_group(code_tab) { |the| !the.filename.start_with?("/saver/test/" ) }
+  add_group(test_tab) { |the| the.filename.start_with?("/saver/test/") }
 end
 
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
