@@ -10,9 +10,9 @@ services:
     build:
       context: source/client
       args: [ COMMIT_SHA ]
-    image: cyberdojo/saver-client:${COMMIT_TAG}
-    container_name: test_saver_client
-    user: nobody
+    image: ${CYBER_DOJO_SAVER_CLIENT_IMAGE}:${CYBER_DOJO_SAVER_TAG}
+    user: ${CYBER_DOJO_SAVER_CLIENT_USER}
+    container_name: ${CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME}
     env_file: [ .env ]
     read_only: true
     restart: no
@@ -24,9 +24,9 @@ services:
     build:
       context: .
       args: [ COMMIT_SHA ]
-    image: ${CYBER_DOJO_SAVER_IMAGE}:${COMMIT_TAG}
-    user: saver
-    container_name: test_saver_server
+    image: ${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}
+    user: ${CYBER_DOJO_SAVER_SERVER_USER}
+    container_name: ${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}
     env_file: [ .env ]
     read_only: true
     restart: no
