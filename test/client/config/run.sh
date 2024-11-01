@@ -1,8 +1,11 @@
-#!/bin/bash -Eeu
+#!/usr/bin/env bash
+set -Eeu
 
 readonly MY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly TEST_LOG="${1}"    # test.log
-shift
+export COVERAGE_ROOT="${1}" # eg /tmp/coverage
+readonly TEST_LOG="${2}"    # eg test.log
+readonly TYPE="${3}"        # eg client|server
+shift; shift; shift
 
 readonly TEST_FILES=(${MY_DIR}/../*.rb)
 readonly TEST_ARGS=(${*})
@@ -13,10 +16,8 @@ require '${MY_DIR}/coverage.rb'
   require file
 }"
 
-mkdir -p ${COVERAGE_ROOT}
-rm -rf ${COVERAGE_ROOT}/*
-
 export RUBYOPT='-W2'
+mkdir -p ${COVERAGE_ROOT}
 
 set +e
 ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${COVERAGE_ROOT}/${TEST_LOG}

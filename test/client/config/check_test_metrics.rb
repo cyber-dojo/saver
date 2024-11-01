@@ -130,7 +130,8 @@ def table_data
   code_stats = get_index_stats(coverage_code_tab_name)
 
   [
-    [ 'test:count',       test_count,     '>=',                 1 ],
+    [ nil ],
+    [ 'test:count',       test_count,     '>=',               133 ],
     [ nil ],
     [ 'test:failures',    failure_count,  '<=',  MAX[:failures  ] ],
     [ 'test:errors',      error_count,    '<=',  MAX[:errors    ] ],
