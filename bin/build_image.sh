@@ -73,7 +73,7 @@ build_image()
   if [ "${type}" == 'server' ]; then
     # Create latest tag for image build cache
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
-    # Tag image-name for local development where differs name comes from echo-versioner-env-vars
+    # Tag image-name for local development where savers name comes from echo-versioner-env-vars
     docker tag "${image_name}" "cyberdojo/saver:latest"
     echo "CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
     echo "CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
