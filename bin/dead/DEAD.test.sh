@@ -4,8 +4,6 @@ set -Eeu
 pushd "${ROOT_DIR}/bin"
 source "./config.sh"
 source "./echo_versioner_env_vars.sh"
-source "./exit_non_zero_unless_installed.sh"
-source "./exit_zero_if_show_help.sh"
 popd
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,7 +34,7 @@ run_client_tests()
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
-run_tests()
+run_tests_in_container()
 {
   # Getting coverage data
   # - - - - - - - - - - -
@@ -58,9 +56,6 @@ run_tests()
   # So coverage data is being written to /tmp inside the container
   # and docker-compose.yml has a tmpfs: /tmp
   # You can't [docker cp] from a tmpfs, so tar-piping coverage out.
-
-  reset_dirs_inside_containers
-  copy_in_saver_test_data
 
   local -r USER="${1}"
   local -r CONTAINER_NAME="${2}"
@@ -112,43 +107,6 @@ run_tests()
   return "${STATUS}"
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - -
-reset_dirs_inside_containers()
-{
-  # See docker-compose.yml for tmpfs and external volume
-  local DIRS=''
-  # /cyber-dojo is a tmpfs
-  DIRS="${DIRS} /cyber-dojo/*"
-  # /one_k is an external volume
-  # See create_space_limited_volume() in ./up.sh
-  DIRS="${DIRS} /one_k/*"
-  # /tmp is a tmpfs
-  DIRS="${DIRS} /tmp/cyber-dojo/*"
-  docker exec "$(server_container)" bash -c "rm -rf ${DIRS}"
-  docker exec "$(client_container)" bash -c "rm -rf /tmp/*"
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - -
-copy_in_saver_test_data()
-{
-  local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
-
-  # You cannot docker cp to a tmpfs, so tar-piping...
-  tar --no-xattrs -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "$(server_container)" tar x -C /cyber-dojo
-
-  local -r tar_files=(
-    almost_full_group.v0.AWCQdE.tgz
-    almost_full_group.v1.X9UunP.tgz
-    almost_full_group.v2.U8Tt6y.tgz
-    rG63fy.tgz
-  )
-  for tar_file in ${tar_files[*]}; do
-    docker exec -i "$(server_container)" tar -zxf - -C / < "${TEST_DATA_DIR}/${tar_file}"
-  done
-}
-
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export $(echo_versioner_env_vars)
-exit_zero_if_show_help "$@"
-exit_non_zero_unless_installed docker
 containers_run_tests "$@"

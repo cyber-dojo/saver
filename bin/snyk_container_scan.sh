@@ -3,7 +3,7 @@ set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-source "${ROOT_DIR}/bin/echo_versioner_env_vars.sh"
+source "${ROOT_DIR}/bin/lib.sh"
 export $(echo_versioner_env_vars)
 
 readonly IMAGE_NAME="${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
