@@ -81,7 +81,7 @@ run_tests()
     --user "${USER}" \
     "${CONTAINER_NAME}" \
       sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${TYPE} ${*:4}"
-  local STATUS=$?
+  local -r STATUS=$?
   set -e
 
   local -r HOST_REPORTS_DIR="${ROOT_DIR}/reports/${TYPE}" # where to tar-pipe files to
@@ -89,10 +89,8 @@ run_tests()
   rm -rf "${HOST_REPORTS_DIR}" &> /dev/null || true
   mkdir -p "${HOST_REPORTS_DIR}" &> /dev/null || true
 
-  docker exec --user "${USER}" \
-    "${CONTAINER_NAME}" \
-    tar Ccf "${CONTAINER_COVERAGE_DIR}" - . \
-        | tar Cxf "${HOST_REPORTS_DIR}/" -
+  docker exec --user "${USER}" "${CONTAINER_NAME}" tar Ccf "${CONTAINER_COVERAGE_DIR}" - . \
+      | tar Cxf "${HOST_REPORTS_DIR}/" -
 
   # Check we generated the expected files.
   exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/${TEST_LOG}"
@@ -111,7 +109,7 @@ run_tests()
     docker logs "${CONTAINER_NAME}" 2>&1
   fi
 
-  return ${STATUS}
+  return "${STATUS}"
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -

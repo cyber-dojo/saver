@@ -5,6 +5,12 @@ repo_root()
 }
 export -f repo_root
 
+stderr()
+{
+  local -r message="${1}"
+  >&2 echo "ERROR: ${message}"
+}
+
 # - - - - - - - - - - - - - - - - - - -
 on_ci()
 {

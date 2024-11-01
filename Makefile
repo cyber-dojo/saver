@@ -5,18 +5,22 @@ AWS_REGION := eu-central-1
 SERVICE_NAME := saver
 IMAGE_NAME := ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${SERVICE_NAME}:${SHORT_SHA}
 
-.PHONY: image test snyk-container snyk-code
 
-image:
+image_server:
 	${PWD}/sh/build.sh
 
-test: image
-	${PWD}/sh/run_tests_with_coverage.sh "${TARGET}"
+test_server:
+	${PWD}/sh/run_tests_with_coverage.sh server
+
+coverage_server:
+	${PWD}/sh/check_coverage.sh server
+
+
 
 lint:
 	docker run --rm --volume "${PWD}:/app" cyberdojo/rubocop --raise-cop-error
 
-snyk-container: image
+snyk-container:
 	snyk container test ${IMAGE_NAME} \
         --file=Dockerfile \
 		--sarif \
