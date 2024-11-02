@@ -8,6 +8,7 @@ SimpleCov.start do
   primary_coverage(:branch)
   filters.clear
   add_filter("test/id58_test_base.rb")
+
   code_tab = ENV['COVERAGE_CODE_TAB_NAME']
   test_tab = ENV['COVERAGE_TEST_TAB_NAME']
   # add_group('debug') { |the| puts(the.filename); false }
