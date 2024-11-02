@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'simplecov'
-require_relative 'simplecov-formatter-json'
+require_relative 'simplecov_formatter_json'
 
 SimpleCov.start do
   coverage_dir(ENV['COVERAGE_ROOT'])
