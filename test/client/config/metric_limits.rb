@@ -1,10 +1,9 @@
 
 # Max code/test metrics values.
 # Used by check_test_metrics.rb
-# which is called from bin/check_coverage.sh
 
 MIN = {
-  count:308
+  count: 133
 }
 
 MAX = {
@@ -13,27 +12,27 @@ MAX = {
   warnings: 0,
   skips: 0,
 
-  duration: 100,
+  duration: 30,
 
-  test: {
+  code: {
     lines: {
-       total: 1773,
+       total: 127,
       missed: 0,
     },
     branches: {
-       total: 12,
+       total: 2,
       missed: 0,
     }
   },
 
-  code: {
+  test: {
     lines: {
-       total: 1249,
-      missed: 10,
+       total: 595,
+      missed: 0,
     },
     branches: {
-       total: 141,
-      missed: 2,
+       total: 2,
+      missed: 0,
     }
   }
 }
