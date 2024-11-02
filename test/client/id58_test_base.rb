@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 require 'English'
 require 'minitest/autorun'
-require 'minitest/ci'
+require 'minitest/reporters'
 require_relative 'require_source'
+require_relative 'slim_json_reporter'
 
-Minitest::Ci.report_dir = "#{ENV.fetch('COVERAGE_ROOT')}/junit"
+reporters = [
+  Minitest::Reporters::DefaultReporter.new,
+  Minitest::Reporters::SlimJsonReporter.new,
+  Minitest::Reporters::JUnitReporter.new("#{ENV.fetch('COVERAGE_ROOT')}/junit")
+]
+Minitest::Reporters.use!(reporters)
 
 class Id58TestBase < Minitest::Test
 
@@ -18,9 +24,6 @@ class Id58TestBase < Minitest::Test
   @@seen_ids = {}
   @@timings = {}
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  # :nocov:
   def self.test(id58_suffix, *lines, version, &test_block)
     source = test_block.source_location
     source_file = File.basename(source[0])
@@ -60,8 +63,6 @@ class Id58TestBase < Minitest::Test
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   Minitest.after_run do
     slow = @@timings.select{ |_name,secs| secs > 0.000 }
     sorted = slow.sort_by{ |name,secs| -secs }.to_h
@@ -79,8 +80,6 @@ class Id58TestBase < Minitest::Test
     }
     puts
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   ID58_ALPHABET = %w{
     0 1 2 3 4 5 6 7 8 9
@@ -122,15 +121,11 @@ class Id58TestBase < Minitest::Test
     @@seen_ids[id58] > 3
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def id58_setup
   end
 
   def id58_teardown
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def id58
     @id58
@@ -143,6 +138,5 @@ class Id58TestBase < Minitest::Test
   def version
     @version
   end
-  # :nocov:
 
 end

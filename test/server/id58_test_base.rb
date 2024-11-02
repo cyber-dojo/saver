@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 require 'English'
 require 'minitest/autorun'
-require 'minitest/ci'
+require 'minitest/reporters'
 require_relative 'require_source'
+require_relative 'slim_json_reporter'
 
-Minitest::Ci.report_dir = "#{ENV.fetch('COVERAGE_ROOT')}/junit"
+reporters = [
+  Minitest::Reporters::DefaultReporter.new,
+  Minitest::Reporters::SlimJsonReporter.new,
+  Minitest::Reporters::JUnitReporter.new("#{ENV.fetch('COVERAGE_ROOT')}/junit")
+]
+Minitest::Reporters.use!(reporters)
 
 class Id58TestBase < Minitest::Test
 
@@ -70,23 +76,23 @@ class Id58TestBase < Minitest::Test
     end
   end
 
-#   Minitest.after_run do
-#     slow = @@timings.select{ |_name,secs| secs > 0.000 }
-#     sorted = slow.sort_by{ |name,secs| -secs }.to_h
-#     max_shown = 5
-#     size = sorted.size < max_shown ? sorted.size : max_shown
-#     puts
-#     if size != 0
-#       puts "Slowest #{size} tests in /app/test/ are..."
-#     end
-#     sorted.each.with_index { |(name,secs),index|
-#       puts "%3.4f %-72s" % [secs,name]
-#       if index === size
-#         break
-#       end
-#     }
-#     puts
-#   end
+  Minitest.after_run do
+    slow = @@timings.select{ |_name,secs| secs > 0.000 }
+    sorted = slow.sort_by{ |name,secs| -secs }.to_h
+    max_shown = 5
+    size = sorted.size < max_shown ? sorted.size : max_shown
+    puts
+    if size != 0
+      puts "Slowest #{size} tests in /app/test/ are..."
+    end
+    sorted.each.with_index { |(name,secs),index|
+      puts "%3.4f %-72s" % [secs,name]
+      if index === size
+        break
+      end
+    }
+    puts
+  end
 
   ID58_ALPHABET = %w{
     0 1 2 3 4 5 6 7 8 9
