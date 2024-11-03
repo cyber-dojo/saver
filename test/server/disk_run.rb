@@ -15,19 +15,30 @@ class DiskRunTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # dir_exists?() dir_make()
 
-  disk_tests '601',
+  disk_tests '501',
   'dir_exists?(k) is false before dir_make(k) and true after' do
-    dirname = 'groups/34/f6/01'
+    dirname = 'groups/34/f5/01'
     refute disk.run(dir_exists_command(dirname))
     disk.run(dir_make_command(dirname))
     assert disk.run(dir_exists_command(dirname))
   end
 
-  disk_tests '602',
+  disk_tests '502',
   'dir_make succeeds once and then fails' do
-    dirname = 'groups/r5/s6/02'
+    dirname = 'groups/r5/s5/02'
+    refute disk.run(dir_exists_command(dirname))
     assert disk.run(dir_make_command(dirname))
     refute disk.run(dir_make_command(dirname))
+  end
+
+  disk_tests '503',
+  'dir_make succeeds when it only has to create the last dir' do
+    dirname = 'groups/q4/s5'
+    refute disk.run(dir_exists_command(dirname))
+    assert disk.run(dir_make_command(dirname))
+    dirname += '/03'
+    refute disk.run(dir_exists_command(dirname))
+    assert disk.run(dir_make_command(dirname))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -

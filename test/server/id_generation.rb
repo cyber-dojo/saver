@@ -101,18 +101,18 @@ class IdGenerationTest < TestBase
   # - - - - - - - - - - - - - - - - - - -
 
   test '13e', %w(
-  kata-id generation tries 42 times and then gives up and returns nil
+  kata-id generation tries 256 times and then gives up and returns nil
   ) do
-    id_generator = stubbed_id_generator(saver_offline_id*42)
+    id_generator = stubbed_id_generator(saver_offline_id*256)
     assert_nil id_generator.kata_id
   end
 
   # - - - - - - - - - - - - - - - - - - -
 
   test '13f', %w(
-  group-id generation tries 42 times and then gives up and returns nil
+  group-id generation tries 256 times and then gives up and returns nil
   ) do
-    id_generator = stubbed_id_generator(saver_offline_id*42)
+    id_generator = stubbed_id_generator(saver_offline_id*256)
     assert_nil id_generator.group_id
   end
 
