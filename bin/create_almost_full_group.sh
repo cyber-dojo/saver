@@ -1,33 +1,29 @@
 #!/usr/bin/env bash
 set -Eeu
 
-# Ensure server-container is up before running this script.
-# $ ./up.sh
+export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-pushd "${ROOT_DIR}/sh"
-source "./config.sh"
-popd
+source "${ROOT_DIR}/bin/lib.sh"
 
-readonly version="${1:-}"
+readonly VERSION="${1}"
+export $(echo_versioner_env_vars)
+readonly CONTAINER="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
+readonly USER="${CYBER_DOJO_SAVER_SERVER_USER}"
+# TODO: docker command to bring up server
+docker exec "${CONTAINER}" bash -c "rm -rf /cyber-dojo/*"
+readonly GID=$(docker exec --user "${USER}" "${CONTAINER}" bash -c "ruby /saver/test/data/create_almost_full_group.rb ${VERSION}")
 
-docker exec "$(server_container)" bash -c "rm -rf /cyber-dojo/*"
+readonly SRC_DIR=/cyber-dojo
+readonly DST_TGZ_FILENAME="${ROOT_DIR}/test/server/data/almost_full_group.v${VERSION}.${GID}.tgz"
 
-gid=$(docker exec \
-  --user "$(server_user)" \
-  "$(server_container)" \
-  bash -c "ruby /app/test/data/create_almost_full_group.rb ${version}")
+# extract /cyber-dojo from saver server into tgz file
+docker exec "${CONTAINER}" \
+  tar -zcf - -C $(dirname ${SRC_DIR}) $(basename ${SRC_DIR}) \
+    > "${DST_TGZ_FILENAME}"
 
-src_dir=/cyber-dojo
-dst_tgz_filename="${ROOT_DIR}/app/test/data/almost_full_group.v${version}.${gid}.tgz"
-
-#extract /cyber-dojo from server_cid into tgz file
-docker exec $(server_container) \
-  tar -zcf - -C $(dirname ${src_dir}) $(basename ${src_dir}) \
-    > "${dst_tgz_filename}"
-
-echo "Filename == ${dst_tgz_filename}"
+echo "Filename == ${DST_TGZ_FILENAME}"
 echo
-echo "Now add the following tar_file to ./lib.sh"
+echo "Now add the following tar_file to run/lib.sh"
 echo
-echo "almost_full_group.v${version}.${gid}.tgz"
+echo "almost_full_group.v${VERSION}.${GID}.tgz"
 echo

@@ -13,8 +13,6 @@ class Model
     @externals = externals
   end
 
-  #- - - - - - - - - - - - - - - - - -
-
   def group_create(manifest:)
     version = from_manifest(manifest)
     group(version).create(manifest)
@@ -52,8 +50,6 @@ class Model
   def group_fork(id:, index:)
     kata(id).fork(Group_v2, id, index)
   end
-
-  #- - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:)
     version = from_manifest(manifest)
@@ -167,8 +163,6 @@ class Model
   def disk
     @externals.disk
   end
-
-  # - - - - - - - - - - - - - - - - - - - -
 
   GROUPS = [ Group_v0, Group_v1, Group_v2 ]
   KATAS = [ Kata_v0, Kata_v1, Kata_v2 ]

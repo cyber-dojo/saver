@@ -52,9 +52,9 @@ class GroupJoinTest < TestBase
   versions_test '6A6', %w(
     when 64 avatars have joined the group is full
   ) do
-    # Precreated almost full groups.
-    # See sh/create_almost_full_group.sh
-    # See app/test/data/almost_full_group.V?.*.tgz
+    # Pre-created almost full groups.
+    # See bin/create_almost_full_group.sh
+    # See test/server/data/almost_full_group.V?.*.tgz
     gids = {
       0 => 'AWCQdE',
       1 => 'X9UunP',
