@@ -1,6 +1,6 @@
 [![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)](https://github.com/cyber-dojo/saver/actions)
 
-- A [docker-containerized](https://hub.docker.com/r/cyberdojo/saver/tags) micro-service for [https://cyber-dojo.org](http://cyber-dojo.org).
+- A [docker-containerized](https://hub.docker.com/r/cyberdojo/saver/tags) microservice for [https://cyber-dojo.org](http://cyber-dojo.org).
 - An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
 - Demonstrates a [Kosli](https://www.kosli.com/) instrumented [GitHub CI workflow](https://app.kosli.com/cyber-dojo/flows/saver-ci/trails/) 
   deploying, with Continuous Compliance, to [staging](https://app.kosli.com/cyber-dojo/environments/aws-beta/snapshots/) and [production](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/) AWS environments.
@@ -8,16 +8,23 @@
 
 # Development
 
+There are two sets of tests:
+- server: these run from inside the saver container
+- client: these run from outside the saver container, making api calls only 
+
 ```bash
-# To build the images, bring up the containers, wait till they are alive and healthy, and...
-# ...run all the tests:
-$ ./build_test.sh
+# To build the images
+$ make {image_server|image_client}
 
-# ...run only a specific test
-$ ./build_test.sh A6D062
+# To run all tests
+$ make {test_server|test_client}
 
-# ...run only tests with a common test prefix
-$ ./build_test.sh A6D
+# To run only specific tests
+$ ./bin/run_tests.sh {-h|--help}
+$ ./bin/run_tests.sh server Ks366
+
+# To check coverage metrics
+$ make {coverage_server|coverage_client}
 ```
 
 # API
