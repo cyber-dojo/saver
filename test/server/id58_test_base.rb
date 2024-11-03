@@ -83,7 +83,7 @@ class Id58TestBase < Minitest::Test
     size = sorted.size < max_shown ? sorted.size : max_shown
     puts
     if size != 0
-      puts "Slowest #{size} tests in /app/test/ are..."
+      puts "Slowest #{size} tests are..."
     end
     sorted.each.with_index { |(name,secs),index|
       puts "%3.4f %-72s" % [secs,name]
