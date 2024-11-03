@@ -7,7 +7,7 @@ require_relative '../lib/json_adapter'
 
 # 1. Manifest has explicit version (2)
 # 2. avatars() does 1 read, not 64 reads.
-# 3. TODO: Store JSON in pretty format.
+# 3. TODO: Store JSON in pretty format?
 # 4. TODO: Stores file contents in lined format?
 
 class Group_v2
@@ -16,8 +16,6 @@ class Group_v2
     @kata = Kata_v2.new(externals)
     @externals = externals
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
     manifest.merge!(default_options)
@@ -31,16 +29,12 @@ class Group_v2
     id
   end
 
-  # - - - - - - - - - - - - - - - - - - -
-
   def manifest(id)
     manifest_src = disk.assert(manifest_read_command(id))
     manifest = json_parse(manifest_src)
     polyfill_manifest_defaults(manifest)
     manifest
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
     taken = katas_indexes(id).map{ |index,_| index }
@@ -62,8 +56,6 @@ class Group_v2
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def joined(id)
     result = {}
     katas_indexes(id).each.with_index(0) do |(group_index,kata_id),index|
@@ -82,8 +74,6 @@ class Group_v2
   include Options
   include PolyFiller
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def katas_indexes(id)
     katas_src = disk.assert(katas_read_command(id))
     # G2ws77 15
@@ -101,13 +91,9 @@ class Group_v2
     # ]
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   def dir_make_command(id, *parts)
     disk.dir_make_command(dir_name(id, *parts))
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def manifest_create_command(id, manifest_src)
     disk.file_create_command(manifest_filename(id), manifest_src)
@@ -116,8 +102,6 @@ class Group_v2
   def manifest_read_command(id)
     disk.file_read_command(manifest_filename(id))
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def katas_create_command(id, src)
     disk.file_create_command(katas_filename(id), src)
@@ -131,7 +115,6 @@ class Group_v2
     disk.file_read_command(katas_filename(id))
   end
 
-  # - - - - - - - - - - - - - -
   # names of dirs/files
 
   def dir_name(id, *parts)
@@ -152,8 +135,6 @@ class Group_v2
     # SyG9sT 50
     # zhTLfa 32
   end
-
-  # - - - - - - - - - - - - - -
 
   def disk
     @externals.disk

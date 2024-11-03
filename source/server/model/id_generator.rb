@@ -16,8 +16,6 @@ class IdGenerator
         s.chars.all?{ |ch| ALPHABET.include?(ch) }
   end
 
-  # - - - - - - - - - - - - - - - - - - -
-
   def initialize(externals)
     @externals = externals
   end
@@ -37,7 +35,7 @@ class IdGenerator
   include IdPather
 
   def generate_id(pather, not_pather)
-    42.times.find do
+    256.times.find do
       id = SIZE.times.map{ ALPHABET[random_index] }.join
       if reserved?(id)
         next
@@ -57,6 +55,7 @@ class IdGenerator
 
       return id
     end
+    nil
   end
 
   def reserved?(id)
