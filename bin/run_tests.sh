@@ -103,14 +103,7 @@ run_tests()
   check_args "$@"
   exit_non_zero_unless_installed docker
   containers_down
-
-  docker volume create --driver local \
-    --opt type=tmpfs \
-    --opt device=tmpfs \
-    --opt o=size=1k \
-    one_k \
-      > /dev/null
-
+  create_space_limited_volume
   docker compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
   exit_non_zero_unless_started_cleanly "${TYPE}"
   copy_in_saver_test_data

@@ -65,6 +65,16 @@ installed()
   fi
 }
 
+create_space_limited_volume()
+{
+  docker volume create --driver local \
+    --opt type=tmpfs \
+    --opt device=tmpfs \
+    --opt o=size=1k \
+    one_k \
+      > /dev/null
+}
+
 copy_in_saver_test_data()
 {
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"

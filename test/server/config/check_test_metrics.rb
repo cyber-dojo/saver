@@ -3,7 +3,6 @@
 # 1) The minitest test_metrics.json file which is generated from slim_json_reporter.rb
 # 2) The coverage.json file which is generated from simplecov_formatter_json.rb
 
-require_relative 'metric_limits'
 require 'json'
 
 def coloured(tf)
@@ -17,31 +16,31 @@ def colourize(code, word)
 end
 
 def table_data
-  cov_root_dir = ENV['COVERAGE_ROOT']
-  stats = JSON.parse(IO.read("#{cov_root_dir}/test_metrics.json"))
+  cov_root = ENV['COVERAGE_ROOT']
+  stats = JSON.parse(IO.read("#{cov_root}/test_metrics.json"))
 
-  cov_json = JSON.parse(IO.read("#{cov_root_dir}/coverage_metrics.json"))
+  cov_json = JSON.parse(IO.read("#{cov_root}/coverage_metrics.json"))
   test_cov = cov_json['groups'][ENV['COVERAGE_TEST_TAB_NAME']]
   code_cov = cov_json['groups'][ENV['COVERAGE_CODE_TAB_NAME']]
 
   [
     [ nil ],
-    [ 'test:count',    stats['test_count'],    '>=',  MIN[:count   ] ],
-    [ 'test:duration', stats['total_time'],    '<=',  MAX[:duration] ],
+    [ 'test.count',    stats['test_count'],    '>=',  308 ],
+    [ 'test.duration', stats['total_time'],    '<=',  100 ],
     [ nil ],
-    [ 'test:failures', stats['failure_count'], '<=',  MAX[:failures] ],
-    [ 'test:errors',   stats['error_count'],   '<=',  MAX[:errors  ] ],
-    [ 'test:skips',    stats['skip_count'],    '<=',  MAX[:skips   ] ],
+    [ 'test.failures', stats['failure_count'], '<=',  0 ],
+    [ 'test.errors',   stats['error_count'],   '<=',  0 ],
+    [ 'test.skips',    stats['skip_count'],    '<=',  0 ],
     [ nil ],
-    [ 'test:lines:total',     test_cov['lines'   ]['total' ], '<=', MAX[:test][:lines   ][:total ] ],
-    [ 'test:lines:missed',    test_cov['lines'   ]['missed'], '<=', MAX[:test][:lines   ][:missed] ],
-    [ 'test:branches:total',  test_cov['branches']['total' ], '<=', MAX[:test][:branches][:total ] ],
-    [ 'test:branches:missed', test_cov['branches']['missed'], '<=', MAX[:test][:branches][:missed] ],
+    [ 'test.lines.total',     test_cov['lines'   ]['total' ], '<=', 1773 ],
+    [ 'test.lines.missed',    test_cov['lines'   ]['missed'], '<=', 0 ],
+    [ 'test.branches.total',  test_cov['branches']['total' ], '<=', 12 ],
+    [ 'test.branches.missed', test_cov['branches']['missed'], '<=', 0 ],
     [ nil ],
-    [ 'app:lines:total',      code_cov['lines'   ]['total' ], '<=', MAX[:code][:lines   ][:total ] ],
-    [ 'app:lines:missed',     code_cov['lines'   ]['missed'], '<=', MAX[:code][:lines   ][:missed] ],
-    [ 'app:branches:total',   code_cov['branches']['total' ], '<=', MAX[:code][:branches][:total ] ],
-    [ 'app:branches:missed',  code_cov['branches']['missed'], '<=', MAX[:code][:branches][:missed] ],
+    [ 'app.lines.total',      code_cov['lines'   ]['total' ], '<=', 1249 ],
+    [ 'app.lines.missed',     code_cov['lines'   ]['missed'], '<=', 10 ],
+    [ 'app.branches.total',   code_cov['branches']['total' ], '<=', 141 ],
+    [ 'app.branches.missed',  code_cov['branches']['missed'], '<=', 2 ],
   ]
 end
 

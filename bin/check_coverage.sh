@@ -49,7 +49,6 @@ check_coverage()
 
   exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/test_metrics.json"
   exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/coverage_metrics.json"
-  exit_non_zero_unless_file_exists "${HOST_TEST_DIR}/config/metric_limits.rb"
 
   set +e
   docker run \
@@ -61,7 +60,6 @@ check_coverage()
     --volume ${HOST_REPORTS_DIR}/test_metrics.json:${CONTAINER_TMP_DIR}/test_metrics.json:ro \
     --volume ${HOST_REPORTS_DIR}/coverage_metrics.json:${CONTAINER_TMP_DIR}/coverage_metrics.json:ro \
     --volume ${HOST_TEST_DIR}/config/check_test_metrics.rb:${CONTAINER_TMP_DIR}/check_test_metrics.rb:ro \
-    --volume ${HOST_TEST_DIR}/config/metric_limits.rb:${CONTAINER_TMP_DIR}/metric_limits.rb:ro \
       cyberdojo/saver:latest \
         sh -c "ruby ${CONTAINER_TMP_DIR}/check_test_metrics.rb"
 

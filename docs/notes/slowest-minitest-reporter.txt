@@ -1,0 +1,36 @@
+
+Tried creating a minitest-reporter to print the slowest times, so I can simplify id58_test_base.rb
+Problem is that you can't get the filename location (filename + line-number)
+
+class Minitest::Reporters::SlowestReporter < Minitest::Reporters::BaseReporter
+  def initialize(options = {})
+    super
+    self.results = []
+  end
+  attr_accessor :results
+  def record(result)
+    results << result
+  end
+  def report
+    super
+    timings = []
+    results.each do |result|
+      timings << [ result.name.gsub("\n", ''), result.time ]
+    end
+
+    sorted = timings.sort_by{ |name, secs| -secs }.to_h
+    max_shown = 5
+    size = sorted.size < max_shown ? sorted.size : max_shown
+    puts
+    if size != 0
+      puts "Slowest #{size} tests in /saver/test/ are..."
+    end
+    sorted.each.with_index { |(name,secs),index|
+      puts "%3.4f %-72s" % [secs,name]
+      if index === size
+        break
+      end
+    }
+    puts
+  end
+end

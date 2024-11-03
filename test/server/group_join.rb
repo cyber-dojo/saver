@@ -53,9 +53,9 @@ class GroupJoinTest < TestBase
     when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.
-    # See sh/create_almost_full_group.sh
-    # See test.sh copy_in_saver_test_data()
-    # See app/test/data/almost_full_group.v?.tgz
+    # See bin/create_almost_full_group.sh
+    # See run/lib.sh copy_in_saver_test_data()
+    # See test/server/data/almost_full_group.v?.tgz
     gids = {
       0 => 'AWCQdE',
       1 => 'X9UunP',

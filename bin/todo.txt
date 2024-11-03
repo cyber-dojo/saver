@@ -7,3 +7,8 @@ Record of tests that fail with "undefined method `[]' for nil"
   Sp4Dk7
   e09h35
   Ws6861
+
+
+Resurrect:
+ - bin/create_almost_full_group.sh
+ - test/server/cyber-dojo/create_almost_full_group.rb
