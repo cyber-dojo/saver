@@ -1,7 +1,7 @@
 
-# Uses data from two sources
-# 1) The minitest test_metrics.json file which is generated from slim_json_reporter.rb
-# 2) The coverage.json file which is generated from simplecov_formatter_json.rb
+# Uses data from two json files:
+# - reports/client/test_metrics.json     generated in slim_json_reporter.rb by minitest. See id58_test_base.rb
+# - reports/client/coverage_metrics.json generated in simplecov_formatter_json.rb by simplecov. See coverage.rb
 
 require 'json'
 
@@ -26,21 +26,21 @@ def table_data
   [
     [ nil ],
     [ 'test.count',    stats['test_count'],    '>=',  133 ],
-    [ 'test.duration', stats['total_time'],    '<=',  30 ],
+    [ 'test.duration', stats['total_time'],    '<=',  30  ],
     [ nil ],
     [ 'test.failures', stats['failure_count'], '<=',  0 ],
-    [ 'test.errors',   stats['error_count'],   '<=',  0 ],
-    [ 'test.skips',    stats['skip_count'],    '<=',  0 ],
+    [ 'test.errors',   stats['error_count'  ], '<=',  0 ],
+    [ 'test.skips',    stats['skip_count'   ], '<=',  0 ],
     [ nil ],
-    [ 'test.lines.total',     test_cov['lines'   ]['total' ], '<=', 590 ],
-    [ 'test.lines.missed',    test_cov['lines'   ]['missed'], '<=', 0 ],
-    [ 'test.branches.total',  test_cov['branches']['total' ], '<=', 2 ],
-    [ 'test.branches.missed', test_cov['branches']['missed'], '<=', 0 ],
+    [ 'test.lines.total',      test_cov['lines'   ]['total' ], '<=', 590 ],
+    [ 'test.lines.missed',     test_cov['lines'   ]['missed'], '<=', 0   ],
+    [ 'test.branches.total',   test_cov['branches']['total' ], '<=', 2   ],
+    [ 'test.branches.missed',  test_cov['branches']['missed'], '<=', 0   ],
     [ nil ],
-    [ 'app.lines.total',      code_cov['lines'   ]['total' ], '<=', 127 ],
-    [ 'app.lines.missed',     code_cov['lines'   ]['missed'], '<=', 0 ],
-    [ 'app.branches.total',   code_cov['branches']['total' ], '<=', 2 ],
-    [ 'app.branches.missed',  code_cov['branches']['missed'], '<=', 0 ],
+    [ 'code.lines.total',      code_cov['lines'   ]['total' ], '<=', 127 ],
+    [ 'code.lines.missed',     code_cov['lines'   ]['missed'], '<=', 0   ],
+    [ 'code.branches.total',   code_cov['branches']['total' ], '<=', 2   ],
+    [ 'code.branches.missed',  code_cov['branches']['missed'], '<=', 0   ],
   ]
 end
 
