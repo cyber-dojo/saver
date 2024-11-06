@@ -13,21 +13,25 @@ There are two sets of tests:
 - client: these run from outside the saver container, making api calls only 
 
 ```bash
-# To build the images
+# Build the images
 $ make {image_server|image_client}
 
-# To run all tests
+# Run all tests
 $ make {test_server|test_client}
 
-# To run only specific tests
+# Run only specific tests
 $ ./bin/run_tests.sh {-h|--help}
 $ ./bin/run_tests.sh server Ks366
 
-# To check coverage metrics
-$ make {coverage_server|coverage_client}
+# Check test metrics
+$ make {metrics_test_server|metrics_test_client}
+
+# Check coverage metrics
+$ make {metrics_coverage_server|metrics_coverage_client}
 ```
 
 # API
+
 ## Group
 
 * [POST group_create(manifest)](docs/api.md#post-group_createmanifest)
@@ -61,5 +65,6 @@ $ make {coverage_server|coverage_client}
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
 
+## Screenshots
 
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)

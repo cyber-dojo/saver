@@ -221,10 +221,15 @@ jobs:
         run:
           make test_server
 
-      - name: Get unit test coverage
-        id: coverage
+      - name: Check test metrics
+        id: test_metrics
         run:
-          make coverage_server
+          make metrics_test_server
+
+      - name: Check coverage metrics
+        id: coverage_metrics
+        run:
+          make metrics_coverage_server
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -241,16 +246,25 @@ jobs:
               --name=saver.unit-test 
               --results-dir=./reports/server/junit
 
-      - name: Attest coverage evidence to Kosli
+      - name: Attest test metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.coverage.outcome }}" == 'success' ] && echo true || echo false)
+          KOSLI_COMPLIANT=$([ "${{ steps.test_metrics.outcome }}" == 'success' ] && echo true || echo false)
           kosli attest generic \
-              --description="unit-test branch-coverage and metrics" \
-              --name=saver.unit-test-branch-coverage \
-              --user-data="./reports/server/coverage_metrics.json"          
+              --name=saver.unit-test-metrics \
+              --user-data="./reports/server/test_metrics.json"
+
+      - name: Attest coverage metrics to Kosli
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
+        env:
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+        run: |
+          KOSLI_COMPLIANT=$([ "${{ steps.coverage_metrics.outcome }}" == 'success' ] && echo true || echo false)
+          kosli attest generic \
+              --name=saver.unit-test-coverage-metrics \
+              --user-data="./reports/server/coverage_metrics.json"
 
 
   integration-tests:
@@ -275,10 +289,15 @@ jobs:
         run:
           make image_client test_client
 
-      - name: Get integration test coverage
-        id: coverage
+      - name: Check test metrics
+        id: test_metrics
         run:
-          make coverage_client
+          make metrics_test_client
+
+      - name: Check coverage metrics
+        id: coverage_metrics
+        run:
+          make metrics_coverage_client
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -295,15 +314,24 @@ jobs:
               --name=saver.integration-test
               --results-dir=./reports/client/junit
 
-      - name: Attest coverage evidence to Kosli
+      - name: Attest test metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.coverage.outcome }}" == 'success' ] && echo true || echo false)
+          KOSLI_COMPLIANT=$([ "${{ steps.test_metrics.outcome }}" == 'success' ] && echo true || echo false)
           kosli attest generic \
-              --description="integration-test branch-coverage and metrics" \
-              --name=saver.integration-test-branch-coverage \
+              --name=saver.integration-test-metrics \
+              --user-data="./reports/client/test_metrics.json"
+
+      - name: Attest coverage metrics to Kosli
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
+        env:
+          KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
+        run: |
+          KOSLI_COMPLIANT=$([ "${{ steps.coverage_metrics.outcome }}" == 'success' ] && echo true || echo false)
+          kosli attest generic \
+              --name=saver.integration-test-coverage-metrics \
               --user-data="./reports/client/coverage_metrics.json"
 
 
