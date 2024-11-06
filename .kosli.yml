@@ -21,6 +21,6 @@ trail:
           type: junit
         - name: integration-test-metrics
           type: generic
-        - name: integration-coverage-metrics
+        - name: integration-test-coverage-metrics
           type: generic
 
