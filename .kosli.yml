@@ -13,10 +13,14 @@ trail:
           type: snyk
         - name: unit-test
           type: junit
-        - name: unit-test-branch-coverage
+        - name: unit-test-metrics
+          type: generic
+        - name: unit-test-coverage-metrics
           type: generic
         - name: integration-test
           type: junit
-        - name: integration-test-branch-coverage
+        - name: integration-test-metrics
+          type: generic
+        - name: integration-coverage-metrics
           type: generic
 

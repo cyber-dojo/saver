@@ -12,7 +12,7 @@ show_help()
 
     Use: ${MY_NAME} {server|client}
 
-    Check test coverage (and other metrics) for tests run from inside the client or server container only
+    Check test coverage metrics for tests run from inside the client or server container only
 
 EOF
 }
@@ -49,30 +49,26 @@ check_coverage()
   local -r HOST_REPORTS_DIR="${ROOT_DIR}/reports/${TYPE}"  # where report json files have been written to
   local -r CONTAINER_TMP_DIR=/tmp
 
-  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/${TEST_LOG}"
-  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/test_metrics.json"
-  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/coverage_metrics.json"
-  exit_non_zero_unless_file_exists "${HOST_TEST_DIR}/config/check_test_metrics.rb"
+  exit_non_zero_unless_file_exists "${HOST_TEST_DIR}/config/check_metrics.rb"           # evaluator
+  exit_non_zero_unless_file_exists "${HOST_REPORTS_DIR}/coverage_metrics.json"          # data from test run
+  exit_non_zero_unless_file_exists "${HOST_TEST_DIR}/config/coverage_metrics_limits.rb" # metric limits
 
   set +e
   docker run \
     --read-only \
     --rm \
     --entrypoint="" \
-    --env COVERAGE_ROOT="${CONTAINER_TMP_DIR}" \
-    --env COVERAGE_CODE_TAB_NAME=app \
-    --env COVERAGE_TEST_TAB_NAME=test \
-    --volume ${HOST_REPORTS_DIR}/test_metrics.json:${CONTAINER_TMP_DIR}/test_metrics.json:ro \
+    --volume ${HOST_TEST_DIR}/config/check_metrics.rb:${CONTAINER_TMP_DIR}/check_metrics.rb:ro \
     --volume ${HOST_REPORTS_DIR}/coverage_metrics.json:${CONTAINER_TMP_DIR}/coverage_metrics.json:ro \
-    --volume ${HOST_TEST_DIR}/config/check_test_metrics.rb:${CONTAINER_TMP_DIR}/check_test_metrics.rb:ro \
+    --volume ${HOST_TEST_DIR}/config/coverage_metrics_limits.rb:${CONTAINER_TMP_DIR}/coverage_metrics_limits.rb:ro \
       "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}" \
-        sh -c "ruby ${CONTAINER_TMP_DIR}/check_test_metrics.rb" \
+        sh -c "ruby ${CONTAINER_TMP_DIR}/check_metrics.rb ${CONTAINER_TMP_DIR}/coverage_metrics.json coverage_metrics_limits" \
         | tee -a "${HOST_REPORTS_DIR}/${TEST_LOG}"
 
   local -r STATUS=${PIPESTATUS[0]}
   set -e
 
-  echo "${TYPE} coverage status == ${STATUS}"
+  echo "${TYPE} coverage metrics status == ${STATUS}"
   echo
   return "${STATUS}"
 }
