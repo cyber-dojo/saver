@@ -157,7 +157,7 @@ clean_top_5()
 {
   # 1st 5 lines on Puma
   local -r L1="Puma starting in single mode..."
-  local -r L2='* Puma version: 6.4.3 (ruby 3.3.5-p100) ("The Eagle of Durango")'
+  local -r L2='* Puma version: 6.4.3 (ruby 3.3.6-p108) ("The Eagle of Durango")'
   local -r L3="*  Min threads: 0"
   local -r L4="*  Max threads: 5"
   local -r L5="*  Environment: production"
