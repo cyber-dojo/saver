@@ -65,6 +65,6 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 - [GET ready?](docs/api.md#get-ready)
 - [GET sha](docs/api.md#get-sha)
 
-## Screenshots
+# Screenshots
 
 ![cyber-dojo.org home page](https://github.com/cyber-dojo/cyber-dojo/blob/master/shared/home_page_snapshot.png)
