@@ -14,13 +14,13 @@ trail:
         - name: unit-test
           type: junit
         - name: unit-test-metrics
-          type: generic
+          type: custom:test-metrics
         - name: unit-test-coverage-metrics
-          type: generic
+          type: custom:coverage-metrics
         - name: integration-test
           type: junit
         - name: integration-test-metrics
-          type: generic
+          type: custom:test-metrics
         - name: integration-test-coverage-metrics
-          type: generic
+          type: custom:coverage-metrics
 
