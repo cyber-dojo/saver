@@ -219,19 +219,9 @@ jobs:
         run:
           docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
-      - name: Run unit tests
+      - name: Run unit tests with metrics
         run:
-          make test_server
-
-      - name: Check test metrics
-        id: test_metrics
-        run:
-          make metrics_test_server
-
-      - name: Check coverage metrics
-        id: coverage_metrics
-        run:
-          make metrics_coverage_server
+          make test_server metrics_test_server metrics_coverage_server
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -252,21 +242,21 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-        run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.test_metrics.outcome }}" == 'success' ] && echo true || echo false)
-          kosli attest generic \
-              --name=saver.unit-test-metrics \
-              --user-data="./reports/server/test_metrics.json"
+        run:
+          kosli attest custom 
+            --attestation-data=./reports/server/test_metrics.json 
+            --name=saver.unit-test-metrics
+            --type=test-metrics
 
       - name: Attest coverage metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-        run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.coverage_metrics.outcome }}" == 'success' ] && echo true || echo false)
-          kosli attest generic \
-              --name=saver.unit-test-coverage-metrics \
-              --user-data="./reports/server/coverage_metrics.json"
+        run:
+          kosli attest custom 
+            --attestation-data=./reports/server/coverage_metrics.json 
+            --name=saver.unit-test-coverage-metrics
+            --type=coverage-metrics
 
 
   integration-tests:
@@ -287,19 +277,9 @@ jobs:
         run:
           docker image load --input ${{ env.IMAGE_TAR_FILENAME }}
 
-      - name: Run integration tests
+      - name: Run integration tests with metrics
         run:
-          make image_client test_client
-
-      - name: Check test metrics
-        id: test_metrics
-        run:
-          make metrics_test_client
-
-      - name: Check coverage metrics
-        id: coverage_metrics
-        run:
-          make metrics_coverage_client
+          make image_client test_client metrics_test_client metrics_coverage_client
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -320,21 +300,21 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-        run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.test_metrics.outcome }}" == 'success' ] && echo true || echo false)
-          kosli attest generic \
-              --name=saver.integration-test-metrics \
-              --user-data="./reports/client/test_metrics.json"
+        run:
+          kosli attest custom 
+            --attestation-data=./reports/client/test_metrics.json 
+            --name=saver.integration-test-metrics
+            --type=test-metrics
 
       - name: Attest coverage metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
-        run: |
-          KOSLI_COMPLIANT=$([ "${{ steps.coverage_metrics.outcome }}" == 'success' ] && echo true || echo false)
-          kosli attest generic \
-              --name=saver.integration-test-coverage-metrics \
-              --user-data="./reports/client/coverage_metrics.json"
+        run:
+          kosli attest custom 
+            --attestation-data=./reports/client/coverage_metrics.json 
+            --name=saver.integration-test-coverage-metrics
+            --type=coverage-metrics
 
 
   snyk-container-scan:
