@@ -22,14 +22,6 @@ class SimpleCov::Formatter::JSONFormatter
            missed: file_list.missed_branches,
         }
       }
-      # create single name entries for kosli-attest-custom
-      data["#{name}_lines_total"] = file_list.lines_of_code
-      data["#{name}_lines_covered"] = file_list.covered_lines
-      data["#{name}_lines_missed"] = file_list.missed_lines
-
-      data["#{name}_branches_total"] = file_list.total_branches
-      data["#{name}_branches_covered"] = file_list.covered_branches
-      data["#{name}_branches_missed"] = file_list.missed_branches
     end
     File.open(output_filepath, "w+") do |file|
       file.print(JSON.pretty_generate(data))
