@@ -11,6 +11,10 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
+
+RUN apk add git=2.45.3-r0
+RUN apk upgrade
+
 WORKDIR /saver
 COPY source/server/ .
 
