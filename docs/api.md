@@ -28,7 +28,7 @@ and returns its id.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/group_create
+      https://${DOMAIN}:${PORT}/group_create
   ```
   ```bash
   {"group_create":"dFg8Us"}
@@ -50,7 +50,7 @@ Determines if a group with the given `id` exists.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/group_exists?
+      https://${DOMAIN}:${PORT}/group_exists?
   ```
   ```bash
   {"group_exists?":true}
@@ -72,7 +72,7 @@ Gets the manifest used to create the group with the given `id`.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/group_manifest | jq .
+      https://${DOMAIN}:${PORT}/group_manifest | jq .
   ```
   ```bash
   {
@@ -119,7 +119,7 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/group_join
+      https://${DOMAIN}:${PORT}/group_join
   ```
   ```bash
   {"group_join":"a8gVRN"}
@@ -143,7 +143,7 @@ for the katas that have joined a group. The id can be the group's `id`
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/group_joined | jq .
+      https://${DOMAIN}:${PORT}/group_joined | jq .
   ```
   ```bash
   {
@@ -181,7 +181,7 @@ that exist in the kata being forked are *not* copied.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/group_fork
+      https://${DOMAIN}:${PORT}/group_fork
   ```
   ```bash
   {"group_fork":"a8gVRN"}
@@ -210,7 +210,7 @@ and returns its id.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/kata_create
+      https://${DOMAIN}:${PORT}/kata_create
   ```
   ```bash
   {"kata_create":"dFg8Us"}
@@ -232,7 +232,7 @@ Determines if a kata exercise with the given `id` exists.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/kata_exists?
+      https://${DOMAIN}:${PORT}/kata_exists?
   ```
   ```bash
   {"kata_exists?":false}
@@ -254,7 +254,7 @@ Gets the manifest used to create the kata exercise with the given `id`.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/kata_manifest | jq .
+      https://${DOMAIN}:${PORT}/kata_manifest | jq .
   ```
   ```bash
   {
@@ -299,7 +299,7 @@ Gets the summary of all current events for the kata with the given `id`.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/kata_events | jq .
+      https://${DOMAIN}:${PORT}/kata_events | jq .
   ```
   ```bash
   {
@@ -347,7 +347,7 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/kata_event | jq .
+      https://${DOMAIN}:${PORT}/kata_event | jq .
   ```
   ```bash
   {
@@ -395,7 +395,7 @@ A Batch-Method for kata_event(id,index).
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      http://${DOMAIN}:${PORT}/katas_events | jq .
+      https://${DOMAIN}:${PORT}/katas_events | jq .
   ```
   ```bash
   {
@@ -473,7 +473,7 @@ that exist in the kata being forked are *not* copied.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/kata_fork
+      https://${DOMAIN}:${PORT}/kata_fork
   ```
   ```bash
   {"kata_fork":"a8gVRN"}
@@ -490,7 +490,7 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
   * **true**
 - example
   ```bash     
-  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/alive?
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/alive?
   ```
   ```bash
   {"alive?":true}
@@ -508,7 +508,7 @@ Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
   * **false** when the service is not ready
 - example
   ```bash     
-  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/ready?
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/ready?
   ```
   ```bash
   {"ready?":false}
@@ -524,7 +524,7 @@ The git commit sha used to create the Docker image.
   * the 40 character commit sha string.
 - example
   ```bash     
-  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/sha
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/sha
   ```
   ```bash
   {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
@@ -540,7 +540,7 @@ The base-image used in the Dockerfile's FROM statement.
   * the name of the base image.
 - example
   ```bash     
-  $ curl --fail --silent --request GET http://${DOMAIN}:${PORT}/base_image
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/base_image
   ```
   ```bash
   {"base_image":"cyberdojo/sinatra-base:edb2887"}
@@ -558,7 +558,7 @@ The base-image used in the Dockerfile's FROM statement.
 - All methods return a json hash in the http response body.
   * If the method does not raise, a string key equals the method's name. eg
     ```bash
-    $ curl --silent -X GET http://${DOMAIN}:${PORT}/ready?
+    $ curl --silent -X GET https://${DOMAIN}:${PORT}/ready?
     ```
     ```bash
     {"ready?":true}
@@ -566,7 +566,7 @@ The base-image used in the Dockerfile's FROM statement.
   * If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
     ```bash
-    $ curl --data 'not-json-hash' --silent -X GET http://${DOMAIN}:${PORT}/run | jq      
+    $ curl --data 'not-json-hash' --silent -X GET https://${DOMAIN}:${PORT}/run | jq      
     ```
     ```bash
     {
