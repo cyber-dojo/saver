@@ -208,7 +208,7 @@ jobs:
 
       - name: Run unit tests with metrics
         run:
-          make metrics_test_server metrics_coverage_server
+          make test_server metrics_test_server metrics_coverage_server
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
