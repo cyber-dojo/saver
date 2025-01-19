@@ -1,4 +1,5 @@
-FROM cyberdojo/sinatra-base:d133c7f
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
@@ -11,12 +12,12 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-
-RUN apk add git=2.45.3-r0
-RUN apk upgrade
-
 WORKDIR /saver
 COPY source/server/ .
+
+# ARGs are reset after FROM See https://github.com/moby/moby/issues/34129
+ARG BASE_IMAGE
+ENV BASE_IMAGE=${BASE_IMAGE}
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}

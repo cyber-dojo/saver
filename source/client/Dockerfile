@@ -1,4 +1,5 @@
-FROM cyberdojo/sinatra-base:d133c7f
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 LABEL maintainer=jon@jaggersoft.com
 
 WORKDIR /saver
