@@ -21,6 +21,7 @@ jobs:
 
   setup:
     runs-on: ubuntu-latest
+    needs: []
     outputs:
       aws_account_id: ${{ steps.vars.outputs.aws_account_id }}
       ecr_registry: ${{ steps.vars.outputs.ecr_registry }}
@@ -29,7 +30,6 @@ jobs:
       service_name: ${{ steps.vars.outputs.service_name }}
       image_tag: ${{ steps.vars.outputs.image_tag }}
       image_name: ${{ steps.vars.outputs.image_name }}
-      image_name_previous: ${{ steps.vars.outputs.image_name_previous }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,13 +38,9 @@ jobs:
       - name: Prepare outputs for workflow jobs
         id: vars
         run: |
-          IMAGE_TAG=${GITHUB_SHA:0:7}        
-          IMAGE_TAG_PREVIOUS=$(git rev-parse --short=7 HEAD^)
-          
-          ECR_REGISTRY="${AWS_ECR_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-          
+          IMAGE_TAG=${GITHUB_SHA:0:7}                  
+          ECR_REGISTRY="${AWS_ECR_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"          
           IMAGE_NAME="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG}"
-          IMAGE_NAME_PREVIOUS="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG_PREVIOUS}"
           
           echo "aws_account_id=${AWS_ACCOUNT_ID}"             >> ${GITHUB_OUTPUT}          
           echo "ecr_registry=${ECR_REGISTRY}"                 >> ${GITHUB_OUTPUT}
@@ -52,8 +48,7 @@ jobs:
           echo "gh_actions_iam_role_name=gh_actions_services" >> ${GITHUB_OUTPUT}
           echo "service_name=${{ env.SERVICE_NAME }}"         >> ${GITHUB_OUTPUT}
           echo "image_tag=${IMAGE_TAG}"                       >> ${GITHUB_OUTPUT}
-          echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}
-          echo "image_name_previous=${IMAGE_NAME_PREVIOUS}"   >> ${GITHUB_OUTPUT}
+          echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}          
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -131,8 +126,8 @@ jobs:
 
 
   build-image:
-    needs: [setup]
     runs-on: ubuntu-latest
+    needs: [setup]
     env:
       IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
     permissions:
@@ -152,27 +147,19 @@ jobs:
           role-duration-seconds: 900
           role-session-name: ${{ github.event.repository.name }}
           role-to-assume: arn:aws:iam::${{ needs.setup.outputs.aws_account_id }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
-          mask-aws-account-id: 'no'
+          mask-aws-account-id: no
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image to ECR
-        id: docker_build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE_NAME }}
-          cache-from: type=registry,ref=${{ needs.setup.outputs.image_name_previous }}
-          cache-to: type=inline,mode=max
-          build-args:
-            COMMIT_SHA=${{ github.sha }}
+        run: |
+          make image_server
+          docker push "${{ env.IMAGE_NAME }}"
 
       - name: Tar Docker image
-        run: |
-          docker pull ${{ env.IMAGE_NAME }}          
+        run:
           docker image save ${{ env.IMAGE_NAME }} --output ${{ env.IMAGE_TAR_FILENAME }}
 
       - name: Cache Docker image
@@ -181,22 +168,23 @@ jobs:
           path: ${{ env.IMAGE_TAR_FILENAME }}
           key: ${{ env.IMAGE_NAME }}
 
-      - name: Make Digest available to following jobs
-        id: variables
-        run: |
-          FINGERPRINT=$(echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')                    
-          echo "artifact_digest=${FINGERPRINT}" >> ${GITHUB_OUTPUT}          
-
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
+      - name: Make Digest available to following jobs
+        if: ${{ github.ref == 'refs/heads/main' }}
+        id: variables
+        run: |
+          FINGERPRINT=$(kosli fingerprint "${{ env.IMAGE_NAME }}" --artifact-type=docker)
+          echo "artifact_digest=${FINGERPRINT}" >> ${GITHUB_OUTPUT}
+
       - name: Attest image evidence to Kosli
         if: ${{ github.ref == 'refs/heads/main' }}
         run:
-          kosli attest artifact "${IMAGE_NAME}"
+          kosli attest artifact "${{ env.IMAGE_NAME }}"
             --artifact-type=docker                    
             --name=saver
 
@@ -243,7 +231,7 @@ jobs:
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
-          kosli attest custom 
+          kosli attest custom
             --attestation-data=./reports/server/test_metrics.json 
             --name=saver.unit-test-metrics
             --type=test-metrics
@@ -253,7 +241,7 @@ jobs:
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
-          kosli attest custom 
+          kosli attest custom
             --attestation-data=./reports/server/coverage_metrics.json 
             --name=saver.unit-test-coverage-metrics
             --type=coverage-metrics
@@ -413,8 +401,8 @@ jobs:
 
 
   deploy-to-beta:
-    needs: [setup, approve-deployment-to-beta]
     uses: ./.github/workflows/sub_deploy_to_beta.yml
+    needs: [setup, approve-deployment-to-beta]
     with:
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
     secrets:
@@ -448,8 +436,8 @@ jobs:
 
 
   deploy-to-prod:
-    needs: [setup, approve-deployment-to-prod]
     uses: ./.github/workflows/sub_deploy_to_prod.yml
+    needs: [setup, approve-deployment-to-prod]
     with:
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
     secrets:
@@ -464,8 +452,8 @@ jobs:
   #   - use the 1st 7 chars of the SHA as a latest-equivalent tag from dockerhub
 
   push-latest:
-    needs: [setup, deploy-to-prod]
     runs-on: ubuntu-latest
+    needs: [setup, deploy-to-prod]
     permissions:
       id-token: write
       contents: write

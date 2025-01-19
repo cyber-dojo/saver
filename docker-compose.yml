@@ -9,7 +9,9 @@ services:
     depends_on: [ server ]
     build:
       context: source/client
-      args: [ COMMIT_SHA ]
+      args:
+        - COMMIT_SHA
+        - BASE_IMAGE=${CYBER_DOJO_SINATRA_BASE_IMAGE}:${CYBER_DOJO_SINATRA_BASE_TAG}
     image: ${CYBER_DOJO_SAVER_CLIENT_IMAGE}:${CYBER_DOJO_SAVER_TAG}
     user: ${CYBER_DOJO_SAVER_CLIENT_USER}
     container_name: ${CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME}
@@ -23,7 +25,9 @@ services:
   server:
     build:
       context: .
-      args: [ COMMIT_SHA ]
+      args:
+        - COMMIT_SHA
+        - BASE_IMAGE=${CYBER_DOJO_SINATRA_BASE_IMAGE}:${CYBER_DOJO_SINATRA_BASE_TAG}
     image: ${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}
     user: ${CYBER_DOJO_SAVER_SERVER_USER}
     container_name: ${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}

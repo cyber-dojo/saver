@@ -27,10 +27,6 @@ check_args()
       exit 0
       ;;
     'server')
-      if [ -n "${CI:-}" ] ; then
-        stderr "In CI workflow - use previous docker/build-push-action@v6 GitHub Action"
-        exit 42
-      fi
       ;;
     'client')
       ;;
@@ -56,9 +52,9 @@ build_image()
   containers_down
   remove_old_images
 
-  docker compose build --build-arg COMMIT_SHA="${COMMIT_SHA}" server
+  docker compose build server
   if [ "${type}" == 'client' ]; then
-    docker compose build --build-arg COMMIT_SHA="${COMMIT_SHA}" client
+    docker compose build client
   fi
 
   local -r image_name="${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
@@ -74,9 +70,10 @@ build_image()
     # Create latest tag for image build cache
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     # Tag image-name for local development where savers name comes from echo-versioner-env-vars
-    docker tag "${image_name}" "cyberdojo/saver:latest"
+    docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     echo "CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
     echo "CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
+    echo "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
   fi
 }
 
