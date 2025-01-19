@@ -1,15 +1,19 @@
 class Prober
 
-  def sha
-    ENV['SHA']
-  end
-
   def alive?
     true
   end
 
   def ready?
     true
+  end
+
+  def sha
+    ENV['SHA']
+  end
+
+  def base_image
+    ENV['BASE_IMAGE']
   end
 
 end
