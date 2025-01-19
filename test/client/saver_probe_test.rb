@@ -7,15 +7,6 @@ class SaverProbeTest < TestBase
     '6E3'
   end
 
-  test '190', %w( sha is sha of image's git commit ) do
-    quoted_sha = prober.sha
-    sha = quoted_sha[1..-2]
-    assert_equal 40, sha.size
-    sha.each_char do |ch|
-      assert '0123456789abcdef'.include?(ch)
-    end
-  end
-
   test '602',
   %w( alive? is always true ) do
     assert prober.alive?
@@ -24,6 +15,20 @@ class SaverProbeTest < TestBase
   test '603',
   %w( ready? is always true ) do
     assert prober.ready?
+  end
+
+  test '604', %w( sha is sha of image's git commit ) do
+    sha = prober.sha
+    assert_equal 40, sha.size
+    sha.each_char do |ch|
+      assert '0123456789abcdef'.include?(ch)
+    end
+  end
+
+  test '605',
+  %w( base_image is sinatra-base ) do
+    base_image = prober.base_image
+    assert base_image.include?("sinatra-base"), base_image
   end
 
   private

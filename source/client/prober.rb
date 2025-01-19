@@ -4,16 +4,20 @@ class Prober
     @externals = externals
   end
 
-  def sha
-    '"' + ENV['SHA'] + '"'
-  end
-
   def alive?
     true
   end
 
   def ready?
     saver.ready?
+  end
+
+  def sha
+    saver.sha
+  end
+
+  def base_image
+    saver.base_image
   end
 
   private
