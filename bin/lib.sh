@@ -20,6 +20,9 @@ echo_versioner_env_vars()
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
+
+  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
+  echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo "${json}" | jq -r '.base_image')"
 }
 
 stderr()
