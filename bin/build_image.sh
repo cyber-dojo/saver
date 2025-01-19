@@ -27,10 +27,6 @@ check_args()
       exit 0
       ;;
     'server')
-      if [ -n "${CI:-}" ] ; then
-        stderr "In CI workflow - use previous docker/build-push-action@v6 GitHub Action"
-        exit 42
-      fi
       ;;
     'client')
       ;;
