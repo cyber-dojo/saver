@@ -5,8 +5,10 @@ on:
     inputs:
       BASE_IMAGE:
         required: true
+        type: string
       KOSLI_TRAIL:
         required: true
+        type: string
     secrets:
       KOSLI_API_TOKEN:
         required: true
