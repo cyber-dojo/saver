@@ -6,17 +6,9 @@ on:
       IMAGE_TAG:
         required: true
         type: string
-    secrets:
-      KOSLI_API_TOKEN:
-        required: true
 
 
 env:
-  KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # False
-  KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
-  KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo
-  KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}                 # saver-ci
-  KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
   AWS_ECR_ID: ${{ vars.AWS_ECR_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}

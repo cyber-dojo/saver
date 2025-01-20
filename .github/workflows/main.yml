@@ -6,9 +6,6 @@ on:
       BASE_IMAGE:
         required: true
         type: string
-      KOSLI_TRAIL:
-        required: true
-        type: string
     secrets:
       DOCKER_USER:
         required: true
@@ -26,7 +23,7 @@ env:
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-  KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
+  KOSLI_TRAIL: ${{ github.sha }}
   KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # false
   KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
   KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo
@@ -423,8 +420,6 @@ jobs:
     needs: [setup, approve-deployment-to-beta]
     with:
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
-    secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   approve-deployment-to-prod:
@@ -458,8 +453,6 @@ jobs:
     needs: [setup, approve-deployment-to-prod]
     with:
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
-    secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   # The cyberdojo/versioner refresh-env.sh script
