@@ -13,8 +13,8 @@ show_help()
     Use: ${MY_NAME} {server|client}
 
     Options:
-      server  - build the server image (local only)
-      client  - build the client image (local and CI workflow)
+      server  - build the server image
+      client  - build the client image
 
 EOF
 }

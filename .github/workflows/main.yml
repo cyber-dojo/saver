@@ -1,15 +1,30 @@
 name: Main
 
 on:
-  push:
+  workflow_call:
+    inputs:
+      BASE_IMAGE:
+        required: true
+        type: string
+      KOSLI_TRAIL:
+        required: true
+        type: string
+    secrets:
+      SNYK_TOKEN:
+        required: true
+      KOSLI_API_TOKEN:
+        required: true
+
 
 env:
+  CYBER_DOJO_SAVER_BASE_IMAGE: ${{ inputs.BASE_IMAGE }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+  KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
   KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # false
   KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
   KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo
   KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}                 # saver-ci
-  KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-  KOSLI_TRAIL: ${{ github.sha }}
   SERVICE_NAME: ${{ github.event.repository.name }}  # saver
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_ECR_ID: ${{ vars.AWS_ECR_ID }}
@@ -33,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 1
 
       - name: Prepare outputs for workflow jobs
         id: vars
@@ -102,8 +117,6 @@ jobs:
         uses: snyk/actions/setup@master
 
       - name: Run Snyk code scan
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk code test
             --policy-path=.snyk
@@ -223,8 +236,8 @@ jobs:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
           kosli attest junit
-              --name=saver.unit-test 
-              --results-dir=./reports/server/junit
+            --name=saver.unit-test 
+            --results-dir=./reports/server/junit
 
       - name: Attest test metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -281,8 +294,8 @@ jobs:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.artifact_digest }}
         run:
           kosli attest junit
-              --name=saver.integration-test
-              --results-dir=./reports/client/junit
+            --name=saver.integration-test
+            --results-dir=./reports/client/junit
 
       - name: Attest test metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
@@ -331,7 +344,6 @@ jobs:
       - name: Run Snyk container scan
         env:
           IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk container test ${IMAGE_NAME}
             --file=Dockerfile
@@ -446,7 +458,7 @@ jobs:
 
   # The cyberdojo/versioner refresh-env.sh script
   # https://github.com/cyber-dojo/versioner/blob/master/sh/refresh-env.sh
-  # relies on being able to:
+  # currently relies on being able to:
   #   - get the :latest image from dockerhub
   #   - extract the SHA env-var embedded inside it
   #   - use the 1st 7 chars of the SHA as a latest-equivalent tag from dockerhub
@@ -465,7 +477,7 @@ jobs:
           role-duration-seconds: 900
           role-session-name: ${{ github.event.repository.name }}
           role-to-assume: arn:aws:iam::${{ needs.setup.outputs.aws_account_id }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
-          mask-aws-account-id: 'no'
+          mask-aws-account-id: no
 
       - name: Login to Amazon ECR
         id: login-ecr

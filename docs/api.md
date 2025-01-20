@@ -550,7 +550,7 @@ The base-image used in the Dockerfile's FROM statement.
 - - - -
 ## JSON in
 - All methods pass their argument in a json hash in the http request body.
-  * For `alive?`,`ready?` and `sha` you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
+  * For `alive?`,`ready?`, `sha`, and `base_image` you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
 
 
 - - - -
