@@ -10,11 +10,15 @@ on:
         required: true
         type: string
     secrets:
+      SNYK_TOKEN:
+        required: true
       KOSLI_API_TOKEN:
         required: true
 
+
 env:
   CYBER_DOJO_SAVER_BASE_IMAGE: ${{ inputs.BASE_IMAGE }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
   KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # false
@@ -113,8 +117,6 @@ jobs:
         uses: snyk/actions/setup@master
 
       - name: Run Snyk code scan
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk code test
             --policy-path=.snyk
@@ -342,7 +344,6 @@ jobs:
       - name: Run Snyk container scan
         env:
           IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk container test ${IMAGE_NAME}
             --file=Dockerfile
