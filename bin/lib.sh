@@ -1,4 +1,10 @@
 
+echo_base_image()
+{
+  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
+  echo "${json}" | jq -r '.base_image'
+}
+
 echo_versioner_env_vars()
 {
   local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
@@ -21,8 +27,9 @@ echo_versioner_env_vars()
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
 
-  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
-  echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo "${json}" | jq -r '.base_image')"
+  if [[ ! -v CYBER_DOJO_SAVER_BASE_IMAGE ]] ; then
+    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"
+  fi
 }
 
 stderr()
@@ -81,7 +88,9 @@ copy_in_saver_test_data()
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
   local -r CID="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
   # You cannot docker cp to a tmpfs, so tar-piping...
-  tar --no-xattrs -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "${CID}" tar x -C /cyber-dojo
+  set -x
+  tar -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "${CID}" tar x -C /cyber-dojo
+  set +x
 
   local -r tar_files=(
     almost_full_group.v0.AWCQdE.tgz
