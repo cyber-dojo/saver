@@ -10,6 +10,10 @@ on:
         required: true
         type: string
     secrets:
+      DOCKER_USER:
+        required: true
+      DOCKER_PASS:
+        required: true
       SNYK_TOKEN:
         required: true
       KOSLI_API_TOKEN:
@@ -18,6 +22,8 @@ on:
 
 env:
   CYBER_DOJO_SAVER_BASE_IMAGE: ${{ inputs.BASE_IMAGE }}
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
