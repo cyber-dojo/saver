@@ -6,6 +6,9 @@ on:
       BASE_IMAGE:
         required: true
         type: string
+      KOSLI_TRAIL:
+        required: true
+        type: string
     secrets:
       DOCKER_USER:
         required: true
@@ -23,7 +26,7 @@ env:
   DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
-  KOSLI_TRAIL: ${{ github.sha }}
+  KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
   KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # false
   KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
   KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo

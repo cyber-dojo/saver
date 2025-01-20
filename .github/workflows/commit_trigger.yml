@@ -26,6 +26,7 @@ jobs:
     uses: ./.github/workflows/main.yml
     with:
       BASE_IMAGE: ${{ needs.get-base-image.outputs.base_image }}
+      KOSLI_TRAIL: ${{ github.sha }}
     secrets:
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
