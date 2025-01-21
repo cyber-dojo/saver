@@ -15,7 +15,11 @@ jobs:
       base_image: ${{ steps.vars.outputs.base_image }}
       kosli_trail: ${{ steps.vars.outputs.kosli_trail }}
     steps:
-      - name: Output the base-image
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          
+      - name: Outputs
         id: vars
         run: | 
           echo "base_image="cyberdojo/sinatra:${{ inputs.base_image }}"  >> ${GITHUB_OUTPUT}
