@@ -18,7 +18,7 @@ jobs:
       - name: Outputs
         id: vars
         run: | 
-          echo "base_image=cyberdojo/sinatra:${{ inputs.base_image }}"  >> ${GITHUB_OUTPUT}
+          echo "base_image=cyberdojo/sinatra-base:${{ inputs.base_image }}"  >> ${GITHUB_OUTPUT}
           echo "kosli_trail=base-image-update-${{ inputs.base_image }}" >> ${GITHUB_OUTPUT}
       
 
