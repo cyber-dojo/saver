@@ -482,8 +482,7 @@ that exist in the kata being forked are *not* copied.
 
 - - - -
 ## GET alive?
-Tests if the service is alive.  
-Used as a [Kubernetes](https://kubernetes.io/) liveness probe.  
+The runtime liveness probe to see if the service is alive.  
 - parameters
   * none
 - result 
@@ -499,8 +498,7 @@ Used as a [Kubernetes](https://kubernetes.io/) liveness probe.
 
 - - - -
 ## GET ready?
-Tests if the service is ready to handle requests.  
-Used as a [Kubernetes](https://kubernetes.io/) readiness probe.
+The runtime readiness probe to see if the service is ready to handle requests.  
 - parameters
   * none
 - result 
