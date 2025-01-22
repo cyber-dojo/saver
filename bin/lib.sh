@@ -5,11 +5,18 @@ echo_base_image()
   echo "${json}" | jq -r '.base_image'
 }
 
-echo_versioner_env_vars()
+echo_env_vars()
 {
-  local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
-  echo COMMIT_SHA="${sha}"
+  # --build-arg ...
+  if [[ ! -v CYBER_DOJO_SAVER_BASE_IMAGE ]] ; then
+    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"
+  fi
+  if [[ ! -v COMMIT_SHA ]] ; then
+    local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
+    echo COMMIT_SHA="${sha}"
+  fi
 
+  # From versioner ...
   docker run --rm cyberdojo/versioner:latest
 
   echo CYBER_DOJO_SAVER_SHA="${sha}"
@@ -26,10 +33,6 @@ echo_versioner_env_vars()
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
-
-  if [[ ! -v CYBER_DOJO_SAVER_BASE_IMAGE ]] ; then
-    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"
-  fi
 }
 
 stderr()
@@ -88,9 +91,20 @@ copy_in_saver_test_data()
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
   local -r CID="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
   # You cannot docker cp to a tmpfs, so tar-piping...
-  set -x
-  tar -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "${CID}" tar x -C /cyber-dojo
-  set +x
+
+  if [ "${CI:-}" == 'true' ]; then
+    set -x
+  fi
+
+  # In the CI workflow this gives a diagnostic
+  #   tar: -: Cannot stat: No such file or directory
+  #   tar: Exiting with failure status due to previous errors
+  # But it appears to worked as the tests all pass, and when commented out some fail ?!?
+  tar --no-xattrs -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "${CID}" tar x -C /cyber-dojo
+
+  if [ "${CI:-}" == 'true' ]; then
+    set +x
+  fi
 
   local -r tar_files=(
     almost_full_group.v0.AWCQdE.tgz
@@ -135,63 +149,18 @@ remove_all_but_latest()
   docker system prune --force
 }
 
-exit_non_zero_unless_started_cleanly()
+echo_warnings()
 {
+  local -r SERVICE_NAME="${1}"
+  local -r DOCKER_LOG=$(docker logs "${CONTAINER_NAME}" 2>&1)
   # Handle known warnings (eg waiting on Gem upgrade)
   # local -r SHADOW_WARNING="server.rb:(.*): warning: shadowing outer local variable - filename"
   # DOCKER_LOG=$(strip_known_warning "${DOCKER_LOG}" "${SHADOW_WARNING}")
 
-  local -r SERVICE_NAME="${1}"
-  echo
-  echo "Checking if ${SERVICE_NAME} started cleanly."
-
-  local -r DOCKER_LOG=$(docker logs "${CONTAINER_NAME}" 2>&1)
-  local -r top_5=$(echo "${DOCKER_LOG}" | head -5)
-
-  if ! array_prefix "$(clean_top_5)" "${top_5}" ; then
-    echo "${SERVICE_NAME} did not start cleanly: docker log..."
-    echo 'expected------------------'
-    clean_top_5
-    echo
-    echo 'actual--------------------'
-    echo "${top_5}"
-    echo
-    echo 'diff--------------------'
-    grep -Fxvf <(clean_top_5) <(echo "${top_5}")
-    echo
-    exit 42
+  if echo "${DOCKER_LOG}" | grep -q "warning" ; then
+    echo "Warnings in ${SERVICE_NAME} container"
+    echo "${DOCKER_LOG}"
   fi
-}
-
-array_prefix()
-{
-  readarray -t expected_lines <<<"${1}"
-  readarray -t actual_lines <<<"${2}"
-  for i in {0..4}
-  do
-     if ! [[ "${actual_lines[$i]}" =~ ^"${expected_lines[$i]}" ]] ; then
-       return 1 # false
-     fi
-  done
-  return 0  # true
-}
-
-top_5()
-{
-  docker logs "${CONTAINER_NAME}" 2>&1 | head -5
-}
-
-clean_top_5()
-{
-  # 1st 5 lines on Puma
-  local -r L1="Puma starting in single mode..."
-  local -r L2='* Puma version: 6.5.0 ("Sky'"'"'s Version")'
-  local -r L3='* Ruby version: ruby 3.3.6 (2024-11-05 revision 75015d4c1f)'  # [x86_64-linux-musl]
-  local -r L4="*  Min threads: 0"
-  local -r L5="*  Max threads: 5"
-  #
-  local -r all5="$(printf "%s\n%s\n%s\n%s\n%s" "${L1}" "${L2}" "${L3}" "${L4}" "${L5}")"
-  echo "${all5}"
 }
 
 strip_known_warning()

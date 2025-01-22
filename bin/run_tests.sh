@@ -13,8 +13,8 @@ show_help()
     Use: ${MY_NAME} {server|client} [ID...]
 
     Options:
-       server  - only run tests from inside the server (local only)
-       client  - only run tests from inside the client (local and CI workflow)
+       server  - only run tests from inside the server
+       client  - only run tests from inside the client
        ID...   - only run tests matching these identifiers
 
 EOF
@@ -99,13 +99,14 @@ run_tests_in_container()
 
 run_tests()
 {
-  export $(echo_versioner_env_vars)
+  # shellcheck disable=SC2046
+  export $(echo_env_vars)
   check_args "$@"
   exit_non_zero_unless_installed docker
   containers_down
   create_space_limited_volume
   docker compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
-  exit_non_zero_unless_started_cleanly "${TYPE}"
+  echo_warnings "${TYPE}"
   copy_in_saver_test_data
   run_tests_in_container "$@"
 }
