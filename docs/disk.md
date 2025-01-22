@@ -27,7 +27,7 @@ Runs a single [command](#command).
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/assert
+      https://${DOMAIN}:${PORT}/assert
   ```
   ```bash
   {"assert":true}
@@ -47,7 +47,7 @@ Runs a single [command](#command).
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/run
+      https://${DOMAIN}:${PORT}/run
   ```
   ```bash
   {"run":true}
@@ -68,7 +68,7 @@ Runs all [commands](#commands).
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/assert_all
+      https://${DOMAIN}:${PORT}/assert_all
   ```
   ```bash
   {"assert_all":[true,true]}
@@ -88,7 +88,7 @@ Runs all [commands](#commands).
     --header 'Content-type: application/json' \
     --silent \
     --fail POST \
-      http://${DOMAIN}:${PORT}/run_all
+      https://${DOMAIN}:${PORT}/run_all
   ```
   ```bash
   {"run_all":[true,false]}
@@ -108,7 +108,7 @@ Runs [commands](#commands) until one is **true**.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/run_until_true
+      https://${DOMAIN}:${PORT}/run_until_true
   ```
   ```bash
   {"run_until_true":[false,true]}
@@ -128,7 +128,7 @@ Runs [commands](#commands) until one is **false**.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      http://${DOMAIN}:${PORT}/run_until_false
+      https://${DOMAIN}:${PORT}/run_until_false
   ```
   ```bash
   {"run_until_false":[true,false]}
