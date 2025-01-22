@@ -45,12 +45,21 @@ check_args()
 build_image()
 {
   check_args "$@"
-  local -r type="${1}"
+  local -r type="${1}" # {server|client}
   exit_non_zero_unless_installed docker
-  export $(echo_versioner_env_vars)
+  # shellcheck disable=SC2046
+  export $(echo_env_vars)
 
   containers_down
   remove_old_images
+
+  echo
+  echo "Building with --build-args"
+  echo "  COMMIT_SHA=${COMMIT_SHA}"
+  echo "  BASE_IMAGE=${CYBER_DOJO_SAVER_BASE_IMAGE}"
+  echo "To change this run:"
+  echo "$ COMMIT_SHA=... CYBER_DOJO_SAVER_BASE_IMAGE=cyberdojo/sinatra-base:... make image_${type}"
+  echo
 
   docker compose build server
   if [ "${type}" == 'client' ]; then

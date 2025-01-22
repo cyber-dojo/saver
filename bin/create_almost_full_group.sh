@@ -5,11 +5,14 @@ export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 source "${ROOT_DIR}/bin/lib.sh"
 
-readonly VERSION="${1}"
-export $(echo_versioner_env_vars)
+readonly VERSION="${1}"  # {0|1|2}
+# shellcheck disable=SC2046
+export $(echo_env_vars)
 readonly CONTAINER="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
 readonly USER="${CYBER_DOJO_SAVER_SERVER_USER}"
-# TODO: docker command to bring up server
+
+# TODO: Need to start a custom-start-points container
+docker compose --progress=plain up --no-build --wait --wait-timeout=10 server
 docker exec "${CONTAINER}" bash -c "rm -rf /cyber-dojo/*"
 readonly GID=$(docker exec --user "${USER}" "${CONTAINER}" bash -c "ruby /saver/test/data/create_almost_full_group.rb ${VERSION}")
 
@@ -23,7 +26,7 @@ docker exec "${CONTAINER}" \
 
 echo "Filename == ${DST_TGZ_FILENAME}"
 echo
-echo "Now add the following tar_file to run/lib.sh"
+echo "Now add the following tar_file to copy_in_saver_test_data() in run/lib.sh"
 echo
 echo "almost_full_group.v${VERSION}.${GID}.tgz"
 echo
