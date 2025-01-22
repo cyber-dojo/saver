@@ -21,10 +21,6 @@ on:
 
 
 env:
-  CYBER_DOJO_SAVER_BASE_IMAGE: ${{ inputs.BASE_IMAGE }}
-  DOCKER_USER: ${{ secrets.DOCKER_USER }}
-  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   KOSLI_DRY_RUN: ${{ vars.KOSLI_DRY_RUN }}           # false
   KOSLI_HOST: ${{ vars.KOSLI_HOST }}                 # https://app.kosli.com
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
@@ -35,8 +31,11 @@ env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_ECR_ID: ${{ vars.AWS_ECR_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
-  IMAGE_TAR_FILENAME: /tmp/${{ github.event.repository.name }}:${{ github.sha }}.tar
   DOCKER_API_VERSION: ${{ vars.DOCKER_API_VERSION }}
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  IMAGE_TAR_FILENAME: /tmp/${{ github.event.repository.name }}:${{ github.sha }}.tar
 
 jobs:
 
@@ -178,7 +177,7 @@ jobs:
           context: .
           push: true
           tags: ${{ env.IMAGE_NAME }}
-          build-args:
+          build-args: |
             COMMIT_SHA=${{ github.sha }}
             BASE_IMAGE=${{ inputs.BASE_IMAGE }}
 
