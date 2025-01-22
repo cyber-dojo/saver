@@ -1,4 +1,4 @@
-name: Main
+name: Sub - main
 
 on:
   workflow_call:

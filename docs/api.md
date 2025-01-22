@@ -548,20 +548,20 @@ The base-image used in the Dockerfile's FROM statement.
 - - - -
 ## JSON in
 - All methods pass their argument in a json hash in the http request body.
-  * For `alive?`,`ready?`, `sha`, and `base_image` you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
+- If there are no arguments you can use `''` (which is the default for `curl --data`) instead of `'{}'`.
 
 
 - - - -
 ## JSON out      
 - All methods return a json hash in the http response body.
-  * If the method does not raise, a string key equals the method's name. eg
+- If the method does not raise, a string key equals the method's name. eg
     ```bash
     $ curl --silent -X GET https://${DOMAIN}:${PORT}/ready?
     ```
     ```bash
     {"ready?":true}
     ```
-  * If the method raises an exception, a string key equals `"exception"`, with
+- If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
     ```bash
     $ curl --data 'not-json-hash' --silent -X GET https://${DOMAIN}:${PORT}/run | jq      
