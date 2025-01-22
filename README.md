@@ -1,4 +1,4 @@
-[![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/main.yml/badge.svg)](https://github.com/cyber-dojo/saver/actions)
+[![Github Action (main)](https://github.com/cyber-dojo/saver/actions/workflows/commit_trigger.yml/badge.svg?branch=main)](https://github.com/cyber-dojo/saver/actions)
 
 - A [docker-containerized](https://hub.docker.com/r/cyberdojo/saver/tags) microservice for [https://cyber-dojo.org](http://cyber-dojo.org).
 - An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
