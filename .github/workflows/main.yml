@@ -27,13 +27,13 @@ env:
   KOSLI_ORG: ${{ vars.KOSLI_ORG }}                   # cyber-dojo
   KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}                 # saver-ci
   KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
-  SERVICE_NAME: ${{ github.event.repository.name }}  # saver
+
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_ECR_ID: ${{ vars.AWS_ECR_ID }}
   AWS_REGION: ${{ vars.AWS_REGION }}
-  DOCKER_API_VERSION: ${{ vars.DOCKER_API_VERSION }}
-  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SERVICE_NAME: ${{ github.event.repository.name }}  # saver
   IMAGE_TAR_FILENAME: /tmp/${{ github.event.repository.name }}:${{ github.sha }}.tar
+  DOCKER_API_VERSION: ${{ vars.DOCKER_API_VERSION }}
 
 jobs:
 
@@ -119,6 +119,8 @@ jobs:
         uses: snyk/actions/setup@master
 
       - name: Run Snyk code scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk code test
             --policy-path=.snyk
@@ -185,7 +187,7 @@ jobs:
           DIGEST=$(echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')          
           echo "digest=${DIGEST}" >> ${GITHUB_OUTPUT}
 
-      - name: Tar Docker image
+      - name: Save Docker image
         run:
           docker image save "${IMAGE_NAME}" --output "${IMAGE_TAR_FILENAME}"
 
@@ -345,6 +347,8 @@ jobs:
         uses: snyk/actions/setup@master
 
       - name: Run Snyk container scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk container test "${IMAGE_NAME}"
             --file=Dockerfile
@@ -465,6 +469,7 @@ jobs:
     needs: [setup, deploy-to-prod]
     env:
       IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
+      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
     steps:
       - name: Retrieve Docker image from cache
         uses: actions/cache@v4
@@ -482,8 +487,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Tag images and push to Dockerhub
-        env:
-          IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
         run: |
           TAGGED="cyberdojo/${SERVICE_NAME}:${IMAGE_TAG}"
           docker tag "${IMAGE_NAME}" "${TAGGED}"
