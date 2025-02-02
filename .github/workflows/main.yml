@@ -419,9 +419,9 @@ jobs:
 
   deploy-to-beta:
     uses: ./.github/workflows/sub_deploy_to_beta.yml
-    needs: [setup, approve-deployment-to-beta]
+    needs: [setup, build-image, approve-deployment-to-beta]
     with:
-      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
+      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}@sha256:${{ needs.build-image.outputs.digest }}
 
 
   approve-deployment-to-prod:
