@@ -1,9 +1,9 @@
 
 echo_base_image()
 {
-  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
-  echo "${json}" | jq -r '.base_image'
-  # echo cyberdojo/sinatra-base:edb2887@sha256:d40099e71ac46310a58cea1640f5fb842dbaadc148e4973bfb8d2092516370a1
+  # local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
+  # echo "${json}" | jq -r '.base_image'
+  echo cyberdojo/sinatra-base:559d354@sha256:ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3
 }
 
 echo_env_vars()
@@ -17,8 +17,8 @@ echo_env_vars()
   # There are none
 
   # Set env-vars for this repos runner service
-  if [[ ! -v CYBER_DOJO_SAVER_BASE_IMAGE ]] ; then
-    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"  # --build-arg
+  if [[ ! -v BASE_IMAGE ]] ; then
+    echo BASE_IMAGE="$(echo_base_image)"  # --build-arg
   fi
   if [[ ! -v COMMIT_SHA ]] ; then
     local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
