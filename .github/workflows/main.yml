@@ -453,9 +453,9 @@ jobs:
 
   deploy-to-prod:
     uses: ./.github/workflows/sub_deploy_to_prod.yml
-    needs: [setup, approve-deployment-to-prod]
+    needs: [setup, build-image, approve-deployment-to-prod]
     with:
-      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
+      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}@sha256:${{ needs.build-image.outputs.digest }}
 
 
   # The cyberdojo/versioner refresh-env.sh script
