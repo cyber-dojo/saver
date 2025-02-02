@@ -4,7 +4,7 @@
 - An HTTP [Ruby](https://www.ruby-lang.org) [Sinatra](http://sinatrarb.com/) web service, offering a Group/Kata model+persistence API.
 - Demonstrates a [Kosli](https://www.kosli.com/) instrumented [GitHub CI workflow](https://app.kosli.com/cyber-dojo/flows/saver-ci/trails/) 
   deploying, with Continuous Compliance, to [staging](https://app.kosli.com/cyber-dojo/environments/aws-beta/snapshots/) and [production](https://app.kosli.com/cyber-dojo/environments/aws-prod/snapshots/) AWS environments.
-- Uses patterns from https://www.kosli.com/blog/using-kosli-attest-in-github-action-workflows-some-tips/
+- Uses compliance reporting patterns from https://www.kosli.com/blog/using-kosli-attest-in-github-action-workflows-some-tips/
 
 # Development
 
@@ -61,10 +61,10 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 
 ## Probe
 
-- [GET alive?](docs/api.md#get-alive)  
-- [GET ready?](docs/api.md#get-ready)
-- [GET sha](docs/api.md#get-sha)
-- [GET base_image](docs/api.md#get-base-image)
+* [GET alive?](docs/api.md#get-alive)  
+* [GET ready?](docs/api.md#get-ready)
+* [GET sha](docs/api.md#get-sha)
+* [GET base_image](docs/api.md#get-base-image)
 
 # Screenshots
 

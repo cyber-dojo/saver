@@ -3,17 +3,26 @@ echo_base_image()
 {
   local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
   echo "${json}" | jq -r '.base_image'
+  #echo cyberdojo/sinatra-base:edb2887@sha256:d40099e71ac46310a58cea1640f5fb842dbaadc148e4973bfb8d2092516370a1
 }
 
 echo_env_vars()
 {
-  # --build-arg ...
+  # Setup port env-vars in .env file using versioner
+  local -r env_filename="${ROOT_DIR}/.env"
+  docker run --rm cyberdojo/versioner | grep PORT > "${env_filename}"
+  echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538" >> "${env_filename}"
+
+  # Get identities of dependent services from versioner
+  # There are none
+
+  # Set env-vars for this repos runner service
   if [[ ! -v CYBER_DOJO_SAVER_BASE_IMAGE ]] ; then
-    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"
+    echo CYBER_DOJO_SAVER_BASE_IMAGE="$(echo_base_image)"  # --build-arg
   fi
   if [[ ! -v COMMIT_SHA ]] ; then
     local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
-    echo COMMIT_SHA="${sha}"
+    echo COMMIT_SHA="${sha}"  # --build-arg
   fi
 
   # From versioner ...
