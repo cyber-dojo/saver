@@ -13,8 +13,8 @@ show_help()
     Use: ${MY_NAME} {server|client}
 
     Options:
-      server  - build the server image
-      client  - build the client image
+      server  - build the server image (local only)
+      client  - build the client image (local and CI workflow)
 
 EOF
 }
@@ -27,6 +27,10 @@ check_args()
       exit 0
       ;;
     'server')
+      if [ -n "${CI:-}" ] ; then
+        stderr "In CI workflow - use docker/build-push-action@v6 GitHub Action"
+        exit 42
+      fi
       ;;
     'client')
       ;;
@@ -78,11 +82,11 @@ build_image()
   if [ "${type}" == 'server' ]; then
     # Create latest tag for image build cache
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
-    # Tag image-name for local development where savers name comes from echo-versioner-env-vars
+    # Tag image-name for local development where savers name comes from echo-env-vars
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     echo "CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
     echo "CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
-    echo "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
+    echo "${image_name}"
   fi
 }
 

@@ -1,4 +1,9 @@
-/reports
 .DS_Store
+
+.env
+
+reports/*
+reports/.*
+
 snyk.container.scan.json
 snyk.code.scan.json
