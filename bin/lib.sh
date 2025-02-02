@@ -1,9 +1,9 @@
 
 echo_base_image()
 {
-  # local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
-  # echo "${json}" | jq -r '.base_image'
-  echo cyberdojo/sinatra-base:559d354@sha256:ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3
+  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
+  echo "${json}" | jq -r '.base_image'
+  # echo cyberdojo/sinatra-base:559d354@sha256:ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3
 }
 
 echo_env_vars()
