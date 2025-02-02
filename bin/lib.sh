@@ -157,7 +157,7 @@ echo_warnings()
   # local -r SHADOW_WARNING="server.rb:(.*): warning: shadowing outer local variable - filename"
   # DOCKER_LOG=$(strip_known_warning "${DOCKER_LOG}" "${SHADOW_WARNING}")
 
-  if echo "${DOCKER_LOG}" | grep -q "warning" ; then
+  if echo "${DOCKER_LOG}" | grep --quiet "warning" ; then
     echo "Warnings in ${SERVICE_NAME} container"
     echo "${DOCKER_LOG}"
   fi
