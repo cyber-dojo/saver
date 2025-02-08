@@ -53,6 +53,11 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Check BASE_IMAGE
+        run: |
+          source ./bin/lib.sh
+          exit_non_zero_if_bad_base_image "${{ inputs.BASE_IMAGE }}"
+
       - name: Prepare outputs for workflow jobs
         id: vars
         run: |
