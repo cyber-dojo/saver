@@ -1,32 +1,40 @@
 
 echo_base_image()
 {
-  # This is set to the env-var BASE_IMAGE which is set as a docker-compose build --build-arg
+  # This is set to the env-var BASE_IMAGE which is set as a docker compose build --build-arg
   # and used the Dockerfile's 'FROM ${BASE_IMAGE}' statement
-  # This BASE_IMAGE abstraction is to facilitate the base_image_trigger.yml workflow.
+  # This BASE_IMAGE abstraction is to facilitate the base_image_update.yml workflow.
+  # echo_base_image_via_curl
+  echo_base_image_via_code
+}
+
+echo_base_image_via_curl()
+{
   local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
-  local -r via_curl="$(echo "${json}" | jq -r '.base_image')"
-  local -r via_code="cyberdojo/sinatra-base:559d354@sha256:ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3"
-  if [ "${via_curl}" != "${via_code}" ] ; then
-    stderr "BASE_IMAGE sources disagree"
-    stderr "Via curl: '${via_curl}'"
-    stderr "Via code: '${via_code}'"
-    exit 42
-  else
-    echo "${via_code}"
-  fi
+  echo "${json}" | jq -r '.base_image'
+}
+
+echo_base_image_via_code()
+{
+  # An alternative echo_base_image for local development.
+  local -r tag=b8a8cac
+  local -r digest=52c26f7dde7c196b75120f562b51f8cf9bfec9dad4002a4839b8907a9a78c6a1
+  echo "cyberdojo/sinatra-base:${tag}@sha256:${digest}"
 }
 
 exit_non_zero_if_bad_base_image()
 {
   # Called in setup job in .github/workflows/main.yml
-  base_image="${1}"
-  regex=":[a-z0-9]{7}@sha256:[a-z0-9]{64}$"
-  if ! [[ ${base_image} =~ $regex ]]; then
-    stderr "BASE_IMAGE must have a 7-digit short-sha tag and a full 64-digit digest, Eg"
-    stderr " base_image_name  : cyberdojo/sinatra-base"
-    stderr " base_image_tag   : 559d354"
-    stderr " base_image_digest: ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3"
+  local -r base_image="${1}"
+  local -r regex=":[a-z0-9]{7}@sha256:[a-z0-9]{64}$"
+  if [[ ${base_image} =~ $regex ]]; then
+    echo "PASSED: base_image=${base_image}"
+  else
+    stderr "base_image=${base_image}"
+    stderr "must have a 7-digit short-sha tag and a full 64-digit digest, Eg"
+    stderr "  name  : cyberdojo/sinatra-base"
+    stderr "  tag   : 559d354"
+    stderr "  digest: ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3"
     exit 42
   fi
 }
@@ -42,6 +50,12 @@ echo_env_vars()
     echo COMMIT_SHA="${sha}"  # --build-arg
   fi
 
+  # Setup port env-vars in .env file using versioner
+  local -r env_filename="${ROOT_DIR}/.env"
+  echo "# This file is generated in bin/lib.sh echo_env_vars()" > "${env_filename}"
+  echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538"                     >> "${env_filename}"
+  docker run --rm cyberdojo/versioner | grep PORT              >> "${env_filename}"
+
   echo CYBER_DOJO_SAVER_SHA="${sha}"
   echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
 
@@ -56,11 +70,6 @@ echo_env_vars()
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
-
-  # Setup port env-vars in .env file using versioner
-  local -r env_filename="${ROOT_DIR}/.env"
-  docker run --rm cyberdojo/versioner | grep PORT > "${env_filename}"
-  echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538" >> "${env_filename}"
 
   # Get identities of all docker-compose.yml dependent services (from versioner)
    docker run --rm cyberdojo/versioner:latest
