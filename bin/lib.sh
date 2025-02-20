@@ -54,7 +54,7 @@ echo_env_vars()
   local -r env_filename="${ROOT_DIR}/.env"
   echo "# This file is generated in bin/lib.sh echo_env_vars()" > "${env_filename}"
   echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538"                     >> "${env_filename}"
-  docker run --rm cyberdojo/versioner | grep PORT              >> "${env_filename}"
+  docker run --rm cyberdojo/versioner 2> /dev/null | grep PORT              >> "${env_filename}"
 
   echo CYBER_DOJO_SAVER_SHA="${sha}"
   echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
@@ -72,7 +72,7 @@ echo_env_vars()
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
 
   # Get identities of all docker-compose.yml dependent services (from versioner)
-   docker run --rm cyberdojo/versioner:latest
+   docker run --rm cyberdojo/versioner:latest 2> /dev/null
 }
 
 stderr()
@@ -92,7 +92,7 @@ exit_non_zero_unless_file_exists()
 
 containers_down()
 {
-  docker compose down --remove-orphans --volumes
+  docker --log-level=ERROR compose down --remove-orphans --volumes
 }
 
 exit_non_zero_unless_installed()

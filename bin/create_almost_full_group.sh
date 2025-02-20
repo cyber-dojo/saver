@@ -12,7 +12,7 @@ readonly CONTAINER="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
 readonly USER="${CYBER_DOJO_SAVER_SERVER_USER}"
 
 # TODO: Need to start a custom-start-points container
-docker compose --progress=plain up --no-build --wait --wait-timeout=10 server
+docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 server
 docker exec "${CONTAINER}" bash -c "rm -rf /cyber-dojo/*"
 readonly GID=$(docker exec --user "${USER}" "${CONTAINER}" bash -c "ruby /saver/test/data/create_almost_full_group.rb ${VERSION}")
 

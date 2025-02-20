@@ -65,9 +65,9 @@ build_image()
   echo "$ COMMIT_SHA=... BASE_IMAGE=cyberdojo/saver:559d354@sha256:ddab9080... make image_${type}"
   echo
 
-  docker compose build server
+  docker --log-level=ERROR compose build server
   if [ "${type}" == 'client' ]; then
-    docker compose build client
+    docker --log-level=ERROR compose build client
   fi
 
   local -r image_name="${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
