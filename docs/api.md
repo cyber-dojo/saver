@@ -27,7 +27,7 @@ and returns its id.
     --fail \
     --header 'Content-type: application/json' \
     --silent \
-    --request GET \
+    --request POST \
       https://${DOMAIN}:${PORT}/group_create
   ```
   ```bash
@@ -209,7 +209,7 @@ and returns its id.
     --fail \
     --header 'Content-type: application/json' \
     --silent \
-    --request GET \
+    --request POST \
       https://${DOMAIN}:${PORT}/kata_create
   ```
   ```bash
