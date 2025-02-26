@@ -28,10 +28,12 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/group_create
+      https://${DOMAIN}:${PORT}/group_create | jq .
   ```
   ```bash
-  {"group_create":"dFg8Us"}
+  {
+    "group_create":  "dFg8Us"
+  }
   ```
 
 
@@ -95,10 +97,12 @@ Determines if a group with the given `id` exists.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      https://${DOMAIN}:${PORT}/group_exists?
+      https://${DOMAIN}:${PORT}/group_exists? | jq .
   ```
   ```bash
-  {"group_exists?":true}
+  {
+    "group_exists?": true
+  }
   ```
 
 - - - -
@@ -118,10 +122,12 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/group_join
+      https://${DOMAIN}:${PORT}/group_join | jq .
   ```
   ```bash
-  {"group_join":"a8gVRN"}
+  {
+    "group_join": "a8gVRN"
+  }
   ```
 
 
@@ -180,10 +186,12 @@ that exist in the kata being forked are *not* copied.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/group_fork
+      https://${DOMAIN}:${PORT}/group_fork | jq .
   ```
   ```bash
-  {"group_fork":"a8gVRN"}
+  {
+    "group_fork": "a8gVRN"
+  }
   ```
 
 
@@ -209,10 +217,12 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_create
+      https://${DOMAIN}:${PORT}/kata_create | jq .
   ```
   ```bash
-  {"kata_create":"dFg8Us"}
+  {
+    "kata_create":  "dFg8Us"
+  }
   ```
 
 
@@ -276,10 +286,12 @@ Determines if a kata exercise with the given `id` exists.
     --header 'Content-type: application/json' \
     --silent \
     --request GET \
-      https://${DOMAIN}:${PORT}/kata_exists?
+      https://${DOMAIN}:${PORT}/kata_exists? | jq .
   ```
   ```bash
-  {"kata_exists?":false}
+  {
+    "kata_exists?": false
+  }
   ```
 
 
@@ -472,10 +484,12 @@ that exist in the kata being forked are *not* copied.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_fork
+      https://${DOMAIN}:${PORT}/kata_fork | jq .
   ```
   ```bash
-  {"kata_fork":"a8gVRN"}
+  {
+    "kata_fork": "a8gVRN"
+  }
   ```
 
 
@@ -488,10 +502,12 @@ The runtime liveness probe to see if the service is alive.
   * **true**
 - example
   ```bash     
-  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/alive?
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/alive? | jq .
   ```
   ```bash
-  {"alive?":true}
+  {
+    "alive?": true
+  }
   ```
 
 
@@ -505,10 +521,12 @@ The runtime readiness probe to see if the service is ready to handle requests.
   * **false** when the service is not ready
 - example
   ```bash     
-  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/ready?
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/ready? | jq .
   ```
   ```bash
-  {"ready?":false}
+  {
+    "ready?": false
+  }
   ```
 
 
@@ -521,10 +539,12 @@ The git commit sha used to create the Docker image.
   * the 40 character commit sha string.
 - example
   ```bash     
-  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/sha
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/sha | jq .
   ```
   ```bash
-  {"sha":"41d7e6068ab75716e4c7b9262a3a44323b4d1448"}
+  {
+    "sha": "41d7e6068ab75716e4c7b9262a3a44323b4d1448"
+  }
   ```
 
 
@@ -537,10 +557,12 @@ The base-image used in the Dockerfile's FROM statement.
   * the name of the base image.
 - example
   ```bash     
-  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/base_image
+  $ curl --fail --silent --request GET https://${DOMAIN}:${PORT}/base_image | jq .
   ```
   ```bash
-  {"base_image":"cyberdojo/sinatra-base:edb2887"}
+  {
+    "base_image": "cyberdojo/sinatra-base:97cbc87@sha256:fcd7994b7d6c2a7545bbaf99367d874f060f999e0257cb03528bfe0d0e446cb2"
+  }
   ```
 
 
@@ -555,10 +577,12 @@ The base-image used in the Dockerfile's FROM statement.
 - All methods return a json hash in the http response body.
 - If the method does not raise, a string key equals the method's name. eg
     ```bash
-    $ curl --silent -X GET https://${DOMAIN}:${PORT}/ready?
+    $ curl --silent -X GET https://${DOMAIN}:${PORT}/ready? | jq .
     ```
     ```bash
-    {"ready?":true}
+    {
+      "ready?": true
+    }
     ```
 - If the method raises an exception, a string key equals `"exception"`, with
     a json-hash as its value. eg
