@@ -8,9 +8,9 @@
 
 - - - -
 ## POST group_create(manifest)
-Creates a new group from the given 
-[manifest](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) 
-and returns its id.
+Creates a new group from the given `manifest` and returns its id.
+See [group_manifest](docs/api.md#get-group_manifest) below for a `manifest` overview.
+See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed information.
 - parameters 
   * **manifest:Hash** created by 
   [creator](https://github.com/cyber-dojo/creator) 
@@ -32,28 +32,6 @@ and returns its id.
   ```
   ```bash
   {"group_create":"dFg8Us"}
-  ```
-
-
-- - - -
-## GET group_exists?(id)
-Determines if a group with the given `id` exists.
-- parameters 
-  * **id:String**.
-- returns 
-  * `true` if a group with the given `id` exists, otherwise `false`.
-- example
-  ```bash
-  $ curl \
-    --data '{"id":"dFg8Us"}' \
-    --fail \
-    --header 'Content-type: application/json' \
-    --silent \
-    --request GET \
-      https://${DOMAIN}:${PORT}/group_exists?
-  ```
-  ```bash
-  {"group_exists?":true}
   ```
 
 
@@ -101,6 +79,27 @@ Gets the manifest used to create the group with the given `id`.
   }  
   ```
 
+
+- - - -
+## GET group_exists?(id)
+Determines if a group with the given `id` exists.
+- parameters 
+  * **id:String**.
+- returns 
+  * `true` if a group with the given `id` exists, otherwise `false`.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/group_exists?
+  ```
+  ```bash
+  {"group_exists?":true}
+  ```
 
 - - - -
 ## POST group_join(id,indexes)
@@ -190,16 +189,16 @@ that exist in the kata being forked are *not* copied.
 
 - - - -
 ## POST kata_create(manifest)
-Creates a new kata from the given 
-[manifest](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) 
-and returns its id.
+Creates a new kata from the given `manifest` and returns its id.
+See [kata_manifest](docs/api.md#get-kata_manifest) below for a `manifest` overview.
+See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed information.
 - parameters 
   * **manifest:Hash** created by 
   [creator](https://github.com/cyber-dojo/creator) 
   from
   [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and
-  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) or
-  [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
+  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) (or
+  [custom-start-points](https://github.com/cyber-dojo/custom-start-points)).
 - returns 
   * the `id` of the created kata.
 - example
@@ -214,28 +213,6 @@ and returns its id.
   ```
   ```bash
   {"kata_create":"dFg8Us"}
-  ```
-
-
-- - - -
-## GET kata_exists?(id)
-Determines if a kata exercise with the given `id` exists.
-- parameters 
-  * **id:String**.
-- returns 
-  * `true` if a kata with the given `id` exists, otherwise `false`.
-- example
-  ```bash
-  $ curl \
-    --data '{"id":"4ScKVJ"}' \
-    --fail \    
-    --header 'Content-type: application/json' \
-    --silent \
-    --request GET \
-      https://${DOMAIN}:${PORT}/kata_exists?
-  ```
-  ```bash
-  {"kata_exists?":false}
   ```
 
 
@@ -281,6 +258,28 @@ Gets the manifest used to create the kata exercise with the given `id`.
       "progress_regexs": []
     }
   }  
+  ```
+
+
+- - - -
+## GET kata_exists?(id)
+Determines if a kata exercise with the given `id` exists.
+- parameters 
+  * **id:String**.
+- returns 
+  * `true` if a kata with the given `id` exists, otherwise `false`.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ"}' \
+    --fail \    
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/kata_exists?
+  ```
+  ```bash
+  {"kata_exists?":false}
   ```
 
 
