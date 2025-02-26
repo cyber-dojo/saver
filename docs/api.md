@@ -10,7 +10,7 @@
 ## POST group_create(manifest)
 Creates a new group from the given `manifest` and returns its id.  
 See `group_manifest` below for a `manifest` overview.  
-See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed information.
+See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
 - parameters 
   * **manifest:Hash** created by 
   [creator](https://github.com/cyber-dojo/creator) 
@@ -191,7 +191,7 @@ that exist in the kata being forked are *not* copied.
 ## POST kata_create(manifest)
 Creates a new kata from the given `manifest` and returns its id.  
 See `kata_manifest` below for a `manifest` overview.  
-See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed information.
+See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
 - parameters 
   * **manifest:Hash** created by 
   [creator](https://github.com/cyber-dojo/creator) 
