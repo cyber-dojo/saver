@@ -502,7 +502,7 @@ that exist in the kata being forked are *not* copied.
 # Probe API
 
 ## GET alive?
-The runtime liveness probe to see if the service is alive.  
+Liveness probe - is the service alive?  
 - parameters
   * none
 - result 
@@ -520,7 +520,7 @@ The runtime liveness probe to see if the service is alive.
 
 - - - -
 ## GET ready?
-The runtime readiness probe to see if the service is ready to handle requests.  
+Readiness probe - is the service ready to handle requests?  
 - parameters
   * none
 - result 
