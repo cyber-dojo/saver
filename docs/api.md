@@ -7,6 +7,8 @@
 
 
 - - - -
+# Group API
+
 ## POST group_create(manifest)
 Creates a new group from the given `manifest` and returns its id.  
 See `group_manifest` below for a `manifest` overview.  
@@ -196,6 +198,8 @@ that exist in the kata being forked are *not* copied.
 
 
 - - - -
+# Kata API
+
 ## POST kata_create(manifest)
 Creates a new kata from the given `manifest` and returns its id.  
 See `kata_manifest` below for a `manifest` overview.  
@@ -494,6 +498,8 @@ that exist in the kata being forked are *not* copied.
 
 
 - - - -
+# Probe API
+
 ## GET alive?
 The runtime liveness probe to see if the service is alive.  
 - parameters

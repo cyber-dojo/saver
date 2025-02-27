@@ -35,20 +35,20 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 ## Group
 
 * [POST group_create(manifest)](docs/api.md#post-group_createmanifest)
+* [GET group_manifest(id)](docs/api.md#get-group_manifestid)
 * [GET group_exists?(id)](docs/api.md#get-group_existsid)
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
 * [GET group_joined(id)](docs/api.md#get-group_joinedid)
-* [GET group_manifest(id)](docs/api.md#get-group_manifestid)
 * [POST group_fork(id,index)](docs/api.md#post-group_forkidindex)
 
 ## Kata
 
 * [POST kata_create(manifest)](docs/api.md#post-kata_createmanifest)
+* [GET kata_manifest(id)](docs/api.md#get-kata_manifestid)
 * [GET kata_exists?(id)](docs/api.md#get-kata_existsid)
 * [GET kata_events(id)](docs/api.md#get-kata_eventsid)
-* [GET kata_event(id,index)](docs/api.md#get-kata_eventidindex)
 * [GET katas_events(ids,indexes)](docs/api.md#get-katas_eventsidsindexes)
-* [GET kata_manifest(id)](docs/api.md#get-kata_manifestid)
+* [GET kata_event(id,index)](docs/api.md#get-kata_eventidindex)
 * [POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_ran_testsidindexfilesstdoutstderrstatussummary)
 * [POST kata_predicted_right(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_predicted_rightidindexfilesstdoutstderrstatussummary)
 * [POST kata_predicted_wrong(id,index,files,stdout,stderr,status,summary)](docs/api.md#post-kata_predicted_wrongidindexfilesstdoutstderrstatussummary)
