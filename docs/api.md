@@ -1,4 +1,5 @@
 # API 
+
 - [(JSON-in)](#json-in) All methods pass their argument in a json hash in the HTTP request body.
 - [(JSON-out)](#json-out) All methods return a json hash in the HTTP response body.
 - GET is used for queries.

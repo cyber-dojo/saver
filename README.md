@@ -32,7 +32,7 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 
 # API
 
-## Group
+## [Group API](docs/api.md#group-api)
 
 * [POST group_create(manifest)](docs/api.md#post-group_createmanifest)
 * [GET group_manifest(id)](docs/api.md#get-group_manifestid)
@@ -41,7 +41,7 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 * [GET group_joined(id)](docs/api.md#get-group_joinedid)
 * [POST group_fork(id,index)](docs/api.md#post-group_forkidindex)
 
-## Kata
+## [Kata API](docs/api.md#kata-api)
 
 * [POST kata_create(manifest)](docs/api.md#post-kata_createmanifest)
 * [GET kata_manifest(id)](docs/api.md#get-kata_manifestid)
@@ -59,7 +59,7 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 * [POST kata_fork(id,index)](docs/api.md#post-kata_forkidindex)
 
 
-## Probe
+## [Probe API](docs/api.md#probe-api)
 
 * [GET alive?](docs/api.md#get-alive)  
 * [GET ready?](docs/api.md#get-ready)
