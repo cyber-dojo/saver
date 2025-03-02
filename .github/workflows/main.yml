@@ -220,7 +220,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run:
           kosli attest artifact "${IMAGE_NAME}"
-            --artifact-type=oci               
+            --artifact-type=docker  
             --name=saver
 
 
