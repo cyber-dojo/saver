@@ -201,7 +201,8 @@ jobs:
 
       - name: Save Docker image
         run:
-          docker image save "${IMAGE_NAME}" --output "${IMAGE_TAR_FILENAME}"
+          docker image save "${IMAGE_NAME}"
+            --output "${IMAGE_TAR_FILENAME}"
 
       - name: Cache Docker image
         uses: actions/cache@v4
@@ -219,7 +220,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run:
           kosli attest artifact "${IMAGE_NAME}"
-            --artifact-type=docker                    
+            --artifact-type=oci               
             --name=saver
 
 
@@ -242,7 +243,8 @@ jobs:
 
       - name: Load Docker image
         run:
-          docker image load --input "${IMAGE_TAR_FILENAME}"
+          docker image load 
+            --input "${IMAGE_TAR_FILENAME}"
 
       - name: Run unit tests with metrics
         run:
@@ -297,7 +299,8 @@ jobs:
 
       - name: Load Docker image
         run:
-          docker image load --input "${IMAGE_TAR_FILENAME}"
+          docker image load 
+            --input "${IMAGE_TAR_FILENAME}"
 
       - name: Run integration tests with metrics
         run:
@@ -353,7 +356,8 @@ jobs:
 
       - name: Load Docker image
         run:
-          docker image load --input "${IMAGE_TAR_FILENAME}"
+          docker image load 
+            --input "${IMAGE_TAR_FILENAME}"
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
