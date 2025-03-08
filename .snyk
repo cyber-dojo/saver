@@ -1,31 +1,5 @@
 # This file specifies snyk vulnerabilities to be ignored.
 # If this file contains only comments, then no vulnerabilities are ignored
 # but do not delete this file - it is needed for the live-snyk-scans repo workflows.
-ignore:
-  SNYK-ALPINE320-CURL-8689556:
-    - '*':
-        reason: No fix available
-        expires: 2025-03-08T10:03:36.581Z
-        created: 2025-02-08T10:03:36.589Z
-  SNYK-ALPINE320-CURL-8689557:
-    - '*':
-        reason: No fix available
-        expires: 2025-03-08T10:03:36.581Z
-        created: 2025-02-08T10:03:36.589Z
-  SNYK-ALPINE320-CURL-8689558:
-    - '*':
-        reason: No fix available
-        expires: 2025-03-08T10:03:36.581Z
-        created: 2025-02-08T10:03:36.589Z
-  SNYK-ALPINE320-OPENSSL-8235201:
-    - '*':
-        reason: No fix available
-        expires: 2025-03-08T10:03:36.581Z
-        created: 2025-02-08T10:03:36.589Z
-  SNYK-ALPINE320-OPENSSL-8690013:
-    - '*':
-        reason: No fix available
-        expires: 2025-03-08T10:03:36.581Z
-        created: 2025-02-08T10:03:36.589Z
 
 patch: {}
