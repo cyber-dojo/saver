@@ -54,7 +54,7 @@ echo_env_vars()
   local -r env_filename="${ROOT_DIR}/.env"
   echo "# This file is generated in bin/lib.sh echo_env_vars()" > "${env_filename}"
   echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538"                     >> "${env_filename}"
-  docker run --rm cyberdojo/versioner 2> /dev/null | grep PORT              >> "${env_filename}"
+  docker run --rm cyberdojo/versioner 2> /dev/null | grep PORT >> "${env_filename}"
 
   echo CYBER_DOJO_SAVER_SHA="${sha}"
   echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
