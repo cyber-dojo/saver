@@ -155,7 +155,7 @@ jobs:
 
   build-image:
     needs: [setup]
-    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@v0.0.14
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@v0.0.15
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: ${{ github.sha }}
