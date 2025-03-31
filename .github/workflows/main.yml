@@ -271,7 +271,7 @@ jobs:
 
       - name: Pull image from ECR registry
         run:
-          docker image pull "${IMAGE_NAME}@sha256:${{ needs.build-image.outputs.digest }}"
+          docker image pull "${IMAGE_NAME}@sha256:${KOSLI_FINGERPRINT}"
 
 
 #      - name: Retrieve Docker image from cache
