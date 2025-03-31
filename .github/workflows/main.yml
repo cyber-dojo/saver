@@ -158,7 +158,7 @@ jobs:
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@v0.0.14
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
-      CHECKOUT_REF: HEAD
+      CHECKOUT_REF: ${{ github.sha }}
       CHECKOUT_FETCH_DEPTH: 1
       IMAGE_TAGS: ${{ needs.setup.outputs.image_name }}
       IMAGE_BUILD_ARGS: |
