@@ -154,7 +154,7 @@ jobs:
 
 
   build-image:
-    uses: cyber-dojo/reusable-actions-workflow/.github/workflows/secure-docker-build.yml@v0.0.12
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@v0.0.12
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: HEAD
