@@ -154,74 +154,91 @@ jobs:
 
 
   build-image:
-    runs-on: ubuntu-latest
-    needs: [setup]
-    env:
-      IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
-    permissions:
-      id-token: write
-      contents: write
-    outputs:
-      digest: ${{ steps.variables.outputs.digest }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+    uses: cyber-dojo/reusable-actions-workflow/.github/workflows/secure-docker-build.yml@v0.0.12
+    with:
+      CHECKOUT_REPOSITORY: cyber-dojo/saver
+      CHECKOUT_REF: HEAD
+      CHECKOUT_DEPTH: 1
+      IMAGE_TAGS: ${{ env.IMAGE_NAME }}
+      IMAGE_BUILD_ARGS: |
+        COMMIT_SHA=${{ github.sha }}
+        BASE_IMAGE=${{ inputs.BASE_IMAGE }}
+      KOSLI_FLOW: saver-ci
+      KOSLI_TRAIL: ${{ env.KOSLI_TRAIL }}
+      KOSLI_REFERENCE_NAME: saver
+    secrets:
+      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region:            ${{ needs.setup.outputs.aws_region }}
-          role-duration-seconds: 900
-          role-session-name:     ${{ github.event.repository.name }}
-          role-to-assume:        arn:aws:iam::${{ needs.setup.outputs.aws_account_id_beta }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
-          mask-aws-account-id:   no
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and push Docker image to Amazon ECR
-        id: docker_build
-        uses: docker/build-push-action@v6
-        with:
-          context:  .
-          no-cache: true
-          push:     true
-          tags:     ${{ env.IMAGE_NAME }}
-          build-args: |
-            COMMIT_SHA=${{ github.sha }}
-            BASE_IMAGE=${{ inputs.BASE_IMAGE }}
-
-      - name: Make image digest available to following jobs
-        id: variables
-        run: |
-          DIGEST=$(echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')          
-          echo "digest=${DIGEST}" >> ${GITHUB_OUTPUT}
-
-      - name: Save Docker image
-        run:
-          docker image save "${IMAGE_NAME}"
-            --output "${IMAGE_TAR_FILENAME}"
-
-      - name: Cache Docker image
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.IMAGE_TAR_FILENAME }}
-          key:  ${{ env.IMAGE_NAME }}
-
-      - name: Setup Kosli CLI
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: kosli-dev/setup-cli-action@v2
-        with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
-
-      - name: Attest image evidence to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run:
-          kosli attest artifact "${IMAGE_NAME}"
-            --artifact-type=docker  
-            --name=saver
+#  was-build-image:
+#    runs-on: ubuntu-latest
+#    needs: [setup]
+#    env:
+#      IMAGE_NAME: ${{ needs.setup.outputs.image_name }}
+#    permissions:
+#      id-token: write
+#      contents: write
+#    outputs:
+#      digest: ${{ steps.variables.outputs.digest }}
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 1
+#
+#      - name: Configure AWS credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-region:            ${{ needs.setup.outputs.aws_region }}
+#          role-duration-seconds: 900
+#          role-session-name:     ${{ github.event.repository.name }}
+#          role-to-assume:        arn:aws:iam::${{ needs.setup.outputs.aws_account_id_beta }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
+#          mask-aws-account-id:   no
+#
+#      - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v2
+#
+#      - name: Build and push Docker image to Amazon ECR
+#        id: docker_build
+#        uses: docker/build-push-action@v6
+#        with:
+#          context:  .
+#          no-cache: true
+#          push:     true
+#          tags:     ${{ env.IMAGE_NAME }}
+#          build-args: |
+#            COMMIT_SHA=${{ github.sha }}
+#            BASE_IMAGE=${{ inputs.BASE_IMAGE }}
+#
+#      - name: Make image digest available to following jobs
+#        id: variables
+#        run: |
+#          DIGEST=$(echo ${{ steps.docker_build.outputs.digest }} | sed 's/.*://')
+#          echo "digest=${DIGEST}" >> ${GITHUB_OUTPUT}
+#
+#      - name: Save Docker image
+#        run:
+#          docker image save "${IMAGE_NAME}"
+#            --output "${IMAGE_TAR_FILENAME}"
+#
+#      - name: Cache Docker image
+#        uses: actions/cache@v4
+#        with:
+#          path: ${{ env.IMAGE_TAR_FILENAME }}
+#          key:  ${{ env.IMAGE_NAME }}
+#
+#      - name: Setup Kosli CLI
+#        if: ${{ github.ref == 'refs/heads/main' }}
+#        uses: kosli-dev/setup-cli-action@v2
+#        with:
+#          version: ${{ vars.KOSLI_CLI_VERSION }}
+#
+#      - name: Attest image evidence to Kosli
+#        if: ${{ github.ref == 'refs/heads/main' }}
+#        run:
+#          kosli attest artifact "${IMAGE_NAME}"
+#            --artifact-type=docker
+#            --name=saver
 
 
   unit-tests:
@@ -235,16 +252,25 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Retrieve Docker image from cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.IMAGE_TAR_FILENAME }}
-          key:  ${{ env.IMAGE_NAME }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Load Docker image
+      - name: Pull image from ECR registry
         run:
-          docker image load 
-            --input "${IMAGE_TAR_FILENAME}"
+          docker image pull "${IMAGE_NAME}@sha256:${{ needs.build-image.outputs.digest }}"
+
+
+#      - name: Retrieve Docker image from cache
+#        uses: actions/cache@v4
+#        with:
+#          path: ${{ env.IMAGE_TAR_FILENAME }}
+#          key:  ${{ env.IMAGE_NAME }}
+#
+#      - name: Load Docker image
+#        run:
+#          docker image load
+#            --input "${IMAGE_TAR_FILENAME}"
 
       - name: Run unit tests with metrics
         run:
