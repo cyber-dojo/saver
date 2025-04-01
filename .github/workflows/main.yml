@@ -155,7 +155,8 @@ jobs:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: ${{ github.sha }}
       CHECKOUT_FETCH_DEPTH: 1
-      IMAGE_TAGS: ${{ needs.setup.outputs.image_name }}
+      IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
+      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
       IMAGE_BUILD_ARGS: |
         COMMIT_SHA=${{ github.sha }}
         BASE_IMAGE=${{ inputs.BASE_IMAGE }}
