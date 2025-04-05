@@ -146,7 +146,7 @@ jobs:
 
   build-image:
     needs: [setup]
-    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build3.yml@main
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: ${{ github.sha }}
@@ -167,33 +167,29 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: [setup, build-image]
+    permissions:
+      id-token: write
+      contents: read
     env:
       IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
-      IMAGE_CACHE_PATH:  ${{ needs.build-image.outputs.cache_path }}
-      IMAGE_CACHE_KEY:   ${{ needs.build-image.outputs.cache_key }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
-#      - uses: cyber-dojo/reusable-actions-workflows/.github/workflows/docker-image-load.yml@main
-#        with:
-#          IMAGE_TAR_FILENAME: ${{ needs.build-image.outputs.image_tar_filename }}
-#          IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region:            ${{ needs.setup.outputs.aws_region }}
+          role-duration-seconds: 900
+          role-session-name:     ${{ github.event.repository.name }}
+          role-to-assume:        arn:aws:iam::${{ needs.setup.outputs.aws_account_id_beta }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
+          mask-aws-account-id:   no
 
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-region:            ${{ needs.setup.outputs.aws_region }}
-#          role-duration-seconds: 900
-#          role-session-name:     ${{ github.event.repository.name }}
-#          role-to-assume:        arn:aws:iam::${{ needs.setup.outputs.aws_account_id_beta }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
-#          mask-aws-account-id:   no
-#
-#      - name: Login to Amazon ECR
-#        id: login-ecr
-#        uses: aws-actions/amazon-ecr-login@v2
-#
-#      - name: Pull image from ECR registry
-#        run:
-#          docker image pull "${IMAGE_NAME}@sha256:${KOSLI_FINGERPRINT}"
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Pull image from ECR registry
+        run:
+          docker image pull "${IMAGE_NAME}@sha256:${KOSLI_FINGERPRINT}"
 
       - name: Retrieve Docker image from cache
         uses: actions/cache@v4
