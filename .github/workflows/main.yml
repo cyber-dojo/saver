@@ -161,7 +161,7 @@ jobs:
         COMMIT_SHA=${{ github.sha }}
         BASE_IMAGE=${{ inputs.BASE_IMAGE }}
       ATTEST_TO_KOSLI: ${{ github.ref == 'refs/heads/main' }}
-      KOSLI_FLOW: saver-ci
+      KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}
       KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
       KOSLI_REFERENCE_NAME: saver
     secrets:
@@ -198,7 +198,6 @@ jobs:
       - name: Pull image from ECR registry
         run:
           docker image pull "${IMAGE_NAME}@sha256:${KOSLI_FINGERPRINT}"
-
 
       - name: Run unit tests with metrics
         run:
