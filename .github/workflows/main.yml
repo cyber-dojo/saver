@@ -150,7 +150,7 @@ jobs:
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: ${{ github.sha }}
-      CHECKOUT_FETCH_DEPTH: 1
+      CHECKOUT_FETCH_DEPTH: 0
       IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
       IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
       IMAGE_BUILD_ARGS: |
