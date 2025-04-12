@@ -146,20 +146,23 @@ jobs:
 
   build-image:
     needs: [setup]
-    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build-composite.yml@main
-    with:
-      CHECKOUT_REPOSITORY: cyber-dojo/saver
-      CHECKOUT_REF: ${{ github.sha }}
-      CHECKOUT_FETCH_DEPTH: 0
-      IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
-      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
-      IMAGE_BUILD_ARGS: |
-        COMMIT_SHA=${{ github.sha }}
-        BASE_IMAGE=${{ inputs.BASE_IMAGE }}
-      ATTEST_TO_KOSLI: ${{ github.ref == 'refs/heads/main' }}
-      KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}
-      KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
-      KOSLI_REFERENCE_NAME: ${{ needs.setup.outputs.service_name }}
+    runs-on: ubuntu-latest
+    name: Build image
+    steps:
+    - uses: cyber-dojo/reusable-actions-workflows@main
+      with:
+        CHECKOUT_REPOSITORY: cyber-dojo/saver
+        CHECKOUT_REF: ${{ github.sha }}
+        CHECKOUT_FETCH_DEPTH: 0
+        IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
+        IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
+        IMAGE_BUILD_ARGS: |
+          COMMIT_SHA=${{ github.sha }}
+          BASE_IMAGE=${{ inputs.BASE_IMAGE }}
+        ATTEST_TO_KOSLI: ${{ github.ref == 'refs/heads/main' }}
+        KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}
+        KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
+        KOSLI_REFERENCE_NAME: ${{ needs.setup.outputs.service_name }}
 
 
   unit-tests:
