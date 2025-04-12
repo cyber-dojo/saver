@@ -146,7 +146,7 @@ jobs:
 
   build-image:
     needs: [setup]
-    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
+    uses: cyber-dojo/reusable-actions-workflows@main
     with:
       CHECKOUT_REPOSITORY: cyber-dojo/saver
       CHECKOUT_REF: ${{ github.sha }}
@@ -160,8 +160,6 @@ jobs:
       KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}
       KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
       KOSLI_REFERENCE_NAME: ${{ needs.setup.outputs.service_name }}
-    secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   unit-tests:
