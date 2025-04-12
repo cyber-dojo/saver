@@ -151,6 +151,8 @@ jobs:
     steps:
     - uses: cyber-dojo/reusable-actions-workflows@main
       with:
+        VARS: ${{ toJson(vars) }}
+        ENV: ${{ toJson(env) }}
         CHECKOUT_REPOSITORY: cyber-dojo/saver
         CHECKOUT_REF: ${{ github.sha }}
         CHECKOUT_FETCH_DEPTH: 0
