@@ -2,14 +2,16 @@ ARG BASE_IMAGE=always-provided
 FROM ${BASE_IMAGE}
 LABEL maintainer=jon@jaggersoft.com
 
+RUN apk add git jq
+RUN apk add --upgrade sqlite=3.45.3-r2       # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
+RUN apk add --upgrade sqlite-libs=3.45.3-r2  # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
+
 # ARGs are reset after FROM See https://github.com/moby/moby/issues/34129
 ARG BASE_IMAGE
 ENV BASE_IMAGE=${BASE_IMAGE}
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
-
-RUN apk add git jq
 
 RUN adduser                        \
   -D               `# no password` \
