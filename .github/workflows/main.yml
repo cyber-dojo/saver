@@ -173,7 +173,7 @@ jobs:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
       - name: Download docker image
-      - uses: cyber-dojo/reusable-actions-workflows/.github/workflows/download-artifact.yml@main
+        uses: cyber-dojo/reusable-actions-workflows/.github/workflows/download-artifact.yml@main
         with:
           IMAGE_NAME:   ${{ needs.setup.outputs.image_name }}
           IMAGE_DIGEST: ${{ needs.build-image.outputs.digest }}
