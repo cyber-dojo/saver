@@ -167,47 +167,29 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: [setup, build-image]
-#    permissions:
-#      id-token: write
-#      contents: read
     env:
       IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
-      IMAGE_DIGEST:      ${{ needs.build-image.outputs.digest }}
+      # IMAGE_DIGEST:      ${{ needs.build-image.outputs.digest }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: cyber-dojo/reusable-actions-workflows/.github/workflows/artifact-download.yml@main
         with:
-          name: ${{ env.IMAGE_DIGEST }}
-          path: ${{ runner.temp }}
+          IMAGE_NAME:   ${{ needs.setup.outputs.image_name }}
+          IMAGE_DIGEST: ${{ needs.build-image.outputs.digest }}
 
-      - name: Load image
-        run: |
-          ls -al ${{ runner.temp }}
-          cat ${{ runner.temp }}/${{ env.IMAGE_DIGEST }}.tar | docker import - ${{ env.IMAGE_NAME }}
-          # docker load --input ${{ runner.temp }}/${{ env.IMAGE_DIGEST }}.tar
-          docker image ls -a
+#      - name: Download artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: ${{ env.IMAGE_DIGEST }}
+#          path: ${{ runner.temp }}
+#
+#      - name: Load image
+#        run:
+#          cat ${{ runner.temp }}/${{ env.IMAGE_DIGEST }}.tar | docker import - ${{ env.IMAGE_NAME }}
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
-#      - name: Configure AWS credentials
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-region:            ${{ needs.setup.outputs.aws_region }}
-#          role-duration-seconds: 900
-#          role-session-name:     ${{ github.event.repository.name }}
-#          role-to-assume:        arn:aws:iam::${{ needs.setup.outputs.aws_account_id_beta }}:role/${{ needs.setup.outputs.gh_actions_iam_role_name }}
-#          mask-aws-account-id:   no
-#
-#      - name: Login to Amazon ECR
-#        id: login-ecr
-#        uses: aws-actions/amazon-ecr-login@v2
-#
-#      - name: Pull image from ECR registry
-#        run:
-#          docker image pull "${IMAGE_NAME}@sha256:${KOSLI_FINGERPRINT}"
 
       - name: Run unit tests with metrics
         run:
