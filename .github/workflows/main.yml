@@ -183,6 +183,7 @@ jobs:
 
       - name: Load image
         run: |
+          ls -al ${{ runner.temp }}
           docker load --input ${{ runner.temp }}/${{ env.IMAGE_DIGEST }}.tar
           docker image ls -a
 
