@@ -4,8 +4,8 @@ echo_base_image()
   # This is set to the env-var BASE_IMAGE which is set as a docker compose build --build-arg
   # and used the Dockerfile's 'FROM ${BASE_IMAGE}' statement
   # This BASE_IMAGE abstraction is to facilitate the base_image_update.yml workflow.
-  echo_base_image_via_curl
-  # echo_base_image_via_code
+  # echo_base_image_via_curl
+  echo_base_image_via_code
 }
 
 echo_base_image_via_curl()
@@ -17,8 +17,8 @@ echo_base_image_via_curl()
 echo_base_image_via_code()
 {
   # An alternative echo_base_image for local development, or initial base-image upgrade
-  local -r tag=759c4e9
-  local -r digest=d5f87f343a9f88a598b810c0f02b81db0bb67319701a956aec3577cbd51c1c24
+  local -r tag=a903598
+  local -r digest=12f9997694fbc19acbdc2ac4c3e616ff5896c4e8e7bc5d37a961af2245e5e18d
   echo "cyberdojo/sinatra-base:${tag}@sha256:${digest}"
 }
 
