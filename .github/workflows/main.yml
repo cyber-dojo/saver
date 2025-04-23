@@ -186,6 +186,7 @@ jobs:
 
       - name: Show env-vars used against docker-compose.yml
         run: |
+          export ROOT_DIR="${PWD}"
           source bin/lib.sh
           echo_env_vars
 
