@@ -148,20 +148,20 @@ jobs:
     needs: [setup]
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
     with:
-      CHECKOUT_REPOSITORY: cyber-dojo/saver
-      CHECKOUT_REF: ${{ github.sha }}
-      CHECKOUT_FETCH_DEPTH: 0
-      IMAGE_NAME: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
-      IMAGE_TAG: ${{ needs.setup.outputs.image_tag }}
-      IMAGE_BUILD_ARGS: |
+      checkout_repository: cyber-dojo/saver
+      checkout_ref: ${{ github.sha }}
+      checkout_fetch_depth: 1
+      image_name: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
+      image_tag: ${{ needs.setup.outputs.image_tag }}
+      image_build_args: |
         COMMIT_SHA=${{ github.sha }}
         BASE_IMAGE=${{ inputs.BASE_IMAGE }}
-      ATTEST_TO_KOSLI: ${{ github.ref == 'refs/heads/main' }}
-      KOSLI_FLOW: ${{ vars.KOSLI_FLOW }}
-      KOSLI_TRAIL: ${{ inputs.KOSLI_TRAIL }}
-      KOSLI_REFERENCE_NAME: ${{ needs.setup.outputs.service_name }}
+      kosli_flow: ${{ vars.KOSLI_FLOW }}
+      kosli_trail: ${{ inputs.KOSLI_TRAIL }}
+      kosli_reference_name: ${{ needs.setup.outputs.service_name }}
+      attest_to_kosli: ${{ github.ref == 'refs/heads/main' }}
     secrets:
-      KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
+      kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
 
 
   unit-tests:
@@ -174,8 +174,7 @@ jobs:
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
-          IMAGE_NAME:   ${{ needs.setup.outputs.image_name }}
-          IMAGE_DIGEST: ${{ needs.build-image.outputs.digest }}
+          image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
         with:
@@ -225,8 +224,7 @@ jobs:
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
-          IMAGE_NAME:   ${{ needs.setup.outputs.image_name }}
-          IMAGE_DIGEST: ${{ needs.build-image.outputs.digest }}
+          image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
         with:
