@@ -56,6 +56,9 @@ echo_env_vars()
   echo "CYBER_DOJO_SAVER_CLIENT_PORT=4538"                     >> "${env_filename}"
   docker run --rm cyberdojo/versioner 2> /dev/null | grep PORT >> "${env_filename}"
 
+  # Get identities of all docker-compose.yml dependent services (from versioner)
+  docker run --rm cyberdojo/versioner:latest 2> /dev/null
+
   echo CYBER_DOJO_SAVER_SHA="${sha}"
   echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
 
@@ -70,9 +73,6 @@ echo_env_vars()
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
-
-  # Get identities of all docker-compose.yml dependent services (from versioner)
-   docker run --rm cyberdojo/versioner:latest 2> /dev/null
 }
 
 stderr()
