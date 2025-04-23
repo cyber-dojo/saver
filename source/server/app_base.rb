@@ -10,6 +10,7 @@ class AppBase < Sinatra::Base
 
   silently { register Sinatra::Contrib }
   set :port, ENV['PORT']
+  set :host_authorization, { permitted_hosts: [] } # https://github.com/sinatra/sinatra/issues/2065#issuecomment-2484285707
 
   def initialize(externals)
     @externals = externals

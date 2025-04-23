@@ -101,7 +101,7 @@ class RackDispatchingTest < TestBase
 
   def assert_get(name, body, expected_name, expected_body)
     response = get_json(name, body)
-    assert_equal 200, response.status
+    assert_equal 200, response.status, response.body
     assert_equal 'application/json', response.headers['Content-Type']
     expected = { expected_name => expected_body }.to_json
     assert_equal expected, response.body, body
