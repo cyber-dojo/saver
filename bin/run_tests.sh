@@ -105,14 +105,10 @@ run_tests()
   exit_non_zero_unless_installed docker
   containers_down
   create_space_limited_volume
-
-  # docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
-  docker --debug --log-level=DEBUG compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
-
+  docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
   echo_warnings "${TYPE}"
   copy_in_saver_test_data
   run_tests_in_container "$@"
 }
 
-set -x
 run_tests "$@"

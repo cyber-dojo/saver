@@ -180,16 +180,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Show downloaded image
-        run:
-          docker image ls
-
-      - name: Show env-vars used against docker-compose.yml
-        run: |
-          export ROOT_DIR="${PWD}"
-          source bin/lib.sh
-          echo_env_vars
-
       - name: Run unit tests with metrics
         run:
           make test_server metrics_test_server metrics_coverage_server
