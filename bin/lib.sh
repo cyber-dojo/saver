@@ -4,8 +4,8 @@ echo_base_image()
   # This is set to the env-var BASE_IMAGE which is set as a docker compose build --build-arg
   # and used the Dockerfile's 'FROM ${BASE_IMAGE}' statement
   # This BASE_IMAGE abstraction is to facilitate the base_image_update.yml workflow.
-  # echo_base_image_via_curl
-  echo_base_image_via_code
+  echo_base_image_via_curl
+  # echo_base_image_via_code
 }
 
 echo_base_image_via_curl()
@@ -59,9 +59,6 @@ echo_env_vars()
   # Get identities of all docker-compose.yml dependent services (from versioner)
   docker run --rm cyberdojo/versioner:latest 2> /dev/null
 
-  echo CYBER_DOJO_SAVER_SHA="${sha}"
-  echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
-
   echo CYBER_DOJO_SAVER_CLIENT_IMAGE=cyberdojo/saver-client
 
   echo CYBER_DOJO_SAVER_SERVER_USER=saver
@@ -70,9 +67,12 @@ echo_env_vars()
   echo CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME=test_saver_server
   echo CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME=test_saver_client
 
+  # This repo overrides
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1
   echo CYBER_DOJO_SAVER_IMAGE=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/saver
+  echo CYBER_DOJO_SAVER_SHA="${sha}"
+  echo CYBER_DOJO_SAVER_TAG="${sha:0:7}"
 }
 
 stderr()
