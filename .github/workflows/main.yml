@@ -275,8 +275,7 @@ jobs:
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
-          IMAGE_NAME:   ${{ needs.setup.outputs.image_name }}
-          IMAGE_DIGEST: ${{ needs.build-image.outputs.digest }}
+          image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
         with:
