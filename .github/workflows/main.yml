@@ -164,6 +164,18 @@ jobs:
       kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
 
 
+  after-build:
+    runs-on: ubuntu-latest
+    needs: [setup, build-image]
+    env:
+      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
+      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
+    steps:
+      - name: Deliberate failure!
+        run:
+          sdfsdfs
+
+
   unit-tests:
     runs-on: ubuntu-latest
     needs: [setup, build-image]
