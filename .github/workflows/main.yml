@@ -128,6 +128,8 @@ jobs:
 
   build-image:
     needs: [setup]
+    env:
+      KOSLI_TRAIL: ${{ env.KOSLI_TRAIL }}
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
     with:
       checkout_repository: cyber-dojo/saver
