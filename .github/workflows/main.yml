@@ -32,6 +32,7 @@ jobs:
       service_name:             ${{ steps.vars.outputs.service_name }}
       image_tag:                ${{ steps.vars.outputs.image_tag }}
       image_name:               ${{ steps.vars.outputs.image_name }}
+      kosli_trail:              ${{ steps.vars.outputs.kosli_trail }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +51,8 @@ jobs:
           echo "gh_actions_iam_role_name=gh_actions_services" >> ${GITHUB_OUTPUT}
           echo "service_name=${{ env.SERVICE_NAME }}"         >> ${GITHUB_OUTPUT}
           echo "image_tag=${IMAGE_TAG}"                       >> ${GITHUB_OUTPUT}
-          echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}          
+          echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}     
+          echo "kosli_trail=${KOSLI_TRAIL}"                   >> ${GITHUB_OUTPUT}
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -128,8 +130,6 @@ jobs:
 
   build-image:
     needs: [setup]
-    env:
-      KOSLI_TRAIL: ${{ env.KOSLI_TRAIL }}
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
     with:
       checkout_repository: cyber-dojo/saver
@@ -140,7 +140,7 @@ jobs:
       image_build_args: |
         COMMIT_SHA=${{ github.sha }}
       kosli_flow: ${{ vars.KOSLI_FLOW }}
-      kosli_trail: ${{ env.KOSLI_TRAIL }}
+      kosli_trail: ${{ needs.setup.outputs.kosli_trail }}
       kosli_reference_name: ${{ needs.setup.outputs.service_name }}
       attest_to_kosli: ${{ github.ref == 'refs/heads/main' }}
     secrets:
