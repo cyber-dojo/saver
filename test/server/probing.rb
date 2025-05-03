@@ -24,10 +24,4 @@ class ProbingTest < TestBase
     end
   end
 
-  test '605',
-  %w( base_image is sinatra-base ) do
-    base_image = prober.base_image
-    assert base_image.include?("sinatra-base"), base_image
-  end
-
 end

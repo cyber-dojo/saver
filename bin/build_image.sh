@@ -60,9 +60,8 @@ build_image()
   echo
   echo "Building with --build-args"
   echo "  COMMIT_SHA=${COMMIT_SHA}"
-  echo "  BASE_IMAGE=${BASE_IMAGE}"
   echo "To change this run:"
-  echo "$ COMMIT_SHA=... BASE_IMAGE=cyberdojo/saver:559d354@sha256:ddab9080... make image_${type}"
+  echo "$ COMMIT_SHA=... make image_${type}"
   echo
 
   docker --log-level=ERROR compose build server

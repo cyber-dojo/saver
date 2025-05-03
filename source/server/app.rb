@@ -9,7 +9,6 @@ class App < AppBase
    get_json(:prober, :alive?)
    get_json(:prober, :ready?)
    get_json(:prober, :sha)
-   get_json(:prober, :base_image)
 
   # - - - - - - - - - - - - - - - - -
 

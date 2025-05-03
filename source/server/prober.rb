@@ -12,8 +12,4 @@ class Prober
     ENV['SHA']
   end
 
-  def base_image
-    ENV['BASE_IMAGE']
-  end
-
 end
