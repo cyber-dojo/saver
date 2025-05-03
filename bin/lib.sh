@@ -1,50 +1,7 @@
 
-echo_base_image()
-{
-  # This is set to the env-var BASE_IMAGE which is set as a docker compose build --build-arg
-  # and used the Dockerfile's 'FROM ${BASE_IMAGE}' statement
-  # This BASE_IMAGE abstraction is to facilitate the base_image_update.yml workflow.
-  echo_base_image_via_curl
-  # echo_base_image_via_code
-}
-
-echo_base_image_via_curl()
-{
-  local -r json="$(curl --fail --silent --request GET https://beta.cyber-dojo.org/saver/base_image)"
-  echo "${json}" | jq -r '.base_image'
-}
-
-echo_base_image_via_code()
-{
-  # An alternative echo_base_image for local development, or initial base-image upgrade
-  local -r tag=a903598
-  local -r digest=12f9997694fbc19acbdc2ac4c3e616ff5896c4e8e7bc5d37a961af2245e5e18d
-  echo "cyberdojo/sinatra-base:${tag}@sha256:${digest}"
-}
-
-exit_non_zero_if_bad_base_image()
-{
-  # Called in setup job in .github/workflows/main.yml
-  local -r base_image="${1}"
-  local -r regex=":[a-z0-9]{7}@sha256:[a-z0-9]{64}$"
-  if [[ ${base_image} =~ $regex ]]; then
-    echo "PASSED: base_image=${base_image}"
-  else
-    stderr "base_image=${base_image}"
-    stderr "must have a 7-digit short-sha tag and a full 64-digit digest, Eg"
-    stderr "  name  : cyberdojo/sinatra-base"
-    stderr "  tag   : 559d354"
-    stderr "  digest: ddab9080cd0bbd8e976a18bdd01b37b66e47fe83b0db396e65dc3014bad17fd3"
-    exit 42
-  fi
-}
-
 echo_env_vars()
 {
   # Set env-vars for this repo
-  if [[ ! -v BASE_IMAGE ]] ; then
-    echo BASE_IMAGE="$(echo_base_image)"  # --build-arg
-  fi
   if [[ ! -v COMMIT_SHA ]] ; then
     local -r sha="$(cd "${ROOT_DIR}" && git rev-parse HEAD)"
     echo COMMIT_SHA="${sha}"  # --build-arg

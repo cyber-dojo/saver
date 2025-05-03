@@ -16,10 +16,6 @@ class Prober
     saver.sha
   end
 
-  def base_image
-    saver.base_image
-  end
-
   private
 
   def saver

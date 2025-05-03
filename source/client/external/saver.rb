@@ -18,10 +18,6 @@ module External
       @http.get(__method__, {})
     end
 
-    def base_image
-      @http.get(__method__, {})
-    end
-
     # - - - - - - - - - - - - - - - - - - -
 
     def group_create(manifest)

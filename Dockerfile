@@ -1,14 +1,10 @@
-ARG BASE_IMAGE=always-provided
-FROM ${BASE_IMAGE}
+FROM cyberdojo/sinatra-base:a903598@sha256:12f9997694fbc19acbdc2ac4c3e616ff5896c4e8e7bc5d37a961af2245e5e18d
+# The FROM statement above is typically set via an automated pull-request from from sinatra-base repo
 LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
 RUN apk add --upgrade sqlite=3.45.3-r2       # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
 RUN apk add --upgrade sqlite-libs=3.45.3-r2  # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
-
-# ARGs are reset after FROM See https://github.com/moby/moby/issues/34129
-ARG BASE_IMAGE
-ENV BASE_IMAGE=${BASE_IMAGE}
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}

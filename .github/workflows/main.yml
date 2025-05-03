@@ -1,20 +1,7 @@
-name: Sub - main
+name: Main
 
 on:
-  workflow_call:
-    inputs:
-      BASE_IMAGE:
-        required: true
-        type: string
-      KOSLI_TRAIL:
-        required: true
-        type: string
-    secrets:
-      SNYK_TOKEN:
-        required: true
-      KOSLI_API_TOKEN:
-        required: true
-
+  push:
 
 env:
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
@@ -24,7 +11,7 @@ env:
   KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
   KOSLI_ORG:       ${{ vars.KOSLI_ORG }}               # cyber-dojo
   KOSLI_FLOW:      ${{ vars.KOSLI_FLOW }}              # saver-ci
-  KOSLI_TRAIL:     ${{ inputs.KOSLI_TRAIL }}
+  KOSLI_TRAIL:     ${{ github.sha }}
 
   AWS_ECR_ID:          ${{ vars.AWS_ECR_ID }}
   AWS_REGION:          ${{ vars.AWS_REGION }}
@@ -49,11 +36,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
-      - name: Check BASE_IMAGE
-        run: |
-          source ./bin/lib.sh
-          exit_non_zero_if_bad_base_image "${{ inputs.BASE_IMAGE }}"
 
       - name: Prepare outputs for workflow jobs
         id: vars
@@ -155,9 +137,8 @@ jobs:
       image_tag: ${{ needs.setup.outputs.image_tag }}
       image_build_args: |
         COMMIT_SHA=${{ github.sha }}
-        BASE_IMAGE=${{ inputs.BASE_IMAGE }}
       kosli_flow: ${{ vars.KOSLI_FLOW }}
-      kosli_trail: ${{ inputs.KOSLI_TRAIL }}
+      kosli_trail: ${{ env.KOSLI_TRAIL }}
       kosli_reference_name: ${{ needs.setup.outputs.service_name }}
       attest_to_kosli: ${{ github.ref == 'refs/heads/main' }}
     secrets:
