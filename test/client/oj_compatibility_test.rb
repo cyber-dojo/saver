@@ -22,7 +22,6 @@ class OjCompatibilityTest < TestBase
   %w[ Oj.dump() is compatible with JSON.generate() ] do
     o = any_hash
     assert_equal JSON.generate(o), Oj.dump(o)
-    assert_equal JSON.fast_generate(o), Oj.dump(o)
   end
 
   # - - - - - - - - - - - - - - - - -

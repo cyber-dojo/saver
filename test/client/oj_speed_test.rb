@@ -11,17 +11,17 @@ class OjSpeedTest < TestBase
   # - - - - - - - - - - - - - - - - -
 
   test 'CB1',
-  %w[ Oj.dump() is faster than JSON.fast_generate() ] do
+  %w[ Oj.dump() is faster than JSON.generate() ] do
     o = any_hash
     oj_gem = -> { Oj.dump(o) }
-    json_gem = -> { JSON.fast_generate(o) }
+    json_gem = -> { JSON.generate(o) }
     t0,t1 = two_timed(100,[oj_gem,json_gem])
     diagnostic = ''
     diagnostic += "\n#{'%.5f' % t0}:oj_gem"
     diagnostic += "\n#{'%.5f' % t1}:json_gem"
     # puts diagnostic
     # 0.00024:oj_gem
-    # 0.00068:json_gem
+    # 0.00068:json_gem
     # assert t0 < t1, diagnostic
   end
 
