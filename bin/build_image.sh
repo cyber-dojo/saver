@@ -53,9 +53,14 @@ build_image()
   exit_non_zero_unless_installed docker
   # shellcheck disable=SC2046
   export $(echo_env_vars)
-
   containers_down
-  remove_old_images
+
+  if [ "${CI:-}" != 'true' ]; then
+    # In CI workflow, don't remove image pulled in the 'Download docker image' CI workflow jobs.
+    remove_old_images
+    # Locally, client and server tests both need a server
+    docker --log-level=ERROR compose build server
+  fi
 
   echo
   echo "Building with --build-args"
@@ -64,7 +69,6 @@ build_image()
   echo "$ COMMIT_SHA=... make image_${type}"
   echo
 
-  docker --log-level=ERROR compose build server
   if [ "${type}" == 'client' ]; then
     docker --log-level=ERROR compose build client
   fi
