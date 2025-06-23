@@ -77,8 +77,6 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -99,8 +97,6 @@ jobs:
       SARIF_FILENAME: snyk.code.scan.json
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -161,8 +157,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Run unit tests with metrics
         run:
@@ -211,8 +205,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Run integration tests with metrics
         run:
@@ -262,8 +254,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
