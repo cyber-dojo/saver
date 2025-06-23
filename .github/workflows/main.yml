@@ -43,16 +43,17 @@ jobs:
         run: |
           ECR_REGISTRY="${AWS_ECR_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"          
           IMAGE_TAG="${GITHUB_SHA:0:7}"                  
-          IMAGE_NAME="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG}"
-          
-          echo "aws_account_id_beta=${AWS_ACCOUNT_ID_BETA}"   >> ${GITHUB_OUTPUT}          
-          echo "ecr_registry=${ECR_REGISTRY}"                 >> ${GITHUB_OUTPUT}
-          echo "aws_region=${AWS_REGION}"                     >> ${GITHUB_OUTPUT}
-          echo "gh_actions_iam_role_name=gh_actions_services" >> ${GITHUB_OUTPUT}
-          echo "service_name=${{ env.SERVICE_NAME }}"         >> ${GITHUB_OUTPUT}
-          echo "image_tag=${IMAGE_TAG}"                       >> ${GITHUB_OUTPUT}
-          echo "image_name=${IMAGE_NAME}"                     >> ${GITHUB_OUTPUT}     
-          echo "kosli_trail=${KOSLI_TRAIL}"                   >> ${GITHUB_OUTPUT}
+          IMAGE_NAME="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG}"          
+          {
+            echo "aws_account_id_beta=${AWS_ACCOUNT_ID_BETA}"             
+            echo "ecr_registry=${ECR_REGISTRY}"                 
+            echo "aws_region=${AWS_REGION}"                    
+            echo "gh_actions_iam_role_name=gh_actions_services" 
+            echo "service_name=${{ env.SERVICE_NAME }}"         
+            echo "image_tag=${IMAGE_TAG}"                       
+            echo "image_name=${IMAGE_NAME}"     
+            echo "kosli_trail=${KOSLI_TRAIL}"
+          } >> ${GITHUB_OUTPUT}
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -76,8 +77,6 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
@@ -98,8 +97,6 @@ jobs:
       SARIF_FILENAME: snyk.code.scan.json
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -149,9 +146,8 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [setup, build-image]
+    needs: [build-image]
     env:
-      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
       - name: Download docker image
@@ -160,8 +156,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Run unit tests with metrics
         run:
@@ -199,9 +193,8 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    needs: [setup, build-image]
+    needs: [build-image]
     env:
-      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
       - name: Download docker image
@@ -210,8 +203,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Run integration tests with metrics
         run:
@@ -249,9 +240,9 @@ jobs:
 
   snyk-container-scan:
     runs-on: ubuntu-latest
-    needs: [setup, build-image]
+    needs: [build-image]
     env:
-      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
+      IMAGE_NAME:        ${{ needs.build-image.outputs.tagged_image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
       SARIF_FILENAME:    snyk.container.scan.json
     steps:
@@ -261,8 +252,6 @@ jobs:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -294,9 +283,8 @@ jobs:
   sdlc-control-gate:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    needs: [setup, build-image, pull-request, unit-tests, integration-tests, snyk-container-scan, snyk-code-scan]
+    needs: [build-image, pull-request, unit-tests, integration-tests, snyk-container-scan, snyk-code-scan]
     env:
-      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
       - name: Setup Kosli CLI
@@ -310,15 +298,14 @@ jobs:
 
       - name: Kosli SDLC gate to short-circuit the workflow
         run:
-          kosli assert artifact "${IMAGE_NAME}"
-            --environment=${KOSLI_AWS_BETA}
+          kosli assert artifact
+            --environment="${KOSLI_AWS_BETA}"
 
 
   approve-deployment-to-beta:
     runs-on: ubuntu-latest
-    needs: [setup, build-image, sdlc-control-gate]
+    needs: [build-image, sdlc-control-gate]
     env:
-      IMAGE_NAME:        ${{ needs.setup.outputs.image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     environment:
       name: staging
@@ -335,9 +322,9 @@ jobs:
 
       - name: Attest approval of deployment to Kosli
         run:
-          kosli report approval "${IMAGE_NAME}"
+          kosli report approval
             --approver="${{ github.actor }}"
-            --environment=${KOSLI_AWS_BETA}
+            --environment="${KOSLI_AWS_BETA}"
 
 
   deploy-to-beta:
