@@ -22,7 +22,7 @@ jobs:
     steps:
     - name: Prepare outputs
       id: vars
-      run: echo "service_name=${{ github.event.repository.name }}" >> ${GITHUB_OUTPUT}
+      run: echo "service_name=${{ github.event.repository.name }}" >> "${GITHUB_OUTPUT}"
 
   trail-attest-terraform:
     needs: [variables]
@@ -45,7 +45,7 @@ jobs:
           kosli create flow "${{ env.KOSLI_FLOW }}" 
             --description="Terraform human-readable plan and state file fingerprint" 
             --template-file=.kosli-tf.yml
-            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+            --api-token="${{ secrets.KOSLI_API_TOKEN }}"
 
       - name: Begin Kosli Terraform Trail
         env: 
@@ -53,7 +53,7 @@ jobs:
         run:
           kosli begin trail "${{ env.KOSLI_TRAIL }}"
             --description="${{ github.actor }} - $(git log -1 --pretty=%B)"
-            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+            --api-token="${{ secrets.KOSLI_API_TOKEN }}"
 
       - name: Download a plan artifact
         uses: actions/download-artifact@v4.1.8
@@ -69,11 +69,11 @@ jobs:
         run:
           kosli attest generic
             --name=tf-plan
-            --flow=${{ env.KOSLI_FLOW }}
-            --trail=${{ env.KOSLI_TRAIL }}
+            --flow="${{ env.KOSLI_FLOW }}"
+            --trail="${{ env.KOSLI_TRAIL }}"
             --attachments=./tfplan
-            --host=${{ env.KOSLI_HOST }}
-            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+            --host="${{ env.KOSLI_HOST }}"
+            --api-token="${{ secrets.KOSLI_API_TOKEN }}"
 
       - name: Delete tf plan artifact
         run: |
@@ -97,10 +97,10 @@ jobs:
           kosli attest artifact ./${{ needs.variables.outputs.service_name }}.tfstate \
             --artifact-type=file \
             --name=tf-state \
-            --flow=${{ env.KOSLI_FLOW }} \
-            --trail=${{ env.KOSLI_TRAIL }} \
-            --host=${{ env.KOSLI_HOST }} \
-            --api-token=${{ secrets.KOSLI_API_TOKEN }}
+            --flow="${{ env.KOSLI_FLOW }}" \
+            --trail="${{ env.KOSLI_TRAIL }}" \
+            --host="${{ env.KOSLI_HOST }}" \
+            --api-token="${{ secrets.KOSLI_API_TOKEN }}"
 
       - name: Delete tf state file artifact
         run: |
