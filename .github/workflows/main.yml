@@ -34,6 +34,11 @@ jobs:
       image_name:               ${{ steps.vars.outputs.image_name }}
       kosli_trail:              ${{ steps.vars.outputs.kosli_trail }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -76,6 +81,11 @@ jobs:
       contents: read
       pull-requests: read
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v4
 
       - name: Setup Kosli CLI
@@ -96,6 +106,11 @@ jobs:
     env:
       SARIF_FILENAME: snyk.code.scan.json
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v4
 
       - name: Setup Snyk
@@ -150,6 +165,11 @@ jobs:
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
@@ -197,6 +217,11 @@ jobs:
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
@@ -246,6 +271,11 @@ jobs:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
       SARIF_FILENAME:    snyk.container.scan.json
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
@@ -287,6 +317,11 @@ jobs:
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
@@ -311,6 +346,11 @@ jobs:
       name: staging
       url:  https://beta.cyber-dojo.org
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
