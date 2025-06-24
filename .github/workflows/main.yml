@@ -331,7 +331,7 @@ jobs:
   sdlc-control-gate:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    needs: [build-image, pull-request, unit-tests, integration-tests, snyk-container-scan, snyk-code-scan]
+    needs: [build-image, workflow-lint, pull-request, unit-tests, integration-tests, snyk-container-scan, snyk-code-scan]
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
