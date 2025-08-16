@@ -1,4 +1,4 @@
-FROM cyberdojo/sinatra-base:a903598@sha256:12f9997694fbc19acbdc2ac4c3e616ff5896c4e8e7bc5d37a961af2245e5e18d
+FROM ghcr.io/cyber-dojo/sinatra-base:28b632a@sha256:41f5d307193f8c917082ee23443cf4fdf0b17af249522e0495030a413c8b9bcd
 LABEL maintainer=jon@jaggersoft.com
 
 WORKDIR /saver
