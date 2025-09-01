@@ -87,8 +87,8 @@ build_image()
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     # Tag image-name for local development where savers name comes from echo-env-vars
     docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
-    echo "CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
-    echo "CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
+    echo "echo CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
+    echo "echo CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
     echo "${image_name}"
   fi
 }
