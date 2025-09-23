@@ -5,7 +5,6 @@ LABEL maintainer=jon@jaggersoft.com
 RUN apk add git jq
 RUN apk add --upgrade sqlite=3.45.3-r2       # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
 RUN apk add --upgrade sqlite-libs=3.45.3-r2  # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
-RUN apk add --upgrade libexpat=2.7.2-r0      # https://security.snyk.io/vuln/SNYK-ALPINE320-EXPAT-13003709
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
