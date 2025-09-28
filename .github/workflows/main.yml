@@ -64,7 +64,13 @@ jobs:
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
-      - name: Attest pull-request evidence to Kosli
+      - name: Create Kosli Flow
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run:
+          kosli create flow "${KOSLI_FLOW}"
+            --description="Group/Kata model+persistence"
+
+      - name: Begin Kosli Trail
         if: ${{ github.ref == 'refs/heads/main' }}
         run:
           kosli begin trail "${KOSLI_TRAIL}"
