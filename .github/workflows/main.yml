@@ -8,7 +8,7 @@ env:
   KOSLI_AWS_BETA:  ${{ vars.KOSLI_AWS_BETA }}          # aws-beta
   KOSLI_DEBUG:     ${{ vars.KOSLI_DEBUG }}             # true/false
   KOSLI_DRY_RUN:   ${{ vars.KOSLI_DRY_RUN }}           # true/false
-  KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
+  # KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
   KOSLI_ORG:       ${{ vars.KOSLI_ORG }}               # cyber-dojo
   KOSLI_FLOW:      ${{ vars.KOSLI_FLOW }}              # saver-ci
   KOSLI_TRAIL:     ${{ github.sha }}
