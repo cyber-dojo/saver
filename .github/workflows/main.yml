@@ -4,6 +4,7 @@ on:
   push:
 
 env:
+  KOSLI_CLI_VERSION: "2.11.26"
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_AWS_BETA:  ${{ vars.KOSLI_AWS_BETA }}          # aws-beta
   KOSLI_DEBUG:     ${{ vars.KOSLI_DEBUG }}             # true/false
@@ -62,7 +63,7 @@ jobs:
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
-          version: ${{ vars.KOSLI_CLI_VERSION }}
+          version: ${KOSLI_CLI_VERSION}
 
       - name: Create Kosli Flow
         if: ${{ github.ref == 'refs/heads/main' }}
