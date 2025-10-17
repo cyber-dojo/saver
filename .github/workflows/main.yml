@@ -63,7 +63,7 @@ jobs:
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
-          version: "2.11.15"
+          version: "2.11.10"
 
       - name: Create Kosli Flow
         if: ${{ github.ref == 'refs/heads/main' }}
