@@ -4,12 +4,11 @@ on:
   push:
 
 env:
-  KOSLI_CLI_VERSION: "2.11.26"
   KOSLI_API_TOKEN: ${{ secrets.KOSLI_API_TOKEN }}
   KOSLI_AWS_BETA:  ${{ vars.KOSLI_AWS_BETA }}          # aws-beta
   KOSLI_DEBUG:     ${{ vars.KOSLI_DEBUG }}             # true/false
   KOSLI_DRY_RUN:   ${{ vars.KOSLI_DRY_RUN }}           # true/false
-  # KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
+  KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
   KOSLI_ORG:       ${{ vars.KOSLI_ORG }}               # cyber-dojo
   KOSLI_FLOW:      ${{ vars.KOSLI_FLOW }}              # saver-ci
   KOSLI_TRAIL:     ${{ github.sha }}
@@ -63,7 +62,7 @@ jobs:
       - name: Setup Kosli CLI
         uses: kosli-dev/setup-cli-action@v2
         with:
-          version: "2.11.10"
+          version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Create Kosli Flow
         if: ${{ github.ref == 'refs/heads/main' }}
