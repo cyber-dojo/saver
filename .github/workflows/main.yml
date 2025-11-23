@@ -59,36 +59,13 @@ jobs:
             echo "kosli_trail=${KOSLI_TRAIL}"
           } >> "${GITHUB_OUTPUT}"
 
+      # https://github.com/cyber-dojo/kosli-begin-trail
       - name: Begin Kosli Trail
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: cyber-dojo/kosli-begin-trail@main
         with:
           cli_version: "${{ vars.KOSLI_CLI_VERSION }}"
           flow_description: "Group/Kata model+persistence"
-
-      # - name: Setup Kosli CLI
-      #   if: ${{ github.ref == 'refs/heads/main' }}
-      #   uses: kosli-dev/setup-cli-action@v2
-      #   with:
-      #     version: ${{ vars.KOSLI_CLI_VERSION }}
-
-      # - name: Create Kosli Flow
-      #   if: ${{ github.ref == 'refs/heads/main' }}
-      #   run:
-      #     kosli create flow "${KOSLI_FLOW}"
-      #       --description="Group/Kata model+persistence"
-
-      # - name: Begin Kosli Trail
-      #   if: ${{ github.ref == 'refs/heads/main' }}
-      #   run:
-      #     kosli begin trail "${KOSLI_TRAIL}"
-      #       --template-file=.kosli.yml
-
-      # - name: Write Trail URL to GitHub Step Summary
-      #   if: ${{ github.ref == 'refs/heads/main' }}
-      #   run: |
-      #     url="https://app.kosli.com/${KOSLI_ORG}/flows/${KOSLI_FLOW}/trails/${KOSLI_TRAIL}"
-      #     echo "[Kosli Trail](${url})" > "${GITHUB_STEP_SUMMARY}"
 
 
   pull-request:
