@@ -61,7 +61,7 @@ jobs:
 
       - name: Begin Kosli Trail
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: cyber-dojo/begin-kosli-trail@main
+        uses: cyber-dojo/kosli-begin-trail@main
         with:
           cli_version: "${{ vars.KOSLI_CLI_VERSION }}"
           flow_description: "Group/Kata model+persistence"
