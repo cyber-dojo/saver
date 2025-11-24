@@ -3,8 +3,6 @@ FROM ghcr.io/cyber-dojo/sinatra-base:ba7acf3@sha256:8baa0ce05142cf89a9333bf0f5a1
 LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
-#RUN apk add --upgrade sqlite=3.45.3-r2       # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
-#RUN apk add --upgrade sqlite-libs=3.45.3-r2  # https://security.snyk.io/vuln/SNYK-ALPINE320-SQLITE-9712342
 
 ARG COMMIT_SHA
 ENV SHA=${COMMIT_SHA}
