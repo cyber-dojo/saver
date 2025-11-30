@@ -73,7 +73,7 @@ class Kata_v2
     #TODO: polyfill_events_defaults(result)
     result[0]["colour"] = "create"
     result.each do |event|
-      event["sub-index"] = 0
+      event["sub_index"] = 0
     end
     result
   end
