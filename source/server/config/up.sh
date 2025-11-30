@@ -7,7 +7,6 @@ readonly uid=19663
 readonly username=saver
 readonly gid=65533
 readonly group=nogroup
-readonly vm_target=${DOCKER_MACHINE_NAME:-default}
 
 if [ ! -d /${dir} ]; then
   cmd="mkdir /${dir}"
