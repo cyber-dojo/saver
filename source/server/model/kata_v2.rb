@@ -72,6 +72,9 @@ class Kata_v2
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
     result[0]["colour"] = "create"
+    result.each do |event|
+      event["sub_index"] = 0
+    end
     result
   end
 

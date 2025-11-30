@@ -55,10 +55,10 @@ class KataEventsTest < TestBase
       kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
       actual = kata_events(id)
       expected = [
-        { "index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
-        { "index" => 1, "time" => t1, "colour" => "red" },
-        { "index" => 2, "time" => t2, "colour" => "red" },
-        { "index" => 3, "time" => t3, "colour" => "red" }
+        { "index" => 0, "sub_index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
+        { "index" => 1, "sub_index" => 0, "time" => t1, "colour" => "red" },
+        { "index" => 2, "sub_index" => 0, "time" => t2, "colour" => "red" },
+        { "index" => 3, "sub_index" => 0, "time" => t3, "colour" => "red" }
       ]
       assert_equal expected, actual
     end
@@ -80,10 +80,10 @@ class KataEventsTest < TestBase
       kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
       actual = kata_events(id)
       expected = [
-        { "index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
-        { "index" => 1, "time" => t1, "colour" => "red" },
-        { "index" => 2, "event" => "outage" },
-        { "index" => 3, "time" => t3, "colour" => "red" }
+        { "index" => 0, "sub_index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
+        { "index" => 1, "sub_index" => 0, "time" => t1, "colour" => "red" },
+        { "index" => 2, "sub_index" => 0, "event" => "outage" },
+        { "index" => 3, "sub_index" => 0, "time" => t3, "colour" => "red" }
       ]
       assert_equal expected, actual
     end
@@ -94,7 +94,7 @@ class KataEventsTest < TestBase
     externals.instance_exec { @time = TimeStub.new(t0) }
     in_kata do |id|
       actual = kata_events(id)
-      expected = [{ "index" => 0, "time" => t0, "colour" => "create", "event" => "created" }]
+      expected = [{ "index" => 0, "sub_index" => 0, "time" => t0, "colour" => "create", "event" => "created" }]
       assert_equal expected, actual
     end
   end

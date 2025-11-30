@@ -19,7 +19,6 @@ services:
     restart: no
     tmpfs: /tmp
     volumes:
-      - ./source/client:/saver/source:ro
       - ./test/client:/saver/test:ro
 
   server:
@@ -34,7 +33,6 @@ services:
     read_only: true
     restart: no
     volumes:
-      - ./source/server:/saver/source:ro
       - ./test/server:/saver/test:ro
       - one_k:/one_k:rw
     tmpfs:

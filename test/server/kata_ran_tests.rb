@@ -102,7 +102,7 @@ class KataRanTestsTest < TestBase
       kata_ran_tests(id, index=4, files, stdout, stderr, status, red_summary)
       events = kata_events(id)
       (2..index-1).each do |n|
-        expected = { 'index' => n, 'event' => 'outage' }
+        expected = { 'index' => n, 'sub_index' => 0, 'event' => 'outage' }
         assert_equal expected, events[n]
       end
       [index, red_summary]
