@@ -15,9 +15,9 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-WORKDIR /saver
+WORKDIR /saver/source
 COPY source/server/ .
 USER saver
-HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /saver/config/healthcheck.sh
+HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /saver/source/config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
-CMD [ "/saver/config/up.sh" ]
+CMD [ "/saver/source/config/up.sh" ]
