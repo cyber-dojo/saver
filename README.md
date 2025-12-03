@@ -22,7 +22,7 @@ $ make {test_server|test_client}
 
 # Run only specific tests
 $ ./bin/run_tests.sh {-h|--help}
-$ ./bin/run_tests.sh server Ks366
+$ ./bin/run_tests.sh {server|client} Ks366
 
 # Check test metrics
 $ make {metrics_test_server|metrics_test_client}
