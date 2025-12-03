@@ -122,13 +122,13 @@ jobs:
             --sarif-file-output="${SARIF_FILENAME}"
 
       - name: Setup Kosli CLI
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest evidence to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest snyk 
             --attachments=.snyk
@@ -178,20 +178,20 @@ jobs:
           make test_server metrics_test_server metrics_coverage_server
 
       - name: Setup Kosli CLI
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest JUnit test evidence to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest junit
             --name=saver.unit-test 
             --results-dir=./reports/server/junit
 
       - name: Attest test metrics to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest custom
             --attestation-data=./reports/server/test_metrics.json 
@@ -199,7 +199,7 @@ jobs:
             --type=test-metrics
 
       - name: Attest coverage metrics to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest custom
             --attestation-data=./reports/server/coverage_metrics.json 
@@ -230,20 +230,20 @@ jobs:
           make image_client test_client metrics_test_client metrics_coverage_client
 
       - name: Setup Kosli CLI
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest junit test evidence to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest junit
             --name=saver.integration-test
             --results-dir=./reports/client/junit
 
       - name: Attest test metrics to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest custom 
             --attestation-data=./reports/client/test_metrics.json 
@@ -251,7 +251,7 @@ jobs:
             --type=test-metrics
 
       - name: Attest coverage metrics to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest custom 
             --attestation-data=./reports/client/coverage_metrics.json 
@@ -292,13 +292,13 @@ jobs:
             --sarif-file-output="${SARIF_FILENAME}"
 
       - name: Setup Kosli CLI
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         uses: kosli-dev/setup-cli-action@v2
         with:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest evidence to Kosli
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run:
           kosli attest snyk
             --attachments=.snyk          
