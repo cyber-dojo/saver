@@ -192,18 +192,20 @@ jobs:
 
       - name: Attest test metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
-        run:
-          kosli attest custom
-            --attestation-data=./reports/server/test_metrics.json 
-            --name=saver.unit-test-metrics
+        run: |
+          cat ./reports/server/test_metrics.json
+          kosli attest custom \
+            --attestation-data=./reports/server/test_metrics.json \
+            --name=saver.unit-test-metrics \
             --type=test-metrics
 
       - name: Attest coverage metrics to Kosli
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
-        run:
-          kosli attest custom
-            --attestation-data=./reports/server/coverage_metrics.json 
-            --name=saver.unit-test-coverage-metrics
+        run: |
+          cat ./reports/server/coverage_metrics.json 
+          kosli attest custom \
+            --attestation-data=./reports/server/coverage_metrics.json \
+            --name=saver.unit-test-coverage-metrics \
             --type=coverage-metrics
 
 
