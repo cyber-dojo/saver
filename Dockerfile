@@ -23,4 +23,4 @@ COPY source/server/ .
 USER saver
 HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD ./config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
-CMD [ "/saver/source/config/up.sh" ]
+CMD [ "./config/up.sh" ]
