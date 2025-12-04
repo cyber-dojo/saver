@@ -174,10 +174,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run unit tests with metrics
-        run: |
+        run:
           make test_server metrics_test_server metrics_coverage_server
-          cat ./reports/server/test_metrics.json
-          cat ./reports/server/coverage_metrics.json 
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
