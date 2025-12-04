@@ -11,6 +11,7 @@ services:
       context: source/client
       args:
         - COMMIT_SHA
+        - APP_DIR=/saver
     image: ${CYBER_DOJO_SAVER_CLIENT_IMAGE}:${CYBER_DOJO_SAVER_TAG}
     user: ${CYBER_DOJO_SAVER_CLIENT_USER}
     container_name: ${CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME}
@@ -27,6 +28,7 @@ services:
       context: .
       args:
         - COMMIT_SHA
+        - APP_DIR=/saver
     image: ${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}
     user: ${CYBER_DOJO_SAVER_SERVER_USER}
     container_name: ${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}

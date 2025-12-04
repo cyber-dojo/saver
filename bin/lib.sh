@@ -24,7 +24,7 @@ echo_env_vars()
 
   echo CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME=test_saver_server
   echo CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME=test_saver_client
-
+  
   # This repo overrides
   local -r AWS_ACCOUNT_ID=244531986313
   local -r AWS_REGION=eu-central-1

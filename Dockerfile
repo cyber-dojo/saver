@@ -5,7 +5,10 @@ LABEL maintainer=jon@jaggersoft.com
 RUN apk add git jq
 
 ARG COMMIT_SHA
-ENV SHA=${COMMIT_SHA}
+ENV COMMIT_SHA=${COMMIT_SHA}
+
+ARG APP_DIR
+ENV APP_DIR=${APP_DIR}
 
 RUN adduser                        \
   -D               `# no password` \
@@ -15,9 +18,9 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-WORKDIR /saver/source
+WORKDIR ${APP_DIR}/source
 COPY source/server/ .
 USER saver
-HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD /saver/source/config/healthcheck.sh
+HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD ./config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
-CMD [ "/saver/source/config/up.sh" ]
+CMD "${APP_DIR}/source/config/up.sh" 

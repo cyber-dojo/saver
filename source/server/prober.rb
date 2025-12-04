@@ -9,7 +9,7 @@ class Prober
   end
 
   def sha
-    ENV['SHA']
+    ENV['COMMIT_SHA']
   end
 
 end
