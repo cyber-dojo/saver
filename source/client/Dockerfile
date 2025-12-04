@@ -4,7 +4,7 @@ LABEL maintainer=jon@jaggersoft.com
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
 
-ARG APP_DIR
+ARG APP_DIR=/saver
 ENV APP_DIR=${APP_DIR}
 
 WORKDIR /saver/source

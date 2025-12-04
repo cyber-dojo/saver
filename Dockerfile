@@ -7,7 +7,7 @@ RUN apk add git jq
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
 
-ARG APP_DIR
+ARG APP_DIR=/saver
 ENV APP_DIR=${APP_DIR}
 
 RUN adduser                        \
