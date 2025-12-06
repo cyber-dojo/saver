@@ -13,7 +13,7 @@ require 'tmpdir'
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
-# 5. saver outages are recorded in events_summary.json
+# 5. saver outages are recorded in events.json
 
 class Kata_v2
 
@@ -81,6 +81,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
+    raise_if_invalid_index(id, index)
     result = { "files" => {} }
     index = index.to_i
     if index < 0
@@ -325,6 +326,14 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+
+  def raise_if_invalid_index(id, index)
+    return if index.to_i < 0
+    indexes = events(id).map {|event| event["index"]}
+    unless indexes.include?(index)
+      raise "Invalid index: #{index}"
+    end
+  end
 
   def read_events(disk, id=nil)
     # eg
