@@ -81,6 +81,10 @@ class Model
     kata(id).event_batch(ids, indexes)
   end
 
+  def kata_edit_files(id:, index:, files:)
+    kata(id).edit_files(id, index, files)
+  end
+
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
   end

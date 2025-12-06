@@ -140,6 +140,10 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def edit_files(id, index, files)
+    # TODO
+  end
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
     message = "ran tests, no prediction, got #{summary['colour']}"
     git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
@@ -270,17 +274,21 @@ class Kata_v2
       unless index > last_index
         raise "Out of order event"
       end
+
       # Backfill saver outage events
       saver_outages = (last_index+1..index-1)
       saver_outages.each do |n|
         events << { 'index' => n, 'event' => 'outage' }
       end
+
       # Add the new event
       events << summary.merge!({ 'index' => index, 'time' => time.now })
       write_files(worktree, '', { events_filename => json_pretty(events) })
 
       # Remove files/
+      # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
       shell.assert_cd_exec(worktree.root_dir, "git rm -r files/")
+
       # Add new files/
       write_files(worktree, "files", content_of(files))
 
@@ -301,7 +309,8 @@ class Kata_v2
         "git commit --message '#{index} #{message}' --quiet",
       ])
     end
-    # Merge succeeded, tag
+
+    # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
     saver_outages.each do |n|
       shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])

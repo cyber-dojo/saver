@@ -56,6 +56,12 @@ module TestHelpersModel
     model.kata_event(id:id, index:index)
   end
 
+  def kata_edit_files(id, index, files)
+    model.kata_edit_files(
+      id:id, index:index, files:files
+    )
+  end
+
   def kata_ran_tests(id, index, files, stdout, stderr, status, summary)
     model.kata_ran_tests(
       id:id, index:index,
