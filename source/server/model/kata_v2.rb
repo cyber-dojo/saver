@@ -73,7 +73,9 @@ class Kata_v2
     #TODO: polyfill_events_defaults(result)
     result[0]["colour"] = "create"
     result.each do |event|
-      event["sub_index"] = 0
+      if !event.key?('sub_index')
+        event['sub_index'] = 0
+      end
     end
     result
   end
@@ -82,7 +84,7 @@ class Kata_v2
 
   def event(id, index)
     raise_if_invalid_index(id, index)
-    result = { "files" => {} }
+    result = { 'files' => {} }
     index = index.to_i
     if index < 0
       index = events(id)[index]['index']
@@ -141,7 +143,16 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def edit_files(id, index, files)
-    # TODO
+    previous_files = event(id, -1)['files']
+    if files != previous_files
+      stdout = { 'content' => '', 'truncated' => false }
+      stderr = { 'content' => '', 'truncated' => false }
+      status = 0
+      sub_index = 1 # SLIME
+      summary = {'sub_index' => sub_index}
+      message = 'edit files'
+      git_commit_tag(id, index, files, stdout, stderr, status, summary, message, sub_index)
+    end
   end
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
@@ -265,14 +276,23 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message, sub_index = 0)
+
+    if in_edit_files(sub_index)
+      tag = "#{index}.#{sub_index}"
+    else 
+      tag = "#{index}"
+    end
+
     saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
-      unless index > last_index
-        raise "Out of order event"
+      if not in_edit_files(sub_index)
+        unless index > last_index
+          raise 'Out of order event'
+        end
       end
 
       # Backfill saver outage events
@@ -287,31 +307,31 @@ class Kata_v2
 
       # Remove files/
       # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
-      shell.assert_cd_exec(worktree.root_dir, "git rm -r files/")
+      shell.assert_cd_exec(worktree.root_dir, 'git rm -r files/')
 
       # Add new files/
-      write_files(worktree, "files", content_of(files))
+      write_files(worktree, 'files', content_of(files))
 
       # Update metadata
       write_files(worktree, '', {
-        "stdout" => stdout['content'],
-        "stderr" => stderr['content'],
-        "status" => status.to_s,
-        "truncations.json" => json_pretty({
-          "stdout" => stdout["truncated"],
-          "stderr" => stderr["truncated"]
+        'stdout' => stdout['content'],
+        'stderr' => stderr['content'],
+        'status' => status.to_s,
+        'truncations.json' => json_pretty({
+          'stdout' => stdout['truncated'],
+          'stderr' => stderr['truncated']
         })
       })
 
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
-        "git add .",
-        "git commit --message '#{index} #{message}' --quiet",
+        'git add .',
+        "git commit --message '#{tag} #{message}' --quiet",
       ])
     end
 
     # git_ff_merge_worktree succeeded, so tag
-    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
+    shell.assert_cd_exec(repo_dir(id), ["git tag #{tag} HEAD"])
     saver_outages.each do |n|
       shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
     end
@@ -336,13 +356,19 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def in_edit_files(sub_index)
+    sub_index != 0
+  end
+
   def raise_if_invalid_index(id, index)
     return if index.to_i < 0
-    indexes = events(id).map {|event| event["index"]}
+    indexes = events(id).map {|event| event['index']}
     unless indexes.include?(index)
       raise "Invalid index: #{index}"
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
 
   def read_events(disk, id=nil)
     # eg
@@ -377,13 +403,13 @@ class Kata_v2
 
   def manifest_filename(id)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
-    kata_id_path(id, "manifest.json")
+    kata_id_path(id, 'manifest.json')
   end
 
   def options_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/options.json'
     if id.nil?
-      "options.json"
+      'options.json'
     else
       kata_id_path(id, options_filename)
     end
@@ -392,7 +418,7 @@ class Kata_v2
   def events_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events.json'
     if id.nil?
-      "events.json"
+      'events.json'
     else
       kata_id_path(id, events_filename)
     end

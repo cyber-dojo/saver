@@ -29,7 +29,7 @@ class KataFileEditTest < TestBase
       assert_equal 1, event1['index']
       assert_equal 0, event1['sub_index']
 
-      kata_edit_files(id, index=1.1, files)
+      kata_edit_files(id, index=1, files)
       events = kata_events(id)
       assert_equal 2, events.size
       event1 = events[-1]
@@ -40,7 +40,38 @@ class KataFileEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  
+  test 'A58', %w(
+  |kata_file_edit creates a NEW event 
+  |when the incoming files are NOT identical to the existing most-recent files.
+  ) do
+    in_kata { |id, files, stdout, stderr, status|
+      manifest = kata_manifest(id)
+      assert_equal 2, manifest['version']
+
+      events = kata_events(id)
+      assert_equal 1, events.size
+      event0 = events[-1]
+      assert_equal 0, event0['index']
+      assert_equal 0, event0['sub_index']
+
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, events.size
+      event1 = events[-1]
+      assert_equal 1, event1['index']
+      assert_equal 0, event1['sub_index']
+
+      files['readme.txt']['content'] += 'Hello world'
+
+      kata_edit_files(id, index=1, files)
+      events = kata_events(id)
+      assert_equal 3, events.size
+      event1 = events[-1]
+      assert_equal 1, event1['index']
+      assert_equal 1, event1['sub_index']
+    }
+  end
+
   private
 
   def in_kata
