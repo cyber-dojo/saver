@@ -278,7 +278,9 @@ class Kata_v2
 
   def git_commit_tag(id, index, files, stdout, stderr, status, summary, message, sub_index = 0)
 
-    if in_edit_files(sub_index)
+    in_edit_files = sub_index != 0
+
+    if in_edit_files
       tag = "#{index}.#{sub_index}"
     else 
       tag = "#{index}"
@@ -289,7 +291,7 @@ class Kata_v2
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
-      if not in_edit_files(sub_index)
+      if not in_edit_files
         unless index > last_index
           raise 'Out of order event'
         end
@@ -313,15 +315,17 @@ class Kata_v2
       write_files(worktree, 'files', content_of(files))
 
       # Update metadata
-      write_files(worktree, '', {
-        'stdout' => stdout['content'],
-        'stderr' => stderr['content'],
-        'status' => status.to_s,
-        'truncations.json' => json_pretty({
-          'stdout' => stdout['truncated'],
-          'stderr' => stderr['truncated']
+      if not in_edit_files
+        write_files(worktree, '', {
+          'stdout' => stdout['content'],
+          'stderr' => stderr['content'],
+          'status' => status.to_s,
+          'truncations.json' => json_pretty({
+            'stdout' => stdout['truncated'],
+            'stderr' => stderr['truncated']
+          })
         })
-      })
+      end
 
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
@@ -355,10 +359,6 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-
-  def in_edit_files(sub_index)
-    sub_index != 0
-  end
 
   def raise_if_invalid_index(id, index)
     return if index.to_i < 0
