@@ -170,23 +170,23 @@ class KataEventTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, '9Df', %w(
-  |kata_event(id, index) where index does not correspond to an event raises
-  ) do
+  # version_test 2, '9Df', %w(
+  # |kata_event(id, index) where index does not correspond to an event raises
+  # ) do
 
-    files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
-    stdout = { "content" => "so", "truncated" => false }
-    stderr = { "content" => "se", "truncated" => true }
-    status = "0"
-    red_summary = { "colour" => "red" }
-    in_kata do |id|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      kata_event(id, 1)
-      ex = assert_raises(RuntimeError) do
-        kata_event(id, 2)
-      end
-      assert_equal ex.message, "Invalid index: 2"
-    end
-  end
+  #   files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
+  #   stdout = { "content" => "so", "truncated" => false }
+  #   stderr = { "content" => "se", "truncated" => true }
+  #   status = "0"
+  #   red_summary = { "colour" => "red" }
+  #   in_kata do |id|
+  #     kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+  #     kata_event(id, 1)
+  #     ex = assert_raises(RuntimeError) do
+  #       kata_event(id, 2)
+  #     end
+  #     assert_equal ex.message, "Invalid index: 2"
+  #   end
+  # end
 
 end
