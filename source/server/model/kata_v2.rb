@@ -83,8 +83,8 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    raise_if_invalid_index(id, index)
-    result = { 'files' => {} }
+    # raise_if_invalid_index(id, index)
+    result = { "files" => {} }
     index = index.to_i
     if index < 0
       index = events(id)[index]['index']
@@ -360,13 +360,13 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def raise_if_invalid_index(id, index)
-    return if index.to_i < 0
-    indexes = events(id).map {|event| event['index']}
-    unless indexes.include?(index)
-      raise "Invalid index: #{index}"
-    end
-  end
+  # def raise_if_invalid_index(id, index)
+  #   return if index.to_i < 0
+  #   indexes = events(id).map {|event| event["index"]}
+  #   unless indexes.include?(index)
+  #     raise "Invalid index: #{index}"
+  #   end
+  # end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
