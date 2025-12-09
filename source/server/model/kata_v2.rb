@@ -72,11 +72,6 @@ class Kata_v2
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
     result[0]["colour"] = "create"
-    result.each do |event|
-      if !event.key?('sub_index')
-        event['sub_index'] = 0
-      end
-    end
     result
   end
 
@@ -148,10 +143,9 @@ class Kata_v2
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
       status = 0
-      sub_index = 1 # SLIME
-      summary = {'sub_index' => sub_index}
+      summary = {} # TODO
       message = 'edit files'
-      git_commit_tag(id, index, files, stdout, stderr, status, summary, message, sub_index)
+      git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
     end
   end
 
@@ -276,25 +270,14 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message, sub_index = 0)
-
-    in_edit_files = sub_index != 0
-
-    if in_edit_files
-      tag = "#{index}.#{sub_index}"
-    else 
-      tag = "#{index}"
-    end
-
+  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
     saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
-      if not in_edit_files
-        unless index > last_index
-          raise 'Out of order event'
-        end
+      unless index > last_index
+        raise 'Out of order event'
       end
 
       # Backfill saver outage events
@@ -315,27 +298,25 @@ class Kata_v2
       write_files(worktree, 'files', content_of(files))
 
       # Update metadata
-      if not in_edit_files
-        write_files(worktree, '', {
-          'stdout' => stdout['content'],
-          'stderr' => stderr['content'],
-          'status' => status.to_s,
-          'truncations.json' => json_pretty({
-            'stdout' => stdout['truncated'],
-            'stderr' => stderr['truncated']
-          })
+      write_files(worktree, '', {
+        'stdout' => stdout['content'],
+        'stderr' => stderr['content'],
+        'status' => status.to_s,
+        'truncations.json' => json_pretty({
+          'stdout' => stdout['truncated'],
+          'stderr' => stderr['truncated']
         })
-      end
+      })
 
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
         'git add .',
-        "git commit --message '#{tag} #{message}' --quiet",
+        "git commit --message '#{index} #{message}' --quiet",
       ])
     end
 
     # git_ff_merge_worktree succeeded, so tag
-    shell.assert_cd_exec(repo_dir(id), ["git tag #{tag} HEAD"])
+    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
     saver_outages.each do |n|
       shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
     end
@@ -357,16 +338,6 @@ class Kata_v2
       "rm -rf #{worktree_dir}"
     )
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  # def raise_if_invalid_index(id, index)
-  #   return if index.to_i < 0
-  #   indexes = events(id).map {|event| event["index"]}
-  #   unless indexes.include?(index)
-  #     raise "Invalid index: #{index}"
-  #   end
-  # end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
