@@ -137,7 +137,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def edit_files(id, index, files)
-    # TODO: add current_file parameter
+    # TODO: add current_file parameter, add to summary
     # TODO: should this be called switch_file()?
     previous_files = event(id, -1)['files']
     message = files != previous_files ? 'edit-files' : 'switch-files'
