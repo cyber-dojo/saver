@@ -78,7 +78,6 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    # raise_if_invalid_index(id, index)
     result = { "files" => {} }
     index = index.to_i
     if index < 0
@@ -138,15 +137,14 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def edit_files(id, index, files)
+    # TODO: add current_file parameter
     previous_files = event(id, -1)['files']
-    if files != previous_files
-      stdout = { 'content' => '', 'truncated' => false }
-      stderr = { 'content' => '', 'truncated' => false }
-      status = 0
-      summary = {} # TODO
-      message = 'edit files'
-      git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
-    end
+    message = files != previous_files ? 'edit-files' : 'switch-files'
+    stdout = { 'content' => '', 'truncated' => false }
+    stderr = { 'content' => '', 'truncated' => false }
+    status = 0
+    summary = { 'colour' => message }
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
   end
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)

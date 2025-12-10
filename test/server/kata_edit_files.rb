@@ -9,7 +9,7 @@ class KataFileEditTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A57', %w(
-  |kata_file_edit does NOT create an event 
+  |kata_file_edit creates a switch-files event 
   |when the incoming files are identical to the existing most-recent files.
   ) do
     in_kata { |id, files, stdout, stderr, status|
@@ -29,16 +29,17 @@ class KataFileEditTest < TestBase
 
       kata_edit_files(id, index=2, files)
       events = kata_events(id)
-      assert_equal 2, events.size
+      assert_equal 3, events.size
       event2 = events[-1]
-      assert_equal 1, event2['index']
+      assert_equal 2, event2['index']      
+      assert_equal 'switch-files', event2['colour']
     }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A58', %w(
-  |kata_file_edit creates a NEW event 
+  |kata_file_edit creates an edit-files event 
   |when the incoming files are NOT identical to the existing most-recent files.
   ) do
     in_kata { |id, files, stdout, stderr, status|
@@ -63,6 +64,7 @@ class KataFileEditTest < TestBase
       assert_equal 3, events.size
       event2 = events[-1]
       assert_equal 2, event2['index']
+      assert_equal 'edit-files', event2['colour']
     }
   end
 
