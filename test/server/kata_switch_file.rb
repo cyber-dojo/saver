@@ -10,7 +10,8 @@ class KataFileEditTest < TestBase
 
   test 'A57', %w(
   |kata_switch_file creates a switch-file event 
-  |when the incoming files are identical to the existing most-recent files.
+  |when the incoming files are identical to the existing most-recent files
+  |and filename is the name of the (unedited) switched-to file
   ) do
     in_kata { |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
@@ -27,12 +28,13 @@ class KataFileEditTest < TestBase
       event1 = events[-1]
       assert_equal 1, event1['index']
 
-      kata_switch_file(id, index=2, files)
+      kata_switch_file(id, index=2, files, 'readme.txt')
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
       assert_equal 2, event2['index']      
       assert_equal 'switch-file', event2['colour']
+      assert_equal 'readme.txt', event2['filename']
     }
   end
 
@@ -40,7 +42,8 @@ class KataFileEditTest < TestBase
 
   test 'A58', %w(
   |kata_switch_file creates an edit-file event 
-  |when the incoming files are NOT identical to the existing most-recent files.
+  |when one file in the incoming files has been edited
+  |and filename is the name of the edited file we just switched from
   ) do
     in_kata { |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
@@ -59,14 +62,19 @@ class KataFileEditTest < TestBase
 
       files['readme.txt']['content'] += 'Hello world'
 
-      kata_switch_file(id, index=2, files)
+      kata_switch_file(id, index=2, files, 'test_hiker.sh')
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
       assert_equal 2, event2['index']
       assert_equal 'edit-file', event2['colour']
+      assert_equal 'readme.txt', event2['filename']
     }
   end
+
+  # TODO: delete file, rename file, new file
+  # Do I have to calculate this?
+  # I think I can pass it directly as a known parameter from web
 
   private
 

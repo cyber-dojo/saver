@@ -136,43 +136,50 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def switch_file(id, index, files)
-    # TODO: add current_file parameter, add to summary
+  def switch_file(id, index, files, filename)
     previous_files = event(id, -1)['files']
-    message = files != previous_files ? 'edit-file' : 'switch-file'
+    summary = {}
+    if files == previous_files
+      summary = { 'colour' => 'switch-file', 'filename' => filename }
+      tag_message = "switched to file #{filename}"
+    else 
+      # SLIMED
+      summary = { 'colour' => 'edit-file', 'filename' => 'readme.txt' }
+      tag_message = "edited file #{filename}"
+    end 
+
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    summary = { 'colour' => message }
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, no prediction, got #{summary['colour']}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
     revert = summary['revert']
     info = json_plain({ "id" => revert[0], "index" => revert[1] })
-    message = "reverted to #{info.inspect}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "reverted to #{info.inspect}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
     info = json_plain(summary['checkout'])
-    message = "checked out #{info.inspect}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "checked out #{info.inspect}"
+    git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -268,7 +275,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+  def git_commit_tag(id, index, files, stdout, stderr, status, summary, tag_message)
     saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
@@ -309,7 +316,7 @@ class Kata_v2
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
         'git add .',
-        "git commit --message '#{index} #{message}' --quiet",
+        "git commit --message '#{index} #{tag_message}' --quiet",
       ])
     end
 

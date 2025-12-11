@@ -81,8 +81,8 @@ class Model
     kata(id).event_batch(ids, indexes)
   end
 
-  def kata_switch_file(id:, index:, files:)
-    kata(id).switch_file(id, index, files)
+  def kata_switch_file(id:, index:, files:, filename:)
+    kata(id).switch_file(id, index, files, filename)
   end
 
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)

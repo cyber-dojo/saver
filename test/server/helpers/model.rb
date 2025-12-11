@@ -56,9 +56,9 @@ module TestHelpersModel
     model.kata_event(id:id, index:index)
   end
 
-  def kata_switch_file(id, index, files)
+  def kata_switch_file(id, index, files, filename)
     model.kata_switch_file(
-      id:id, index:index, files:files
+      id:id, index:index, files:files, filename:filename
     )
   end
 
