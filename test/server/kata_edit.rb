@@ -8,8 +8,8 @@ class KataEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'A57', %w(
-  |kata_switch_file creates a switch-file event 
+  test 'A50', %w(
+  |kata_switch_file results in a switch-file event 
   |when the incoming files are identical to the existing most-recent files
   |and filename is the name of the (unedited) switched-to file
   ) do
@@ -40,8 +40,8 @@ class KataEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'A58', %w(
-  |kata_switch_file creates an edit-file event 
+  test 'A51', %w(
+  |kata_switch_file results in an edit-file event 
   |when one file in the incoming files has been edited
   |and filename is the name of the edited file we just switched from
   ) do
@@ -72,7 +72,42 @@ class KataEditTest < TestBase
     end
   end
 
-  # TODO: delete file, rename file, new file
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A52', %w(
+  |kata_create_file results in a create-file event 
+  ) do
+    in_kata do |id, files, stdout, stderr, status|
+      manifest = kata_manifest(id)
+      assert_equal 2, manifest['version']
+
+      events = kata_events(id)
+      assert_equal 1, events.size
+      event0 = events[-1]
+      assert_equal 0, event0['index']
+
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, events.size
+      event1 = events[-1]
+      assert_equal 1, event1['index']
+
+      kata_create_file(id, index=2, 'wibble.py')
+      events = kata_events(id)
+      assert_equal 3, events.size
+      event2 = events[-1]
+      assert_equal 2, event2['index']
+      assert_equal 'create-file', event2['colour']
+      assert_equal 'wibble.py', event2['filename']
+
+      files = kata_event(id, -1)['files']
+      filenames = files.keys
+      assert filenames.include?('wibble.py')
+      assert_equal '', files['wibble.py']['content']
+    end
+  end
+
+  # TODO: delete file, rename file
 
   private
 

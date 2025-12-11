@@ -81,6 +81,10 @@ class Model
     kata(id).event_batch(ids, indexes)
   end
 
+  def kata_create_file(id:, index:, filename:)
+    kata(id).create_file(id, index, filename)
+  end
+
   def kata_switch_file(id:, index:, files:, filename:)
     kata(id).switch_file(id, index, files, filename)
   end

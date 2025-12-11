@@ -136,13 +136,13 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # def create_file(id, index, filename)
-  #   files = read_current_files(id)
-  #   files[filename] = { 'content' => '' }
-  #   summary = { 'colour' => 'create-file', 'filename' => filename }
-  #   tag_message = "created file '#{filename}'"
-  #   git_commit_tag(id, index, files, summary, tag_message)
-  # end
+  def create_file(id, index, filename)
+    files = read_current_files(id)
+    files[filename] = { 'content' => '' }
+    summary = { 'colour' => 'create-file', 'filename' => filename }
+    tag_message = "created file '#{filename}'"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
 
   # def delete_file(id, index, filename)
   #   files = read_current_files(id)
