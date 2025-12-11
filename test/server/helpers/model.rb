@@ -68,6 +68,12 @@ module TestHelpersModel
     )
   end
 
+  def kata_rename_file(id, index, old_filename, new_filename)
+    model.kata_rename_file(
+      id:id, index:index, old_filename:old_filename, new_filename:new_filename
+    )
+  end
+
   def kata_switch_file(id, index, files, filename)
     model.kata_switch_file(
       id:id, index:index, files:files, filename:filename

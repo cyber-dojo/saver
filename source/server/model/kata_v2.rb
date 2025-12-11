@@ -152,18 +152,18 @@ class Kata_v2
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  # def rename_file(id, index, old_filename, new_filename)
-  #   files = read_current_files(id)
-  #   old = files.delete(old_filename)
-  #   files[new_filename] = old
-  #   summary = { 
-  #     'colour' => 'rename-file', 
-  #     'old_filename' => old_filename,
-  #     'new_filename' => new_filename 
-  #   }
-  #   tag_message = "renamed file '#{old_filename}' to '#{new_filename}'"
-  #   git_commit_tag(id, index, files, summary, tag_message)
-  # end
+  def rename_file(id, index, old_filename, new_filename)
+    files = read_current_files(id)
+    old = files.delete(old_filename)
+    files[new_filename] = old
+    summary = { 
+      'colour' => 'rename-file', 
+      'old_filename' => old_filename,
+      'new_filename' => new_filename 
+    }
+    tag_message = "renamed file '#{old_filename}' to '#{new_filename}'"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
 
   def switch_file(id, index, files, filename)
     current_files = read_current_files(id)

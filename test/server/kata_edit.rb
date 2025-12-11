@@ -142,7 +142,43 @@ class KataEditTest < TestBase
     end
   end
 
-  # TODO: rename file
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A54', %w(
+  |kata_rename_file results in a rename-file event 
+  ) do
+    in_kata do |id, files, stdout, stderr, status|
+      manifest = kata_manifest(id)
+      assert_equal 2, manifest['version']
+
+      events = kata_events(id)
+      assert_equal 1, events.size
+      event0 = events[-1]
+      assert_equal 0, event0['index']
+
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, events.size
+      event1 = events[-1]
+      assert_equal 1, event1['index']
+
+      content = files['readme.txt']['content']
+      kata_rename_file(id, index=2, 'readme.txt', 'readme.md')
+      events = kata_events(id)
+      assert_equal 3, events.size
+      event2 = events[-1]
+      assert_equal 2, event2['index']
+      assert_equal 'rename-file', event2['colour']
+      assert_equal 'readme.txt', event2['old_filename']
+      assert_equal 'readme.md', event2['new_filename']
+
+      files = kata_event(id, -1)['files']
+      filenames = files.keys
+      refute filenames.include?('readme.txt')
+      assert filenames.include?('readme.md')
+      assert_equal content, files['readme.md']['content']
+    end
+  end
 
   private
 

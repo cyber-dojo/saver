@@ -89,6 +89,10 @@ class Model
     kata(id).delete_file(id, index, filename)
   end
 
+  def kata_rename_file(id:, index:, old_filename:, new_filename:)
+    kata(id).rename_file(id, index, old_filename, new_filename)
+  end
+
   def kata_switch_file(id:, index:, files:, filename:)
     kata(id).switch_file(id, index, files, filename)
   end
