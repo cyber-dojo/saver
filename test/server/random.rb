@@ -1,17 +1,16 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 require_source 'model/id_generator'
 
 class RandomTest < TestBase
-
   def self.id58_prefix
     'aA8'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '340', %w[
-  sample(N) returns all of 0 to N-1 inclusive
-  ] do
+  test '340', %w[sample(N) returns all of 0 to N-1 inclusive] do
     size = ALPHABET_SIZE
     counts = {}
     1000.times do
@@ -26,9 +25,7 @@ class RandomTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '341', %w(
-  no sample(N) duplicates in 2000 repeats
-  ) do
+  test '341', %w[no sample(N) duplicates in 2000 repeats] do
     repeats = 2000
     ids = {}
     repeats.times do
@@ -40,9 +37,7 @@ class RandomTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '342', %w(
-  alphanumeric(N) returns N character string sampled from [0-9A-Za-z]
-  ) do
+  test '342', %w(alphanumeric(N) returns N character string sampled from [0-9A-Za-z]) do
     counts = {}
     1000.times do
       random.alphanumeric(10).chars.each { |ch| counts[ch] = true }
@@ -54,9 +49,7 @@ class RandomTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '343', %w(
-  no alphanumeric(6) duplicates in 2000 repeats
-  ) do
+  test '343', %w[no alphanumeric(6) duplicates in 2000 repeats] do
     repeats = 2000
     ids = {}
     repeats.times do
@@ -66,8 +59,5 @@ class RandomTest < TestBase
     assert_equal repeats, ids.size
   end
 
-  private
-
   ALPHABET_SIZE = IdGenerator::ALPHABET.size
-
 end

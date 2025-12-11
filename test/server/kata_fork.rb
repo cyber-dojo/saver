@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 
 class KataForkTest < TestBase
-
   def self.id58_prefix
     'c5C'
   end
@@ -96,5 +97,4 @@ class KataForkTest < TestBase
       end
     end
   end
-
 end
