@@ -30,7 +30,7 @@ class App < AppBase
   post_json(:model, :kata_fork)
    get_json(:model, :katas_events)
 
-  #post_json(:model, :kata_edit_files)    
+  #post_json(:model, :kata_switch_file)
   post_json(:model, :kata_ran_tests)
   post_json(:model, :kata_predicted_right)
   post_json(:model, :kata_predicted_wrong)
