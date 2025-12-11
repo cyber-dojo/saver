@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class KataFileEditTest < TestBase
+class KataEditTest < TestBase
 
   def self.id58_prefix
     'Dcc'
@@ -13,7 +13,7 @@ class KataFileEditTest < TestBase
   |when the incoming files are identical to the existing most-recent files
   |and filename is the name of the (unedited) switched-to file
   ) do
-    in_kata { |id, files, stdout, stderr, status|
+    in_kata do |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
       assert_equal 2, manifest['version']
 
@@ -35,7 +35,7 @@ class KataFileEditTest < TestBase
       assert_equal 2, event2['index']      
       assert_equal 'switch-file', event2['colour']
       assert_equal 'readme.txt', event2['filename']
-    }
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,7 +45,7 @@ class KataFileEditTest < TestBase
   |when one file in the incoming files has been edited
   |and filename is the name of the edited file we just switched from
   ) do
-    in_kata { |id, files, stdout, stderr, status|
+    in_kata do |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
       assert_equal 2, manifest['version']
 
@@ -69,17 +69,10 @@ class KataFileEditTest < TestBase
       assert_equal 2, event2['index']
       assert_equal 'edit-file', event2['colour']
       assert_equal 'readme.txt', event2['filename']
-    }
+    end
   end
 
   # TODO: delete file, rename file, new file
-  # Do I have to calculate this?
-  # I think I can pass it directly as a known parameter from web
-  # I think I could even have methods for each
-  # kata_switch_file() - only needs to look for one edited file 
-  # kata_delete_file()
-  # kata_create_file()
-  # kata_rename_file()
 
   private
 
