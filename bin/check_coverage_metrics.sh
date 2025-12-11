@@ -2,8 +2,8 @@
 set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 source "${ROOT_DIR}/bin/lib.sh"
+export $(echo_env_vars)
 
 show_help()
 {
@@ -41,7 +41,6 @@ check_args()
 check_coverage()
 {
   check_args "$@"
-  export $(echo_env_vars)
 
   local -r TYPE="${1}"           # {server|client}
   local -r TEST_LOG=test.log
@@ -63,7 +62,7 @@ check_coverage()
     --volume ${HOST_TEST_DIR}/config/coverage_metrics_limits.rb:${CONTAINER_TMP_DIR}/coverage_metrics_limits.rb:ro \
       "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}" \
         sh -c "ruby ${CONTAINER_TMP_DIR}/check_metrics.rb ${CONTAINER_TMP_DIR}/coverage_metrics.json coverage_metrics_limits" \
-        | tee -a "${HOST_REPORTS_DIR}/${TEST_LOG}"
+        2>/dev/null | tee -a "${HOST_REPORTS_DIR}/${TEST_LOG}"
 
   local -r STATUS=${PIPESTATUS[0]}
   set -e
