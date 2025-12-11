@@ -137,37 +137,37 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   # def create_file(id, index, filename)
+  #   files = read_current_files(id)
+  #   files[filename] = { 'content' => '' }
   #   summary = { 'colour' => 'create-file', 'filename' => filename }
   #   tag_message = "created file '#{filename}'"
-  #   files = event(id, -1)['files']
-  #   files[filename] = { 'content' => '' }
   #   git_commit_tag(id, index, files, summary, tag_message)
   # end
 
   # def delete_file(id, index, filename)
+  #   files = read_current_files(id)
+  #   files.delete(filename)
   #   summary = { 'colour' => 'delete-file', 'filename' => filename }
   #   tag_message = "deleted file '#{filename}'"
-  #   files = event(id, -1)['files']
-  #   files.delete(filename)
   #   git_commit_tag(id, index, files, summary, tag_message)
   # end
 
   # def rename_file(id, index, old_filename, new_filename)
+  #   files = read_current_files(id)
+  #   old = files.delete(old_filename)
+  #   files[new_filename] = old
   #   summary = { 
   #     'colour' => 'rename-file', 
   #     'old_filename' => old_filename,
   #     'new_filename' => new_filename 
   #   }
   #   tag_message = "renamed file '#{old_filename}' to '#{new_filename}'"
-  #   files = event(id, -1)['files']
-  #   old = files.delete(old_filename)
-  #   files[new_filename] = old
   #   git_commit_tag(id, index, files, summary, tag_message)
   # end
 
   def switch_file(id, index, files, filename)
-    previous_files = event(id, -1)['files']
-    edited = edited_file(previous_files, files)
+    current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
     if edited.nil?
       summary = { 'colour' => 'switch-file', 'filename' => filename }
       tag_message = "switched to file '#{filename}'"
@@ -378,6 +378,10 @@ class Kata_v2
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+
+  def read_current_files(id)
+    event(id, -1)['files']
+  end
 
   def read_events(disk, id=nil)
     # eg
