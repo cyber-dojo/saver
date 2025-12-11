@@ -12,7 +12,6 @@ require_relative 'require_source'
 require 'json'
 
 class TestBase < Id58TestBase
-
   def initialize(arg)
     super(arg)
   end
@@ -43,11 +42,11 @@ class TestBase < Id58TestBase
   end
 
   def self.disk_tests(id58_suffix, *lines, &block)
-    test(id58_suffix, ["<disk:Real>"]+lines) do
+    test(id58_suffix, ['<disk:Real>'] + lines) do
       self.instance_exec(&block)
     end
-    test(id58_suffix, ["<disk:Fake>"]+lines) do
-      self.externals.instance_variable_set("@disk", DiskFake.new)
+    test(id58_suffix, ['<disk:Fake>'] + lines) do
+      self.externals.instance_variable_set('@disk', DiskFake.new)
       self.instance_eval(&block)
     end
   end
@@ -80,12 +79,11 @@ class TestBase < Id58TestBase
 
   def assert_v2_last_commit_message(id, expected)
     if version === 2
-      dir = '/' + disk.root_dir + "/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
+      dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
       stdout = shell.assert_cd_exec(dir, "git log --abbrev-commit --pretty=oneline")
       last = stdout.lines[0]
       diagnostic = "\nexpected:#{expected}\n  actual:#{last}"
       assert last.include?(expected), diagnostic
     end    
   end
-
 end

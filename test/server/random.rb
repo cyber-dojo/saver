@@ -47,8 +47,8 @@ class RandomTest < TestBase
     1000.times do
       random.alphanumeric(10).chars.each { |ch| counts[ch] = true }
     end
-    assert_equal 26+26+10, counts.size
-    expected = [*('0'..'9'),*('A'..'Z'),*('a'..'z')].join
+    assert_equal 26 + 26 + 10, counts.size
+    expected = [*('0'..'9'), *('A'..'Z'), *('a'..'z')].join
     assert_equal expected, counts.keys.sort.join
   end
 

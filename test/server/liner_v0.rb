@@ -91,10 +91,10 @@ class LinerV0Test < TestBase
 
   private
 
-  UNLINED_TEST_HIKER_RB = "require 'sss'\nxxx"
-  UNLINED_HIKER_RB = "def x\nend\n"
-  UNLINED_STDOUT = "aa\nbb\ncc"
-  UNLINED_STDERR = "dd\nee\n"
+  UNLINED_TEST_HIKER_RB = "require 'sss'\nxxx".freeze
+  UNLINED_HIKER_RB = "def x\nend\n".freeze
+  UNLINED_STDOUT = "aa\nbb\ncc".freeze
+  UNLINED_STDERR = "dd\nee\n".freeze
 
   UNLINED_EVENT = {
     'files' => {
@@ -120,10 +120,10 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  LINED_TEST_HIKER_RB = [ "require 'sss'\n", "xxx" ]
-  LINED_HIKER_RB = [ "def x\n", "end\n" ]
-  LINED_STDOUT = [ "aa\n", "bb\n", "cc" ]
-  LINED_STDERR = [ "dd\n", "ee\n" ]
+  LINED_TEST_HIKER_RB = ["require 'sss'\n", 'xxx'].freeze
+  LINED_HIKER_RB = ["def x\n", "end\n"].freeze
+  LINED_STDOUT = ["aa\n", "bb\n", 'cc'].freeze
+  LINED_STDERR = ["dd\n", "ee\n"].freeze
 
   LINED_EVENT = {
     'files' => {
