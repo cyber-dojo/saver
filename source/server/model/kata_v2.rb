@@ -71,14 +71,14 @@ class Kata_v2
   def events(id)
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
-    result[0]["colour"] = "create"
+    result[0]['colour'] = 'create'
     result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    result = { "files" => {} }
+    result = { 'files' => {} }
     index = index.to_i
     if index < 0
       index = events(id)[index]['index']
@@ -90,26 +90,26 @@ class Kata_v2
     reader.files.each do |filename, content|
       if filename[-1] === '/' # dir marker
         next
-      elsif filename.start_with?("files/")
-        result["files"][filename["files/".size..-1]] = {
-          "content" => content
+      elsif filename.start_with?('files/')
+        result['files'][filename['files/'.size..-1]] = {
+          'content' => content
         }
-      elsif ["stdout", "stderr"].include?(filename)
+      elsif ['stdout', 'stderr'].include?(filename)
         result[filename] = {
-          "content" => content
+          'content' => content
         }
-      elsif filename === "status"
-        result["status"] = content
-      elsif filename === "events.json"
+      elsif filename === 'status'
+        result['status'] = content
+      elsif filename === 'events.json'
         event = json_parse(content)[index]
         result.merge!(event)
-      elsif filename === "truncations.json"
+      elsif filename === 'truncations.json'
         truncations = json_parse(content)
       end
     end
 
-    if result["event"] == "outage"
-      ["stdout", "stderr", "status"].each { |f| result.delete(f) }
+    if result['event'] == 'outage'
+      ['stdout', 'stderr', 'status'].each { |f| result.delete(f) }
     elsif result.has_key?('stdout')
       result['stdout']['truncated'] = truncations['stdout']
       result['stderr']['truncated'] = truncations['stderr']
@@ -197,7 +197,7 @@ class Kata_v2
 
   def reverted(id, index, files, stdout, stderr, status, summary)
     revert = summary['revert']
-    info = json_plain({ "id" => revert[0], "index" => revert[1] })
+    info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
     tag_message = "reverted to #{info.inspect}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
@@ -229,7 +229,7 @@ class Kata_v2
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
       shell.assert_cd_exec(worktree.root_dir, [
-        "git add .",
+        'git add .',
         "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
       ])
     end
@@ -266,7 +266,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def readme_filename(id)
-    kata_id_path(id, "README.md")
+    kata_id_path(id, 'README.md')
   end
 
   def readme(manifest)

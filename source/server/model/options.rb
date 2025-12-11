@@ -50,14 +50,14 @@ module Options
   end
 
   KNOWN_KEYS = [
-    "theme",
-    "fork_button",
-    "colour",
-    "predict",
-    "starting_info_dialog",
-    "revert_red",
-    "revert_amber",
-    "revert_green"
+    'theme',
+    'fork_button',
+    'colour',
+    'predict',
+    'starting_info_dialog',
+    'revert_red',
+    'revert_amber',
+    'revert_green'
   ]
 
 end

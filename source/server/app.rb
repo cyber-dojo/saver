@@ -34,6 +34,7 @@ class App < AppBase
   #post_json(:model, :kata_delete_file)
   #post_json(:model, :kata_rename_file)
   #post_json(:model, :kata_switch_file)
+  
   post_json(:model, :kata_ran_tests)
   post_json(:model, :kata_predicted_right)
   post_json(:model, :kata_predicted_wrong)
