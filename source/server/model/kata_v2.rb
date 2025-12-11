@@ -143,8 +143,8 @@ class Kata_v2
       summary = { 'colour' => 'switch-file', 'filename' => filename }
       tag_message = "switched to file #{filename}"
     else 
-      # SLIMED
-      summary = { 'colour' => 'edit-file', 'filename' => 'readme.txt' }
+      filename = edited_file(previous_files, files)
+      summary = { 'colour' => 'edit-file', 'filename' => filename }
       tag_message = "edited file #{filename}"
     end 
 
@@ -461,4 +461,15 @@ class Kata_v2
     @externals.time
   end
 
+end
+
+def edited_file(previous_files, current_files)
+  previous_files.each do |filename, values|
+    previous_content = previous_files[filename]['content']
+    current_content = current_files[filename]['content']
+    if previous_content != current_content
+      return filename
+    end
+  end
+  # Should never get here!
 end

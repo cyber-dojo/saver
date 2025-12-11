@@ -75,6 +75,11 @@ class KataFileEditTest < TestBase
   # TODO: delete file, rename file, new file
   # Do I have to calculate this?
   # I think I can pass it directly as a known parameter from web
+  # I think I could even have methods for each
+  # kata_switch_file() - only needs to look for one edited file 
+  # kata_delete_file()
+  # kata_create_file()
+  # kata_rename_file()
 
   private
 
