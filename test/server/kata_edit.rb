@@ -75,7 +75,8 @@ class KataEditTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A52', %w(
-  |kata_create_file results in a create-file event 
+  |kata_create_file results in a create-file event
+  |and the created file has empty content
   ) do
     in_kata do |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
@@ -107,7 +108,41 @@ class KataEditTest < TestBase
     end
   end
 
-  # TODO: delete file, rename file
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'A53', %w(
+  |kata_delete_file results in a delete-file event 
+  ) do
+    in_kata do |id, files, stdout, stderr, status|
+      manifest = kata_manifest(id)
+      assert_equal 2, manifest['version']
+
+      events = kata_events(id)
+      assert_equal 1, events.size
+      event0 = events[-1]
+      assert_equal 0, event0['index']
+
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, events.size
+      event1 = events[-1]
+      assert_equal 1, event1['index']
+
+      kata_delete_file(id, index=2, 'readme.txt')
+      events = kata_events(id)
+      assert_equal 3, events.size
+      event2 = events[-1]
+      assert_equal 2, event2['index']
+      assert_equal 'delete-file', event2['colour']
+      assert_equal 'readme.txt', event2['filename']
+
+      files = kata_event(id, -1)['files']
+      filenames = files.keys
+      refute filenames.include?('readme.txt')
+    end
+  end
+
+  # TODO: rename file
 
   private
 

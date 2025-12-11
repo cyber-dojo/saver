@@ -62,6 +62,12 @@ module TestHelpersModel
     )
   end
 
+  def kata_delete_file(id, index, filename)
+    model.kata_delete_file(
+      id:id, index:index, filename:filename
+    )
+  end
+
   def kata_switch_file(id, index, files, filename)
     model.kata_switch_file(
       id:id, index:index, files:files, filename:filename

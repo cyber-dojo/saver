@@ -144,13 +144,13 @@ class Kata_v2
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  # def delete_file(id, index, filename)
-  #   files = read_current_files(id)
-  #   files.delete(filename)
-  #   summary = { 'colour' => 'delete-file', 'filename' => filename }
-  #   tag_message = "deleted file '#{filename}'"
-  #   git_commit_tag(id, index, files, summary, tag_message)
-  # end
+  def delete_file(id, index, filename)
+    files = read_current_files(id)
+    files.delete(filename)
+    summary = { 'colour' => 'delete-file', 'filename' => filename }
+    tag_message = "deleted file '#{filename}'"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
 
   # def rename_file(id, index, old_filename, new_filename)
   #   files = read_current_files(id)

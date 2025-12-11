@@ -85,6 +85,10 @@ class Model
     kata(id).create_file(id, index, filename)
   end
 
+  def kata_delete_file(id:, index:, filename:)
+    kata(id).delete_file(id, index, filename)
+  end
+
   def kata_switch_file(id:, index:, files:, filename:)
     kata(id).switch_file(id, index, files, filename)
   end
