@@ -140,7 +140,7 @@ class Kata_v2
     files = read_current_files(id)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'create-file', 'filename' => filename }
-    tag_message = "created file '#{filename}'"
+    tag_message = "created file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
@@ -148,7 +148,7 @@ class Kata_v2
     files = read_current_files(id)
     files.delete(filename)
     summary = { 'colour' => 'delete-file', 'filename' => filename }
-    tag_message = "deleted file '#{filename}'"
+    tag_message = "deleted file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
@@ -161,7 +161,7 @@ class Kata_v2
       'old_filename' => old_filename,
       'new_filename' => new_filename 
     }
-    tag_message = "renamed file '#{old_filename}' to '#{new_filename}'"
+    tag_message = "renamed file #{old_filename} to #{new_filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
@@ -173,7 +173,7 @@ class Kata_v2
       tag_message = "switched to file '#{filename}'"
     else
       summary = { 'colour' => 'edit-file', 'filename' => edited }
-      tag_message = "edited file '#{edited}'"
+      tag_message = "edited file #{edited}"
     end 
     git_commit_tag(id, index, files, summary, tag_message)
   end

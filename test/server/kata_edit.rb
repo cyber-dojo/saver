@@ -2,6 +2,11 @@ require_relative 'test_base'
 
 class KataEditTest < TestBase
 
+  def initialize(arg)
+    super(arg)
+    @version = 2
+  end
+
   def self.id58_prefix
     'Dcc'
   end
@@ -28,13 +33,14 @@ class KataEditTest < TestBase
       event1 = events[-1]
       assert_equal 1, event1['index']
 
-      kata_switch_file(id, index=2, files, 'readme.txt')
+      kata_switch_file(id, index=2, files, 'readme.txt') # <<<<<<<
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
       assert_equal 2, event2['index']      
       assert_equal 'switch-file', event2['colour']
       assert_equal 'readme.txt', event2['filename']
+      assert_v2_last_commit_message(id, '2 switched to file readme.txt')
     end
   end
 
@@ -62,13 +68,14 @@ class KataEditTest < TestBase
 
       files['readme.txt']['content'] += 'Hello world'
 
-      kata_switch_file(id, index=2, files, 'test_hiker.sh')
+      kata_switch_file(id, index=2, files, 'test_hiker.sh') # <<<<<<<
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
       assert_equal 2, event2['index']
       assert_equal 'edit-file', event2['colour']
       assert_equal 'readme.txt', event2['filename']
+      assert_v2_last_commit_message(id, '2 edited file readme.txt')
     end
   end
 
@@ -93,7 +100,7 @@ class KataEditTest < TestBase
       event1 = events[-1]
       assert_equal 1, event1['index']
 
-      kata_create_file(id, index=2, 'wibble.py')
+      kata_create_file(id, index=2, 'wibble.py') # <<<<<<<
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
@@ -105,6 +112,7 @@ class KataEditTest < TestBase
       filenames = files.keys
       assert filenames.include?('wibble.py')
       assert_equal '', files['wibble.py']['content']
+      assert_v2_last_commit_message(id, '2 created file wibble.py')
     end
   end
 
@@ -128,7 +136,7 @@ class KataEditTest < TestBase
       event1 = events[-1]
       assert_equal 1, event1['index']
 
-      kata_delete_file(id, index=2, 'readme.txt')
+      kata_delete_file(id, index=2, 'readme.txt') # <<<<<<<
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
@@ -139,6 +147,7 @@ class KataEditTest < TestBase
       files = kata_event(id, -1)['files']
       filenames = files.keys
       refute filenames.include?('readme.txt')
+      assert_v2_last_commit_message(id, '2 deleted file readme.txt')
     end
   end
 
@@ -163,7 +172,7 @@ class KataEditTest < TestBase
       assert_equal 1, event1['index']
 
       content = files['readme.txt']['content']
-      kata_rename_file(id, index=2, 'readme.txt', 'readme.md')
+      kata_rename_file(id, index=2, 'readme.txt', 'readme.md') # <<<<<<<
       events = kata_events(id)
       assert_equal 3, events.size
       event2 = events[-1]
@@ -177,6 +186,7 @@ class KataEditTest < TestBase
       refute filenames.include?('readme.txt')
       assert filenames.include?('readme.md')
       assert_equal content, files['readme.md']['content']
+      assert_v2_last_commit_message(id, '2 renamed file readme.txt to readme.md')
     end
   end
 

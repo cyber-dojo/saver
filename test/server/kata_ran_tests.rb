@@ -135,14 +135,4 @@ class KataRanTestsTest < TestBase
     end
   end
 
-  def assert_v2_last_commit_message(id, expected)
-    if version === 2
-      dir = '/' + disk.root_dir + "/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
-      stdout = shell.assert_cd_exec(dir, "git log --abbrev-commit --pretty=oneline")
-      last = stdout.lines[0]
-      diagnostic = "\nexpected:#{expected}\n  actual:#{last}"
-      assert last.include?(expected), diagnostic
-    end
-  end
-
 end
