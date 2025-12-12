@@ -49,7 +49,7 @@ class RackDispatchingTest < TestBase
 
   test 'E2A',
   'dispatch has 404 when method name is not found' do
-    response,_stdout,_stderr = with_captured_stdout_stderr do
+    response, _stdout, _stderr = with_captured_stdout_stderr do
       post_json '/xyz', ''
     end
     assert_equal 404, response.status
@@ -59,7 +59,7 @@ class RackDispatchingTest < TestBase
 
   test 'E2B',
   'dispatch has 400 status when non-empty body is not JSON' do
-    response,_stdout,_stderr = with_captured_stdout_stderr do
+    response, _stdout, _stderr = with_captured_stdout_stderr do
       get_json '/sha', 'abc'
     end
     assert_equal 400, response.status
@@ -69,7 +69,7 @@ class RackDispatchingTest < TestBase
 
   test 'E2C',
   'dispatch has 400 status when non-empty body is not JSON Hash' do
-    response,_stdout,_stderr = with_captured_stdout_stderr do
+    response, _stdout, _stderr = with_captured_stdout_stderr do
       get_json '/sha', '[]'
     end
     assert_equal 400, response.status
@@ -111,7 +111,7 @@ class RackDispatchingTest < TestBase
 
   def assert_get_raises(name, body, expected_status, message)
     assert_dispatch_raises(name, expected_status, message) do
-      get_json '/'+name, body
+      get_json "/#{name}", body
     end
   end
 
@@ -133,7 +133,7 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def assert_exception_response(response, expected_status, expected_message)
-    expected_body = { "exception" => expected_message }
+    expected_body = { 'exception' => expected_message }
     actual_type = response.headers["Content-Type"]
     actual_status = response.status
     actual_body = JSON.parse!(response.body)
@@ -147,11 +147,11 @@ class RackDispatchingTest < TestBase
     json = JSON.parse!(stdout)
     exception = json['exception']
     refute_nil exception
-    assert_equal '/'+name, exception['path'], "path:#{__LINE__}"
+    assert_equal "/#{name}", exception['path'], "path:#{__LINE__}"
     assert_equal message, exception['message'], "exception['message']:#{__LINE__}"
     assert_equal 'Array', exception['backtrace'].class.name, "exception['backtrace'].class.name:#{__LINE__}"
     assert_equal 'String', exception['backtrace'][0].class.name, "exception['backtrace'][0].class.name:#{__LINE__}"
-    assert exception.has_key?('time')
+    assert exception.key?('time')
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,7 +162,7 @@ class RackDispatchingTest < TestBase
     $stdout = StringIO.new('', 'w')
     $stderr = StringIO.new('', 'w')
     response = yield
-    return [ response, $stdout.string, $stderr.string ]
+    [response, $stdout.string, $stderr.string]
   ensure
     $stderr = old_stderr
     $stdout = old_stdout

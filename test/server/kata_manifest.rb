@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 
 class KataManifestTest < TestBase
-
   def self.id58_prefix
     '5Ks'
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, '473', %w(
+  version_test 0, '473', %w[
   already existing kata_manifest {test-data copied into saver}
   is "polyfilled" to make it look like version=1
-  ) do
+  ] do
     manifest = kata_manifest(id='5rTJv5')
     assert_equal 0, manifest['version'], :version
     assert_equal 'Ruby, MiniTest', manifest['display_name'], :display_name
@@ -25,11 +26,11 @@ class KataManifestTest < TestBase
     assert_equal '5rTJv5', manifest['id'], :id
     assert manifest.has_key?('visible_files'), :polyfilled_visible_files
     expected_filenames = [
-      "test_hiker.rb",
-      "hiker.rb",
-      "cyber-dojo.sh",
-      "coverage.rb",
-      "readme.txt"
+      'test_hiker.rb',
+      'hiker.rb',
+      'cyber-dojo.sh',
+      'coverage.rb',
+      'readme.txt'
     ]
     assert_equal expected_filenames.sort, manifest['visible_files'].keys.sort, :filenames
   end
@@ -56,9 +57,7 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Q62', %w(
-  retrieved kata_manifest has created and version keys
-  ) do
+  versions_test 'Q62', %w[retrieved kata_manifest has created and version keys] do
     now = [2018,11,30, 9,34,56,6453]
       externals.instance_exec {
         @time = TimeStub.new(now)
@@ -76,18 +75,16 @@ class KataManifestTest < TestBase
 
   include KataTestData
 
-  version_test 2, 'K8S', %w(
-  |kata_manifest
-  ) do
+  version_test 2, 'K8S', %w[kata_manifest] do
     now = [2021,5,31, 10,3,51,6553]
     externals.instance_exec { @time = TimeStub.new(now) }
     manifest = manifest_Tennis_refactoring_Python_unitttest
     id = kata_create(manifest)
     actual = kata_manifest(id)
     expected = {
-      'image_name' => "cyberdojofoundation/python_unittest:b8333d3",
-      'display_name' => "Tennis refactoring, Python unitttest",
-      'filename_extension' => [".py"],
+      'image_name' => 'cyberdojofoundation/python_unittest:b8333d3',
+      'display_name' => 'Tennis refactoring, Python unitttest',
+      'filename_extension' => ['.py'],
       'version' => 2,
       'created' => now,
       'exercise' => '',
@@ -96,14 +93,13 @@ class KataManifestTest < TestBase
       'max_seconds' => 10,
       'progress_regexs' => [],
       'tab_size' => 4,
-      'theme' => "light",
-      'colour' => "on",
-      'predict' => "off",
-      'revert_red' => "off",
-      'revert_amber' => "off",
-      'revert_green' => "off"
+      'theme' => 'light',
+      'colour' => 'on',
+      'predict' => 'off',
+      'revert_red' => 'off',
+      'revert_amber' => 'off',
+      'revert_green' => 'off'
     }
     assert_equal expected, actual
   end
-
 end

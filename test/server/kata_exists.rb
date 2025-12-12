@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 
 class KataExistsTest < TestBase
-
   def self.id58_prefix
     'Ws5'
   end
@@ -68,12 +69,11 @@ class KataExistsTest < TestBase
     assert kata_exists?('k5ZTk0'), :original_no_explicit_version
   end
 
-  private
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   class DiskExceptionRaiser
     def method_missing(_m, *_args, &_block)
       raise self.class.name
     end
   end
-
 end

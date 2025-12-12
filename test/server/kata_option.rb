@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 
 class KataOptionTest < TestBase
-
   def self.id58_prefix
     'Ks3'
   end
@@ -159,5 +160,4 @@ class KataOptionTest < TestBase
       assert_raises { kata_option_set(id, 'revert_blue', 'atlantic') }
     end
   end
-
 end

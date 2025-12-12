@@ -71,18 +71,14 @@ class Kata_v2
   def events(id)
     result = read_events(disk, id)
     #TODO: polyfill_events_defaults(result)
-    result[0]["colour"] = "create"
-    result.each do |event|
-      event["sub_index"] = 0
-    end
+    result[0]['colour'] = 'create'
     result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    # raise_if_invalid_index(id, index)
-    result = { "files" => {} }
+    result = { 'files' => {} }
     index = index.to_i
     if index < 0
       index = events(id)[index]['index']
@@ -94,26 +90,26 @@ class Kata_v2
     reader.files.each do |filename, content|
       if filename[-1] === '/' # dir marker
         next
-      elsif filename.start_with?("files/")
-        result["files"][filename["files/".size..-1]] = {
-          "content" => content
+      elsif filename.start_with?('files/')
+        result['files'][filename['files/'.size..-1]] = {
+          'content' => content
         }
-      elsif ["stdout", "stderr"].include?(filename)
+      elsif ['stdout', 'stderr'].include?(filename)
         result[filename] = {
-          "content" => content
+          'content' => content
         }
-      elsif filename === "status"
-        result["status"] = content
-      elsif filename === "events.json"
+      elsif filename === 'status'
+        result['status'] = content
+      elsif filename === 'events.json'
         event = json_parse(content)[index]
         result.merge!(event)
-      elsif filename === "truncations.json"
+      elsif filename === 'truncations.json'
         truncations = json_parse(content)
       end
     end
 
-    if result["event"] == "outage"
-      ["stdout", "stderr", "status"].each { |f| result.delete(f) }
+    if result['event'] == 'outage'
+      ['stdout', 'stderr', 'status'].each { |f| result.delete(f) }
     elsif result.has_key?('stdout')
       result['stdout']['truncated'] = truncations['stdout']
       result['stderr']['truncated'] = truncations['stderr']
@@ -140,32 +136,76 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def create_file(id, index, filename)
+    files = read_current_files(id)
+    files[filename] = { 'content' => '' }
+    summary = { 'colour' => 'create-file', 'filename' => filename }
+    tag_message = "created file #{filename}"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
+
+  def delete_file(id, index, filename)
+    files = read_current_files(id)
+    files.delete(filename)
+    summary = { 'colour' => 'delete-file', 'filename' => filename }
+    tag_message = "deleted file #{filename}"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
+
+  def rename_file(id, index, old_filename, new_filename)
+    files = read_current_files(id)
+    old = files.delete(old_filename)
+    files[new_filename] = old
+    summary = { 
+      'colour' => 'rename-file', 
+      'old_filename' => old_filename,
+      'new_filename' => new_filename 
+    }
+    tag_message = "renamed file #{old_filename} to #{new_filename}"
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
+
+  def switch_file(id, index, files, filename)
+    current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
+    if edited.nil?
+      summary = { 'colour' => 'switch-file', 'filename' => filename }
+      tag_message = "switched to file '#{filename}'"
+    else
+      summary = { 'colour' => 'edit-file', 'filename' => edited }
+      tag_message = "edited file #{edited}"
+    end 
+    git_commit_tag(id, index, files, summary, tag_message)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, no prediction, got #{summary['colour']}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
     revert = summary['revert']
-    info = json_plain({ "id" => revert[0], "index" => revert[1] })
-    message = "reverted to #{info.inspect}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
+    tag_message = "reverted to #{info.inspect}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
     info = json_plain(summary['checkout'])
-    message = "checked out #{info.inspect}"
-    git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+    tag_message = "checked out #{info.inspect}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -189,7 +229,7 @@ class Kata_v2
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
       shell.assert_cd_exec(worktree.root_dir, [
-        "git add .",
+        'git add .',
         "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
       ])
     end
@@ -226,7 +266,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def readme_filename(id)
-    kata_id_path(id, "README.md")
+    kata_id_path(id, 'README.md')
   end
 
   def readme(manifest)
@@ -261,47 +301,59 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, stdout, stderr, status, summary, message)
+  def git_commit_tag(id, index, files, summary, tag_message)
+    stdout = { 'content' => '', 'truncated' => false }
+    stderr = { 'content' => '', 'truncated' => false }
+    status = 0
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+  end
+  
+  def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
     saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
       unless index > last_index
-        raise "Out of order event"
+        raise 'Out of order event'
       end
+
       # Backfill saver outage events
       saver_outages = (last_index+1..index-1)
       saver_outages.each do |n|
         events << { 'index' => n, 'event' => 'outage' }
       end
+
       # Add the new event
       events << summary.merge!({ 'index' => index, 'time' => time.now })
       write_files(worktree, '', { events_filename => json_pretty(events) })
 
       # Remove files/
-      shell.assert_cd_exec(worktree.root_dir, "git rm -r files/")
+      # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
+      shell.assert_cd_exec(worktree.root_dir, 'git rm -r files/')
+
       # Add new files/
-      write_files(worktree, "files", content_of(files))
+      write_files(worktree, 'files', content_of(files))
 
       # Update metadata
       write_files(worktree, '', {
-        "stdout" => stdout['content'],
-        "stderr" => stderr['content'],
-        "status" => status.to_s,
-        "truncations.json" => json_pretty({
-          "stdout" => stdout["truncated"],
-          "stderr" => stderr["truncated"]
+        'stdout' => stdout['content'],
+        'stderr' => stderr['content'],
+        'status' => status.to_s,
+        'truncations.json' => json_pretty({
+          'stdout' => stdout['truncated'],
+          'stderr' => stderr['truncated']
         })
       })
 
       # Add all files and commit
       shell.assert_cd_exec(worktree.root_dir, [
-        "git add .",
-        "git commit --message '#{index} #{message}' --quiet",
+        'git add .',
+        "git commit --message '#{index} #{tag_message}' --quiet",
       ])
     end
-    # Merge succeeded, tag
+
+    # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
     saver_outages.each do |n|
       shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
@@ -327,13 +379,9 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # def raise_if_invalid_index(id, index)
-  #   return if index.to_i < 0
-  #   indexes = events(id).map {|event| event["index"]}
-  #   unless indexes.include?(index)
-  #     raise "Invalid index: #{index}"
-  #   end
-  # end
+  def read_current_files(id)
+    event(id, -1)['files']
+  end
 
   def read_events(disk, id=nil)
     # eg
@@ -368,13 +416,13 @@ class Kata_v2
 
   def manifest_filename(id)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/manifest.json'
-    kata_id_path(id, "manifest.json")
+    kata_id_path(id, 'manifest.json')
   end
 
   def options_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/options.json'
     if id.nil?
-      "options.json"
+      'options.json'
     else
       kata_id_path(id, options_filename)
     end
@@ -383,7 +431,7 @@ class Kata_v2
   def events_filename(id=nil)
     # eg id == 'SyG9sT' ==> '/katas/Sy/G9/sT/events.json'
     if id.nil?
-      "events.json"
+      'events.json'
     else
       kata_id_path(id, events_filename)
     end
@@ -450,4 +498,15 @@ class Kata_v2
     @externals.time
   end
 
+end
+
+def edited_file(previous_files, current_files)
+  previous_files.each do |filename, values|
+    previous_content = previous_files[filename]['content']
+    current_content = current_files[filename]['content']
+    if previous_content != current_content
+      return filename
+    end
+  end
+  return nil
 end

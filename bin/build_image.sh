@@ -74,7 +74,7 @@ build_image()
   fi
 
   local -r image_name="${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
-  local -r sha_in_image=$(docker run --rm --entrypoint="" "${image_name}" sh -c 'echo -n ${COMMIT_SHA}')
+  local -r sha_in_image=$(docker run --rm --entrypoint="" "${image_name}" sh -c 'echo -n ${COMMIT_SHA}' 2>/dev/null)
   if [ "${COMMIT_SHA}" != "${sha_in_image}" ]; then
     echo "ERROR: unexpected env-var inside image ${image_name}"
     echo "expected: 'COMMIT_SHA=${COMMIT_SHA}'"
@@ -84,9 +84,9 @@ build_image()
 
   if [ "${type}" == 'server' ]; then
     # Create latest tag for image build cache
-    docker tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
+    docker --log-level=ERROR tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     # Tag image-name for local development where savers name comes from echo-env-vars
-    docker tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
+    docker --log-level=ERROR tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
     echo "echo CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
     echo "echo CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
     echo "${image_name}"

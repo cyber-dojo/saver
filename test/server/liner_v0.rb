@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 require_relative 'test_base'
 require_source 'model/liner_v0'
 
 class LinerV0Test < TestBase
-
   def self.id58_prefix
     'B45'
   end
 
   include Liner_v0
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test '7AA',
   'lined(event) splits lines files/stdout/stderr and does not alter argument' do
@@ -38,12 +39,12 @@ class LinerV0Test < TestBase
     lined = {
       'files' => {
         'cyber-dojo.sh' => {
-          'content' => [ "a\n","z\n"],
+          'content' => ["a\n", "z\n"],
           'truncated' => false
         },
         'readme.txt' => {
-          'content' => [ "read\n","me\n","blah"]
-        },
+          'content' => ["read\n", "me\n", 'blah']
+        }
       }
     }
     expected = {
@@ -54,7 +55,7 @@ class LinerV0Test < TestBase
         },
         'readme.txt' => {
           'content' => "read\nme\nblah"
-        },
+        }
       }
     }
     assert_equal expected, unlined(lined)
@@ -72,29 +73,29 @@ class LinerV0Test < TestBase
         },
         'readme.txt' => {
           'content' => "read\nme\nblah"
-        },
+        }
       }
     }
     expected = {
       'files' => {
         'cyber-dojo.sh' => {
-          'content' => [ "a\n","z\n"],
+          'content' => ["a\n", "z\n"],
           'truncated' => false
         },
         'readme.txt' => {
-          'content' => [ "read\n","me\n","blah"]
-        },
+          'content' => ["read\n", "me\n", 'blah']
+        }
       }
     }
     assert_equal expected, lined(unlined)
   end
 
-  private
+  # - - - - - - - - - - - - - - - - - - - - - -
 
-  UNLINED_TEST_HIKER_RB = "require 'sss'\nxxx"
-  UNLINED_HIKER_RB = "def x\nend\n"
-  UNLINED_STDOUT = "aa\nbb\ncc"
-  UNLINED_STDERR = "dd\nee\n"
+  UNLINED_TEST_HIKER_RB = "require 'sss'\nxxx".freeze
+  UNLINED_HIKER_RB = "def x\nend\n".freeze
+  UNLINED_STDOUT = "aa\nbb\ncc".freeze
+  UNLINED_STDERR = "dd\nee\n".freeze
 
   UNLINED_EVENT = {
     'files' => {
@@ -116,14 +117,14 @@ class LinerV0Test < TestBase
       'truncated' => false
     },
     'status' => 0
-  }
+  }.freeze
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  LINED_TEST_HIKER_RB = [ "require 'sss'\n", "xxx" ]
-  LINED_HIKER_RB = [ "def x\n", "end\n" ]
-  LINED_STDOUT = [ "aa\n", "bb\n", "cc" ]
-  LINED_STDERR = [ "dd\n", "ee\n" ]
+  LINED_TEST_HIKER_RB = ["require 'sss'\n", 'xxx'].freeze
+  LINED_HIKER_RB = ["def x\n", "end\n"].freeze
+  LINED_STDOUT = ["aa\n", "bb\n", 'cc'].freeze
+  LINED_STDERR = ["dd\n", "ee\n"].freeze
 
   LINED_EVENT = {
     'files' => {
@@ -145,6 +146,5 @@ class LinerV0Test < TestBase
       'truncated' => false
     },
     'status' => 0
-  }
-
+  }.freeze
 end
