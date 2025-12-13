@@ -65,7 +65,7 @@ class KataFileCreateTest < TestBase
       assert_equal 2, event2['index']
       assert_equal 'create-file', event2['colour']
       assert_equal 'wibble.txt', event2['filename']
-      files = kata_event(id, 1)['files']
+      files = kata_event(id, 2)['files']
       assert_equal '', files['wibble.txt']['content']
     end
   end
