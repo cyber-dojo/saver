@@ -16,10 +16,10 @@ class KataFileCreateTest < TestBase
       files = kata_event(id, 0)['files']
       filenames = files.keys
       refute filenames.include?('wibble.txt') 
-      result = kata_file_create(id, index=1, files, 'wibble.txt')
 
-      # result == "1..0" , needs to be 1
+      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
+      assert_equal 2, new_index
       events = kata_events(id)
       assert_equal 2, events.size
       event1 = events[1]

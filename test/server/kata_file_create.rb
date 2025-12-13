@@ -20,8 +20,9 @@ class KataFileCreateTest < TestBase
   |with the created file having empty content
   ) do
     in_tennis_kata do |id, files|
-      kata_file_create(id, index=1, files, 'wibble.txt')
+      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
+      assert_equal 2, new_index
       events = kata_events(id)
       assert_equal 2, events.size
       event1 = events[1]
@@ -49,8 +50,10 @@ class KataFileCreateTest < TestBase
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
-      kata_file_create(id, index=1, files, 'wibble.txt')
 
+      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
+
+      assert_equal 3, new_index
       events = kata_events(id)
       assert_equal 3, events.size
 

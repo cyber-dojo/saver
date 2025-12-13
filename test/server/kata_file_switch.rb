@@ -19,8 +19,9 @@ class KataFileSwitchTest < TestBase
   |does NOT create any new events
   ) do
     in_tennis_kata do |id, files|
-      kata_file_switch(id, index=1, files)
+      new_index = kata_file_switch(id, index=1, files)
 
+      assert_equal 1, new_index
       events = kata_events(id)
       assert_equal 1, events.size
       event0 = events[0]
@@ -40,7 +41,9 @@ class KataFileSwitchTest < TestBase
     in_tennis_kata do |id, files|
       files['readme.txt']['content'] += 'Hello world'
 
-      kata_file_switch(id, index=1, files)
+      new_index = kata_file_switch(id, index=1, files)
+
+      assert_equal 2, new_index
       events = kata_events(id)
       assert_equal 2, events.size
       event1 = events[1]
