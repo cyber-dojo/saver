@@ -136,7 +136,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(id, index, filename)
+  def file_create(id, index, files, filename)
     files = read_current_files(id)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'create-file', 'filename' => filename }
@@ -144,7 +144,7 @@ class Kata_v2
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  def file_delete(id, index, filename)
+  def file_delete(id, index, files, filename)
     files = read_current_files(id)
     files.delete(filename)
     summary = { 'colour' => 'delete-file', 'filename' => filename }
@@ -152,7 +152,7 @@ class Kata_v2
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  def file_rename(id, index, old_filename, new_filename)
+  def file_rename(id, index, files, old_filename, new_filename)
     files = read_current_files(id)
     old = files.delete(old_filename)
     files[new_filename] = old

@@ -81,16 +81,16 @@ class Model
     kata(id).event_batch(ids, indexes)
   end
 
-  def kata_file_create(id:, index:, filename:)
-    kata(id).file_create(id, index, filename)
+  def kata_file_create(id:, index:, files:, filename:)
+    kata(id).file_create(id, index, files, filename)
   end
 
-  def kata_file_delete(id:, index:, filename:)
-    kata(id).file_delete(id, index, filename)
+  def kata_file_delete(id:, index:, files:, filename:)
+    kata(id).file_delete(id, index, files, filename)
   end
 
-  def kata_file_rename(id:, index:, old_filename:, new_filename:)
-    kata(id).file_rename(id, index, old_filename, new_filename)
+  def kata_file_rename(id:, index:, files:, old_filename:, new_filename:)
+    kata(id).file_rename(id, index, files, old_filename, new_filename)
   end
 
   def kata_file_switch(id:, index:, files:, filename:)

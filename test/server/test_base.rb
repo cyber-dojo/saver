@@ -74,7 +74,7 @@ class TestBase < Id58TestBase
 
   def in_tennis_kata
     id = kata_create(manifest_Tennis_refactoring_Python_unitttest)
-    # ["cyber-dojo.sh", "readme.txt", "tennis.py", "tennis_unit_test.py"]    
+    # filenames = ["cyber-dojo.sh", "readme.txt", "tennis.py", "tennis_unit_test.py"]    
     yield(id, kata_event(id, -1)['files'])
   end
 

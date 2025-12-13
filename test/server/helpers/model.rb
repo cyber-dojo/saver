@@ -58,21 +58,21 @@ module TestHelpersModel
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_file_create(id, index, filename)
+  def kata_file_create(id, index, files, filename)
     model.kata_file_create(
-      id:id, index:index, filename:filename
+      id:id, index:index, files:files, filename:filename
     )
   end
 
-  def kata_file_delete(id, index, filename)
+  def kata_file_delete(id, index, files, filename)
     model.kata_file_delete(
-      id:id, index:index, filename:filename
+      id:id, index:index, files:files, filename:filename
     )
   end
 
-  def kata_file_rename(id, index, old_filename, new_filename)
+  def kata_file_rename(id, index, files, old_filename, new_filename)
     model.kata_file_rename(
-      id:id, index:index, old_filename:old_filename, new_filename:new_filename
+      id:id, index:index, files:files, old_filename:old_filename, new_filename:new_filename
     )
   end
 

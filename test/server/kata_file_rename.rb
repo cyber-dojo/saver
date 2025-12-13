@@ -20,11 +20,11 @@ class KataFileRenameTest < TestBase
   ) do
     in_tennis_kata do |id, files|
       content = files['readme.txt']['content']
-      kata_file_rename(id, index=1, 'readme.txt', 'readme.md')
+      kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
       assert_equal 2, events.size
-      event1 = events[-1]
+      event1 = events[1]
       assert_equal 1, event1['index']
       assert_equal 'rename-file', event1['colour']
       assert_equal 'readme.txt', event1['old_filename']

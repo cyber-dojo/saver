@@ -23,7 +23,7 @@ class KataFileSwitchTest < TestBase
 
       events = kata_events(id)
       assert_equal 2, events.size
-      event1 = events[-1]
+      event1 = events[1]
       assert_equal 1, event1['index']      
       assert_equal 'switch-file', event1['colour']
       assert_equal 'readme.txt', event1['filename']
@@ -47,7 +47,7 @@ class KataFileSwitchTest < TestBase
       kata_file_switch(id, index=1, files, 'test_hiker.sh')
       events = kata_events(id)
       assert_equal 2, events.size
-      event1 = events[-1]
+      event1 = events[1]
       assert_equal 1, event1['index']
       assert_equal 'edit-file', event1['colour']
       assert_equal 'readme.txt', event1['filename']
