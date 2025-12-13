@@ -70,4 +70,9 @@ class KataFileDeleteTest < TestBase
       assert_tag_commit_message(id, 2, '2 deleted file tennis.py')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  # TODO: what about when the deleted file has also been edited?
+  
 end

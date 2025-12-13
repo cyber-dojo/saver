@@ -194,17 +194,14 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_switch(id, index, files, filename)
+  def file_switch(id, index, files)
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
-    if edited.nil?
-      summary = { 'colour' => 'switch-file', 'filename' => filename }
-      tag_message = "switched to file '#{filename}'"
-    else
+    if edited
       summary = { 'colour' => 'edit-file', 'filename' => edited }
       tag_message = "edited file #{edited}"
+      git_commit_tag(id, index, files, summary, tag_message)
     end 
-    git_commit_tag(id, index, files, summary, tag_message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

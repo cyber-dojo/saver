@@ -78,4 +78,9 @@ class KataFileRenameTest < TestBase
       assert_tag_commit_message(id, 2, '2 renamed file readme.txt to readme.md')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  # TODO: what about when the renamed file has also been edited
+  
 end
