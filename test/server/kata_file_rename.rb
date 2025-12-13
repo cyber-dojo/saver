@@ -42,11 +42,12 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'D02', %w(
-  |when one other file has been edited
+  |when one file has been edited
+  |and a different file has been renamed
   |a kata_file_rename event 
   |results in two events
   |the first for the edit
-  |the second for the renamed file
+  |the second for the rename
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['tennis.py']['content'] + '# some comment'
@@ -81,6 +82,41 @@ class KataFileRenameTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # TODO: what about when the renamed file has also been edited
-  
+  test 'D03', %w(
+  |when one file has been edited
+  |and the same file has been renamed
+  |a kata_file_rename event 
+  |results in two events
+  |the first for the edit
+  |the second for the rename
+  ) do
+    in_tennis_kata do |id, files|
+      edited_content = files['readme.txt']['content'] + '# some comment'
+      files['readme.txt']['content'] = edited_content
+      kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
+
+      events = kata_events(id)
+      assert_equal 3, events.size
+
+      event1 = events[1]
+      assert_equal 1, event1['index']
+      assert_equal 'edit-file', event1['colour']
+      assert_equal 'readme.txt', event1['filename']
+      files = kata_event(id, 1)['files']
+      assert_equal edited_content, files['readme.txt']['content']
+      assert_tag_commit_message(id, 1, '1 edited file readme.txt')
+
+      event2 = events[2]
+      assert_equal 2, event2['index']
+      assert_equal 'rename-file', event2['colour']
+      assert_equal 'readme.txt', event2['old_filename']
+      assert_equal 'readme.md', event2['new_filename']
+      files = kata_event(id, 2)['files']
+      filenames = files.keys
+      refute filenames.include?('readme.txt')
+      assert filenames.include?('readme.md')
+      assert_equal edited_content, files['readme.md']['content']
+      assert_tag_commit_message(id, 2, '2 renamed file readme.txt to readme.md')
+    end
+  end
 end
