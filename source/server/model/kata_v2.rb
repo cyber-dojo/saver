@@ -340,19 +340,13 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
-    saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
-      unless index > last_index
-        raise 'Out of order event'
-      end
 
-      # Backfill saver outage events
-      saver_outages = (last_index+1..index-1)
-      saver_outages.each do |n|
-        events << { 'index' => n, 'event' => 'outage' }
+      unless index == last_index+1  
+        raise 'Out of order event'
       end
 
       # Add the new event
@@ -386,9 +380,6 @@ class Kata_v2
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
-    saver_outages.each do |n|
-      shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
-    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

@@ -85,18 +85,6 @@ class KataRanTestsTest < TestBase
     }
   end
 
-  version_test 2, 'DkA', %w[kata_ran_tests with saver-outages backfilled in events] do
-    in_kata { |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=4, files, stdout, stderr, status, red_summary)
-      events = kata_events(id)
-      (2..index-1).each do |n|
-        expected = { 'index' => n, 'event' => 'outage' }
-        assert_equal expected, events[n]
-      end
-      [index, red_summary]
-    }
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def in_kata
