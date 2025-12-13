@@ -111,7 +111,7 @@ class GroupExistsTest < TestBase
     assert group_exists?('FxWwrr'), :original_no_explicit_version
   end
 
-  private
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   class DiskExceptionRaiser
     def method_missing(_m, *_args, &_block)
