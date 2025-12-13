@@ -1,0 +1,51 @@
+require_relative 'test_base'
+
+class KataFileSwitchTest < TestBase
+
+  def self.id58_prefix
+    'Dcc'
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'E01', %w(
+  |when no files have been edited
+  |a kata_file_switch event 
+  |does NOT create any new events
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      new_index = kata_file_switch(id, index=1, files)
+
+      assert_equal 1, new_index
+      events = kata_events(id)
+      assert_equal 1, events.size
+      event0 = events[0]
+      assert_equal 0, event0['index']      
+      assert_equal 'create', event0['colour']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'E02', %w(
+  |when one file has been edited
+  |a kata_file_switch event 
+  |results in a single edit-file event 
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      files['readme.txt']['content'] += 'Hello world'
+
+      new_index = kata_file_switch(id, index=1, files)
+
+      assert_equal 2, new_index
+      events = kata_events(id)
+      assert_equal 2, events.size
+      event1 = events[1]
+      assert_equal 1, event1['index']
+      assert_equal 'edit-file', event1['colour']
+      assert_equal 'readme.txt', event1['filename']
+    end
+  end
+end
