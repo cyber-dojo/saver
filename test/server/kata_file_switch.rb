@@ -14,8 +14,9 @@ class KataFileSwitchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E01', %w(
-  |kata_file_switch results in NO edit-file event 
-  |when the incoming files are identical to the existing most-recent files
+  |when no files have been edited
+  |a kata_file_switch event 
+  |does NOT create any new events
   ) do
     in_tennis_kata do |id, files|
       kata_file_switch(id, index=1, files)
@@ -32,8 +33,9 @@ class KataFileSwitchTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E02', %w(
-  |kata_file_switch results in an edit-file event 
-  |when one file in the incoming files has been edited
+  |when one file has been edited
+  |a kata_file_switch event 
+  |results in a single edit-file event 
   ) do
     in_tennis_kata do |id, files|
       files['readme.txt']['content'] += 'Hello world'

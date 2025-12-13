@@ -14,7 +14,7 @@ class KataFileCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'B01', %w(
-  |when no other file has been edited
+  |when no files have been edited
   |a kata_file_create event 
   |results in a single create-file event
   |with the created file having empty content
