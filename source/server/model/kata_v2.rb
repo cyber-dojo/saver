@@ -142,15 +142,13 @@ class Kata_v2
     if edited
       summary = { 'colour' => 'edit-file', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
-      git_commit_tag(id, index, files, summary, tag_message)
-      index += 1
+      index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'create-file', 'filename' => filename }
     tag_message = "created file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
-    index += 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -161,15 +159,13 @@ class Kata_v2
     if edited
       summary = { 'colour' => 'edit-file', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
-      git_commit_tag(id, index, files, summary, tag_message)
-      index += 1
+      index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files.delete(filename)
     summary = { 'colour' => 'delete-file', 'filename' => filename }
     tag_message = "deleted file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
-    index += 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -180,8 +176,7 @@ class Kata_v2
     if edited
       summary = { 'colour' => 'edit-file', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
-      git_commit_tag(id, index, files, summary, tag_message)
-      index += 1
+      index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files[new_filename] = files.delete(old_filename)
@@ -192,7 +187,6 @@ class Kata_v2
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
     git_commit_tag(id, index, files, summary, tag_message)
-    index += 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -200,13 +194,11 @@ class Kata_v2
   def file_switch(id, index, files)
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
-    if edited
-      summary = { 'colour' => 'edit-file', 'filename' => edited }
-      tag_message = "edited file #{edited}"
-      git_commit_tag(id, index, files, summary, tag_message)
-      index += 1
-    end 
-    index
+    return index if !edited
+
+    summary = { 'colour' => 'edit-file', 'filename' => edited }
+    tag_message = "edited file #{edited}"
+    git_commit_tag(id, index, files, summary, tag_message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -380,6 +372,7 @@ class Kata_v2
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
+    index + 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

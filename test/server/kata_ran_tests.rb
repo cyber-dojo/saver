@@ -87,6 +87,18 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'DkA', %w[
+  |kata_ran_tests returns the next index
+  ] do
+    in_kata { |id, files, stdout, stderr, status|
+      new_index = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      assert_equal 2, new_index
+      [index=1, red_summary]
+    }
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   def in_kata
     gid = group_create(manifest_Tennis_refactoring_Python_unitttest)
     id = group_join(gid)
