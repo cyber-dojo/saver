@@ -67,8 +67,7 @@ class KataFileDeleteTest < TestBase
       files = kata_event(id, 2)['files']
       filenames = files.keys
       refute filenames.include?('tennis.py')
-      assert_v2_last_commit_message(id, '2 deleted file tennis.py')
-      
+      assert_v2_last_commit_message(id, '2 deleted file tennis.py')      
     end
   end
 end

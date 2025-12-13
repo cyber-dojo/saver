@@ -174,9 +174,15 @@ class Kata_v2
 
   def file_rename(id, index, files, old_filename, new_filename)
     current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
+    if edited
+      summary = { 'colour' => 'edit-file', 'filename' => edited }
+      tag_message = "edited file '#{edited}'"
+      git_commit_tag(id, index, files, summary, tag_message)
+      index += 1
+    end
 
-    old = files.delete(old_filename)
-    files[new_filename] = old
+    files[new_filename] = files.delete(old_filename)
     summary = { 
       'colour' => 'rename-file', 
       'old_filename' => old_filename,

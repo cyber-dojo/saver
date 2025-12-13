@@ -60,6 +60,7 @@ class KataFileCreateTest < TestBase
       assert_equal 'readme.txt', event1['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
+      # TODO: assert_v2_commit_message(id, tag, expected)
 
       event2 = events[2]
       assert_equal 2, event2['index']
@@ -67,6 +68,7 @@ class KataFileCreateTest < TestBase
       assert_equal 'wibble.txt', event2['filename']
       files = kata_event(id, 2)['files']
       assert_equal '', files['wibble.txt']['content']
+      # TODO: assert_v2_commit_message(id, tag, expected)
     end
   end
 end
