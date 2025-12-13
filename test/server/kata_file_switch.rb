@@ -39,7 +39,8 @@ class KataFileSwitchTest < TestBase
   |results in a single edit-file event 
   ) do
     in_tennis_kata do |id, files|
-      files['readme.txt']['content'] += 'Hello world'
+      edited_content = files['readme.txt']['content'] + 'Hello world'
+      files['readme.txt']['content'] = edited_content
 
       new_index = kata_file_switch(id, index=1, files)
 
@@ -50,6 +51,8 @@ class KataFileSwitchTest < TestBase
       assert_equal 1, events[1]['index']
       assert_equal 'edit-file', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
+      files = kata_event(id, 1)['files']
+      assert_equal edited_content, files['readme.txt']['content']
       assert_tag_commit_message(id, 1, '1 edited file readme.txt')
     end
   end

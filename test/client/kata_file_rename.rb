@@ -27,11 +27,9 @@ class KataFileRenameTest < TestBase
       assert_equal 'rename-file', events[1]['event']
       assert_equal 'readme.txt', events[1]['old_filename']
       assert_equal 'readme.md', events[1]['new_filename']
-
       files = kata_event(id, -1)['files']
-      filenames = files.keys
-      refute filenames.include?('readme.txt')
-      assert filenames.include?('readme.md')
+      refute files.keys.include?('readme.txt')
+      assert files.keys.include?('readme.md')
       assert_equal content, files['readme.md']['content']
     end
   end
@@ -69,9 +67,8 @@ class KataFileRenameTest < TestBase
       assert_equal 'readme.txt', events[2]['old_filename']
       assert_equal 'readme.md', events[2]['new_filename']
       files = kata_event(id, 2)['files']
-      filenames = files.keys
-      refute filenames.include?('readme.txt')
-      assert filenames.include?('readme.md')
+      refute files.keys.include?('readme.txt')
+      assert files.keys.include?('readme.md')
       assert_equal renamed_content, files['readme.md']['content']
     end
   end
@@ -108,9 +105,8 @@ class KataFileRenameTest < TestBase
       assert_equal 'readme.txt', events[2]['old_filename']
       assert_equal 'readme.md', events[2]['new_filename']
       files = kata_event(id, 2)['files']
-      filenames = files.keys
-      refute filenames.include?('readme.txt')
-      assert filenames.include?('readme.md')
+      refute files.keys.include?('readme.txt')
+      assert files.keys.include?('readme.md')
       assert_equal edited_content, files['readme.md']['content']
     end
   end

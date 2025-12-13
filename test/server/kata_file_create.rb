@@ -31,8 +31,7 @@ class KataFileCreateTest < TestBase
       assert_equal 'wibble.txt', events[1]['filename']
 
       files = kata_event(id, 1)['files']
-      filenames = files.keys
-      assert filenames.include?('wibble.txt')
+      assert files.keys.include?('wibble.txt')
       assert_equal '', files['wibble.txt']['content']
       assert_tag_commit_message(id, 1, '1 created file wibble.txt')
     end

@@ -15,8 +15,7 @@ class KataFileDeleteTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      filenames = files.keys
-      assert filenames.include?('readme.txt') 
+      assert files.keys.include?('readme.txt') 
 
       new_index = kata_file_delete(id, index=1, files, 'readme.txt')
 
@@ -27,10 +26,8 @@ class KataFileDeleteTest < TestBase
       assert_equal 1, events[1]['index']
       assert_equal 'delete-file', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
-
       files = kata_event(id, 1)['files']
-      filenames = files.keys
-      refute filenames.include?('readme.txt')
+      refute files.keys.include?('readme.txt')
     end
   end
 
@@ -46,8 +43,7 @@ class KataFileDeleteTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      filenames = files.keys
-      assert filenames.include?('readme.txt') 
+      assert files.keys.include?('readme.txt') 
 
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
@@ -68,8 +64,7 @@ class KataFileDeleteTest < TestBase
       assert_equal 'delete-file', events[2]['event']
       assert_equal 'tennis.py', events[2]['filename']
       files = kata_event(id, 2)['files']
-      filenames = files.keys
-      refute filenames.include?('tennis.py')
+      refute files.keys.include?('tennis.py')
     end
   end
 
@@ -85,8 +80,7 @@ class KataFileDeleteTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      filenames = files.keys
-      assert filenames.include?('readme.txt') 
+      assert files.keys.include?('readme.txt') 
 
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
@@ -107,8 +101,7 @@ class KataFileDeleteTest < TestBase
       assert_equal 'delete-file', events[2]['event']
       assert_equal 'readme.txt', events[2]['filename']
       files = kata_event(id, 2)['files']
-      filenames = files.keys
-      refute filenames.include?('readme.txt')
+      refute files.keys.include?('readme.txt')
     end
   end  
 end
