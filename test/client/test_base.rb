@@ -74,6 +74,14 @@ class TestBase < Id58TestBase
     saver.katas_events(ids, indexes)
   end
 
+  # - - - - - - - - - - - - - - - - - -
+
+  def kata_file_create(id, index, files, filename)
+    saver.kata_file_create(id, index, files, filename)
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
   def kata_option_get(name)
     saver.kata_option_get(id, name)
   end
