@@ -35,7 +35,7 @@ class KataFileRenameTest < TestBase
       refute filenames.include?('readme.txt')
       assert filenames.include?('readme.md')
       assert_equal content, files['readme.md']['content']
-      assert_v2_last_commit_message(id, '1 renamed file readme.txt to readme.md')
+      assert_tag_commit_message(id, 1, '1 renamed file readme.txt to readme.md')
     end
   end
 
@@ -63,7 +63,7 @@ class KataFileRenameTest < TestBase
       assert_equal 'tennis.py', event1['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['tennis.py']['content']
-      # TODO: assert_v2_commit_message(id, tag, expected)
+      assert_tag_commit_message(id, 1, '1 edited file tennis.py')
 
       event2 = events[2]
       assert_equal 2, event2['index']
@@ -75,7 +75,7 @@ class KataFileRenameTest < TestBase
       refute filenames.include?('readme.txt')
       assert filenames.include?('readme.md')
       assert_equal renamed_content, files['readme.md']['content']
-      assert_v2_last_commit_message(id, '2 renamed file readme.txt to readme.md')
+      assert_tag_commit_message(id, 2, '2 renamed file readme.txt to readme.md')
     end
   end
 end

@@ -33,7 +33,7 @@ class KataFileCreateTest < TestBase
       filenames = files.keys
       assert filenames.include?('wibble.txt')
       assert_equal '', files['wibble.txt']['content']
-      assert_v2_last_commit_message(id, '1 created file wibble.txt')
+      assert_tag_commit_message(id, 1, '1 created file wibble.txt')
     end
   end
 
@@ -60,7 +60,7 @@ class KataFileCreateTest < TestBase
       assert_equal 'readme.txt', event1['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
-      # TODO: assert_v2_commit_message(id, tag, expected)
+      assert_tag_commit_message(id, 1, '1 edited file readme.txt')
 
       event2 = events[2]
       assert_equal 2, event2['index']
@@ -68,7 +68,7 @@ class KataFileCreateTest < TestBase
       assert_equal 'wibble.txt', event2['filename']
       files = kata_event(id, 2)['files']
       assert_equal '', files['wibble.txt']['content']
-      # TODO: assert_v2_commit_message(id, tag, expected)
+      assert_tag_commit_message(id, 2, '2 created file wibble.txt')
     end
   end
 end

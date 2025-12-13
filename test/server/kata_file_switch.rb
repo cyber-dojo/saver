@@ -27,7 +27,7 @@ class KataFileSwitchTest < TestBase
       assert_equal 1, event1['index']      
       assert_equal 'switch-file', event1['colour']
       assert_equal 'readme.txt', event1['filename']
-      assert_v2_last_commit_message(id, '1 switched to file readme.txt')
+      assert_tag_commit_message(id, 1, '1 switched to file readme.txt')
 
       # TODO: should this result in NO new events?      
 
@@ -51,7 +51,7 @@ class KataFileSwitchTest < TestBase
       assert_equal 1, event1['index']
       assert_equal 'edit-file', event1['colour']
       assert_equal 'readme.txt', event1['filename']
-      assert_v2_last_commit_message(id, '1 edited file readme.txt')
+      assert_tag_commit_message(id, 1, '1 edited file readme.txt')
     end
   end
 end

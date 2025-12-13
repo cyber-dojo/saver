@@ -12,7 +12,7 @@ class KataRanTestsTest < TestBase
   versions3_test 'Dk1', %w[kata_ran_tests gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      assert_v2_last_commit_message(id, '1 ran tests, no prediction, got red')
+      assert_tag_commit_message(id, 1, '1 ran tests, no prediction, got red')
       [index, red_summary]
     }
   end
@@ -23,7 +23,7 @@ class KataRanTestsTest < TestBase
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({ 'predicted' => 'red' })
       kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
-      assert_v2_last_commit_message(id, '1 ran tests, predicted red, got red')
+      assert_tag_commit_message(id, 1, '1 ran tests, predicted red, got red')
       [index, summary]
     }
   end
@@ -34,7 +34,7 @@ class KataRanTestsTest < TestBase
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({ 'predicted' => 'green' })
       kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
-      assert_v2_last_commit_message(id, '1 ran tests, predicted green, got red')
+      assert_tag_commit_message(id, 1, '1 ran tests, predicted green, got red')
       [index, summary]
     }
   end
@@ -48,7 +48,7 @@ class KataRanTestsTest < TestBase
       reverted_summary = { 'colour' => 'red', 'revert' => [id, index=1] }
       kata_reverted(id, index=3, files, stdout, stderr, status, reverted_summary)
       expected = JSON.generate({'id': id, 'index': 1})
-      assert_v2_last_commit_message(id, "3 reverted to #{expected}")
+      assert_tag_commit_message(id, 3, "3 reverted to #{expected}")
       [index, reverted_summary]
     }
   end
@@ -66,7 +66,7 @@ class KataRanTestsTest < TestBase
       checkout_out_summary = { 'colour' => 'red', 'checkout' => checkout }
       kata_checked_out(id, index=1, files, stdout, stderr, status, checkout_out_summary)
       expected = JSON.generate(checkout)
-      assert_v2_last_commit_message(id, "1 checked out #{expected}")
+      assert_tag_commit_message(id, 1, "1 checked out #{expected}")
       [index, checkout_out_summary]
     }
   end

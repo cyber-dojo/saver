@@ -31,7 +31,7 @@ class KataFileDeleteTest < TestBase
       files = kata_event(id, 1)['files']
       filenames = files.keys
       refute filenames.include?('readme.txt')
-      assert_v2_last_commit_message(id, '1 deleted file readme.txt')
+      assert_tag_commit_message(id, 1, '1 deleted file readme.txt')
     end
   end
 
@@ -58,7 +58,7 @@ class KataFileDeleteTest < TestBase
       assert_equal 'readme.txt', event1['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
-      # TODO: assert_v2_commit_message(id, tag, expected)
+      assert_tag_commit_message(id, 1, '1 edited file readme.txt')
 
       event2 = events[2]
       assert_equal 2, event2['index']
@@ -67,7 +67,7 @@ class KataFileDeleteTest < TestBase
       files = kata_event(id, 2)['files']
       filenames = files.keys
       refute filenames.include?('tennis.py')
-      assert_v2_last_commit_message(id, '2 deleted file tennis.py')      
+      assert_tag_commit_message(id, 2, '2 deleted file tennis.py')
     end
   end
 end
