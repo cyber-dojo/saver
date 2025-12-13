@@ -70,9 +70,17 @@ module External
       @http.get(__method__, { ids:ids, indexes:indexes })
     end
 
+    # - - - - - - - - - - - - - - - - - -
+
     def kata_file_create(id, index, files, filename)
       @http.post(__method__, { id:id, index:index, files:files, filename:filename })
     end
+
+    def kata_file_delete(id, index, files, filename)
+      @http.post(__method__, { id:id, index:index, files:files, filename:filename })
+    end
+
+    # - - - - - - - - - - - - - - - - - -
 
     def kata_option_get(id, name)
       @http.get(__method__, { id:id, name:name })
