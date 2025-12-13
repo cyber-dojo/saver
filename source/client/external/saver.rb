@@ -80,6 +80,16 @@ module External
       @http.post(__method__, { id:id, index:index, files:files, filename:filename })
     end
 
+    def kata_file_rename(id, index, files, old_filename, new_filename)
+      @http.post(__method__, { 
+        id:id, 
+        index:index, 
+        files:files, 
+        old_filename:old_filename, 
+        new_filename:new_filename
+      })
+    end
+
     # - - - - - - - - - - - - - - - - - -
 
     def kata_option_get(id, name)

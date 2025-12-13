@@ -84,6 +84,10 @@ class TestBase < Id58TestBase
     saver.kata_file_delete(id, index, files, filename)
   end
 
+  def kata_file_rename(id, index, files, old_filename, new_filename)
+    saver.kata_file_rename(id, index, files, old_filename, new_filename)
+  end
+
   # - - - - - - - - - - - - - - - - - -
 
   def kata_option_get(name)
