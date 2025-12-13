@@ -72,6 +72,12 @@ class TestBase < Id58TestBase
 
   attr_reader :version
 
+  def in_tennis_kata
+    id = kata_create(manifest_Tennis_refactoring_Python_unitttest)
+    # ["cyber-dojo.sh", "readme.txt", "tennis.py", "tennis_unit_test.py"]    
+    yield(id, kata_event(id, -1)['files'])
+  end
+
   def assert_v2_last_commit_message(id, expected)
     return unless version == 2
 

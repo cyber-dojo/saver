@@ -56,29 +56,33 @@ module TestHelpersModel
     model.kata_event(id:id, index:index)
   end
 
-  def kata_create_file(id, index, filename)
-    model.kata_create_file(
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  def kata_file_create(id, index, filename)
+    model.kata_file_create(
       id:id, index:index, filename:filename
     )
   end
 
-  def kata_delete_file(id, index, filename)
-    model.kata_delete_file(
+  def kata_file_delete(id, index, filename)
+    model.kata_file_delete(
       id:id, index:index, filename:filename
     )
   end
 
-  def kata_rename_file(id, index, old_filename, new_filename)
-    model.kata_rename_file(
+  def kata_file_rename(id, index, old_filename, new_filename)
+    model.kata_file_rename(
       id:id, index:index, old_filename:old_filename, new_filename:new_filename
     )
   end
 
-  def kata_switch_file(id, index, files, filename)
-    model.kata_switch_file(
+  def kata_file_switch(id, index, files, filename)
+    model.kata_file_switch(
       id:id, index:index, files:files, filename:filename
     )
   end
+
+  # - - - - - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id, index, files, stdout, stderr, status, summary)
     model.kata_ran_tests(
