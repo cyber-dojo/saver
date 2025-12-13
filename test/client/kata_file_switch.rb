@@ -17,12 +17,12 @@ class KataFileSwitchTest < TestBase
       files = kata_event(id, 0)['files']
       new_index = kata_file_switch(id, index=1, files)
 
-      assert_equal 1, new_index
       events = kata_events(id)
+      assert_equal 1, new_index
       assert_equal 1, events.size
-      event0 = events[0]
-      assert_equal 0, event0['index']      
-      assert_equal 'create', event0['colour']
+
+      assert_equal 0, events[0]['index']      
+      assert_equal 'create', events[0]['colour']
     end
   end
 
@@ -39,13 +39,13 @@ class KataFileSwitchTest < TestBase
 
       new_index = kata_file_switch(id, index=1, files)
 
-      assert_equal 2, new_index
       events = kata_events(id)
+      assert_equal 2, new_index
       assert_equal 2, events.size
-      event1 = events[1]
-      assert_equal 1, event1['index']
-      assert_equal 'edit-file', event1['colour']
-      assert_equal 'readme.txt', event1['filename']
+
+      assert_equal 1, events[1]['index']
+      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'readme.txt', events[1]['filename']
     end
   end
 end

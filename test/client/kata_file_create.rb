@@ -19,13 +19,13 @@ class KataFileCreateTest < TestBase
 
       new_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
-      assert_equal 2, new_index
       events = kata_events(id)
+      assert_equal 2, new_index
       assert_equal 2, events.size
-      event1 = events[1]
-      assert_equal 1, event1['index']
-      assert_equal 'create-file', event1['colour']
-      assert_equal 'wibble.txt', event1['filename']
+
+      assert_equal 1, events[1]['index']
+      assert_equal 'create-file', events[1]['event']
+      assert_equal 'wibble.txt', events[1]['filename']
 
       files = kata_event(id, 1)['files']
       filenames = files.keys

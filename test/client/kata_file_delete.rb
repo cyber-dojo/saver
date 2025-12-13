@@ -20,13 +20,13 @@ class KataFileDeleteTest < TestBase
 
       new_index = kata_file_delete(id, index=1, files, 'readme.txt')
 
-      assert_equal 2, new_index
       events = kata_events(id)
+      assert_equal 2, new_index
       assert_equal 2, events.size
-      event1 = events[1]
-      assert_equal 1, event1['index']
-      assert_equal 'delete-file', event1['colour']
-      assert_equal 'readme.txt', event1['filename']
+
+      assert_equal 1, events[1]['index']
+      assert_equal 'delete-file', events[1]['event']
+      assert_equal 'readme.txt', events[1]['filename']
 
       files = kata_event(id, 1)['files']
       filenames = files.keys
@@ -54,21 +54,19 @@ class KataFileDeleteTest < TestBase
       
       new_index = kata_file_delete(id, index=1, files, 'tennis.py')
 
-      assert_equal 3, new_index
       events = kata_events(id)
+      assert_equal 3, new_index
       assert_equal 3, events.size
 
-      event1 = events[1]
-      assert_equal 1, event1['index']
-      assert_equal 'edit-file', event1['colour']
-      assert_equal 'readme.txt', event1['filename']
+      assert_equal 1, events[1]['index']
+      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
 
-      event2 = events[2]
-      assert_equal 2, event2['index']
-      assert_equal 'delete-file', event2['colour']
-      assert_equal 'tennis.py', event2['filename']
+      assert_equal 2, events[2]['index']
+      assert_equal 'delete-file', events[2]['event']
+      assert_equal 'tennis.py', events[2]['filename']
       files = kata_event(id, 2)['files']
       filenames = files.keys
       refute filenames.include?('tennis.py')
@@ -95,21 +93,19 @@ class KataFileDeleteTest < TestBase
       
       new_index = kata_file_delete(id, index=1, files, 'readme.txt')
 
-      assert_equal 3, new_index
       events = kata_events(id)
+      assert_equal 3, new_index
       assert_equal 3, events.size
 
-      event1 = events[1]
-      assert_equal 1, event1['index']
-      assert_equal 'edit-file', event1['colour']
-      assert_equal 'readme.txt', event1['filename']
+      assert_equal 1, events[1]['index']
+      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
 
-      event2 = events[2]
-      assert_equal 2, event2['index']
-      assert_equal 'delete-file', event2['colour']
-      assert_equal 'readme.txt', event2['filename']
+      assert_equal 2, events[2]['index']
+      assert_equal 'delete-file', events[2]['event']
+      assert_equal 'readme.txt', events[2]['filename']
       files = kata_event(id, 2)['files']
       filenames = files.keys
       refute filenames.include?('readme.txt')
