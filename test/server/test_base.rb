@@ -72,13 +72,19 @@ class TestBase < Id58TestBase
 
   attr_reader :version
 
-  def assert_v2_last_commit_message(id, expected)
+  def in_tennis_kata
+    id = kata_create(manifest_Tennis_refactoring_Python_unitttest)
+    # filenames = ["cyber-dojo.sh", "readme.txt", "tennis.py", "tennis_unit_test.py"]    
+    yield(id, kata_event(id, -1)['files'])
+  end
+
+  def assert_tag_commit_message(id, tag, expected)
     return unless version == 2
 
     dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
-    stdout = shell.assert_cd_exec(dir, 'git log --abbrev-commit --pretty=oneline')
-    last = stdout.lines[0]
-    diagnostic = "\nexpected:#{expected}\n  actual:#{last}"
-    assert last.include?(expected), diagnostic
+    stdout = shell.assert_cd_exec(dir, "git tag --list --format='%(contents)' #{tag}")
+    line = stdout.lines[0]
+    diagnostic = "\nexpected:#{expected}\n  actual:#{line}"
+    assert line.include?(expected), diagnostic
   end
 end

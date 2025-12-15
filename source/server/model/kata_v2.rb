@@ -136,28 +136,52 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def create_file(id, index, filename)
-    files = read_current_files(id)
+  def file_create(id, index, files, filename)
+    current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
+    if edited
+      summary = { 'event' => 'edit-file', 'filename' => edited }
+      tag_message = "edited file '#{edited}'"
+      index = git_commit_tag(id, index, files, summary, tag_message)
+    end
+
     files[filename] = { 'content' => '' }
-    summary = { 'colour' => 'create-file', 'filename' => filename }
+    summary = { 'event' => 'create-file', 'filename' => filename }
     tag_message = "created file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  def delete_file(id, index, filename)
-    files = read_current_files(id)
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_delete(id, index, files, filename)
+    current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
+    if edited
+      summary = { 'event' => 'edit-file', 'filename' => edited }
+      tag_message = "edited file '#{edited}'"
+      index = git_commit_tag(id, index, files, summary, tag_message)
+    end
+
     files.delete(filename)
-    summary = { 'colour' => 'delete-file', 'filename' => filename }
+    summary = { 'event' => 'delete-file', 'filename' => filename }
     tag_message = "deleted file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  def rename_file(id, index, old_filename, new_filename)
-    files = read_current_files(id)
-    old = files.delete(old_filename)
-    files[new_filename] = old
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_rename(id, index, files, old_filename, new_filename)
+    current_files = read_current_files(id)
+    edited = edited_file(current_files, files)
+    if edited
+      summary = { 'event' => 'edit-file', 'filename' => edited }
+      tag_message = "edited file '#{edited}'"
+      index = git_commit_tag(id, index, files, summary, tag_message)
+    end
+
+    files[new_filename] = files.delete(old_filename)
     summary = { 
-      'colour' => 'rename-file', 
+      'event' => 'rename-file', 
       'old_filename' => old_filename,
       'new_filename' => new_filename 
     }
@@ -165,16 +189,15 @@ class Kata_v2
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
-  def switch_file(id, index, files, filename)
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def file_switch(id, index, files)
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
-    if edited.nil?
-      summary = { 'colour' => 'switch-file', 'filename' => filename }
-      tag_message = "switched to file '#{filename}'"
-    else
-      summary = { 'colour' => 'edit-file', 'filename' => edited }
-      tag_message = "edited file #{edited}"
-    end 
+    return index if !edited
+
+    summary = { 'event' => 'edit-file', 'filename' => edited }
+    tag_message = "edited file #{edited}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
@@ -309,19 +332,13 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
-    saver_outages = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
       events = read_events(worktree)
       last_index = events.last['index']
-      unless index > last_index
-        raise 'Out of order event'
-      end
 
-      # Backfill saver outage events
-      saver_outages = (last_index+1..index-1)
-      saver_outages.each do |n|
-        events << { 'index' => n, 'event' => 'outage' }
+      unless index == last_index+1  
+        raise 'Out of order event'
       end
 
       # Add the new event
@@ -355,9 +372,7 @@ class Kata_v2
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
-    saver_outages.each do |n|
-      shell.assert_cd_exec(repo_dir(id), ["git tag #{n} HEAD"])
-    end
+    index + 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

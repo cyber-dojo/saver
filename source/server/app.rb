@@ -30,10 +30,10 @@ class App < AppBase
   post_json(:model, :kata_fork)
    get_json(:model, :katas_events)
 
-  post_json(:model, :kata_create_file)
-  post_json(:model, :kata_delete_file)
-  post_json(:model, :kata_rename_file)
-  post_json(:model, :kata_switch_file)
+  post_json(:model, :kata_file_create)
+  post_json(:model, :kata_file_delete)
+  post_json(:model, :kata_file_rename)
+  post_json(:model, :kata_file_switch)
   
   post_json(:model, :kata_ran_tests)
   post_json(:model, :kata_predicted_right)

@@ -74,6 +74,26 @@ class TestBase < Id58TestBase
     saver.katas_events(ids, indexes)
   end
 
+  # - - - - - - - - - - - - - - - - - -
+
+  def kata_file_create(id, index, files, filename)
+    saver.kata_file_create(id, index, files, filename)
+  end
+
+  def kata_file_delete(id, index, files, filename)
+    saver.kata_file_delete(id, index, files, filename)
+  end
+
+  def kata_file_rename(id, index, files, old_filename, new_filename)
+    saver.kata_file_rename(id, index, files, old_filename, new_filename)
+  end
+
+  def kata_file_switch(id, index, files)
+    saver.kata_file_switch(id, index, files)
+  end
+
+  # - - - - - - - - - - - - - - - - - -
+
   def kata_option_get(name)
     saver.kata_option_get(id, name)
   end

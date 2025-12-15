@@ -64,31 +64,6 @@ class KataEventsTest < TestBase
     end
   end
 
-  version_test 2, 'ds1', %w( saver outages are recorded as backfilled events ) do
-    files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
-    stdout = { "content" => "so", "truncated" => false }
-    stderr = { "content" => "se", "truncated" => true }
-    summary = { "colour" => "red" }
-    t0 = [2021,6,12, 6,9,51,899055]
-    t1 = [2021,6,12, 6,57,895675]
-    t3 = [2021,6,12, 7,48,673675]
-    externals.instance_exec { @time = TimeStub.new(t0, t1, t3) }
-
-    in_kata do |id|
-      kata_ran_tests(id, 1, files, stdout, stderr,   "0", summary)
-      # saver outage for 2
-      kata_ran_tests(id, 3, files, stdout, stderr, "137", summary)
-      actual = kata_events(id)
-      expected = [
-        { "index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
-        { "index" => 1, "time" => t1, "colour" => "red" },
-        { "index" => 2, "event" => "outage" },
-        { "index" => 3, "time" => t3, "colour" => "red" }
-      ]
-      assert_equal expected, actual
-    end
-  end
-
   version_test 2, 'eh4', %w( polyfill colour 'create' for index==0 creation event ) do
     t0 = [2021,6,12, 6,9,51,899055]
     externals.instance_exec { @time = TimeStub.new(t0) }

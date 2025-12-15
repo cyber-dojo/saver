@@ -52,7 +52,7 @@ class GroupJoinedTest < TestBase
     end
   end
 
-  private
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def expected
     {

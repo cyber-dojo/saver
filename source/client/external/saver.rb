@@ -25,23 +25,23 @@ module External
     end
 
     def group_exists?(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def group_manifest(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def group_join(id, indexes)
-      @http.post(__method__, {id:id, indexes:indexes})
+      @http.post(__method__, { id:id, indexes:indexes })
     end
 
     def group_joined(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def group_fork(id, index)
-      @http.post(__method__, {id:id, index:index})
+      @http.post(__method__, { id:id, index:index })
     end
 
     # - - - - - - - - - - - - - - - - - - -
@@ -51,39 +51,65 @@ module External
     end
 
     def kata_exists?(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def kata_manifest(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def kata_events(id)
-      @http.get(__method__, {id:id})
+      @http.get(__method__, { id:id })
     end
 
     def kata_event(id, index)
-      @http.get(__method__, {id:id, index:index})
+      @http.get(__method__, { id:id, index:index })
     end
 
     def katas_events(ids, indexes)
-      @http.get(__method__, {ids:ids, indexes:indexes})
+      @http.get(__method__, { ids:ids, indexes:indexes })
     end
 
+    # - - - - - - - - - - - - - - - - - -
+
+    def kata_file_create(id, index, files, filename)
+      @http.post(__method__, { id:id, index:index, files:files, filename:filename })
+    end
+
+    def kata_file_delete(id, index, files, filename)
+      @http.post(__method__, { id:id, index:index, files:files, filename:filename })
+    end
+
+    def kata_file_rename(id, index, files, old_filename, new_filename)
+      @http.post(__method__, { 
+        id:id, 
+        index:index, 
+        files:files, 
+        old_filename:old_filename, 
+        new_filename:new_filename
+      })
+    end
+
+    def kata_file_switch(id, index, files)
+      @http.post(__method__, { id:id, index:index, files:files })
+    end
+
+    # - - - - - - - - - - - - - - - - - -
+
     def kata_option_get(id, name)
-      @http.get(__method__, {id:id, name:name})
+      @http.get(__method__, { id:id, name:name })
     end
 
     def kata_option_set(id, name, value)
-      @http.post(__method__, {id:id, name:name, value:value})
+      @http.post(__method__, { id:id, name:name, value:value })
     end
 
     def kata_fork(id, index)
-      @http.post(__method__, {id:id, index:index})
+      @http.post(__method__, { id:id, index:index })
     end
 
     #def kata_download(id)
-    #  @http.get(__method__, {id:id})
+    #  @http.get(__method__, { id:id })
     #end
 
   end
