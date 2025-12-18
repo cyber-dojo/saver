@@ -78,13 +78,23 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    result = { 'files' => {} }
     index = index.to_i
-    if index < 0
-      index = events(id)[index]['index']
+    all_events = events(id)
+    last_index = all_events[-1]['index'] 
+    if index > last_index
+      raise "Invalid index #{index}"
     end
 
+    if index < 0
+      if -index > last_index + 1
+        raise "Invalid index #{index}"
+      end
+      index = all_events[index]['index']
+    end
+
+    result = { 'files' => {} }
     truncations = nil
+
     tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
