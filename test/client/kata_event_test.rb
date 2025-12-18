@@ -30,4 +30,21 @@ class KataEventTest < TestBase
     assert_equal expected, actual
   end
 
+  version_test 2, '1P5', %w( v2 bad +ve index raises ) do
+    in_kata do |id|
+      index = 0
+      event = kata_event(id, index)
+
+      files = event['files']
+      index = 1
+      kata_file_create(id, index, files, 'wibble.txt')
+      kata_event(id, index)
+
+      bad_index = 2
+      error = assert_raises(HttpJsonHash::ServiceError) do
+        kata_event(id, bad_index)
+      end
+      assert_equal "Invalid index #{bad_index}", error.message
+    end
+  end
 end
