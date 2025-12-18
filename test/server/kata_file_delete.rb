@@ -42,13 +42,14 @@ class KataFileDeleteTest < TestBase
   |and a different file has been deleted
   |a kata_file_delete event 
   |results in two events
-  |the first for the edit
+  |the first for the edit (and *NOT* for the delete)
   |the second for the delete
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
+      # At this point, 'tennis.py', the deleted file, IS in files
       new_index = kata_file_delete(id, index=1, files, 'tennis.py')
 
       events = kata_events(id)
@@ -61,6 +62,7 @@ class KataFileDeleteTest < TestBase
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
       assert_tag_commit_message(id, 1, '1 edited file readme.txt')
+      assert files.keys.include?('tennis.py')
 
       assert_equal 2, events[2]['index']
       assert_equal 'delete-file', events[2]['event']
