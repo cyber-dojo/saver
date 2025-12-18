@@ -43,13 +43,14 @@ class KataFileCreateTest < TestBase
   |when one other file has been edited
   |a kata_file_create event 
   |results in two events
-  |the first for the edit
+  |the first for the edit (and *NOT* the created file)
   |the second for the newly created file
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
 
+      # VIP: at this point 'wibble.txt', the new filename, is NOT in files
       new_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
       events = kata_events(id)
@@ -62,6 +63,7 @@ class KataFileCreateTest < TestBase
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
       assert_tag_commit_message(id, 1, '1 edited file readme.txt')
+      refute files.keys.include?('wibble.txt')
 
       assert_equal 2, events[2]['index']
       assert_equal 'create-file', events[2]['event']

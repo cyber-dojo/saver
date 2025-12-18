@@ -137,6 +137,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
+    # At this point, the (new) filename is NOT present in files
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
     if edited
@@ -154,6 +155,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_delete(id, index, files, filename)
+    # At this point, the (deleted) filename IS present in files
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
     if edited
