@@ -80,11 +80,15 @@ class Kata_v2
   def event(id, index)
     index = index.to_i
     all_events = events(id)
-    if index > all_events[-1]['index']
+    last_index = all_events[-1]['index'] 
+    if index > last_index
       raise "Invalid index #{index}"
     end
 
     if index < 0
+      if -index > last_index + 1
+        raise "Invalid index #{index}"
+      end
       index = all_events[index]['index']
     end
 
