@@ -44,7 +44,7 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
 ## GET group_manifest(id)
 Gets the manifest used to create the group with the given `id`.
 - parameters
-  * **id:String**.
+  * **id:String**. The group id.
 - returns
   * the manifest of the group with the given `id`.
 - example
@@ -89,7 +89,7 @@ Gets the manifest used to create the group with the given `id`.
 ## GET group_exists?(id)
 Determines if a group with the given `id` exists.
 - parameters 
-  * **id:String**.
+  * **id:String**. The group id.
 - returns 
   * `true` if a group with the given `id` exists, otherwise `false`.
 - example
@@ -112,7 +112,7 @@ Determines if a group with the given `id` exists.
 ## POST group_join(id,indexes)
 Creates a new kata in the group with the given `id` and returns the kata's id.
 - parameters 
-  * **id:String**.
+  * **id:String**. The group id.
   * **indexes:Array[int]**
   Currently unused (and defaulted). For a planned feature.  
 - returns 
@@ -137,10 +137,9 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
 - - - -
 ## GET group_joined(id)
 Returns the kata-id and kata-events-summary keyed against the kata's avatar-index (0-63)
-for the katas that have joined a group. The id can be the group's `id`
-**or** the `id` of any kata in the group.
+for the katas that have joined a group. 
 - parameters 
-  * **id:String**.
+  * **id:String**. The group's `id` **or** the `id` of any kata in the group.
 - returns 
   * a **Hash**.
 - example
@@ -177,8 +176,8 @@ the given `id` at the given `index`. The new group is *not* a fork in the git se
 that is, it is *not* a 'deep' copy, the history of commits (one per test event)
 that exist in the kata being forked are *not* copied.
 - parameters 
-  * **id:String**.
-  * **index:int**
+  * **id:String**. The id of the kata being forked.
+  * **index:int**. The event index to fork from.
 - returns 
   * the `id` of the created group.
 - example
@@ -235,7 +234,7 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
 ## GET kata_manifest(id)
 Gets the manifest used to create the kata exercise with the given `id`.
 - parameters 
-  * **id:String**.
+  * **id:String**. The kata id.
 - returns 
   * the manifest of the kata with the given `id`.
 - example
@@ -280,7 +279,7 @@ Gets the manifest used to create the kata exercise with the given `id`.
 ## GET kata_exists?(id)
 Determines if a kata exercise with the given `id` exists.
 - parameters 
-  * **id:String**.
+  * **id:String**. The kata id.
 - returns 
   * `true` if a kata with the given `id` exists, otherwise `false`.
 - example
@@ -304,7 +303,7 @@ Determines if a kata exercise with the given `id` exists.
 ## GET kata_events(id)
 Gets the summary of all current events for the kata with the given `id`.
 - parameters 
-  * **id:String**.
+  * **id:String**. The kata id.
 - returns 
   * an Array holding the events summary of the kata with the given `id`.
 - example
@@ -351,7 +350,7 @@ Gets the summary of all current events for the kata with the given `id`.
 ## GET kata_event(id,index)
 Gets the full details for the kata event whose kata has the given `id` whose event has the given `index`.
 - parameters 
-  * **id:String**.
+  * **id:String**. The kata id.
   * **index:int**. Negative values count backwards, -1 is the last index.
 - returns 
   * the event with the given `id` and `index`.
@@ -399,8 +398,8 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
 Gets the full details for the kata events with the given `ids` and `indexes`.
 A Batch-Method for kata_event(id,index).
 - parameters 
-  * **ids:Array[String]**.
-  * **index:Array[int]**.
+  * **ids:Array[String]**. The kata ids.
+  * **index:Array[int]**. The corresponding event indexes.
 - returns 
   * the events with the given `ids` and `indexes`.
 - example
@@ -438,6 +437,14 @@ A Batch-Method for kata_event(id,index).
 - - - -
 ## POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)
 Record a test event with no prediction.
+- parameters 
+  * **id:String**. The kata id.
+  * **index:int**. The next event index.
+  * **files:Hash**. The files which created `stdout`,`stderr`,`status` in the same format as [kata_event](#get-kata_eventidindex)
+  * **stdout:Hash**. The stdout produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
+  * **stderr:Hash**. The stderr produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
+  * **status:String**. The status produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
+  * **summary:Hash**. Extra event data to store, eg `duration`,`time`,`colour`
 
 
 - - - -
