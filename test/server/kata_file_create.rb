@@ -27,7 +27,7 @@ class KataFileCreateTest < TestBase
       assert_equal 2, events.size
       
       assert_equal 1, events[1]['index']
-      assert_equal 'create-file', events[1]['event']
+      assert_equal 'file-create', events[1]['event']
       assert_equal 'wibble.txt', events[1]['filename']
 
       files = kata_event(id, 1)['files']
@@ -58,7 +58,7 @@ class KataFileCreateTest < TestBase
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'file-edit', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
@@ -66,7 +66,7 @@ class KataFileCreateTest < TestBase
       refute files.keys.include?('wibble.txt')
 
       assert_equal 2, events[2]['index']
-      assert_equal 'create-file', events[2]['event']
+      assert_equal 'file-create', events[2]['event']
       assert_equal 'wibble.txt', events[2]['filename']
       files = kata_event(id, 2)['files']
       assert_equal '', files['wibble.txt']['content']
