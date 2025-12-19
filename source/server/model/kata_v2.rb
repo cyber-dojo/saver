@@ -9,11 +9,11 @@ require_relative '../lib/utf8_clean'
 require 'base64'
 require 'tmpdir'
 
-# 1. Uses git repo to store date
+# 1. Uses git repo to store data
 # 2. event.json has been dropped
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
-# 5. saver outages are recorded in events.json
+# 5. saver outages are NOT recorded in events.json
 
 class Kata_v2
 
