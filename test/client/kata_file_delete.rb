@@ -24,7 +24,7 @@ class KataFileDeleteTest < TestBase
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'delete-file', events[1]['event']
+      assert_equal 'file-delete', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       refute files.keys.include?('readme.txt')
@@ -55,13 +55,13 @@ class KataFileDeleteTest < TestBase
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'file-edit', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
 
       assert_equal 2, events[2]['index']
-      assert_equal 'delete-file', events[2]['event']
+      assert_equal 'file-delete', events[2]['event']
       assert_equal 'tennis.py', events[2]['filename']
       files = kata_event(id, 2)['files']
       refute files.keys.include?('tennis.py')
@@ -92,13 +92,13 @@ class KataFileDeleteTest < TestBase
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'file-edit', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
 
       assert_equal 2, events[2]['index']
-      assert_equal 'delete-file', events[2]['event']
+      assert_equal 'file-delete', events[2]['event']
       assert_equal 'readme.txt', events[2]['filename']
       files = kata_event(id, 2)['files']
       refute files.keys.include?('readme.txt')

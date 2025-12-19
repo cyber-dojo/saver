@@ -28,7 +28,7 @@ class KataFileRenameTest < TestBase
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'rename-file', events[1]['event']
+      assert_equal 'file-rename', events[1]['event']
       assert_equal 'readme.txt', events[1]['old_filename']
       assert_equal 'readme.md', events[1]['new_filename']
 
@@ -62,14 +62,14 @@ class KataFileRenameTest < TestBase
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'file-edit', events[1]['event']
       assert_equal 'tennis.py', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['tennis.py']['content']
       assert_tag_commit_message(id, 1, '1 edited file tennis.py')
 
       assert_equal 2, events[2]['index']
-      assert_equal 'rename-file', events[2]['event']
+      assert_equal 'file-rename', events[2]['event']
       assert_equal 'readme.txt', events[2]['old_filename']
       assert_equal 'readme.md', events[2]['new_filename']
       files = kata_event(id, 2)['files']
@@ -101,14 +101,14 @@ class KataFileRenameTest < TestBase
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'edit-file', events[1]['event']
+      assert_equal 'file-edit', events[1]['event']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
       assert_tag_commit_message(id, 1, '1 edited file readme.txt')
 
       assert_equal 2, events[2]['index']
-      assert_equal 'rename-file', events[2]['event']
+      assert_equal 'file-rename', events[2]['event']
       assert_equal 'readme.txt', events[2]['old_filename']
       assert_equal 'readme.md', events[2]['new_filename']
       files = kata_event(id, 2)['files']

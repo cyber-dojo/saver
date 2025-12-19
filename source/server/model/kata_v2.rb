@@ -151,13 +151,13 @@ class Kata_v2
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
     if edited
-      summary = { 'event' => 'edit-file', 'filename' => edited }
+      summary = { 'event' => 'file-edit', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
       index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files[filename] = { 'content' => '' }
-    summary = { 'event' => 'create-file', 'filename' => filename }
+    summary = { 'event' => 'file-create', 'filename' => filename }
     tag_message = "created file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
@@ -169,13 +169,13 @@ class Kata_v2
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
     if edited
-      summary = { 'event' => 'edit-file', 'filename' => edited }
+      summary = { 'event' => 'file-edit', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
       index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files.delete(filename)
-    summary = { 'event' => 'delete-file', 'filename' => filename }
+    summary = { 'event' => 'file-delete', 'filename' => filename }
     tag_message = "deleted file #{filename}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
@@ -186,14 +186,14 @@ class Kata_v2
     current_files = read_current_files(id)
     edited = edited_file(current_files, files)
     if edited
-      summary = { 'event' => 'edit-file', 'filename' => edited }
+      summary = { 'event' => 'file-edit', 'filename' => edited }
       tag_message = "edited file '#{edited}'"
       index = git_commit_tag(id, index, files, summary, tag_message)
     end
 
     files[new_filename] = files.delete(old_filename)
     summary = { 
-      'event' => 'rename-file', 
+      'event' => 'file-rename', 
       'old_filename' => old_filename,
       'new_filename' => new_filename 
     }
@@ -208,7 +208,7 @@ class Kata_v2
     edited = edited_file(current_files, files)
     return index if !edited
 
-    summary = { 'event' => 'edit-file', 'filename' => edited }
+    summary = { 'event' => 'file-edit', 'filename' => edited }
     tag_message = "edited file #{edited}"
     git_commit_tag(id, index, files, summary, tag_message)
   end
