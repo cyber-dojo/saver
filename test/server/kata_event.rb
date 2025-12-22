@@ -145,14 +145,13 @@ class KataEventTest < TestBase
   ) do
     in_kata do |id|
       actual = kata_event(id, 0)
-      expected = {content:"", truncated:false}
-      assert_equal expected, actual["stdout"]
-      expected = {content:"", truncated:false}
-      assert_equal expected, actual["stderr"]
+      expected = { 'content' => '', 'truncated' => false }
+      assert_equal expected, actual['stdout']
+      assert_equal expected, actual['stderr']
       expected = 0
-      assert_equal expected, actual["status"]
-      expected = "create"
-      assert_equal expected, actual["colour"]
+      assert_equal expected, actual['status']
+      expected = 'create'
+      assert_equal expected, actual['colour']
     end
   end
 
