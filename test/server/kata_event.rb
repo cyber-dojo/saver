@@ -89,7 +89,7 @@ class KataEventTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # kata_event(id, index < 0)
 
-  version_test 0, '2dJ', %w(
+  version_test 0, 'Hx6', %w(
   kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5rTJv5'
@@ -105,6 +105,18 @@ class KataEventTest < TestBase
     assert_equal kata_event(id, 3), kata_event(id, -1)
     assert_equal kata_event(id, 2), kata_event(id, -2)
     assert_equal kata_event(id, 1), kata_event(id, -3)
+  end
+
+  version_test 2, 'Hx8', %w(
+  kata_event(id, index=-N) raises when N is out of bounds
+  ) do
+    in_kata do |id|
+      kata_event(id, -1)
+      ex = assert_raises(RuntimeError) do
+        kata_event(id, -2)
+      end
+      assert_equal ex.message, "Invalid index -2"
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,26 +155,5 @@ class KataEventTest < TestBase
       assert_equal expected, actual["colour"]
     end
   end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  # version_test 2, '9Df', %w(
-  # |kata_event(id, index) where index does not correspond to an event raises
-  # ) do
-
-  #   files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
-  #   stdout = { "content" => "so", "truncated" => false }
-  #   stderr = { "content" => "se", "truncated" => true }
-  #   status = "0"
-  #   red_summary = { "colour" => "red" }
-  #   in_kata do |id|
-  #     kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-  #     kata_event(id, 1)
-  #     ex = assert_raises(RuntimeError) do
-  #       kata_event(id, 2)
-  #     end
-  #     assert_equal ex.message, "Invalid index: 2"
-  #   end
-  # end
 
 end
