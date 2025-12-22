@@ -101,13 +101,9 @@ class Kata_v2
       if filename[-1] === '/' # dir marker
         next
       elsif filename.start_with?('files/')
-        result['files'][filename['files/'.size..-1]] = {
-          'content' => content
-        }
+        result['files'][filename['files/'.size..-1]] = { 'content' => content }
       elsif ['stdout', 'stderr'].include?(filename)
-        result[filename] = {
-          'content' => content
-        }
+        result[filename] = { 'content' => content }
       elsif filename === 'status'
         result['status'] = content
       elsif filename === 'events.json'
@@ -118,16 +114,14 @@ class Kata_v2
       end
     end
 
-    if result['event'] == 'outage'
-      ['stdout', 'stderr', 'status'].each { |f| result.delete(f) }
-    elsif result.has_key?('stdout')
+    if result.has_key?('stdout')
       result['stdout']['truncated'] = truncations['stdout']
       result['stderr']['truncated'] = truncations['stderr']
     end
 
     if index === 0
-      result['stdout'] = { 'content': '', 'truncated': false}
-      result['stderr'] = { 'content': '', 'truncated': false}
+      result['stdout'] = { 'content' => '', 'truncated' => false}
+      result['stderr'] = { 'content' => '', 'truncated' => false}
       result['status'] = 0
       result['colour'] = 'create'
     end
