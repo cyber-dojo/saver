@@ -75,7 +75,10 @@ class TestBase < Id58TestBase
   def in_tennis_kata
     id = kata_create(manifest_Tennis_refactoring_Python_unitttest)
     # filenames = ["cyber-dojo.sh", "readme.txt", "tennis.py", "tennis_unit_test.py"]    
-    yield(id, kata_event(id, -1)['files'])
+    stdout = { 'content' => 'some-stdout', 'truncated' => false }
+    stderr = { 'content' => 'some-stderr', 'truncated' => false }
+    status = '0'
+    yield(id, kata_event(id, -1)['files'], stdout, stderr, status)
   end
 
   def assert_tag_commit_message(id, tag, expected)

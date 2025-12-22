@@ -147,8 +147,11 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
-    # At this point, the (new) filename is NOT present in files
-    current_files = read_current_files(id)
+    # At this point, the (new) filename is NOT present in files.
+    # Can create two saver events if there is also a file-edit.
+    # The timestamp of the file-edit will only be approximate.
+
+    current_files = read_current_files(id, index - 1)
     edited = edited_file(current_files, files)
     if edited
       summary = { 'event' => 'file-edit', 'filename' => edited }
@@ -165,8 +168,11 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_delete(id, index, files, filename)
-    # At this point, the (deleted) filename IS present in files
-    current_files = read_current_files(id)
+    # At this point, the (deleted) filename IS present in files.
+    # Can create two saver events if there is also a file-edit.
+    # The timestamp of the file-edit will only be approximate.
+
+    current_files = read_current_files(id, index - 1)
     edited = edited_file(current_files, files)
     if edited
       summary = { 'event' => 'file-edit', 'filename' => edited }
@@ -183,7 +189,11 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_rename(id, index, files, old_filename, new_filename)
-    current_files = read_current_files(id)
+    # At this point, new_filename is NOT present in files.
+    # Can create two saver events if there is also a file-edit.
+    # The timestamp of the file-edit will only be approximate.
+
+    current_files = read_current_files(id, index - 1)
     edited = edited_file(current_files, files)
     if edited
       summary = { 'event' => 'file-edit', 'filename' => edited }
@@ -204,7 +214,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_switch(id, index, files)
-    current_files = read_current_files(id)
+    current_files = read_current_files(id, index - 1)
     edited = edited_file(current_files, files)
     return index if !edited
 
@@ -406,8 +416,8 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def read_current_files(id)
-    event(id, -1)['files']
+  def read_current_files(id, index)
+    event(id, index)['files']
   end
 
   def read_events(disk, id=nil)
