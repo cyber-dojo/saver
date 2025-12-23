@@ -55,9 +55,8 @@ class TestBase < Id58TestBase
     end
   end
 
-  def self.versions3_test(id58_suffix, *lines, &block)
-    versions = (0..2)
-    versions.each do |version|
+  def self.versions_01_test(id58_suffix, *lines, &block)
+    (0..1).each do |version|
       version_test(version, id58_suffix, *lines, &block)
     end
   end

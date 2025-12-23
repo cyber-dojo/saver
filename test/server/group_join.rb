@@ -8,7 +8,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test '1s9', %w(
+  versions_test '1s9', %w(
   group is initially empty
   ) do
     in_group do |id|
@@ -18,7 +18,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test '6A5', %w(
+  versions_test '6A5', %w(
   when you join a group you increase its size by one,
   and are a member of the group
   ) do
@@ -49,7 +49,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test '6A6', %w(
+  versions_test '6A6', %w(
     when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.

@@ -107,5 +107,25 @@ class KataFileDeleteTest < TestBase
       refute files.keys.include?('readme.txt')
       assert_tag_commit_message(id, 2, '2 deleted file readme.txt')
     end
-  end  
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'C04', %w(
+  |in versions 0 and 1, kata_file_delete
+  |returns unchanged index argument and does nothing
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      assert files.keys.include?('readme.txt') 
+
+      expected = kata_events(id)
+      new_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      actual = kata_events(id)
+
+      assert_equal index, new_index
+      assert_equal expected, actual
+    end
+  end
+
 end

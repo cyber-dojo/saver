@@ -104,6 +104,24 @@ class Kata_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def file_create(id, index, files, filename)
+    index
+  end
+
+  def file_delete(id, index, files, filename)
+    index
+  end
+
+  def file_rename(id, index, files, old_filename, new_filename)
+    index
+  end
+
+  def file_edit(id, index, files)
+    index
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
