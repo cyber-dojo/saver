@@ -90,7 +90,7 @@ module External
       })
     end
 
-    def kata_file_switch(id, index, files)
+    def kata_file_edit(id, index, files)
       @http.post(__method__, { id:id, index:index, files:files })
     end
 
