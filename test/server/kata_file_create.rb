@@ -77,4 +77,24 @@ class KataFileCreateTest < TestBase
       assert_tag_commit_message(id, 3, '3 created file wibble.txt')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'B03', %w(
+  |in versions 0 and 1, kata_file_create
+  |returns unchanged index argument and does nothing
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      refute files.keys.include?('wibble.txt') 
+
+      expected = kata_events(id)
+      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
+      actual = kata_events(id)
+
+      assert_equal index, new_index
+      assert_equal expected, actual
+    end
+  end
+
 end

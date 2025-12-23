@@ -8,7 +8,7 @@ class GroupCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'h35', %w(
+  versions_test 'h35', %w(
   |POST /group_create(manifest)
   |has status 200
   |returns the id: of a new group

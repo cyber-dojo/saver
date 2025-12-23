@@ -118,4 +118,24 @@ class KataFileRenameTest < TestBase
       assert_tag_commit_message(id, 2, '2 renamed file readme.txt to readme.md')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'D04', %w(
+  |in versions 0 and 1, kata_file_rename
+  |returns unchanged index argument and does nothing
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      assert files.keys.include?('readme.txt') 
+
+      expected = kata_events(id)
+      new_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme2.txt')
+      actual = kata_events(id)
+
+      assert_equal index, new_index
+      assert_equal expected, actual
+    end
+  end
+
 end

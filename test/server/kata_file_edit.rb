@@ -56,4 +56,23 @@ class KataFileEditTest < TestBase
       assert_tag_commit_message(id, 1, '1 edited file readme.txt')
     end
   end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'E03', %w(
+  |in versions 0 and 1, kata_file_edit
+  |returns unchanged index argument and does nothing
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+
+      expected = kata_events(id)
+      new_index = kata_file_edit(id, index=1, files)
+      actual = kata_events(id)
+
+      assert_equal index, new_index
+      assert_equal expected, actual
+    end
+  end
+
 end

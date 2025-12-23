@@ -9,7 +9,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk1', %w[kata_ran_tests gives same results in all versions] do
+  versions_test 'Dk1', %w[kata_ran_tests gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       assert_tag_commit_message(id, 1, '1 ran tests, no prediction, got red')
@@ -19,7 +19,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk2', %w[kata_predicted_right gives same results in all versions] do
+  versions_test 'Dk2', %w[kata_predicted_right gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({ 'predicted' => 'red' })
       kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
@@ -30,7 +30,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk3', %w[kata_predicted_wrong gives same results in all versions] do
+  versions_test 'Dk3', %w[kata_predicted_wrong gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       summary = red_summary.merge({ 'predicted' => 'green' })
       kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
@@ -41,7 +41,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk6', %w[kata_reverted gives same results in all versions] do
+  versions_test 'Dk6', %w[kata_reverted gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       kata_ran_tests(id, index=2, files, stdout, stderr, status, red_summary)
@@ -55,7 +55,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk7', %w[kata_checked_out gives same results in all versions] do
+  versions_test 'Dk7', %w[kata_checked_out gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
       group_id = manifest["group_id"]
@@ -73,7 +73,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk8', %w[
+  versions_test 'Dk8', %w[
   |kata_ran_tests returns the next index in all versions
   ] do
     in_kata { |id, files, stdout, stderr, status|
