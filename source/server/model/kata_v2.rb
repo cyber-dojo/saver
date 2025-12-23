@@ -142,7 +142,7 @@ class Kata_v2
 
   def file_create(id, index, files, filename)
     # At this point, the (new) filename is NOT present in files.
-    index = file_switch(id, index, files)
+    index = file_edit(id, index, files)
     files[filename] = { 'content' => '' }
     summary = { 'event' => 'file-create', 'filename' => filename }
     tag_message = "created file '#{filename}'"
@@ -153,7 +153,7 @@ class Kata_v2
 
   def file_delete(id, index, files, filename)
     # At this point, the (deleted) filename IS present in files.
-    index = file_switch(id, index, files)
+    index = file_edit(id, index, files)
     files.delete(filename)
     summary = { 'event' => 'file-delete', 'filename' => filename }
     tag_message = "deleted file '#{filename}'"
@@ -164,7 +164,7 @@ class Kata_v2
 
   def file_rename(id, index, files, old_filename, new_filename)
     # At this point, new_filename is NOT present in files.
-    index = file_switch(id, index, files)
+    index = file_edit(id, index, files)
     files[new_filename] = files.delete(old_filename)
     summary = { 
       'event' => 'file-rename', 
@@ -177,15 +177,15 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_switch(id, index, files)
+  def file_edit(id, index, files)
     # Creates a saver event if any file has been edited.
     # The timestamp of the file-edit will only be approximate.
-    current_files = read_current_files(id, index - 1)
-    edited = edited_file(current_files, files)
-    return index if !edited
+    current_files = event(id, index - 1)['files']
+    edited_filename = edited_filename(current_files, files)
+    return index if !edited_filename
 
-    summary = { 'event' => 'file-edit', 'filename' => edited }
-    tag_message = "edited file '#{edited}'"
+    summary = { 'event' => 'file-edit', 'filename' => edited_filename }
+    tag_message = "edited file '#{edited_filename}'"
     git_commit_tag(id, index, files, summary, tag_message)
   end
 
@@ -382,10 +382,6 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def read_current_files(id, index)
-    event(id, index)['files']
-  end
-
   def read_events(disk, id=nil)
     # eg
     # [
@@ -503,7 +499,7 @@ class Kata_v2
 
 end
 
-def edited_file(previous_files, current_files)
+def edited_filename(previous_files, current_files)
   previous_files.each do |filename, values|
     previous_content = previous_files[filename]['content']
     current_content = current_files[filename]['content']

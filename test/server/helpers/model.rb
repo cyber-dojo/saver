@@ -76,8 +76,8 @@ module TestHelpersModel
     )
   end
 
-  def kata_file_switch(id, index, files)
-    model.kata_file_switch(
+  def kata_file_edit(id, index, files)
+    model.kata_file_edit(
       id:id, index:index, files:files
     )
   end

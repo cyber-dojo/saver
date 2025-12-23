@@ -93,8 +93,8 @@ class Model
     kata(id).file_rename(id, index, files, old_filename, new_filename)
   end
 
-  def kata_file_switch(id:, index:, files:)
-    kata(id).file_switch(id, index, files)
+  def kata_file_edit(id:, index:, files:)
+    kata(id).file_edit(id, index, files)
   end
 
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
