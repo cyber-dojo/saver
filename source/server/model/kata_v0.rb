@@ -142,14 +142,14 @@ class Kata_v0
       'stderr' => stderr,
       'status' => status
     }
-    result = disk.assert_all([
+    disk.assert_all([
       # A failing make_command() ensures the append_command() is not run.
       dir_exists_command(id),
       dir_make_command(id, index),
       event_file_create_command(id, index, json_plain(lined(event_n))),
       events_file_append_command(id, json_plain(summary) + "\n")
     ])
-    result
+    index + 1
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
