@@ -41,7 +41,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk7', %w[kata_reverted gives same results in all versions] do
+  versions3_test 'Dk6', %w[kata_reverted gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       kata_ran_tests(id, index=2, files, stdout, stderr, status, red_summary)
@@ -55,7 +55,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions3_test 'Dk6', %w[kata_checked_out gives same results in all versions] do
+  versions3_test 'Dk7', %w[kata_checked_out gives same results in all versions] do
     in_kata { |id, files, stdout, stderr, status|
       manifest = kata_manifest(id)
       group_id = manifest["group_id"]
@@ -73,6 +73,18 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  versions3_test 'Dk8', %w[
+  |kata_ran_tests returns the next index in all versions
+  ] do
+    in_kata { |id, files, stdout, stderr, status|
+      new_index = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      assert_equal 2, new_index
+      [index=1, red_summary]
+    }
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   version_test 2, 'Dk9', %w[kata_ran_tests with an already used index
   raises "Out of order event" exception] do
     in_kata { |id, files, stdout, stderr, status|
@@ -81,18 +93,6 @@ class KataRanTestsTest < TestBase
         kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
       }
       assert_equal 'Out of order event', error.message
-      [index=1, red_summary]
-    }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, 'DkA', %w[
-  |kata_ran_tests returns the next index
-  ] do
-    in_kata { |id, files, stdout, stderr, status|
-      new_index = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      assert_equal 2, new_index
       [index=1, red_summary]
     }
   end
