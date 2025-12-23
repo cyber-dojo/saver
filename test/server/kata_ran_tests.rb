@@ -100,7 +100,9 @@ class KataRanTestsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def in_kata
-    gid = group_create(manifest_Tennis_refactoring_Python_unitttest)
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
     id = group_join(gid)
     index = 1
     data = bats
