@@ -45,7 +45,7 @@ class KataFileEditTest < TestBase
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
-      assert_equal 'file-edit', events[1]['event']
+      assert_equal 'file_edit', events[1]['colour']
       assert_equal 'readme.txt', events[1]['filename']
       files = kata_event(id, 1)['files']
       assert_equal edited_content, files['readme.txt']['content']
