@@ -144,7 +144,7 @@ class Kata_v2
     # At this point, the (new) filename is NOT present in files.
     index = file_edit(id, index, files)
     files[filename] = { 'content' => '' }
-    summary = { 'event' => 'file-create', 'filename' => filename }
+    summary = { 'colour' => 'file_create', 'filename' => filename }
     tag_message = "created file '#{filename}'"
     git_commit_tag(id, index, files, summary, tag_message)
   end
@@ -155,7 +155,7 @@ class Kata_v2
     # At this point, the (deleted) filename IS present in files.
     index = file_edit(id, index, files)
     files.delete(filename)
-    summary = { 'event' => 'file-delete', 'filename' => filename }
+    summary = { 'colour' => 'file_delete', 'filename' => filename }
     tag_message = "deleted file '#{filename}'"
     git_commit_tag(id, index, files, summary, tag_message)
   end
@@ -167,7 +167,7 @@ class Kata_v2
     index = file_edit(id, index, files)
     files[new_filename] = files.delete(old_filename)
     summary = { 
-      'event' => 'file-rename', 
+      'colour' => 'file_rename', 
       'old_filename' => old_filename,
       'new_filename' => new_filename 
     }
@@ -182,9 +182,9 @@ class Kata_v2
     # The timestamp of the file-edit will only be approximate.
     current_files = event(id, index - 1)['files']
     edited_filename = edited_filename(current_files, files)
-    return index if !edited_filename
+    return index unless edited_filename
 
-    summary = { 'event' => 'file-edit', 'filename' => edited_filename }
+    summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     tag_message = "edited file '#{edited_filename}'"
     git_commit_tag(id, index, files, summary, tag_message)
   end
