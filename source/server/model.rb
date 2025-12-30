@@ -97,6 +97,10 @@ class Model
     kata(id).file_edit(id, index, files)
   end
 
+  def kata_ran_tests2(id:, index:, files:, stdout:, stderr:, status:, summary:)
+    kata(id).ran_tests2(id, index, files, stdout, stderr, status, summary)
+  end
+
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
   end
