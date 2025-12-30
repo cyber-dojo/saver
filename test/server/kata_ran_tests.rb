@@ -111,7 +111,7 @@ class KataRanTestsTest < TestBase
     stderr = data['stderr']
     status = data['status']
 
-    index, summary = *yield(id, files, stdout, stderr, status) # <<<<<<<
+    index, summary = *yield(id, files, stdout, stderr, status)
 
     actual = kata_event(id, index)
     assert_equal files, actual['files'], :files

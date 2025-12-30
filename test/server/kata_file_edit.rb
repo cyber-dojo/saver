@@ -75,4 +75,38 @@ class KataFileEditTest < TestBase
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E04', %w(
+  |when one file has been edited
+  |a kata_ran_test2 event 
+  |results in two events
+  ) do
+    in_kata do |id|
+
+      files = kata_event(id, 0)['files']
+      edited_content = files['readme.txt']['content'] + 'Hello world'
+      files['readme.txt']['content'] = edited_content
+
+      data = bats
+      stdout = data['stdout']
+      stderr = data['stderr']
+      status = data['status']
+
+      new_index = kata_ran_tests2(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 3, new_index
+      assert_equal 3, events.size
+
+      assert_equal 1, events[1]['index']
+      assert_equal 'file_edit', events[1]['colour']
+      assert_equal 'readme.txt', events[1]['filename'] # cyber-dojo.sh
+      files = kata_event(id, 1)['files']
+      assert_equal edited_content, files['readme.txt']['content']
+      assert_tag_commit_message(id, 1, '1 edited file readme.txt')
+
+      assert_equal 2, events[2]['index']
+      assert_equal 'red', events[2]['colour']
+    end
+  end
 end

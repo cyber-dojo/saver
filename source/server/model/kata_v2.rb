@@ -191,6 +191,12 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def ran_tests2(id, index, files, stdout, stderr, status, summary)
+    index = file_edit(id, index, files)
+    tag_message = "ran tests, no prediction, got #{summary['colour']}"
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+  end
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
