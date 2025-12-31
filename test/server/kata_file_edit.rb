@@ -77,13 +77,39 @@ class KataFileEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  versions_01_test 'E04', %w(
+  |when one file has been edited
+  |a kata_ran_test2 event 
+  |results in one event
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      edited_content = files['readme.txt']['content'] + 'Hello world'
+      files['readme.txt']['content'] = edited_content
+
+      data = bats
+      stdout = data['stdout']
+      stderr = data['stderr']
+      status = data['status']
+
+      new_index = kata_ran_tests2(id, index=1, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, new_index
+      assert_equal 2, events.size
+
+      assert_equal 1, events[1]['index']
+      assert_equal 'red', events[1]['colour']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'E04', %w(
   |when one file has been edited
   |a kata_ran_test2 event 
   |results in two events
   ) do
     in_kata do |id|
-
       files = kata_event(id, 0)['files']
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
