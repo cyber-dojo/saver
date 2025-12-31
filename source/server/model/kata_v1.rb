@@ -125,6 +125,10 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  def ran_tests2(id, index, files, stdout, stderr, status, summary)
+    universal_append(id, index, files, stdout, stderr, status, summary)
+  end
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
