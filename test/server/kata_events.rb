@@ -56,9 +56,9 @@ class KataEventsTest < TestBase
       actual = kata_events(id)
       expected = [
         { "index" => 0, "event" => "created", "time" => t0, "colour" => "create" },
-        { "index" => 1, "time" => t1, "colour" => "red" },
-        { "index" => 2, "time" => t2, "colour" => "red" },
-        { "index" => 3, "time" => t3, "colour" => "red" }
+        { "index" => 1, "time" => t1, "colour" => "red", "diff_added_count" => 1, "diff_deleted_count" => 281 },
+        { "index" => 2, "time" => t2, "colour" => "red", "diff_added_count" => 0, "diff_deleted_count" => 0 },
+        { "index" => 3, "time" => t3, "colour" => "red", "diff_added_count" => 0, "diff_deleted_count" => 0 }
       ]
       assert_equal expected, actual
     end

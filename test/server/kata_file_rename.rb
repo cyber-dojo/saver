@@ -14,9 +14,9 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'D01', %w(
-  |when no other file has been edited
-  |a kata_file_rename event
-  |results in a single rename-file event 
+  | when no other file has been edited
+  | a kata_file_rename event
+  | results in a single rename-file event 
   ) do
     in_tennis_kata do |id, files|
       content = files['readme.txt']['content']
@@ -43,12 +43,12 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'D02', %w(
-  |when one file has been edited
-  |and a different file has been renamed
-  |a kata_file_rename event 
-  |results in two events
-  |the first for the edit
-  |the second for the rename
+  | when one file has been edited
+  | and a different file has been renamed
+  | a kata_file_rename event 
+  | results in two events
+  | the first for the edit
+  | the second for the rename
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['tennis.py']['content'] + '# some comment'
@@ -83,12 +83,12 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'D03', %w(
-  |when one file has been edited
-  |and the same file has been renamed
-  |a kata_file_rename event 
-  |results in two events
-  |the first for the edit
-  |the second for the rename
+  | when one file has been edited
+  | and the same file has been renamed
+  | a kata_file_rename event 
+  | results in two events
+  | the first for the edit
+  | the second for the rename
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + '# some comment'
@@ -122,8 +122,8 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'D04', %w(
-  |in versions 0 and 1, kata_file_rename
-  |returns unchanged index argument and does nothing
+  | in versions 0 and 1, kata_file_rename
+  | returns unchanged index argument and does nothing
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']

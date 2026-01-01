@@ -335,16 +335,43 @@ class Kata_v2
         raise 'Out of order event'
       end
 
-      # Add the new event
-      events << summary.merge!({ 'index' => index, 'time' => time.now })
-      write_files(worktree, '', { events_filename => json_pretty(events) })
-
       # Remove files/
       # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
       shell.assert_cd_exec(worktree.root_dir, 'git rm -r files/')
 
-      # Add new files/
+      # Write new files/
       write_files(worktree, 'files', content_of(files))
+
+      # Add all files 
+      shell.assert_cd_exec(worktree.root_dir, 'git add .')
+
+      # Calculate number of added/deleted lines
+      info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat")
+      # Eg ' 1 file changed, 1 insertion(+), 1 deletion(-)'
+      # Eg ' 1 file changed, 2 insertions(+), 1 deletion(-)'
+      # Eg ' 1 file changed, 1 insertion(+)'
+      # Eg ' 1 file changed, 172 deletions(-)'
+      regex1 = /\d+ files? changed, (\d+) insertions?\(\+\), (\d+) deletion/
+      regex2 = /\d+ files? changed, (\d+) insertions?\(\+\)/
+      regex3 = /\d+ files? changed, (\d+) deletions?\(\+\)/
+      if info == ""
+        added_count, deleted_count = 0, 0
+      elsif m = info.match(regex1) 
+        added_count, deleted_count = *m.captures
+      elsif m = info.match(regex2)
+        added_count, deleted_count = *m.captures, 0
+      elsif m = info.match(regex3)
+        added_count, deleted_count = 0, *m.captures
+      end
+
+      # Write the new event
+      events << summary.merge!({ 
+        'index' => index, 
+        'time' => time.now,
+        'diff_added_count' => added_count.to_i,
+        'diff_deleted_count' => deleted_count.to_i
+      })
+      write_files(worktree, '', { events_filename => json_pretty(events) })
 
       # Update metadata
       write_files(worktree, '', {
@@ -357,11 +384,11 @@ class Kata_v2
         })
       })
 
-      # Add all files and commit
-      shell.assert_cd_exec(worktree.root_dir, [
-        'git add .',
-        "git commit --message '#{index} #{tag_message}' --quiet",
-      ])
+      # Add new event and metadata
+      shell.assert_cd_exec(worktree.root_dir, 'git add .')
+
+      # Commit
+      shell.assert_cd_exec(worktree.root_dir, "git commit --message '#{index} #{tag_message}' --quiet")
     end
 
     # git_ff_merge_worktree succeeded, so tag
@@ -455,6 +482,10 @@ class Kata_v2
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
     commands = files.each.with_object([]) do |(filename,content),array|
+      #if content.class != String 
+      #  puts("Y"*42)
+      #  puts("write_files(#{filename}, content=#{content.class.name})")
+      #end
       path = "#{base_dir}/#{filename}"
       array << disk.file_write_command(path, content)
     end

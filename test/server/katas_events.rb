@@ -60,7 +60,9 @@ class KatasEventsTest < TestBase
             'time' => now,
             'stdout' => stdout,
             'stderr' => stderr,
-            'status' => '0'
+            'status' => '0',
+            'diff_added_count' => 1, 
+            'diff_deleted_count' => 281
           }
         },
         ids[1] => {
@@ -71,7 +73,9 @@ class KatasEventsTest < TestBase
             'time' => now,
             'stdout' => stdout,
             'stderr' => stderr,
-            'status' => '137'
+            'status' => '137',
+            'diff_added_count' => 0, 
+            'diff_deleted_count' => 0
           }
         }
       }
