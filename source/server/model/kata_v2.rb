@@ -332,10 +332,11 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    all_events = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
-      events = read_events(worktree)
-      last_index = events.last['index']
+      all_events = read_events(worktree)
+      last_index = all_events.last['index']
 
       unless index == last_index+1
         raise 'Out of order event'
@@ -352,32 +353,32 @@ class Kata_v2
       shell.assert_cd_exec(worktree.root_dir, 'git add .')
 
       # Calculate number of added/deleted lines
-      info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat")
+      info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat --ignore-cr-at-eol")
       # Eg ' 1 file changed, 1 insertion(+), 1 deletion(-)'
       # Eg ' 1 file changed, 2 insertions(+), 1 deletion(-)'
       # Eg ' 1 file changed, 1 insertion(+)'
       # Eg ' 1 file changed, 172 deletions(-)'
       regex1 = /\d+ files? changed, (\d+) insertions?\(\+\), (\d+) deletion/
       regex2 = /\d+ files? changed, (\d+) insertions?\(\+\)/
-      regex3 = /\d+ files? changed, (\d+) deletions?\(\+\)/
-      if info == ""
-        added_count, deleted_count = 0, 0
-      elsif m = info.match(regex1) 
+      regex3 = /\d+ files? changed, (\d+) deletions?\(\-\)/
+      if m = info.match(regex1) 
         added_count, deleted_count = *m.captures
       elsif m = info.match(regex2)
         added_count, deleted_count = *m.captures, 0
       elsif m = info.match(regex3)
         added_count, deleted_count = 0, *m.captures
+      else 
+        added_count, deleted_count = 0, 0
       end
 
       # Write the new event
-      events << summary.merge!({ 
+      all_events << summary.merge!({ 
         'index' => index, 
         'time' => time.now,
         'diff_added_count' => added_count.to_i,
         'diff_deleted_count' => deleted_count.to_i
       })
-      write_files(worktree, '', { events_filename => json_pretty(events) })
+      write_files(worktree, '', { events_filename => json_pretty(all_events) })
 
       # Update metadata
       write_files(worktree, '', {
@@ -399,6 +400,10 @@ class Kata_v2
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
+
+    #puts(json_pretty(all_events))
+    #TODO: add major_index
+
     { 'next_index' => index + 1 }
   end
 

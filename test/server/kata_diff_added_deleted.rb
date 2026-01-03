@@ -14,21 +14,106 @@ class KataDiffAddedDeletedTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'E01', %w(
-  | when a file has been edited
+  | when a file has lines added
   | a kata_file_edit event 
-  | shows diff_added_lines, diff_deleted_lines
+  | shows diff_added_lines=N, diff_deleted_lines=0
   ) do
     in_tennis_kata do |id, files|
-      edited_content = files['readme.txt']['content'] + "Hello\nworld\n"
+      added_lines = ['Hello', 'world']
+      edited_content = files['readme.txt']['content'] + "\n" + added_lines.join("\n")
+
       files['readme.txt']['content'] = edited_content
-      new_index = kata_file_edit(id, index=1, files)
+      next_index = kata_file_edit(id, index=1, files)
 
       events = kata_events(id)
-      assert_equal 2, new_index
+      assert_equal 2, next_index
       assert_equal 2, events.size
 
-      assert_equal 2, events[1]['diff_added_count']
-      assert_equal 1, events[1]['diff_deleted_count']
+      assert_equal added_lines.size, events[1]['diff_added_count']
+      assert_equal 0, events[1]['diff_deleted_count']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E02', %w(
+  | when file has lines deleted
+  | a kata_file_edit event 
+  | shows diff_added_lines=0, diff_deleted_lines=N
+  ) do
+    in_tennis_kata do |id, files|
+      deleted_content = files['readme.txt']['content']
+      deleted_lines = deleted_content.split("\n")
+
+      files['readme.txt']['content'] = ''
+      next_index = kata_file_edit(id, index=1, files)
+
+      events = kata_events(id)
+      assert_equal 2, next_index
+      assert_equal 2, events.size
+
+      assert_equal 0, events[1]['diff_added_count']
+      assert_equal deleted_lines.size, events[1]['diff_deleted_count']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E03', %w(
+  | when file is renamed
+  | a kata_file_edit event 
+  | shows diff_added_lines=0, diff_deleted_lines=0
+  ) do
+    in_tennis_kata do |id, files|
+      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme2.txt')
+
+      events = kata_events(id)
+      assert_equal 2, next_index
+      assert_equal 2, events.size
+
+      assert_equal 0, events[1]['diff_added_count']
+      assert_equal 0, events[1]['diff_deleted_count']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E04', %w(
+  | when a file is created
+  | a kata_file_edit event 
+  | shows diff_added_lines=0, diff_deleted_lines=0
+  ) do
+    in_tennis_kata do |id, files|
+      next_index = kata_file_create(id, index=1, files, 'newfile.txt')
+
+      events = kata_events(id)
+      assert_equal 2, next_index
+      assert_equal 2, events.size
+
+      assert_equal 0, events[1]['diff_added_count']
+      assert_equal 0, events[1]['diff_deleted_count']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'E05', %w(
+  | when a file is deleted
+  | a kata_file_edit event 
+  | shows diff_added_lines=N, diff_deleted_lines=0
+  ) do
+    in_tennis_kata do |id, files|
+      deleted_content = files['readme.txt']['content']
+      deleted_lines = deleted_content.split("\n")
+
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
+
+      events = kata_events(id)
+      assert_equal 2, next_index
+      assert_equal 2, events.size
+
+      assert_equal 0, events[1]['diff_added_count']
+      assert_equal deleted_lines.size, events[1]['diff_deleted_count']
     end
   end
 
