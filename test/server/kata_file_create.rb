@@ -8,24 +8,24 @@ class KataFileCreateTest < TestBase
   end
 
   def self.id58_prefix
-    'Dcc'
+    'DcA'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'B01', %w(
-  |when no files have been edited
-  |a kata_file_create event 
-  |results in a single create-file event
-  |with the created file having empty content
+  | when no files have been edited
+  | a kata_file_create event 
+  | results in a single create-file event
+  | with the created file having empty content
   ) do
     in_tennis_kata do |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
 
-      new_index = kata_file_create(id, index=2, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=2, files, 'wibble.txt')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
       
       assert_equal 2, events[2]['index']
@@ -42,11 +42,11 @@ class KataFileCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'B02', %w(
-  |when one other file has been edited
-  |a kata_file_create event 
-  |results in two events
-  |the first for the edit (and *NOT* the created file)
-  |the second for the newly created file
+  | when one other file has been edited
+  | a kata_file_create event 
+  | results in two events
+  | the first for the edit (and *NOT* the created file)
+  | the second for the newly created file
   ) do
     in_tennis_kata do |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
@@ -55,10 +55,10 @@ class KataFileCreateTest < TestBase
       files['readme.txt']['content'] = edited_content
 
       # VIP: at this point 'wibble.txt', the new filename, is NOT in files
-      new_index = kata_file_create(id, index=2, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=2, files, 'wibble.txt')
 
       events = kata_events(id)
-      assert_equal 4, new_index
+      assert_equal 4, next_index
       assert_equal 4, events.size
 
       assert_equal 2, events[2]['index']
@@ -81,18 +81,18 @@ class KataFileCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'B03', %w(
-  |in versions 0 and 1, kata_file_create
-  |returns unchanged index argument and does nothing
+  | in versions 0 and 1, kata_file_create
+  | returns unchanged index argument and does nothing
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
       refute files.keys.include?('wibble.txt') 
 
       expected = kata_events(id)
-      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=1, files, 'wibble.txt')
       actual = kata_events(id)
 
-      assert_equal index, new_index
+      assert_equal index, next_index
       assert_equal expected, actual
     end
   end

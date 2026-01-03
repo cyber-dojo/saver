@@ -8,21 +8,21 @@ class KataFileDeleteTest < TestBase
   end
 
   def self.id58_prefix
-    'Dcc'
+    'DcB'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'C01', %w(
-  |when no files have been edited
-  |a kata_file_delete event
-  |results in a single delete-file event 
+  | when no files have been edited
+  | a kata_file_delete event
+  | results in a single delete-file event 
   ) do
     in_tennis_kata do |id, files|
-      new_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
 
       events = kata_events(id)
-      assert_equal 2, new_index
+      assert_equal 2, next_index
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
@@ -38,22 +38,22 @@ class KataFileDeleteTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'C02', %w(
-  |when one file has been edited
-  |and a different file has been deleted
-  |a kata_file_delete event 
-  |results in two events
-  |the first for the edit (and *NOT* for the delete)
-  |the second for the delete
+  | when one file has been edited
+  | and a different file has been deleted
+  | a kata_file_delete event 
+  | results in two events
+  | the first for the edit (and *NOT* for the delete)
+  | the second for the delete
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
       # At this point, 'tennis.py', the deleted file, IS in files
-      new_index = kata_file_delete(id, index=1, files, 'tennis.py')
+      next_index = kata_file_delete(id, index=1, files, 'tennis.py')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
@@ -76,21 +76,21 @@ class KataFileDeleteTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'C03', %w(
-  |when one file has been edited
-  |and the same file has been deleted
-  |a kata_file_delete event 
-  |results in two events
-  |the first for the edit
-  |the second for the delete
+  | when one file has been edited
+  | and the same file has been deleted
+  | a kata_file_delete event 
+  | results in two events
+  | the first for the edit
+  | the second for the delete
   ) do
     in_tennis_kata do |id, files|
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
-      new_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
@@ -112,18 +112,18 @@ class KataFileDeleteTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'C04', %w(
-  |in versions 0 and 1, kata_file_delete
-  |returns unchanged index argument and does nothing
+  | in versions 0 and 1, kata_file_delete
+  | returns unchanged index argument and does nothing
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
       assert files.keys.include?('readme.txt') 
 
       expected = kata_events(id)
-      new_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
       actual = kata_events(id)
 
-      assert_equal index, new_index
+      assert_equal index, next_index
       assert_equal expected, actual
     end
   end

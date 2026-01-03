@@ -146,7 +146,8 @@ class Kata_v2
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
     tag_message = "created file '#{filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -157,7 +158,8 @@ class Kata_v2
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     tag_message = "deleted file '#{filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -172,7 +174,8 @@ class Kata_v2
       'new_filename' => new_filename 
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -182,11 +185,14 @@ class Kata_v2
     # The timestamp of the file-edit will only be approximate.
     current_files = event(id, index - 1)['files']
     edited_filename = edited_filename(current_files, files)
-    return index unless edited_filename
+    if !edited_filename
+      return index
+    end
 
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     tag_message = "edited file '#{edited_filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -331,7 +337,7 @@ class Kata_v2
       events = read_events(worktree)
       last_index = events.last['index']
 
-      unless index == last_index+1  
+      unless index == last_index+1
         raise 'Out of order event'
       end
 
@@ -393,7 +399,7 @@ class Kata_v2
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
-    index + 1
+    { 'next_index' => index + 1 }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

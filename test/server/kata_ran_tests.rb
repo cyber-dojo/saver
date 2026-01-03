@@ -77,8 +77,9 @@ class KataRanTestsTest < TestBase
   |kata_ran_tests returns the next index in all versions
   ] do
     in_kata { |id, files, stdout, stderr, status|
-      new_index = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      assert_equal 2, new_index
+      result = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      next_index = result['next_index']
+      assert_equal 2, next_index
       [index=1, red_summary]
     }
   end
