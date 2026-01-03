@@ -365,12 +365,11 @@ class Kata_v2
       # Write new files/
       write_files(worktree, 'files', content_of(files))
 
-      # Add all files 
+      # Add all files/
       shell.assert_cd_exec(worktree.root_dir, 'git add .')
 
       # Calculate number of added/deleted lines
       info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat --ignore-cr-at-eol")
-      # Eg ' 1 file changed, 1 insertion(+), 1 deletion(-)'
       # Eg ' 1 file changed, 2 insertions(+), 1 deletion(-)'
       # Eg ' 1 file changed, 1 insertion(+)'
       # Eg ' 1 file changed, 172 deletions(-)'
@@ -418,28 +417,6 @@ class Kata_v2
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
 
     { 'next_index' => index + 1, 'major_index' => major_index(all_events, index) }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def major_index(events, index)
-    # assert index > 0
-    count = 0
-    events[1..].each do |event|
-      if is_light?(event)
-        count += 1
-      end
-    end
-    count
-  end
-
-  def is_light?(event)
-    case event['colour']
-    when 'file_create', 'file_delete', 'file_rename', 'file_edit'
-      false
-    else
-      true
-    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -582,6 +559,8 @@ class Kata_v2
 
 end
 
+# - - - - - - - - - - - - - - - - - - - -
+
 def edited_filename(previous_files, current_files)
   previous_files.each do |filename, values|
     previous_content = previous_files[filename]['content']
@@ -591,4 +570,21 @@ def edited_filename(previous_files, current_files)
     end
   end
   return nil
+end
+
+def major_index(events, index)
+  # assert index > 0
+  count = 0
+  events[1..].each do |event|
+    if is_light?(event)
+      count += 1
+    end
+  end
+  count
+end
+
+FILE_EVENTS = %w( file_create file_delete file_rename file_edit )
+
+def is_light?(event)
+  !FILE_EVENTS.include?(event['colour'])
 end
