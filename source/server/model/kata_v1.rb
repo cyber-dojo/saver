@@ -176,7 +176,7 @@ class Kata_v1
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
       events_file_append_command(id, ",\n" + json_plain(summary))
     ])
-    { 'next_index' => index + 1 }
+    { 'next_index' => index + 1, 'major_index' => index }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

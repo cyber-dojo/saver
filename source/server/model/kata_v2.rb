@@ -401,10 +401,29 @@ class Kata_v2
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
 
-    #puts(json_pretty(all_events))
-    #TODO: add major_index
+    { 'next_index' => index + 1, 'major_index' => major_index(all_events, index) }
+  end
 
-    { 'next_index' => index + 1 }
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def major_index(events, index)
+    # assert index > 0
+    count = 0
+    events[1..].each do |event|
+      if is_light?(event)
+        count += 1
+      end
+    end
+    count
+  end
+
+  def is_light?(event)
+    case event['colour']
+    when 'file_create', 'file_delete', 'file_rename', 'file_edit'
+      false
+    else
+      true
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
