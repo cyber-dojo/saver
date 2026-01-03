@@ -14,6 +14,22 @@ require 'tmpdir'
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
 # 5. saver outages are NOT recorded in events.json
+# 6. There are new file-create/delete/rename/edit events
+
+# File-events
+# In web microservice, whenever:
+#   - a new (empty) file is created, file_create is called.
+#   - a file is deleted, file_delete is called.
+#   - a file is renamed, file_rename is called.
+#   - a new file is *selected*, file_edit is called 
+#     which catches all changes to individual files.
+# Thus events.json could hold, for example
+#  0=create, 1=rename, 2=edit, 3=ran-tests, 4=edit, 5=edit, 6=ran-tests
+# This means that the index in each event no longer corresponds to
+# just the red/amber/green ran-tests events. In the above, there are
+# two ran-tests events at indexes 3,6 which would previously have been 1,2
+# Because of this, ran_tests2() now returns the 'major_index' which 
+# corresponds to the previous red/amber/green index.
 
 class Kata_v2
 
