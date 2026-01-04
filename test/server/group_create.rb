@@ -9,10 +9,10 @@ class GroupCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'h35', %w(
-  |POST /group_create(manifest)
-  |has status 200
-  |returns the id: of a new group
-  |that exists in saver
+  | POST /group_create(manifest)
+  | has status 200
+  | returns the id: of a new group
+  | that exists in saver
   ) do
     assert_json_post_200(
       path = 'group_create',

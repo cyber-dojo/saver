@@ -9,7 +9,7 @@ class GroupJoinTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '1s9', %w(
-  group is initially empty
+  | group is initially empty
   ) do
     in_group do |id|
       assert_equal({}, joined(id))
@@ -19,8 +19,8 @@ class GroupJoinTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '6A5', %w(
-  when you join a group you increase its size by one,
-  and are a member of the group
+  | when you join a group you increase its size by one,
+  | and are a member of the group
   ) do
     in_group do |group_id|
       indexes = [15,4] + ((0..63).to_a - [15,4]).shuffle
@@ -50,7 +50,7 @@ class GroupJoinTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '6A6', %w(
-    when 64 avatars have joined the group is full
+  | when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.
     # See bin/create_almost_full_group.sh

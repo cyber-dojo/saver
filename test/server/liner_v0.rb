@@ -12,8 +12,9 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7AA',
-  'lined(event) splits lines files/stdout/stderr and does not alter argument' do
+  test '7AA', %w(
+  | lined(event) splits lines files/stdout/stderr and does not alter argument
+  ) do
     assert_equal LINED_EVENT, lined(UNLINED_EVENT)
     assert_equal UNLINED_EVENT['files']['test_hiker.rb']['content'], UNLINED_TEST_HIKER_RB
     assert_equal UNLINED_EVENT['files']['hiker.rb']['content'], UNLINED_HIKER_RB
@@ -23,8 +24,9 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7AB',
-  'unlined(event) rejoins files/stdout/stderr and does not alter argument' do
+  test '7AB', %w(
+  | unlined(event) rejoins files/stdout/stderr and does not alter argument
+  ) do
     assert_equal UNLINED_EVENT, unlined(LINED_EVENT)
     assert_equal LINED_EVENT['files']['test_hiker.rb']['content'], LINED_TEST_HIKER_RB
     assert_equal LINED_EVENT['files']['hiker.rb']['content'], LINED_HIKER_RB
@@ -34,8 +36,9 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7A3',
-  'unlined(event) has truncated fields when event has' do
+  test '7A3', %w(
+  | unlined(event) has truncated fields when event has
+  ) do
     lined = {
       'files' => {
         'cyber-dojo.sh' => {
@@ -63,8 +66,9 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7A4',
-  'lined(event) has truncated fields when event has' do
+  test '7A4', %w(
+  | lined(event) has truncated fields when event has
+  ) do
     unlined = {
       'files' => {
         'cyber-dojo.sh' => {

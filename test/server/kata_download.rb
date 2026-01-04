@@ -12,8 +12,8 @@ class KataDownloadTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, '75s', %w(
-  |kata_exists? is false,
-  |for a well-formed id that does not exist
+  | kata_exists? is false,
+  | for a well-formed id that does not exist
   ) do
     files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
     stdout = { "content" => "so", "truncated" => false }
@@ -56,7 +56,7 @@ class KataDownloadTest < TestBase
   end
 
   version_test 2, '75t', %w(
-  |downloaded README.md file for custom exercise
+  | downloaded README.md file for custom exercise
   ) do
     manifest = custom_manifest
     refute manifest.keys.include?('exercise')
@@ -67,7 +67,7 @@ class KataDownloadTest < TestBase
   end
 
   version_test 2, '75u', %w(
-  |downloaded README.md file for non-custom exercise
+  | downloaded README.md file for non-custom exercise
   ) do
     manifest = custom_manifest
     manifest['exercise'] = "Print Diamond"

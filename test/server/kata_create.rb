@@ -9,10 +9,10 @@ class KataCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'h35', %w(
-  |POST /kata_create(manifest)
-  |has status 200
-  |returns the id: of a new kata
-  |that exists in saver
+  | POST /kata_create(manifest)
+  | has status 200
+  | returns the id: of a new kata
+  | that exists in saver
   ) do
     assert_json_post_200(
       path = 'kata_create',

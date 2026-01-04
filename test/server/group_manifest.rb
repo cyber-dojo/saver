@@ -7,7 +7,7 @@ class GroupManifestTest < TestBase
   end
 
   version_test 0, '472', %w(
-  already existing group_manifest {test-data copied into saver}
+  | already existing group_manifest {test-data copied into saver}
   ) do
     manifest = group_manifest(id='chy6BJ')
     assert_equal 0, manifest['version'], :version
@@ -28,7 +28,7 @@ class GroupManifestTest < TestBase
   end
 
   versions_test 'Q61', %w(
-  retrieved group_manifest has created and version keys
+  | retrieved group_manifest has created and version keys
   ) do
     now = [2019,3,17, 7,13,36,3428]
     externals.instance_exec {

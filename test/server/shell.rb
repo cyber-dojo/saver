@@ -9,17 +9,23 @@ class ShellTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'DBB', 'assert_exec(*commands) returns stdout when the commands all succeed' do
+  test 'DBB', %w(
+  | assert_exec(*commands) returns stdout when the commands all succeed
+  ) do
     assert_equal 'Hello', shell.assert_exec('echo -n Hello')
   end
 
-  test '0B8', 'assert_cd_exec(path,*commands) returns stdout when the cd and the commands succeeds' do
+  test '0B8', %w(
+  | assert_cd_exec(path,*commands) returns stdout when the cd and the commands succeeds
+  ) do
     assert_equal 'Hello', shell.assert_cd_exec('.', 'echo -n Hello')
   end
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'AF6', 'assert_exec(*commands) raises when a command fails' do
+  test 'AF6', %w(
+  | assert_exec(*commands) raises when a command fails
+  ) do
     error = assert_raises { shell.assert_exec('zzzz') }
     json = JSON.parse(error.message)
     assert_equal '', json['stdout']
@@ -27,7 +33,9 @@ class ShellTest < TestBase
     assert_equal 127, json['exit_status']
   end
 
-  test 'ACD', 'assert_cd_exec(path,*commands) raises when the cd fails' do
+  test 'ACD', %w(
+  | assert_cd_exec(path,*commands) raises when the cd fails
+  ) do
     error = assert_raises { shell.assert_cd_exec('zzzz', 'echo -n Hello') }
     json = JSON.parse(error.message)
     assert_equal '', json['stdout']
@@ -36,7 +44,9 @@ class ShellTest < TestBase
     assert_equal 2, json['exit_status']
   end
 
-  test '995', 'assert_cd_exec(path,*commands) raises when a command fails' do
+  test '995', %w(
+  | assert_cd_exec(path,*commands) raises when a command fails
+  ) do
     error = assert_raises { shell.assert_cd_exec('.', 'zzzz') }
     json = JSON.parse(error.message)
     assert_equal '', json['stdout']

@@ -7,8 +7,8 @@ class KataEventsTest < TestBase
   end
 
   version_test 0, 'f5S', %w(
-  already existing kata_events() summary {test-data copied into saver}
-  is "polyfilled" to make it look like version=1
+  | already existing kata_events() summary {test-data copied into saver}
+  | is "polyfilled" to make it look like version=1
   ) do
     id = '5rTJv5'
     manifest = kata_manifest(id)
@@ -30,7 +30,7 @@ class KataEventsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   version_test 1, 'rp8', %w(
-  already existing kata_events() summary {test-data copied into saver}
+  | already existing kata_events() summary {test-data copied into saver}
   ) do
     id = '5U2J18'
     assert_equal 1, kata_manifest(id)['version'], :version
@@ -53,7 +53,9 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'ds0', %w( kata_events v2 ) do
+  version_test 2, 'ds0', %w( 
+  | kata_events v2 
+  ) do
     stdout = { 'content' => 'so', 'truncated' => false }
     stderr = { 'content' => 'se', 'truncated' => true }
     summary = { 'colour' => 'red' }
@@ -96,7 +98,9 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'eh4', %w( polyfill colour='create' for index==0 creation event ) do
+  version_test 2, 'eh4', %w( 
+  | polyfill colour='create' for index==0 creation event 
+  ) do
     t0 = [2021,6,12, 6,9,51,899055]
     externals.instance_exec { @time = TimeStub.new(t0) }
     in_kata do |id|

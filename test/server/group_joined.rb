@@ -15,15 +15,15 @@ class GroupJoinedTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 0, 'JJ0', %w(
-  already existing group_joined(id) {test-data copied into saver}
-  with id == group-id
+  | already existing group_joined(id) {test-data copied into saver}
+  | with id == group-id
   ) do
     assert_equal expected[V0_GROUP_ID], group_joined(V0_GROUP_ID)
   end
 
   version_test 1, 'JJ1', %w(
-  already existing group_joined(id) {test-data copied into saver}
-  with id == group-id
+  | already existing group_joined(id) {test-data copied into saver}
+  | with id == group-id
   ) do
     assert_equal expected[V1_GROUP_ID], group_joined(V1_GROUP_ID)
   end
@@ -31,13 +31,13 @@ class GroupJoinedTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 0, 'Sp8', %w(
-  the id can be any joined kata's id
+  | the id can be any joined kata's id
   ) do
     assert_equal expected[V0_GROUP_ID], group_joined(V0_KATA_ID)
   end
 
   version_test 1, 'Sp9', %w(
-  the id can be any joined kata's id
+  | the id can be any joined kata's id
   ) do
     assert_equal expected[V1_GROUP_ID], group_joined(V1_KATA_ID)
   end
@@ -45,7 +45,7 @@ class GroupJoinedTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test'xD4', %w(
-  empty Hash is returned for a kata-id not in a group
+  | empty Hash is returned for a kata-id not in a group
   ) do
     in_kata do |id|
       assert_equal({}, group_joined(id))
