@@ -54,7 +54,6 @@ class KataEventsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'ds0', %w( kata_events v2 ) do
-    files = { 'cyber-dojo.sh' => { 'content' => 'pytest *_test.rb' }}
     stdout = { 'content' => 'so', 'truncated' => false }
     stderr = { 'content' => 'se', 'truncated' => true }
     summary = { 'colour' => 'red' }
@@ -62,18 +61,23 @@ class KataEventsTest < TestBase
     t1 = [2021,6,12, 6,57,895675]
     t2 = [2021,6,12, 7,12,685675]
     t3 = [2021,6,12, 7,48,673675]
-    externals.instance_exec { @time = TimeStub.new(t0, t1, t2, t3) }
+    t4 = [2021,6,12, 7,49,367523]
+    externals.instance_exec { @time = TimeStub.new(t0, t1, t2, t3, t4) }
 
     in_kata do |id|
-      kata_ran_tests(id, 1, files, stdout, stderr,   '0', summary)
+      files = kata_event(id, 0)['files']
+      kata_file_create(id, 1, files, 'newfile.txt')
+      files['newfile.txt'] = { 'content' => '' }   
       kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary)
-      kata_ran_tests(id, 3, files, stdout, stderr, '137', summary)
+      kata_ran_tests(id, 3, files, stdout, stderr,   '0', summary)
+      kata_ran_tests(id, 4, files, stdout, stderr, '137', summary)
       actual = kata_events(id)
       expected = [
         { 'index' => 0, 'time' => t0, 'colour' => 'create', 'event' => 'created' },
-        event(1, t1, 'red', 1, 281),
-        event(2, t2, 'red', 0, 0),
-        event(3, t3, 'red', 0, 0)
+        file_create_event(1, t1, 'newfile.txt'),
+        rag_event(2, t2, 'red', 0, 0),
+        rag_event(3, t3, 'red', 0, 0),
+        rag_event(4, t4, 'red', 0, 0)
       ]
       assert_equal expected, actual
     end
@@ -93,13 +97,24 @@ class KataEventsTest < TestBase
 
   private
 
-  def event(index, time, colour, diff_added_count, diff_deleted_count)
+  def rag_event(index, time, colour, diff_added_count, diff_deleted_count)
     {
       'index' => index,
       'time' => time,
       'colour' => colour,
       'diff_added_count' => diff_added_count,
       'diff_deleted_count' => diff_deleted_count
+    }
+  end
+
+  def file_create_event(index, time, filename)
+    {
+      'index' => index,
+      'time' => time,
+      'colour' => 'file_create',
+      'filename' => filename,
+      'diff_added_count' => 0,
+      'diff_deleted_count' => 0
     }
   end
 
