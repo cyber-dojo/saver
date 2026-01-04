@@ -54,6 +54,7 @@ class Kata_v0
     result = disk.assert(events_file_read_command(id))
     json = json_parse('[' + result.lines.join(',') + ']')
     polyfill_events(json)
+    polyfill_major_minor(json)
     json
   end
 

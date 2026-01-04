@@ -67,7 +67,9 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    all = json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    polyfill_major_minor(all)
+    all
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

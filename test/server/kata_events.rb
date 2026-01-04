@@ -19,10 +19,10 @@ class KataEventsTest < TestBase
     t2 = [2019,1,16,12,45,46,82887]
     t3 = [2019,1,16,12,45,52,220587]
     expected = [
-      { 'index' => 0, 'event' => 'created', 'time' => t0 },
-      { 'index' => 1, 'colour' => 'red',    'time' => t1, 'duration' => 1.46448,  'predicted' => 'red' },
-      { 'index' => 2, 'colour' => 'amber',  'time' => t2, 'duration' => 1.031421, 'predicted' => 'none' },
-      { 'index' => 3, 'colour' => 'green',  'time' => t3, 'duration' => 1.042027, 'predicted' => 'none' },
+      { 'index' => 0, 'major_index' => 0, 'minor_index' => '', 'event' => 'created', 'time' => t0 },
+      { 'index' => 1, 'major_index' => 1, 'minor_index' => '', 'colour' => 'red',    'time' => t1, 'duration' => 1.46448,  'predicted' => 'red' },
+      { 'index' => 2, 'major_index' => 2, 'minor_index' => '', 'colour' => 'amber',  'time' => t2, 'duration' => 1.031421, 'predicted' => 'none' },
+      { 'index' => 3, 'major_index' => 3, 'minor_index' => '', 'colour' => 'green',  'time' => t3, 'duration' => 1.042027, 'predicted' => 'none' },
     ]
     assert_equal expected, actual
   end
@@ -43,10 +43,10 @@ class KataEventsTest < TestBase
     d2 = 0.426736
     d3 = 0.438522
     expected = [
-      { 'index' => 0, 'event'  => 'created', 'time' => t0},
-      { 'index' => 1, 'colour' => 'red',     'time' => t1, 'duration' => d1, 'predicted' => 'none' },
-      { 'index' => 2, 'colour' => 'amber',   'time' => t2, 'duration' => d2, 'predicted' => 'none' },
-      { 'index' => 3, 'colour' => 'green',   'time' => t3, 'duration' => d3, 'predicted' => 'none' }
+      { 'index' => 0, 'major_index' => 0, 'minor_index' => '', 'event'  => 'created', 'time' => t0},
+      { 'index' => 1, 'major_index' => 1, 'minor_index' => '', 'colour' => 'red',     'time' => t1, 'duration' => d1, 'predicted' => 'none' },
+      { 'index' => 2, 'major_index' => 2, 'minor_index' => '', 'colour' => 'amber',   'time' => t2, 'duration' => d2, 'predicted' => 'none' },
+      { 'index' => 3, 'major_index' => 3, 'minor_index' => '', 'colour' => 'green',   'time' => t3, 'duration' => d3, 'predicted' => 'none' }
     ]
     assert_equal expected, actual
   end
