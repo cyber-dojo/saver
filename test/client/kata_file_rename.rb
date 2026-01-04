@@ -17,10 +17,10 @@ class KataFileRenameTest < TestBase
       files = kata_event(id, 0)['files']
       content = files['readme.txt']['content']
       
-      new_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
+      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
-      assert_equal 2, new_index
+      assert_equal 2, next_index
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
@@ -50,10 +50,10 @@ class KataFileRenameTest < TestBase
       renamed_content = files['readme.txt']['content']
       files['tennis.py']['content'] = edited_content
       
-      new_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
+      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
@@ -88,10 +88,10 @@ class KataFileRenameTest < TestBase
       edited_content = files['readme.txt']['content'] + '# some comment'
       files['readme.txt']['content'] = edited_content
       
-      new_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
+      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
