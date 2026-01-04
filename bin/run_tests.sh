@@ -65,7 +65,7 @@ run_tests_in_container()
     --env COVERAGE_TEST_TAB_NAME=test \
     --user "${USER}" \
     "${CONTAINER_NAME}" \
-      sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${TYPE} ${*:2}"
+      sh -c "/saver/test/config/run.sh ${CONTAINER_COVERAGE_DIR} ${TEST_LOG} ${TYPE} ${*:2} ${tid:-}"
   local -r STATUS=$?
   set -e
 
