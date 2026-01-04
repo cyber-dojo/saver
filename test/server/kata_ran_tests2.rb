@@ -86,7 +86,7 @@ class KataRanTests2Test < TestBase
       status = data['status']
 
       actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
-      expected = { 'next_index' => 6, 'major_index' => 1 }
+      expected = { 'next_index' => 6, 'major_index' => 1, 'minor_index' => '' }
       assert_equal expected, actual
 
       next_index = expected['next_index']
@@ -98,7 +98,7 @@ class KataRanTests2Test < TestBase
       assert_equal 9, next_index
 
       actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
-      expected = { 'next_index' => 10, 'major_index' => 2 }
+      expected = { 'next_index' => 10, 'major_index' => 2, 'minor_index' => '' }
       assert_equal expected, actual
     end
   end

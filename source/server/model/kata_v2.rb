@@ -416,7 +416,11 @@ class Kata_v2
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
 
-    { 'next_index' => index + 1, 'major_index' => major_index(all_events, index) }
+    { 
+      'next_index' => index + 1, 
+      'major_index' => major_index(all_events, index),
+      'minor_index' => ''
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
