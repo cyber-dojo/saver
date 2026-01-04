@@ -83,16 +83,15 @@ class KataEventsTest < TestBase
       kata_ran_tests(id, 6, files, stdout, stderr, '137', summary)
 
       actual = kata_events(id)
-      expected = [
-        kata_create_event(0, t0),
-        file_create_event(1, t1, 'newfile.txt'),
-        rag_event(2, t2, 'red', 0, 0),
-        file_edit_event(3, t3, 'newfile.txt', 1, 0),
-        file_rename_event(4, t4, 'newfile.txt', 'newfile2.txt'),
-        rag_event(5, t5, 'red', 0, 0),
-        rag_event(6, t6, 'red', 0, 0)
-      ]
-      assert_equal expected, actual
+      assert_equal 7, actual.size
+
+      assert_equal kata_create_event(0, t0), actual[0], 0
+      assert_equal file_create_event(1, 0, 1, t1, 'newfile.txt'), actual[1], 1
+      assert_equal rag_event(2, 1, '', t2, 'red', 0, 0), actual[2], 2
+      assert_equal file_edit_event(3, 1, 1, t3, 'newfile.txt', 1, 0), actual[3], 3
+      assert_equal file_rename_event(4, 1, 2, t4, 'newfile.txt', 'newfile2.txt'), actual[4], 4
+      assert_equal rag_event(5, 2, '', t5, 'red', 0, 0), actual[5], 5
+      assert_equal rag_event(6, 3, '', t6, 'red', 0, 0), actual[6], 6
     end
   end
 
@@ -105,7 +104,16 @@ class KataEventsTest < TestBase
     externals.instance_exec { @time = TimeStub.new(t0) }
     in_kata do |id|
       actual = kata_events(id)
-      expected = [{ 'index' => 0, 'colour' => 'create', 'time' => t0, 'event' => 'created' }]
+      expected = [{ 
+        'index' => 0, 
+        'major_index' => 0,
+        'minor_index' => '',
+        'colour' => 
+        'create', 
+        'time' => t0, 
+        'event' => 
+        'created' 
+      }]
       assert_equal expected, actual
     end
   end
@@ -115,15 +123,19 @@ class KataEventsTest < TestBase
   def kata_create_event(index, time)
     {
       'index' => 0,
+      'major_index' => 0,
+      'minor_index' => '',
       'time' => time,
       'colour' => 'create',
       'event' => 'created'
     }
   end
 
-  def rag_event(index, time, colour, diff_added_count, diff_deleted_count)
+  def rag_event(index, major, minor, time, colour, diff_added_count, diff_deleted_count)
     {
       'index' => index,
+      'major_index' => major,
+      'minor_index' => minor,
       'time' => time,
       'colour' => colour,
       'diff_added_count' => diff_added_count,
@@ -131,9 +143,11 @@ class KataEventsTest < TestBase
     }
   end
 
-  def file_create_event(index, time, filename)
+  def file_create_event(index, major, minor, time, filename)
     {
       'index' => index,
+      'major_index' => major,
+      'minor_index' => minor,
       'time' => time,
       'colour' => 'file_create',
       'filename' => filename,
@@ -142,9 +156,11 @@ class KataEventsTest < TestBase
     }
   end
 
-  def file_edit_event(index, time, filename, diff_added_count, diff_deleted_count)
+  def file_edit_event(index, major, minor, time, filename, diff_added_count, diff_deleted_count)
     {
       'index' => index,
+      'major_index' => major,
+      'minor_index' => minor,
       'time' => time,
       'colour' => 'file_edit',
       'filename' => filename,
@@ -153,9 +169,11 @@ class KataEventsTest < TestBase
     }
   end
 
-  def file_rename_event(index, time, old_filename, new_filename)
+  def file_rename_event(index, major, minor, time, old_filename, new_filename)
     {
       'index' => index,
+      'major_index' => major,
+      'minor_index' => minor,
       'time' => time,
       'colour' => 'file_rename',
       'old_filename' => old_filename,
