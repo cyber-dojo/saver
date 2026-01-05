@@ -14,6 +14,22 @@ require 'tmpdir'
 # 3. event_summary.json is now called events.json and contains a json array
 # 4. entries in events.json have strictly sequential indexes
 # 5. saver outages are NOT recorded in events.json
+# 6. There are new file-create/delete/rename/edit events
+
+# File-events
+# In web microservice, whenever:
+#   - a new (empty) file is created, file_create is called.
+#   - a file is deleted, file_delete is called.
+#   - a file is renamed, file_rename is called.
+#   - a new file is *selected*, file_edit is called 
+#     which catches all changes to individual files.
+# Thus events.json could hold, for example
+#  0=create, 1=rename, 2=edit, 3=ran-tests, 4=edit, 5=edit, 6=ran-tests
+# This means that the index in each event no longer corresponds to
+# just the red/amber/green ran-tests events. In the above, there are
+# two ran-tests events at indexes 3,6 which would previously have been 1,2
+# Because of this, ran_tests2() now returns the 'major_index' which 
+# corresponds to the previous red/amber/green index.
 
 class Kata_v2
 
@@ -70,8 +86,8 @@ class Kata_v2
 
   def events(id)
     result = read_events(disk, id)
-    #TODO: polyfill_events_defaults(result)
     result[0]['colour'] = 'create'
+    polyfill_major_minor(result)
     result
   end
 
@@ -146,7 +162,8 @@ class Kata_v2
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
     tag_message = "created file '#{filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -157,7 +174,8 @@ class Kata_v2
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     tag_message = "deleted file '#{filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -172,7 +190,8 @@ class Kata_v2
       'new_filename' => new_filename 
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -182,11 +201,14 @@ class Kata_v2
     # The timestamp of the file-edit will only be approximate.
     current_files = event(id, index - 1)['files']
     edited_filename = edited_filename(current_files, files)
-    return index unless edited_filename
+    if !edited_filename
+      return index
+    end
 
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     tag_message = "edited file '#{edited_filename}'"
-    git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message)
+    result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -326,25 +348,52 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    all_events = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
       # Update events in worktree
-      events = read_events(worktree)
-      last_index = events.last['index']
+      all_events = read_events(worktree)
+      last_index = all_events.last['index']
 
-      unless index == last_index+1  
+      unless index == last_index+1
         raise 'Out of order event'
       end
-
-      # Add the new event
-      events << summary.merge!({ 'index' => index, 'time' => time.now })
-      write_files(worktree, '', { events_filename => json_pretty(events) })
 
       # Remove files/
       # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
       shell.assert_cd_exec(worktree.root_dir, 'git rm -r files/')
 
-      # Add new files/
+      # Write new files/
       write_files(worktree, 'files', content_of(files))
+
+      # Add all files/
+      shell.assert_cd_exec(worktree.root_dir, 'git add .')
+
+      # Calculate number of added/deleted lines
+      info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat --ignore-cr-at-eol")
+      # Eg ' 1 file changed, 2 insertions(+), 1 deletion(-)'
+      # Eg ' 1 file changed, 1 insertion(+)'
+      # Eg ' 1 file changed, 172 deletions(-)'
+      regex1 = /\d+ files? changed, (\d+) insertions?\(\+\), (\d+) deletion/
+      regex2 = /\d+ files? changed, (\d+) insertions?\(\+\)/
+      regex3 = /\d+ files? changed, (\d+) deletions?\(\-\)/
+      if m = info.match(regex1) 
+        added_count, deleted_count = *m.captures
+      elsif m = info.match(regex2)
+        added_count, deleted_count = *m.captures, 0
+      elsif m = info.match(regex3)
+        added_count, deleted_count = 0, *m.captures
+      else 
+        added_count, deleted_count = 0, 0
+      end
+
+      # Write the new event
+      all_events << summary.merge!({ 
+        'index' => index, 
+        'time' => time.now,
+        'diff_added_count' => added_count.to_i,
+        'diff_deleted_count' => deleted_count.to_i
+      })
+      write_files(worktree, '', { events_filename => json_pretty(all_events) })
 
       # Update metadata
       write_files(worktree, '', {
@@ -357,16 +406,21 @@ class Kata_v2
         })
       })
 
-      # Add all files and commit
-      shell.assert_cd_exec(worktree.root_dir, [
-        'git add .',
-        "git commit --message '#{index} #{tag_message}' --quiet",
-      ])
+      # Add new event and metadata
+      shell.assert_cd_exec(worktree.root_dir, 'git add .')
+
+      # Commit
+      shell.assert_cd_exec(worktree.root_dir, "git commit --message '#{index} #{tag_message}' --quiet")
     end
 
     # git_ff_merge_worktree succeeded, so tag
     shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
-    index + 1
+
+    { 
+      'next_index' => index + 1, 
+      'major_index' => major_index(all_events, index),
+      'minor_index' => ''
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -455,6 +509,10 @@ class Kata_v2
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
     commands = files.each.with_object([]) do |(filename,content),array|
+      #if content.class != String 
+      #  puts("Y"*42)
+      #  puts("write_files(#{filename}, content=#{content.class.name})")
+      #end
       path = "#{base_dir}/#{filename}"
       array << disk.file_write_command(path, content)
     end
@@ -505,6 +563,8 @@ class Kata_v2
 
 end
 
+# - - - - - - - - - - - - - - - - - - - -
+
 def edited_filename(previous_files, current_files)
   previous_files.each do |filename, values|
     previous_content = previous_files[filename]['content']
@@ -514,4 +574,15 @@ def edited_filename(previous_files, current_files)
     end
   end
   return nil
+end
+
+def major_index(events, index)
+  # assert index > 0
+  count = 0
+  events[1..].each do |event|
+    if is_light?(event)
+      count += 1
+    end
+  end
+  count
 end

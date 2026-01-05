@@ -10,8 +10,8 @@ class KataManifestTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 0, '473', %w[
-  already existing kata_manifest {test-data copied into saver}
-  is "polyfilled" to make it look like version=1
+  | already existing kata_manifest {test-data copied into saver}
+  | is "polyfilled" to make it look like version=1
   ] do
     manifest = kata_manifest(id='5rTJv5')
     assert_equal 0, manifest['version'], :version
@@ -57,7 +57,9 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Q62', %w[retrieved kata_manifest has created and version keys] do
+  versions_test 'Q62', %w(
+  | retrieved kata_manifest has created and version keys
+  ) do
     now = [2018,11,30, 9,34,56,6453]
       externals.instance_exec {
         @time = TimeStub.new(now)
@@ -75,7 +77,9 @@ class KataManifestTest < TestBase
 
   include KataTestData
 
-  version_test 2, 'K8S', %w[kata_manifest] do
+  version_test 2, 'K8S', %w(
+  | kata_manifest
+  ) do
     now = [2021,5,31, 10,3,51,6553]
     externals.instance_exec { @time = TimeStub.new(now) }
     manifest = manifest_Tennis_refactoring_Python_unitttest

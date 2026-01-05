@@ -8,12 +8,16 @@ class KataEventTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, '2R6', %w( v0 example ) do
+  version_test 0, '2R6', %w(
+  | v0 example 
+  ) do
     assert_equal kata_event_k5ZTk0_2, kata_event(V0_KATA_ID, 2)
     assert_equal kata_event_k5ZTk0_3, kata_event(V0_KATA_ID, 3)
   end
 
-  version_test 0, '2R8', %w( v0 example via HTTP GET ) do
+  version_test 0, '2R8', %w( 
+  | v0 example via HTTP GET 
+  ) do
     args = {"id":V0_KATA_ID, "index":3 }
     expected = kata_event_k5ZTk0_3
     assert_json_get_200('kata_event', args) do |actual|
@@ -23,12 +27,16 @@ class KataEventTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, '1P3', %w( v1 example ) do
+  version_test 1, '1P3', %w( 
+  | v1 example 
+  ) do
     assert_equal kata_event_rUqcey_1, kata_event(V1_KATA_ID, 1)
     assert_equal kata_event_rUqcey_2, kata_event(V1_KATA_ID, 2)
   end
 
-  version_test 1, '1P5', %w( v1 example via HTTP GET ) do
+  version_test 1, '1P5', %w( 
+  | v1 example via HTTP GET 
+  ) do
     args = {"id":V1_KATA_ID, "index":2}
     expected = kata_event_rUqcey_2
     assert_json_get_200('kata_event', args) do |actual|
@@ -39,8 +47,8 @@ class KataEventTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 0, 'f5T', %w(
-  retrieve already existing individual kata_event() {test-data copied into saver}
-  is "polyfilled" to make it look like version=1
+  | retrieve already existing individual kata_event() {test-data copied into saver}
+  | is "polyfilled" to make it look like version=1
   ) do
     actual = kata_event(id='5rTJv5', index=0)
 
@@ -65,7 +73,7 @@ class KataEventTest < TestBase
   # . . . . . . . . . . . .
 
   version_test 1, 'rp9', %w(
-  retrieve already existing individual kata_event() {test-data copied into saver}
+  | retrieve already existing individual kata_event() {test-data copied into saver}
   ) do
     actual = kata_event(id='H8NAvN', index=0)
     assert actual.is_a?(Hash), actual.class.name
@@ -90,7 +98,7 @@ class KataEventTest < TestBase
   # kata_event(id, index < 0)
 
   version_test 0, 'Hx6', %w(
-  kata_event(id, index=-N) retrieves the Nth most recent event
+  | kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5rTJv5'
     assert_equal kata_event(id, 3), kata_event(id, -1)
@@ -99,7 +107,7 @@ class KataEventTest < TestBase
   end
 
   version_test 1, 'Hx7', %w(
-  kata_event(id, index=-N) retrieves the Nth most recent event
+  | kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5U2J18'
     assert_equal kata_event(id, 3), kata_event(id, -1)
@@ -108,7 +116,7 @@ class KataEventTest < TestBase
   end
 
   version_test 2, 'Hx8', %w(
-  kata_event(id, index=-N) raises when N is out of bounds
+  | kata_event(id, index=-N) raises when N is out of bounds
   ) do
     in_kata do |id|
       kata_event(id, -1)
@@ -122,8 +130,8 @@ class KataEventTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 0, '4dJ', %w(
-  |kata_event(id, index=-1) retrieves the most recent event
-  |even when only the creation event exists
+  | kata_event(id, index=-1) retrieves the most recent event
+  | even when only the creation event exists
   ) do
     post_json '/kata_create', {
       manifest: manifest_Tennis_refactoring_Python_unitttest
@@ -137,11 +145,11 @@ class KataEventTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, '9De', %w(
-  |kata_event(id, index=0) polyfills stdout,stderr,status,colour
-  |because these are needed now that the initial index=0 traffic-light
-  |is shown on the main kata/edit page allowing you to click the
-  |index=0 traffic-light and thus get a review/diff page for index=0
-  |You also need 'colour' when reverting back to index=0 traffic-light
+  | kata_event(id, index=0) polyfills stdout,stderr,status,colour
+  | because these are needed now that the initial index=0 traffic-light
+  | is shown on the main kata/edit page allowing you to click the
+  | index=0 traffic-light and thus get a review/diff page for index=0
+  | You also need 'colour' when reverting back to index=0 traffic-light
   ) do
     in_kata do |id|
       actual = kata_event(id, 0)

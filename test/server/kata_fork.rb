@@ -10,7 +10,7 @@ class KataForkTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '760', %w(
-  |bad id raises
+  | bad id raises
   ) do
     assert_raises { kata_fork(id58, -1) }
   end
@@ -18,7 +18,7 @@ class KataForkTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '761', %w(
-  |bad_index raises
+  | bad_index raises
   ) do
     in_kata do |id|
       assert_raises { kata_fork(id, 1) }
@@ -28,9 +28,9 @@ class KataForkTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '762', %w[
-  |fork returns id of new kata
-  |whose manifest and files match the kata forked from
-  |and whose version is always 2
+  | fork returns id of new kata
+  | whose manifest and files match the kata forked from
+  | and whose version is always 2
   ] do
     in_kata do |kid|
       files = {
@@ -83,8 +83,8 @@ class KataForkTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '763', %w[
-  |fork from kata in a group
-  |leaves no trace of the original group
+  | fork from kata in a group
+  | leaves no trace of the original group
   ] do
     in_group do |gid|
       in_kata(gid) do |kid|

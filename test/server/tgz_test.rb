@@ -10,7 +10,9 @@ class TgzTest < TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  test 'H3s', %w[simple tgz round-trip] do
+  test 'H3s', %w(
+  | simple tgz round-trip
+  ) do
     files_in = {
       'hello.txt' => 'greetings earthlings...',
       'hiker.c' => '#include <stdio.h>'
@@ -20,7 +22,9 @@ class TgzTest < TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  test 'H4s', %w[simple tgz round-trip of nothing] do
+  test 'H4s', %w(
+  | simple tgz round-trip of nothing
+  ) do
     assert_equal({}, TGZ.files(TGZ.of({})))
   end
 end

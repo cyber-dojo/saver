@@ -10,8 +10,8 @@ class KataExistsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '760', %w(
-  |kata_exists? is false,
-  |for a well-formed id that does not exist
+  | kata_exists? is false,
+  | for a well-formed id that does not exist
   ) do
     refute kata_exists?('123AbZ')
   end
@@ -19,8 +19,8 @@ class KataExistsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '761', %w(
-  |kata_exists? is true,
-  |for a well-formed id that exists
+  | kata_exists? is true,
+  | for a well-formed id that exists
   ) do
     in_kata do |id|
       assert kata_exists?(id), :created_in_test
@@ -30,8 +30,8 @@ class KataExistsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '762', %w[
-  |kata_exists? is false (it does not raise),
-  |for a malformed id
+  | kata_exists? is false (it does not raise),
+  | for a malformed id
   ] do
     refute kata_exists?(42), 'Integer'
     refute kata_exists?(nil), 'nil'
@@ -46,9 +46,9 @@ class KataExistsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '763', %w(
-  |kata_exists? raises,
-  |when id is well-formed,
-  |and saver is offline
+  | kata_exists? raises,
+  | when id is well-formed,
+  | and saver is offline
   ) do
     externals.instance_exec {
       @disk = DiskExceptionRaiser.new
@@ -61,9 +61,9 @@ class KataExistsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test '764', %w(
-  |kata_exists? is true
-  |for id from original kata
-  |when there was no explicit version in the manifest
+  | kata_exists? is true
+  | for id from original kata
+  | when there was no explicit version in the manifest
   ) do
     assert kata_exists?('5rTJv5'), :original_no_explicit_version
     assert kata_exists?('k5ZTk0'), :original_no_explicit_version

@@ -16,10 +16,10 @@ class KataFileCreateTest < TestBase
       files = kata_event(id, 0)['files']
       refute files.keys.include?('wibble.txt') 
 
-      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
       events = kata_events(id)
-      assert_equal 2, new_index
+      assert_equal 2, next_index
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
@@ -45,10 +45,10 @@ class KataFileCreateTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
 
-      new_index = kata_file_create(id, index=1, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=1, files, 'wibble.txt')
 
       events = kata_events(id)
-      assert_equal 3, new_index
+      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']

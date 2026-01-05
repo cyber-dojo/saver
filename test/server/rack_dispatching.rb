@@ -10,24 +10,27 @@ class RackDispatchingTest < TestBase
   # 200
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E39',
-  'dispatches to alive' do
+  test 'E39', %w(
+  | dispatches to alive
+  ) do
     assert_get('alive' , ''  , 'alive?', true)
     assert_get('alive?', ''  , 'alive?', true)
     assert_get('alive' , '{}', 'alive?', true)
     assert_get('alive?', '{}', 'alive?', true)
   end
 
-  test 'E40',
-  'dispatches to ready' do
+  test 'E40', %w(
+  | dispatches to ready
+  ) do
     assert_get('ready' , ''  , 'ready?', true)
     assert_get('ready?', ''  , 'ready?', true)
     assert_get('ready' , '{}', 'ready?', true)
     assert_get('ready?', '{}', 'ready?', true)
   end
 
-  test 'E41',
-  'dispatches to sha' do
+  test 'E41', %w(
+  | dispatches to sha
+  ) do
     def prober.sha
       '80206798f1c1e0b403f17ceb1e7510edea8d8e51'
     end
@@ -36,8 +39,8 @@ class RackDispatchingTest < TestBase
   end
 
   test 'E42', %w(
-  you can pass arguments as path params
-  as that is simpler when calling from JavaScript
+  | you can pass arguments as path params
+  | as that is simpler when calling from JavaScript
   ) do
     assert_get('kata_exists?id=123AbZ', '', 'kata_exists?', false)
     assert_get('kata_exists?id=5rTJv5', '', 'kata_exists?', true)
@@ -47,8 +50,9 @@ class RackDispatchingTest < TestBase
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2A',
-  'dispatch has 404 when method name is not found' do
+  test 'E2A', %w(
+  | dispatch has 404 when method name is not found
+  ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
       post_json '/xyz', ''
     end
@@ -57,8 +61,9 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2B',
-  'dispatch has 400 status when non-empty body is not JSON' do
+  test 'E2B', %w(
+  | dispatch has 400 status when non-empty body is not JSON
+  ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
       get_json '/sha', 'abc'
     end
@@ -67,8 +72,9 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2C',
-  'dispatch has 400 status when non-empty body is not JSON Hash' do
+  test 'E2C', %w(
+  | dispatch has 400 status when non-empty body is not JSON Hash
+  ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
       get_json '/sha', '[]'
     end
@@ -79,8 +85,9 @@ class RackDispatchingTest < TestBase
   # 500
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F1A',
-  'dispatch has 500 status when implementation raises' do
+  test 'F1A', %w(
+  | dispatch has 500 status when implementation raises
+  ) do
     def prober.sha
       raise ArgumentError, 'wibble'
     end
@@ -89,8 +96,9 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F1B',
-  'dispatch has 500 status when implementation has syntax error' do
+  test 'F1B', %w(
+  | dispatch has 500 status when implementation has syntax error
+  ) do
     def prober.sha
       raise SyntaxError, 'fubar'
     end

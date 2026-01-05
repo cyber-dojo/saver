@@ -1,3 +1,5 @@
 AllCops:
-    NewCops: enable
+  NewCops: enable
+  Exclude:
+    - test/**/*
 

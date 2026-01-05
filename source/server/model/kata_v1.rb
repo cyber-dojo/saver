@@ -67,7 +67,9 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    all = json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    polyfill_major_minor(all)
+    all
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -176,7 +178,7 @@ class Kata_v1
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
       events_file_append_command(id, ",\n" + json_plain(summary))
     ])
-    index + 1
+    { 'next_index' => index + 1, 'major_index' => index }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

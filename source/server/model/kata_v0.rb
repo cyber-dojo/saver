@@ -54,6 +54,7 @@ class Kata_v0
     result = disk.assert(events_file_read_command(id))
     json = json_parse('[' + result.lines.join(',') + ']')
     polyfill_events(json)
+    polyfill_major_minor(json)
     json
   end
 
@@ -171,7 +172,7 @@ class Kata_v0
       event_file_create_command(id, index, json_plain(lined(event_n))),
       events_file_append_command(id, json_plain(summary) + "\n")
     ])
-    index + 1
+    { 'next_index' => index + 1, 'major_index' => index }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
