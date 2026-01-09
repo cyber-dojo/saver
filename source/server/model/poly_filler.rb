@@ -62,21 +62,19 @@ module PolyFiller
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def polyfill_major_minor(events)
-    events[0]['major_index'] = 0
-    events[0]['minor_index'] = ''
     major = 0
     minor = 0
+    events[0]['major_index'] = 0
+    events[0]['minor_index'] = 0
     events[1..].each do |event|
         if is_light?(event)
-        major += 1
-        event['major_index'] = major
-        event['minor_index'] = ''
-        minor = 0
+          major += 1
+          minor = 0
         else 
-        minor += 1
+          minor += 1
+        end
         event['major_index'] = major
         event['minor_index'] = minor
-        end
     end
   end
 

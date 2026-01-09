@@ -419,7 +419,7 @@ class Kata_v2
     { 
       'next_index' => index + 1, 
       'major_index' => major_index(all_events, index),
-      'minor_index' => ''
+      'minor_index' => 0
     }
   end
 
@@ -509,10 +509,6 @@ class Kata_v2
   def write_files(disk, base_dir, files)
     make_dirs(disk, base_dir, files)
     commands = files.each.with_object([]) do |(filename,content),array|
-      #if content.class != String 
-      #  puts("Y"*42)
-      #  puts("write_files(#{filename}, content=#{content.class.name})")
-      #end
       path = "#{base_dir}/#{filename}"
       array << disk.file_write_command(path, content)
     end
