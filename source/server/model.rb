@@ -109,8 +109,16 @@ class Model
     kata(id).predicted_right(id, index, files, stdout, stderr, status, summary)
   end
 
+  def kata_predicted_right2(id:, index:, files:, stdout:, stderr:, status:, summary:)
+    kata(id).predicted_right2(id, index, files, stdout, stderr, status, summary)
+  end
+
   def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary)
+  end
+
+  def kata_predicted_wrong2(id:, index:, files:, stdout:, stderr:, status:, summary:)
+    kata(id).predicted_wrong2(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:)

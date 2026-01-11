@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class KataRanTests2Test < TestBase
+class KataPredictedWrong2Test < TestBase
 
   def initialize(arg)
     super(arg)
@@ -8,14 +8,14 @@ class KataRanTests2Test < TestBase
   end
 
   def self.id58_prefix
-    'Sp5'
+    'B1D'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'E04', %w(
   | when one file has been edited
-  | a kata_ran_test2 event 
+  | a kata_predicted_wrong2 event 
   | results in one event
   | and returns a dict containing 
   | next_index, and major_index which is an index of
@@ -39,7 +39,7 @@ class KataRanTests2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 2, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -51,7 +51,7 @@ class KataRanTests2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 2, next_index
 
-      actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 3, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end
@@ -61,7 +61,7 @@ class KataRanTests2Test < TestBase
 
   test 'E05', %w(
   | when one file has been edited
-  | a kata_ran_test2 event 
+  | a kata_predicted_wrong2 event 
   | results in two events
   | and returns a dict containing 
   | next_index, and major_index which is an index of
@@ -85,7 +85,7 @@ class KataRanTests2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 6, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -97,7 +97,7 @@ class KataRanTests2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 9, next_index
 
-      actual = kata_ran_tests2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 10, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end

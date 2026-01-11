@@ -92,6 +92,24 @@ module TestHelpersModel
     )
   end
 
+  def kata_predicted_right2(id, index, files, stdout, stderr, status, summary)
+    model.kata_predicted_right2(
+      id:id, index:index,
+      files:files, stdout:stdout, stderr:stderr, status:status,
+      summary:summary
+    )
+  end
+
+  def kata_predicted_wrong2(id, index, files, stdout, stderr, status, summary)
+    model.kata_predicted_wrong2(
+      id:id, index:index,
+      files:files, stdout:stdout, stderr:stderr, status:status,
+      summary:summary
+    )
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
   def kata_ran_tests(id, index, files, stdout, stderr, status, summary)
     model.kata_ran_tests(
       id:id, index:index,

@@ -64,8 +64,8 @@ module PolyFiller
   def polyfill_major_minor(events)
     major = 0
     minor = 0
-    events[0]['major_index'] = 0
-    events[0]['minor_index'] = 0
+    events[0]['major_index'] = major
+    events[0]['minor_index'] = minor
     events[1..].each do |event|
         if is_light?(event)
           major += 1
