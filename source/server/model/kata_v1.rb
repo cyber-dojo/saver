@@ -131,6 +131,16 @@ class Kata_v1
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
+  def predicted_right2(id, index, files, stdout, stderr, status, summary)
+    universal_append(id, index, files, stdout, stderr, status, summary)
+  end
+
+  def predicted_wrong2(id, index, files, stdout, stderr, status, summary)
+    universal_append(id, index, files, stdout, stderr, status, summary)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def ran_tests(id, index, files, stdout, stderr, status, summary)
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
@@ -178,7 +188,7 @@ class Kata_v1
       event_file_create_command(id, index, json_plain(event_n.merge(summary))),
       events_file_append_command(id, ",\n" + json_plain(summary))
     ])
-    { 'next_index' => index + 1, 'major_index' => index }
+    { 'next_index' => index + 1, 'major_index' => index, 'minor_index' => 0 }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
