@@ -25,26 +25,31 @@ module PolyFiller
     # event - read from /..ID../INDEX/event.json
     # events_summary - read from /..ID../events.json
     # Polyfill the former from the latter.
+    event['index'] = index
+    event['time'] = event_summary['time']
+
     if event.has_key?('status')
       event['status'] = event['status'].to_s
     end
+
     if index === 0
       event['event'] = 'created'
     end
+
     if event_summary.has_key?('colour')
       event['colour'] = event_summary['colour']
       event['duration'] = event_summary['duration']
       event['predicted'] = event_summary['predicted']
       event['predicted'] ||= 'none'
     end
+
     if event_summary.has_key?('revert')
       event['revert'] = event_summary['revert']
     end
+
     if event_summary.has_key?('checkout')
       event['checkout'] = event_summary['checkout']
     end
-    event['index'] = index
-    event['time'] = event_summary['time']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -61,20 +66,35 @@ module PolyFiller
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def polyfill_major_minor(events)
+  def polyfill_major_minor_events(events)
     major = 0
     minor = 0
     events[0]['major_index'] = major
     events[0]['minor_index'] = minor
     events[1..].each do |event|
-        if is_light?(event)
-          major += 1
-          minor = 0
-        else 
-          minor += 1
-        end
-        event['major_index'] = major
-        event['minor_index'] = minor
+      if is_light?(event)
+        major += 1
+        minor = 0
+      else 
+        minor += 1
+      end
+      event['major_index'] = major
+      event['minor_index'] = minor
+      
+      if event.has_key?('checkout')
+        event['checkout']['major_index'] = event['index']
+        event['checkout']['minor_index'] = 0
+      end
+    end
+  end
+
+  def polyfill_major_minor_event(event)
+    event['major_index'] = event['index']
+    event['minor_index'] = 0
+    
+    if event.has_key?('checkout')
+      event['checkout']['major_index'] = event['index']
+      event['checkout']['minor_index'] = 0
     end
   end
 
