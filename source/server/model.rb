@@ -81,6 +81,8 @@ class Model
     kata(id).event_batch(ids, indexes)
   end
 
+  # - - - - - - - - - - - - - - - - - - - -
+
   def kata_file_create(id:, index:, files:, filename:)
     kata(id).file_create(id, index, files, filename)
   end
@@ -97,9 +99,21 @@ class Model
     kata(id).file_edit(id, index, files)
   end
 
+  # - - - - - - - - - - - - - - - - - - - -
+
   def kata_ran_tests2(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).ran_tests2(id, index, files, stdout, stderr, status, summary)
   end
+
+  def kata_predicted_right2(id:, index:, files:, stdout:, stderr:, status:, summary:)
+    kata(id).predicted_right2(id, index, files, stdout, stderr, status, summary)
+  end
+
+  def kata_predicted_wrong2(id:, index:, files:, stdout:, stderr:, status:, summary:)
+    kata(id).predicted_wrong2(id, index, files, stdout, stderr, status, summary)
+  end
+  
+  # - - - - - - - - - - - - - - - - - - - -
 
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
@@ -109,16 +123,8 @@ class Model
     kata(id).predicted_right(id, index, files, stdout, stderr, status, summary)
   end
 
-  def kata_predicted_right2(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_right2(id, index, files, stdout, stderr, status, summary)
-  end
-
   def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary)
-  end
-
-  def kata_predicted_wrong2(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_wrong2(id, index, files, stdout, stderr, status, summary)
   end
 
   def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:)
@@ -129,13 +135,7 @@ class Model
     kata(id).checked_out(id, index, files, stdout, stderr, status, summary)
   end
 
-  def kata_option_get(id:, name:)
-    kata(id).option_get(id, name)
-  end
-
-  def kata_option_set(id:, name:, value:)
-    kata(id).option_set(id, name, value)
-  end
+  # - - - - - - - - - - - - - - - - - - - -
 
   def kata_download(id:)
     kata(id).download(id)
@@ -143,6 +143,16 @@ class Model
 
   def kata_fork(id:, index:)
     kata(id).fork(Kata_v2, id, index)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - -
+
+  def kata_option_get(id:, name:)
+    kata(id).option_get(id, name)
+  end
+
+  def kata_option_set(id:, name:, value:)
+    kata(id).option_set(id, name, value)
   end
 
   CURRENT_VERSION = 2

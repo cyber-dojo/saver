@@ -1,12 +1,6 @@
 require_relative 'test_base'
 
 class KataRanTests2Test < TestBase
-
-  def initialize(arg)
-    super(arg)
-    @version = 2
-  end
-
   def self.id58_prefix
     'Sp5'
   end

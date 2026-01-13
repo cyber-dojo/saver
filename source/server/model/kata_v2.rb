@@ -231,6 +231,19 @@ class Kata_v2
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
+  # def reverted2(id, index, files, stdout, stderr, status, summary)
+  #   revert = summary['revert']
+  #   info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
+  #   tag_message = "reverted to #{info.inspect}"
+  #   git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+  # end
+
+  # def checked_out2(id, index, files, stdout, stderr, status, summary)
+  #   info = json_plain(summary['checkout'])
+  #   tag_message = "checked out #{info.inspect}"
+  #   git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+  # end
+
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
@@ -305,8 +318,6 @@ class Kata_v2
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   include Fork
   include Options
 
@@ -315,8 +326,6 @@ class Kata_v2
   include IdPather
   include JsonAdapter
   include PolyFiller
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def readme_filename(id)
     kata_id_path(id, 'README.md')
