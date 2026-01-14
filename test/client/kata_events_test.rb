@@ -61,7 +61,7 @@ class KataEventsTest < TestBase
     actual = kata_event(id='5rTJv5', index=0)
 
     assert actual.is_a?(Hash)
-    expected = %w( files index major_index minor_index time event )
+    expected = %w( files index time event )
     assert_equal expected.sort, actual.keys.sort
     assert_equal 0, actual['index'], :polyfilled_index
     assert_equal [2019,1,16,12,44,55,800239], actual['time'], :polyfilled_time
@@ -70,7 +70,7 @@ class KataEventsTest < TestBase
     actual = kata_event(id='5rTJv5', index=1)
 
     assert actual.is_a?(Hash)
-    expected = %w( files stdout stderr status index major_index minor_index time colour duration predicted )
+    expected = %w( files stdout stderr status index time colour duration predicted )
     assert_equal expected.sort, actual.keys.sort
     assert_equal '1', actual['status'], :polyfilled
     assert_equal [2019,1,16,12,45,40,544806], actual['time'], :polyfilled_time
@@ -88,7 +88,7 @@ class KataEventsTest < TestBase
     actual = kata_event(id='H8NAvN', index=0)
 
     assert actual.is_a?(Hash)
-    expected = %w( files index major_index minor_index time event )
+    expected = %w( files index time event )
     assert_equal expected.sort, actual.keys.sort, :keys
     assert_equal 0, actual['index'], :index
     assert_equal [2020,10,19,12,15,38,644198], actual['time'], :time
@@ -97,7 +97,7 @@ class KataEventsTest < TestBase
     actual = kata_event(id='H8NAvN', index=1)
 
     assert actual.is_a?(Hash)
-    expected = %w( files stdout stderr status index major_index minor_index time colour duration predicted )
+    expected = %w( files stdout stderr status index time colour duration predicted )
     assert_equal expected.sort, actual.keys.sort, :keys
     assert_equal '1', actual['status'], :status
     assert_equal [2020,10,19,12,15,47,353545], actual['time'], :time

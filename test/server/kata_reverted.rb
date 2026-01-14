@@ -33,7 +33,7 @@ class KataRevertedTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_test 'Dk7', %w(
-  | kata_reverted is poly-filled in all versions 
+  | kata_reverted has revert field in all versions 
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -50,10 +50,15 @@ class KataRevertedTest < TestBase
       }
 
       result = kata_reverted(id, index=3, files, stdout, stderr, status, reverted_summary)
+      next_index = result['next_index']
 
-      actual = kata_event(id, result['next_index'] - 1)
+      actual = kata_event(id, next_index - 1)
       assert actual.keys.include?('revert'), :no_revert_key
       expected = [id, 1]
+      assert_equal expected, actual['revert']
+
+      actual = kata_events(id)[next_index - 1]
+      assert actual.keys.include?('revert'), :no_revert_key
       assert_equal expected, actual['revert']
     end
   end

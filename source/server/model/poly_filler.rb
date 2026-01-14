@@ -79,22 +79,7 @@ module PolyFiller
         minor += 1
       end
       event['major_index'] = major
-      event['minor_index'] = minor
-      
-      if event.has_key?('checkout')
-        event['checkout']['major_index'] = event['index']
-        event['checkout']['minor_index'] = 0
-      end
-    end
-  end
-
-  def polyfill_major_minor_event(event)
-    event['major_index'] = event['index']
-    event['minor_index'] = 0
-    
-    if event.has_key?('checkout')
-      event['checkout']['major_index'] = event['index']
-      event['checkout']['minor_index'] = 0
+      event['minor_index'] = minor      
     end
   end
 

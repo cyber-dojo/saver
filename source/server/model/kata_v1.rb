@@ -81,7 +81,6 @@ class Kata_v1
       index = all[index]['index']
     end
     result = json_parse(disk.assert(event_file_read_command(id, index)))
-    polyfill_major_minor_event(result)
     result
   end
 

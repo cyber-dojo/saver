@@ -73,7 +73,6 @@ class Kata_v0
     events = json_parse('[' + all[0].lines.join(',') + ']')
     result = unlined(json_parse(all[1]))
     polyfill_event(result, events, index)
-    polyfill_major_minor_event(result)
     result
   end
 
