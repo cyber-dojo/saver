@@ -67,9 +67,9 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    all = json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
-    polyfill_major_minor(all)
-    all
+    result = json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    polyfill_major_minor_events(result)
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -80,13 +80,14 @@ class Kata_v1
       all = events(id)
       index = all[index]['index']
     end
-    json_parse(disk.assert(event_file_read_command(id, index)))
+    result = json_parse(disk.assert(event_file_read_command(id, index)))
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event_batch(ids, indexes)
-    json = {}
+    result = {}
 
     commands = []
     (0...ids.size).each do |i|
@@ -94,17 +95,17 @@ class Kata_v1
       index = indexes[i]
       commands << event_file_read_command(id, index)
     end
-    results = disk.assert_all(commands)
+    all = disk.assert_all(commands)
 
     (0...ids.size).each do |i|
-      j = json_parse(results[i])
+      j = json_parse(all[i])
       id = ids[i]
       index = indexes[i]
-      json[id] ||= {}
-      json[id][index.to_s] = j
+      result[id] ||= {}
+      result[id][index.to_s] = j
     end
 
-    json
+    result
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

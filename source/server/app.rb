@@ -35,12 +35,15 @@ class App < AppBase
   post_json(:model, :kata_file_rename)
   post_json(:model, :kata_file_edit)
   
-  post_json(:model, :kata_ran_tests)
   post_json(:model, :kata_ran_tests2)
-  post_json(:model, :kata_predicted_right)
   post_json(:model, :kata_predicted_right2)
-  post_json(:model, :kata_predicted_wrong)
   post_json(:model, :kata_predicted_wrong2)
+  #post_json(:model, :kata_reverted2)
+  #post_json(:model, :kata_checked_out2)
+
+  post_json(:model, :kata_ran_tests)
+  post_json(:model, :kata_predicted_right)
+  post_json(:model, :kata_predicted_wrong)
   post_json(:model, :kata_reverted)
   post_json(:model, :kata_checked_out)
 

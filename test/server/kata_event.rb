@@ -18,10 +18,9 @@ class KataEventTest < TestBase
   version_test 0, '2R8', %w( 
   | v0 example via HTTP GET 
   ) do
-    args = {"id":V0_KATA_ID, "index":3 }
-    expected = kata_event_k5ZTk0_3
+    args = {'id':V0_KATA_ID, 'index':3 }
     assert_json_get_200('kata_event', args) do |actual|
-      assert_equal expected, actual
+      assert_equal kata_event_k5ZTk0_3, actual
     end
   end
 
@@ -37,10 +36,9 @@ class KataEventTest < TestBase
   version_test 1, '1P5', %w( 
   | v1 example via HTTP GET 
   ) do
-    args = {"id":V1_KATA_ID, "index":2}
-    expected = kata_event_rUqcey_2
+    args = {'id':V1_KATA_ID, 'index':2}
     assert_json_get_200('kata_event', args) do |actual|
-      assert_equal expected, actual
+      assert_equal kata_event_rUqcey_2, actual
     end
   end
 
@@ -53,7 +51,8 @@ class KataEventTest < TestBase
     actual = kata_event(id='5rTJv5', index=0)
 
     assert actual.is_a?(Hash)
-    assert_equal ['files','index','time','event'].sort, actual.keys.sort
+    expected = %w( files index time event )
+    assert_equal expected.sort, actual.keys.sort
     assert_equal 0, actual['index'], :polyfilled_index
     assert_equal [2019,1,16,12,44,55,800239], actual['time'], :polyfilled_time
     assert_equal 'created', actual['event'], :polyfilled_created
@@ -61,7 +60,8 @@ class KataEventTest < TestBase
     actual = kata_event(id='5rTJv5', index=1)
 
     assert actual.is_a?(Hash)
-    assert_equal ['files','stdout','stderr','status','index','time','colour','duration','predicted'].sort, actual.keys.sort
+    expected = %w( files stdout stderr status index time colour duration predicted )
+    assert_equal expected.sort, actual.keys.sort
     assert_equal '1', actual['status'], :polyfilled
     assert_equal [2019,1,16,12,45,40,544806], actual['time'], :polyfilled_time
     assert_equal 1.46448, actual['duration'], :polyfilled_duration
@@ -77,7 +77,8 @@ class KataEventTest < TestBase
   ) do
     actual = kata_event(id='H8NAvN', index=0)
     assert actual.is_a?(Hash), actual.class.name
-    assert_equal ['files','index','time','event'].sort, actual.keys.sort, :keys
+    expected = %w( files index time event )
+    assert_equal expected.sort, actual.keys.sort, :keys
     assert_equal 0, actual['index'], :index
     assert_equal [2020,10,19,12,15,38,644198], actual['time'], :time
     assert_equal 'created', actual['event'], :event
@@ -85,7 +86,8 @@ class KataEventTest < TestBase
     actual = kata_event(id='H8NAvN', index=1)
 
     assert actual.is_a?(Hash)
-    assert_equal ['files','stdout','stderr','status','index','time','colour','duration','predicted'].sort, actual.keys.sort, :keys
+    expected = %w( files stdout stderr status index time colour duration predicted )
+    assert_equal expected.sort, actual.keys.sort, :keys
     assert_equal '1', actual['status'], :status
     assert_equal [2020,10,19,12,15,47,353545], actual['time'], :time
     assert_equal 0.918826, actual['duration'], :duration

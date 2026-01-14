@@ -1,14 +1,26 @@
 require_relative 'test_base'
 
 class KataPredictedWrong2Test < TestBase
-
-  def initialize(arg)
-    super(arg)
-    @version = 2
-  end
-
   def self.id58_prefix
     'B1D'
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_test 'E03', %w(
+  | kata_predicted_wrong gives same git-commit-message in all versions
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      data = bats
+      stdout = data['stdout']
+      stderr = data['stderr']
+      status = data['status']
+      summary = red_summary.merge({ 'predicted' => 'green' })
+      kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
+      assert_tag_commit_message(id, 1, '1 ran tests, predicted green, got red')
+      [index, summary]
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -

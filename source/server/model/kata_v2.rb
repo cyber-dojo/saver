@@ -87,7 +87,7 @@ class Kata_v2
   def events(id)
     result = read_events(disk, id)
     result[0]['colour'] = 'create'
-    polyfill_major_minor(result)
+    polyfill_major_minor_events(result)
     result
   end
 
@@ -114,18 +114,18 @@ class Kata_v2
     tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
-      if filename[-1] === '/' # dir marker
+      if filename[-1] == '/' # dir marker
         next
       elsif filename.start_with?('files/')
         result['files'][filename['files/'.size..-1]] = { 'content' => content }
       elsif ['stdout', 'stderr'].include?(filename)
         result[filename] = { 'content' => content }
-      elsif filename === 'status'
+      elsif filename == 'status'
         result['status'] = content
-      elsif filename === 'events.json'
+      elsif filename == 'events.json'
         event = json_parse(content)[index]
         result.merge!(event)
-      elsif filename === 'truncations.json'
+      elsif filename == 'truncations.json'
         truncations = json_parse(content)
       end
     end
@@ -135,7 +135,7 @@ class Kata_v2
       result['stderr']['truncated'] = truncations['stderr']
     end
 
-    if index === 0
+    if index == 0
       result['stdout'] = { 'content' => '', 'truncated' => false}
       result['stderr'] = { 'content' => '', 'truncated' => false}
       result['status'] = 0
@@ -305,8 +305,6 @@ class Kata_v2
     end
   end
 
-  # - - - - - - - - - - - - - - - - - - - - - -
-
   include Fork
   include Options
 
@@ -315,8 +313,6 @@ class Kata_v2
   include IdPather
   include JsonAdapter
   include PolyFiller
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def readme_filename(id)
     kata_id_path(id, 'README.md')
