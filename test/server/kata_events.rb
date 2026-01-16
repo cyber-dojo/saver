@@ -98,7 +98,10 @@ class KataEventsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'eh4', %w( 
-  | polyfill colour='create' for index==0 creation event 
+  | polyfill creation event with
+  | diff_added_count=0
+  | diff_deleted_count=0
+  | colour=create
   ) do
     t0 = [2021,6,12, 6,9,51,899055]
     externals.instance_exec { @time = TimeStub.new(t0) }
@@ -108,11 +111,11 @@ class KataEventsTest < TestBase
         'index' => 0, 
         'major_index' => 0,
         'minor_index' => 0,
-        'colour' => 
-        'create', 
+        'colour' => 'create', 
         'time' => t0, 
-        'event' => 
-        'created' 
+        'event' => 'created',
+        'diff_added_count' => 0,
+        'diff_deleted_count' => 0
       }]
       assert_equal expected, actual
     end
@@ -127,7 +130,9 @@ class KataEventsTest < TestBase
       'minor_index' => 0,
       'time' => time,
       'colour' => 'create',
-      'event' => 'created'
+      'event' => 'created',
+      'diff_added_count' => 0,
+      'diff_deleted_count' => 0
     }
   end
 

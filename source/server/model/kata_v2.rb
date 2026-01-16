@@ -86,7 +86,10 @@ class Kata_v2
 
   def events(id)
     result = read_events(disk, id)
-    result[0]['colour'] = 'create'
+    event = result[0]
+    event['colour'] = 'create'
+    event['diff_added_count'] = 0
+    event['diff_deleted_count'] = 0
     polyfill_major_minor_events(result)
     result
   end
