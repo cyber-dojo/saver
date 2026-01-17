@@ -20,7 +20,7 @@ class KataEventsTest < TestBase
     t2 = [2019,1,16,12,45,46,82887]
     t3 = [2019,1,16,12,45,52,220587]
     expected = [
-      { 'index' => 0, 'major_index' => 0, 'minor_index' => 0, 'event' => 'created', 'time' => t0 },
+      { 'index' => 0, 'major_index' => 0, 'minor_index' => 0, 'colour' => 'create', 'time' => t0, 'event' => 'created' },
       { 'index' => 1, 'major_index' => 1, 'minor_index' => 0, 'colour' => 'red',    'time' => t1, 'duration' => 1.46448,  'predicted' => 'red' },
       { 'index' => 2, 'major_index' => 2, 'minor_index' => 0, 'colour' => 'amber',  'time' => t2, 'duration' => 1.031421, 'predicted' => 'none' },
       { 'index' => 3, 'major_index' => 3, 'minor_index' => 0, 'colour' => 'green',  'time' => t3, 'duration' => 1.042027, 'predicted' => 'none' },
@@ -41,7 +41,7 @@ class KataEventsTest < TestBase
     t2 = [2020,10,19,12,52,58,547002]
     t3 = [2020,10,19,12,53,3,256202]
     expected = [
-      { 'index' => 0, 'major_index' => 0, 'minor_index' => 0, 'event'  => 'created', 'time' => t0},
+      { 'index' => 0, 'major_index' => 0, 'minor_index' => 0, 'colour' => 'create',  'time' => t0, 'event'  => 'created' },
       { 'index' => 1, 'major_index' => 1, 'minor_index' => 0, 'colour' => 'red',     'time' => t1, 'duration' => 0.491393, 'predicted' => 'none' },
       { 'index' => 2, 'major_index' => 2, 'minor_index' => 0, 'colour' => 'amber',   'time' => t2, 'duration' => 0.426736, 'predicted' => 'none' },
       { 'index' => 3, 'major_index' => 3, 'minor_index' => 0, 'colour' => 'green',   'time' => t3, 'duration' => 0.438522, 'predicted' => 'none' }

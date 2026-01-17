@@ -68,6 +68,7 @@ class Kata_v1
 
   def events(id)
     result = json_parse('[' + disk.assert(events_file_read_command(id)) + ']')
+    result[0]['colour'] = 'create'
     polyfill_major_minor_events(result)
     result
   end
