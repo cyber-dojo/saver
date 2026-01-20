@@ -2,20 +2,14 @@ require_relative 'test_base'
 
 class GroupExistsTest < TestBase
 
-  def self.id58_prefix
-    'Ws6'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '860', %w(
+  versions_test 'Ws6860', %w(
   | group_exists? is false,
   | for a well-formed id that does not exist
   ) do
     refute group_exists?('123AbZ')
   end
 
-  version_test 2, '760', %w(
+  version_test 2, 'Ws6760', %w(
   | group_exists? is false,
   | for a well-formed id that does not exist
   ) do
@@ -24,7 +18,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '861', %w(
+  versions_test 'Ws6861', %w(
   | group_exists? is true,
   | for a well-formed id from previous group_create
   ) do
@@ -33,7 +27,7 @@ class GroupExistsTest < TestBase
     end
   end
 
-  version_test 2, '761', %w(
+  version_test 2, 'Ws6761', %w(
   | group_exists? is true,
   | for a well-formed id from previous group_create
   ) do
@@ -44,7 +38,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '862', %w(
+  versions_test 'Ws6862', %w(
   | group_exists? is false,
   | for a malformed id
   ) do
@@ -58,7 +52,7 @@ class GroupExistsTest < TestBase
     refute group_exists?('12345i'), '!id?()'
   end
 
-  version_test 2, '762', %w(
+  version_test 2, 'Ws6762', %w(
   | group_exists? is false,
   | for a malformed id
   ) do
@@ -74,7 +68,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '863', %w(
+  versions_test 'Ws6863', %w(
   | group_exists? raises,
   | when id is well-formed,
   | and saver is offline
@@ -87,7 +81,7 @@ class GroupExistsTest < TestBase
     }
   end
 
-  version_test 2, '763', %w(
+  version_test 2, 'Ws6763', %w(
   | group_exists? raises,
   | when id is well-formed,
   | and saver is offline
@@ -102,7 +96,7 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '864', %w(
+  versions_test 'Ws6864', %w(
   | group_exists? is true
   | for id from original group
   | when there was no explicit version in the manifest

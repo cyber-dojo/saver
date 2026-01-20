@@ -5,13 +5,8 @@ require_source 'lib/tarfile_reader'
 require_source 'lib/tarfile_writer'
 
 class TarFileTest < TestBase
-  def self.id58_prefix
-    '80B'
-  end
 
-  # - - - - - - - - - - - - - - - - - -
-
-  test '364', %w(
+  test '80B364', %w(
   | simple tar round-trip
   ) do
     writer = TarFile::Writer.new
@@ -29,7 +24,7 @@ class TarFileTest < TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  test '365', %w(
+  test '80B365', %w(
   | writing content where .size != .bytesize does not throw
   ) do
     utf8 = [226].pack('U*')
@@ -41,7 +36,7 @@ class TarFileTest < TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  test '366', %w(
+  test '80B366', %w(
   | empty file round-trip
   ) do
     writer = TarFile::Writer.new

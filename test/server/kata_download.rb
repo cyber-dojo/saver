@@ -5,13 +5,7 @@ require 'tmpdir'
 
 class KataDownloadTest < TestBase
 
-  def self.id58_prefix
-    'kL3'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, '75s', %w(
+  version_test 2, 'kL375s', %w(
   | kata_exists? is false,
   | for a well-formed id that does not exist
   ) do
@@ -48,14 +42,7 @@ class KataDownloadTest < TestBase
     end
   end
 
-  def assert_last_commit_message(dir_path, expected)
-    latest_commits_messages = shell.assert_cd_exec(dir_path, "git log --abbrev-commit --pretty=oneline")
-    last_commits_message = latest_commits_messages.lines[0]
-    diagnostic = "\nexpected:#{expected}\n  actual:#{last_commits_message}"
-    assert last_commits_message.include?(expected), diagnostic
-  end
-
-  version_test 2, '75t', %w(
+  version_test 2, 'kL375t', %w(
   | downloaded README.md file for custom exercise
   ) do
     manifest = custom_manifest
@@ -66,7 +53,7 @@ class KataDownloadTest < TestBase
     refute readme.include?('- Language'), readme
   end
 
-  version_test 2, '75u', %w(
+  version_test 2, 'kL375u', %w(
   | downloaded README.md file for non-custom exercise
   ) do
     manifest = custom_manifest
@@ -75,6 +62,13 @@ class KataDownloadTest < TestBase
     readme = Kata_v2.new(externals).send(:readme, manifest)
     assert readme.include?("- Exercise: `Print Diamond`"), readme
     assert readme.include?("- Language & test-framework: `Bash, bats`"), readme
+  end
+
+  def assert_last_commit_message(dir_path, expected)
+    latest_commits_messages = shell.assert_cd_exec(dir_path, "git log --abbrev-commit --pretty=oneline")
+    last_commits_message = latest_commits_messages.lines[0]
+    diagnostic = "\nexpected:#{expected}\n  actual:#{last_commits_message}"
+    assert last_commits_message.include?(expected), diagnostic
   end
 
 end

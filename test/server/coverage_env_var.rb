@@ -2,11 +2,7 @@ require_relative 'test_base'
 
 class CoverageEnvVarTest < TestBase
 
-  def self.id58_prefix
-    'A4A'
-  end
-
-  test 'B7D',
+  test 'A4AB7D',
   'APP_DIR (for coverage metrics file) is set in server image downloaded from registry in workflow' do
     # If you update APP_DIR's value in the Dockerfile, you will also need to
     # update the target root-dirs in docker-compose.yml

@@ -3,13 +3,8 @@
 require_relative 'test_base'
 
 class KataRanTestsTest < TestBase
-  def self.id58_prefix
-    'Sp4'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'Dk1', %w(
+  versions_test 'Sp4Dk1', %w(
   | kata_ran_tests gives same results in all versions
   ) do
     in_kata do |id, files, stdout, stderr, status|
@@ -21,7 +16,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Dk8', %w(
+  versions_test 'Sp4Dk8', %w(
   | kata_ran_tests returns the next index in all versions
   ) do
     in_kata do |id, files, stdout, stderr, status|
@@ -34,7 +29,7 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'Dk9', %w(
+  version_test 2, 'Sp4Dk9', %w(
   | kata_ran_tests with an already used index
   | raises "Out of order event" exception
   ) do

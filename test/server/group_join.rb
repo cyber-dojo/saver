@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class GroupJoinTest < TestBase
 
-  def self.id58_prefix
-    'Gw4'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '1s9', %w(
+  versions_test 'Gw41s9', %w(
   | group is initially empty
   ) do
     in_group do |id|
@@ -18,7 +12,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '6A5', %w(
+  versions_test 'Gw46A5', %w(
   | when you join a group you increase its size by one,
   | and are a member of the group
   ) do
@@ -49,7 +43,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '6A6', %w(
+  versions_test 'Gw46A6', %w(
   | when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.

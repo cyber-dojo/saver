@@ -3,13 +3,8 @@
 require_relative 'test_base'
 
 class KataExistsTest < TestBase
-  def self.id58_prefix
-    'Ws5'
-  end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '760', %w(
+  versions_test 'Ws5760', %w(
   | kata_exists? is false,
   | for a well-formed id that does not exist
   ) do
@@ -18,7 +13,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '761', %w(
+  versions_test 'Ws5761', %w(
   | kata_exists? is true,
   | for a well-formed id that exists
   ) do
@@ -29,7 +24,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '762', %w[
+  versions_test 'Ws5762', %w[
   | kata_exists? is false (it does not raise),
   | for a malformed id
   ] do
@@ -45,7 +40,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '763', %w(
+  versions_test 'Ws5763', %w(
   | kata_exists? raises,
   | when id is well-formed,
   | and saver is offline
@@ -60,7 +55,7 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '764', %w(
+  versions_test 'Ws5764', %w(
   | kata_exists? is true
   | for id from original kata
   | when there was no explicit version in the manifest

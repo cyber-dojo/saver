@@ -3,13 +3,8 @@
 require_relative 'test_base'
 
 class KataManifestTest < TestBase
-  def self.id58_prefix
-    '5Ks'
-  end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 0, '473', %w[
+  version_test 0, '5Ks473', %w[
   | already existing kata_manifest {test-data copied into saver}
   | is "polyfilled" to make it look like version=1
   ] do
@@ -57,7 +52,7 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Q62', %w(
+  versions_test '5KsQ62', %w(
   | retrieved kata_manifest has created and version keys
   ) do
     now = [2018,11,30, 9,34,56,6453]
@@ -77,7 +72,7 @@ class KataManifestTest < TestBase
 
   include KataTestData
 
-  version_test 2, 'K8S', %w(
+  version_test 2, '5KsK8S', %w(
   | kata_manifest
   ) do
     now = [2021,5,31, 10,3,51,6553]

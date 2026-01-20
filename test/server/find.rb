@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class FindTest < TestBase
 
-  def self.id58_prefix
-    '29E'
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  test '6CA', %w[ when body of find has no return, find returns nil ] do
+  test '29E6CA', %w[ when body of find has no return, find returns nil ] do
     def my_find1()
       result = 4.times.find {}
       return result
@@ -17,10 +11,10 @@ class FindTest < TestBase
     assert_nil result
   end
 
-  test '6CB', %w[
-  when body of find returns
-  the find does NOT continue
-  the return returns from the outer function
+  test '29E6CB', %w[
+  | when body of find returns
+  | the find does NOT continue
+  | the return returns from the outer function
   ] do
     def my_find2(arg)
       nos = []
@@ -33,13 +27,13 @@ class FindTest < TestBase
     assert_equal [[0], true], my_find2(true)
   end
 
-  test '6CC', %w[
-  when body of find ends with nil/false
-  the find DOES continue
-  result is nil/false
-  when body of finds ends with anything other than nil/false
-  the find does NOT continue
-  result is zero ?!
+  test '29E6CC', %w[
+  | when body of find ends with nil/false
+  | the find DOES continue
+  | result is nil/false
+  | when body of finds ends with anything other than nil/false
+  | the find does NOT continue
+  | result is zero ?!
   ] do
     def my_find3(arg)
       nos = []
@@ -54,10 +48,10 @@ class FindTest < TestBase
     assert_equal [[0], 0], my_find3("f")
   end
 
-  test '6CD', %w[
-  when body of find raises
-  the find does NOT continue
-  exception propagates out of method containing find call
+  test '29E6CD', %w[
+  | when body of find raises
+  | the find does NOT continue
+  | exception propagates out of method containing find call
   ] do
     nos = []
     my_find4 = lambda do 4.times.find {|n| nos.append(n); raise "42"} end

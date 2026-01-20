@@ -3,11 +3,8 @@
 require_relative 'test_base'
 
 class TimeNowStubTest < TestBase
-  def self.id58_prefix
-    'b5D'
-  end
 
-  test '192', %w(
+  test 'b5D192', %w(
   | stubbed values are returned
   ) do
     ymdhms = [2021, 4, 18, 19, 12, 23, 454_231]
@@ -15,7 +12,7 @@ class TimeNowStubTest < TestBase
     assert_equal ymdhms, t.now
   end
 
-  test '193', %w(
+  test 'b5D193', %w(
   | stubbing more than one time
   ) do
     ymdhms = [2021, 4, 18, 19, 12, 23, 454_231]

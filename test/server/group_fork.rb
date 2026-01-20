@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class GroupForkTest < TestBase
 
-  def self.id58_prefix
-    'D2k'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '760', %w(
+  versions_test 'D2k760', %w(
   | bad id raises
   ) do
     assert_raises { group_fork(id58, -1) }
@@ -16,7 +10,7 @@ class GroupForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '761', %w(
+  versions_test 'D2k761', %w(
   | bad_index raises
   ) do
     in_kata do |id|
@@ -26,7 +20,7 @@ class GroupForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '762', %w[
+  versions_test 'D2k762', %w[
   | fork returns id of new group
   | whose manifest and files match the kata forked from
   | and whose version is always 2
@@ -82,7 +76,7 @@ class GroupForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '763', %w[
+  versions_test 'D2k763', %w[
   | fork from kata in a group
   | leaves no trace of the original group
   ] do

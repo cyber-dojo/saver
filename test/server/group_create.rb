@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class GroupCreateTest < TestBase
 
-  def self.id58_prefix
-    'e08'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'h35', %w(
+  versions_test 'e08h35', %w(
   | POST /group_create(manifest)
   | has status 200
   | returns the id: of a new group

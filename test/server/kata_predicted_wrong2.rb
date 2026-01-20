@@ -1,13 +1,8 @@
 require_relative 'test_base'
 
 class KataPredictedWrong2Test < TestBase
-  def self.id58_prefix
-    'B1D'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'E03', %w(
+  versions_test 'B1DE03', %w(
   | kata_predicted_wrong gives same git-commit-message in all versions
   ) do
     in_kata do |id|
@@ -25,7 +20,7 @@ class KataPredictedWrong2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'E04', %w(
+  versions_01_test 'B1DE04', %w(
   | when one file has been edited
   | a kata_predicted_wrong2 event 
   | results in one event
@@ -71,7 +66,7 @@ class KataPredictedWrong2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E05', %w(
+  test 'B1DE05', %w(
   | when one file has been edited
   | a kata_predicted_wrong2 event 
   | results in two events

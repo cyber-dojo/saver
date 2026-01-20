@@ -7,13 +7,9 @@ class KataFileEditTest < TestBase
     @version = 2
   end
 
-  def self.id58_prefix
-    'DcC'
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E01', %w(
+  test 'DcCE01', %w(
   | when no files have been edited
   | a kata_file_edit event 
   | does NOT create any new events
@@ -33,7 +29,7 @@ class KataFileEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E02', %w(
+  test 'DcCE02', %w(
   | when one file has been edited
   | a kata_file_edit event 
   | results in a single edit-file event 
@@ -59,7 +55,7 @@ class KataFileEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'E03', %w(
+  versions_01_test 'DcCE03', %w(
   | in versions 0 and 1, kata_file_edit
   | returns unchanged index argument and does nothing
   ) do

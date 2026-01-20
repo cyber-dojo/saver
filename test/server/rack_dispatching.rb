@@ -2,15 +2,11 @@ require_relative 'test_base'
 
 class RackDispatchingTest < TestBase
 
-  def self.id58_prefix
-    'FF0'
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 200
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E39', %w(
+  test 'FF0E39', %w(
   | dispatches to alive
   ) do
     assert_get('alive' , ''  , 'alive?', true)
@@ -19,7 +15,7 @@ class RackDispatchingTest < TestBase
     assert_get('alive?', '{}', 'alive?', true)
   end
 
-  test 'E40', %w(
+  test 'FF0E40', %w(
   | dispatches to ready
   ) do
     assert_get('ready' , ''  , 'ready?', true)
@@ -28,7 +24,7 @@ class RackDispatchingTest < TestBase
     assert_get('ready?', '{}', 'ready?', true)
   end
 
-  test 'E41', %w(
+  test 'FF0E41', %w(
   | dispatches to sha
   ) do
     def prober.sha
@@ -38,7 +34,7 @@ class RackDispatchingTest < TestBase
     assert_get('sha', '{}', 'sha', prober.sha)
   end
 
-  test 'E42', %w(
+  test 'FF0E42', %w(
   | you can pass arguments as path params
   | as that is simpler when calling from JavaScript
   ) do
@@ -50,7 +46,7 @@ class RackDispatchingTest < TestBase
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2A', %w(
+  test 'FF0E2A', %w(
   | dispatch has 404 when method name is not found
   ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
@@ -61,7 +57,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2B', %w(
+  test 'FF0E2B', %w(
   | dispatch has 400 status when non-empty body is not JSON
   ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
@@ -72,7 +68,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E2C', %w(
+  test 'FF0E2C', %w(
   | dispatch has 400 status when non-empty body is not JSON Hash
   ) do
     response, _stdout, _stderr = with_captured_stdout_stderr do
@@ -85,7 +81,7 @@ class RackDispatchingTest < TestBase
   # 500
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F1A', %w(
+  test 'FF0F1A', %w(
   | dispatch has 500 status when implementation raises
   ) do
     def prober.sha
@@ -96,7 +92,7 @@ class RackDispatchingTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'F1B', %w(
+  test 'FF0F1B', %w(
   | dispatch has 500 status when implementation has syntax error
   ) do
     def prober.sha

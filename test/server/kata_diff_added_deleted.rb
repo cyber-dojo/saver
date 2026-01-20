@@ -7,13 +7,9 @@ class KataDiffAddedDeletedTest < TestBase
     @version = 2
   end
 
-  def self.id58_prefix
-    'A6A'
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E01', %w(
+  test 'A6AE01', %w(
   | when a file has lines added
   | a kata_file_edit event 
   | shows diff_added_lines=N, diff_deleted_lines=0
@@ -36,7 +32,7 @@ class KataDiffAddedDeletedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E02', %w(
+  test 'A6AE02', %w(
   | when file has lines deleted
   | a kata_file_edit event 
   | shows diff_added_lines=0, diff_deleted_lines=N
@@ -60,7 +56,7 @@ class KataDiffAddedDeletedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E03', %w(
+  test 'A6AE03', %w(
   | when file is renamed
   | a kata_file_edit event 
   | shows diff_added_lines=0, diff_deleted_lines=0
@@ -79,7 +75,7 @@ class KataDiffAddedDeletedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E04', %w(
+  test 'A6AE04', %w(
   | when a file is created
   | a kata_file_edit event 
   | shows diff_added_lines=0, diff_deleted_lines=0
@@ -98,7 +94,7 @@ class KataDiffAddedDeletedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E05', %w(
+  test 'A6AE05', %w(
   | when a file is deleted
   | a kata_file_edit event 
   | shows diff_added_lines=N, diff_deleted_lines=0
@@ -121,7 +117,7 @@ class KataDiffAddedDeletedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E06', %w(
+  test 'A6AE06', %w(
   | when a file has lines edited
   | a kata_file_edit event 
   | shows diff_added_lines=N, diff_deleted_lines=M

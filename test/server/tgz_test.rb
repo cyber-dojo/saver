@@ -4,13 +4,8 @@ require_relative 'test_base'
 require_source 'lib/tgz'
 
 class TgzTest < TestBase
-  def self.id58_prefix
-    'e51'
-  end
 
-  # - - - - - - - - - - - - - - - - - -
-
-  test 'H3s', %w(
+  test 'e51H3s', %w(
   | simple tgz round-trip
   ) do
     files_in = {
@@ -22,7 +17,7 @@ class TgzTest < TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  test 'H4s', %w(
+  test 'e51H4s', %w(
   | simple tgz round-trip of nothing
   ) do
     assert_equal({}, TGZ.files(TGZ.of({})))

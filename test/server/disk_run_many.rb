@@ -2,10 +2,6 @@ require_relative 'test_base'
 
 class DiskRunManyTest < TestBase
 
-  def self.id58_prefix
-    '34F'
-  end
-
   def id58_setup
     @expected = []
     @commands = []
@@ -18,9 +14,9 @@ class DiskRunManyTest < TestBase
   # run_all()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '314', %w(
-  |run_all() runs all its commands
-  |not stopping when any return false
+  disk_tests '34F314', %w(
+  | run_all() runs all its commands
+  | not stopping when any return false
   ) do
     dirname = 'batch/e3/t3/14'
     command(true, dir_make_command(dirname))
@@ -41,10 +37,10 @@ class DiskRunManyTest < TestBase
   # run_until_false()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '512', %w(
-  |run_until_false()
-  |completes all its commands
-  |when nothing returns false
+  disk_tests '34F512', %w(
+  | run_until_false()
+  | completes all its commands
+  | when nothing returns false
   ) do
     dirname = 'batch-run-until-false/x3/t5/12'
     command(true, dir_make_command(dirname))
@@ -59,10 +55,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '513', %w(
-  |run_until_false()
-  |stops at exists?() returning false
-  |and does not execute subsequent commands
+  disk_tests '34F513', %w(
+  | run_until_false()
+  | stops at exists?() returning false
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-false/x3/t5/13'
     command(true, dir_make_command(dirname))
@@ -79,10 +75,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '514', %w(
-  |run_until_false()
-  |stops at create() returning false
-  |and does not execute subsequent commands
+  disk_tests '34F514', %w(
+  | run_until_false()
+  | stops at create() returning false
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-false/x3/t5/14'
     command(true, dir_make_command(dirname))
@@ -97,10 +93,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '515', %w(
-  |run_until_false()
-  |stops at write() already existing file
-  |and does not execute subsequent commands
+  disk_tests '34F515', %w(
+  | run_until_false()
+  | stops at write() already existing file
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-false/x3/t5/15'
     command(true, dir_make_command(dirname))
@@ -116,10 +112,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '516', %w(
-  |run_until_false()
-  |stops at append() to non-existant file
-  |and does not execute subsequent commands
+  disk_tests '34F516', %w(
+  | run_until_false()
+  | stops at append() to non-existant file
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-false/x3/t5/16'
     command(true, dir_make_command(dirname))
@@ -137,10 +133,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '517', %w(
-  |run_until_false()
-  |stops at read() non-existent file
-  |and does not execute subsequent commands
+  disk_tests '34F517', %w(
+  | run_until_false()
+  | stops at read() non-existent file
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-false/x3/t5/17'
     command(true, dir_make_command(dirname))
@@ -157,10 +153,10 @@ class DiskRunManyTest < TestBase
   # run_until_true()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '712', %w(
-  |run_until_true()
-  |completes all its commands
-  |when nothing returns true
+  disk_tests '34F712', %w(
+  | run_until_true()
+  | completes all its commands
+  | when nothing returns true
   ) do
     dirname = 'batch-run-until-true/x3/t7/12'
     filename = dirname + '/read-false.txt'
@@ -174,10 +170,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '713', %w(
-  |run_until_true()
-  |stops at exists?() returning true
-  |and does not execute subsequent commands
+  disk_tests '34F713', %w(
+  | run_until_true()
+  | stops at exists?() returning true
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/13'
     disk.assert(dir_make_command(dirname))
@@ -194,10 +190,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '714', %w(
-  |run_until_true()
-  |stops at create() returning true
-  |and does not execute subsequent commands
+  disk_tests '34F714', %w(
+  | run_until_true()
+  | stops at create() returning true
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/14'
     disk.assert(dir_make_command(dirname))
@@ -215,10 +211,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '715', %w(
-  |run_until_true()
-  |stops at write() returning true
-  |and does not execute subsequent commands
+  disk_tests '34F715', %w(
+  | run_until_true()
+  | stops at write() returning true
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/15'
     filename = dirname + '/stop-at-write-true'
@@ -237,10 +233,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '716', %w(
-  |run_until_true()
-  |stops at append() returning true
-  |and does not execute subsequent commands
+  disk_tests '34F716', %w(
+  | run_until_true()
+  | stops at append() returning true
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/16'
     filename = dirname + '/stop-at-append-true'
@@ -260,10 +256,10 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '717', %w(
-  |run_until_true()
-  |stops at read() a file that exists
-  |and does not execute subsequent commands
+  disk_tests '34F717', %w(
+  | run_until_true()
+  | stops at read() a file that exists
+  | and does not execute subsequent commands
   ) do
     dirname = 'batch-run-until-true/x3/t7/17'
     event_3 = dirname + '/3.event.json'

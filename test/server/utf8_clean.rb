@@ -4,11 +4,8 @@ require_relative 'test_base'
 require_source 'lib/utf8_clean'
 
 class Utf8CleanTest < TestBase
-  def self.id58_prefix
-    '3D9'
-  end
 
-  test '7FE', %w(
+  test '3D97FE', %w(
   | cleaned string removes invalid encodings
   ) do
     bad_str = (100..1000).to_a.pack('c*').force_encoding('utf-8')
