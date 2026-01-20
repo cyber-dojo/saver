@@ -2,10 +2,6 @@ require_relative 'test_base'
 
 class DiskAssertTest < TestBase
 
-  def self.id58_prefix
-    'FA2'
-  end
-
   def id58_setup
     externals.instance_exec {
       @disk = External::Disk.new('tmp/cyber-dojo')
@@ -14,7 +10,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '538',
+  disk_tests 'FA2538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
     error = assert_raises(RuntimeError) {
@@ -26,7 +22,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '539',
+  disk_tests 'FA2539',
   'assert() returns command result when command is true' do
     dirname = 'groups/sw/EP/7K'
     filename = dirname + '/' + '3.events.json'
@@ -39,7 +35,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '166',
+  test 'FA2166',
   'raises when no space left on device' do
     externals.instance_exec {
       # See docker-compose.yml volume one_k

@@ -7,13 +7,9 @@ class KataFileDeleteTest < TestBase
     @version = 2
   end
 
-  def self.id58_prefix
-    'DcB'
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'C01', %w(
+  test 'DcBC01', %w(
   | when no files have been edited
   | a kata_file_delete event
   | results in a single delete-file event 
@@ -37,7 +33,7 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'C02', %w(
+  test 'DcBC02', %w(
   | when one file has been edited
   | and a different file has been deleted
   | a kata_file_delete event 
@@ -75,7 +71,7 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'C03', %w(
+  test 'DcBC03', %w(
   | when one file has been edited
   | and the same file has been deleted
   | a kata_file_delete event 
@@ -111,7 +107,7 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'C04', %w(
+  versions_01_test 'DcBC04', %w(
   | in versions 0 and 1, kata_file_delete
   | returns unchanged index argument and does nothing
   ) do

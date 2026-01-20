@@ -1,13 +1,8 @@
 require_relative 'test_base'
 
 class KataCheckedOutTest < TestBase
-  def self.id58_prefix
-    '77B'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'Dk7', %w(
+  versions_test '77BDk7', %w(
   | kata_checked_out gives same git-commit-message in all versions
   ) do
     in_group do |gid|
@@ -41,7 +36,7 @@ class KataCheckedOutTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Dk8', %w(
+  versions_test '77BDk8', %w(
   | kata_checked_out event has checkout field in all versions
   ) do
     in_group do |gid|

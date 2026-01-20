@@ -3,19 +3,14 @@
 require_relative 'test_base'
 
 class ShellTest < TestBase
-  def self.id58_prefix
-    'C89'
-  end
 
-  # - - - - - - - - - - - - - - - - -
-
-  test 'DBB', %w(
+  test 'C89DBB', %w(
   | assert_exec(*commands) returns stdout when the commands all succeed
   ) do
     assert_equal 'Hello', shell.assert_exec('echo -n Hello')
   end
 
-  test '0B8', %w(
+  test 'C890B8', %w(
   | assert_cd_exec(path,*commands) returns stdout when the cd and the commands succeeds
   ) do
     assert_equal 'Hello', shell.assert_cd_exec('.', 'echo -n Hello')
@@ -23,7 +18,7 @@ class ShellTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'AF6', %w(
+  test 'C89AF6', %w(
   | assert_exec(*commands) raises when a command fails
   ) do
     error = assert_raises { shell.assert_exec('zzzz') }
@@ -33,7 +28,7 @@ class ShellTest < TestBase
     assert_equal 127, json['exit_status']
   end
 
-  test 'ACD', %w(
+  test 'C89ACD', %w(
   | assert_cd_exec(path,*commands) raises when the cd fails
   ) do
     error = assert_raises { shell.assert_cd_exec('zzzz', 'echo -n Hello') }
@@ -44,7 +39,7 @@ class ShellTest < TestBase
     assert_equal 2, json['exit_status']
   end
 
-  test '995', %w(
+  test 'C89995', %w(
   | assert_cd_exec(path,*commands) raises when a command fails
   ) do
     error = assert_raises { shell.assert_cd_exec('.', 'zzzz') }

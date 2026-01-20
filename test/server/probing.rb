@@ -3,23 +3,20 @@
 require_relative 'test_base'
 
 class ProbingTest < TestBase
-  def self.id58_prefix
-    'AEA'
-  end
 
-  test '602', %w(
+  test 'AEA602', %w(
   | ready? is true when all start_points are ready
   ) do
     assert prober.ready?
   end
 
-  test '603', %w(
+  test 'AEA603', %w(
   | alive? is always true
   ) do
     assert prober.alive?
   end
 
-  test '604', %w(
+  test 'AEA604', %w(
   | sha is sha of image's git commit
   ) do
     sha = prober.sha

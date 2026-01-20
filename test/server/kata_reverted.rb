@@ -1,13 +1,8 @@
 require_relative 'test_base'
 
 class KataRevertedTest < TestBase
-  def self.id58_prefix
-    '67D'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'Dk6', %w(
+  versions_test '67DDk6', %w(
   | kata_reverted gives same git-commit-message in all versions
   ) do
     in_kata do |id|
@@ -32,7 +27,7 @@ class KataRevertedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Dk7', %w(
+  versions_test '67DDk7', %w(
   | kata_reverted has revert field in all versions 
   ) do
     in_kata do |id|

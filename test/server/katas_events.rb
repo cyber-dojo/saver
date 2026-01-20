@@ -3,11 +3,8 @@
 require_relative 'test_base'
 
 class KatasEventsTest < TestBase
-  def self.id58_prefix
-    'LS5'
-  end
 
-  version_test 0, '2R6', %w( 
+  version_test 0, 'LS52R6', %w( 
   | v0 example 
   ) do
     actual = katas_events([V0_KATA_ID, V0_KATA_ID], [2, 3])
@@ -20,7 +17,7 @@ class KatasEventsTest < TestBase
     assert_equal expected, actual
   end
 
-  version_test 1, '1P3', %w( 
+  version_test 1, 'LS51P3', %w( 
   | v1 example 
   ) do
     actual = katas_events([V1_KATA_ID, V1_KATA_ID], [1, 2])
@@ -33,7 +30,7 @@ class KatasEventsTest < TestBase
     assert_equal expected, actual
   end
 
-  version_test 2, '1P4', %w( 
+  version_test 2, 'LS51P4', %w( 
   | v2 example 
   ) do
     now = [2018, 11, 30, 9, 34, 56, 6_453]

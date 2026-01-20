@@ -2,10 +2,6 @@ require_relative 'test_base'
 
 class GroupJoinedTest < TestBase
 
-  def self.id58_prefix
-    'QS4'
-  end
-
   V0_GROUP_ID = 'FxWwrr'
   V0_KATA_ID = '5rTJv5'
 
@@ -14,14 +10,14 @@ class GroupJoinedTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, 'JJ0', %w(
+  version_test 0, 'QS4JJ0', %w(
   | already existing group_joined(id) {test-data copied into saver}
   | with id == group-id
   ) do
     assert_equal expected[V0_GROUP_ID], group_joined(V0_GROUP_ID)
   end
 
-  version_test 1, 'JJ1', %w(
+  version_test 1, 'QS4JJ1', %w(
   | already existing group_joined(id) {test-data copied into saver}
   | with id == group-id
   ) do
@@ -30,13 +26,13 @@ class GroupJoinedTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, 'Sp8', %w(
+  version_test 0, 'QS4Sp8', %w(
   | the id can be any joined kata's id
   ) do
     assert_equal expected[V0_GROUP_ID], group_joined(V0_KATA_ID)
   end
 
-  version_test 1, 'Sp9', %w(
+  version_test 1, 'QS4Sp9', %w(
   | the id can be any joined kata's id
   ) do
     assert_equal expected[V1_GROUP_ID], group_joined(V1_KATA_ID)
@@ -44,7 +40,7 @@ class GroupJoinedTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test'xD4', %w(
+  versions_test 'QS4xD4', %w(
   | empty Hash is returned for a kata-id not in a group
   ) do
     in_kata do |id|

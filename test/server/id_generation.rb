@@ -5,13 +5,7 @@ require 'tmpdir'
 
 class IdGenerationTest < TestBase
 
-  def self.id58_prefix
-    'A6D'
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test '062', %w(
+  test 'A6D062', %w(
   | alphabet has 58 characters
   ) do
     assert_equal 58, alphabet.size
@@ -19,7 +13,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '065', %w(
+  test 'A6D065', %w(
   | every letter of the alphabet can be used as part of a dir-name
   ) do
     diagnostic = 'forward slash is the dir separator'
@@ -37,7 +31,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '13d', %w(
+  test 'A6D13d', %w(
   | id 999999 is reserved for a kata id when saver is offline
   ) do
     id = 'eF762A'
@@ -47,7 +41,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test '14a', %w(
+  versions_test 'A6D14a', %w(
   | kata-id generator will skip id that already exists as a group
   ) do
     in_group do |group_id|
@@ -59,7 +53,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test '14b', %w(
+  versions_test 'A6D14b', %w(
   | group-id generator will skip id that already exists as a kata
   ) do
     in_kata do |kata_id|
@@ -71,7 +65,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '068', %w(
+  test 'A6D068', %w(
   | id?(s) true examples
   ) do
     assert id?('012AaE')
@@ -83,7 +77,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '069', %w(
+  test 'A6D069', %w(
   | id?(s) false examples
   ) do
     refute id?(42),  :integer_not_string
@@ -100,7 +94,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '13e', %w(
+  test 'A6D13e', %w(
   | kata-id generation tries 256 times and then gives up and returns nil
   ) do
     id_generator = stubbed_id_generator(saver_offline_id*256)
@@ -109,7 +103,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '13f', %w(
+  test 'A6D13f', %w(
   | group-id generation tries 256 times and then gives up and returns nil
   ) do
     id_generator = stubbed_id_generator(saver_offline_id*256)
@@ -118,7 +112,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '13b', %w(
+  test 'A6D13b', %w(
   | group-id does not exist before generation but does after
   ) do
     id =  'sD92wM'
@@ -130,7 +124,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  test '13c', %w(
+  test 'A6D13c', %w(
   | kata-id does not exist before generation but does after
   ) do
     id =  '7w3RPx'

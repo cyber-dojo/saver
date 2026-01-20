@@ -4,11 +4,7 @@ require_source 'lib/gnu_unzip'
 
 class GnuZipTest < TestBase
 
-  def self.id58_prefix
-    'Cw4'
-  end
-
-  test '4A1', %w(
+  test 'Cw44A1', %w(
   | simple gzip round-trip of non-empty string 
   ) do
     expected = 'sdgfadsfghfghsfhdfghdfghdfgh'
@@ -17,7 +13,7 @@ class GnuZipTest < TestBase
     assert_equal expected, actual
   end
 
-  test '4A2', %w( 
+  test 'Cw44A2', %w( 
   | simple gzip round-trip of empty string 
   ) do
     expected = ''

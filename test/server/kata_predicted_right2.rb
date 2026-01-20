@@ -1,13 +1,8 @@
 require_relative 'test_base'
 
 class KataPredictedRight2Test < TestBase
-  def self.id58_prefix
-    '535'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'E03', %w(
+  versions_test '535E03', %w(
   | kata_predicted_right gives same tag-commit-message in all versions
   ) do
     in_kata do |id|
@@ -25,7 +20,7 @@ class KataPredictedRight2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'E04', %w(
+  versions_01_test '535E04', %w(
   | when one file has been edited
   | a kata_predicted_right2 event 
   | results in one event
@@ -71,7 +66,7 @@ class KataPredictedRight2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E05', %w(
+  test '535E05', %w(
   | when one file has been edited
   | a kata_predicted_right2 event 
   | results in two events

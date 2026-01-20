@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class KataCreateTest < TestBase
 
-  def self.id58_prefix
-    'e09'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test 'h35', %w(
+  versions_test 'e09h35', %w(
   | POST /kata_create(manifest)
   | has status 200
   | returns the id: of a new kata

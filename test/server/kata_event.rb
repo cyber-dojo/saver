@@ -2,20 +2,14 @@ require_relative 'test_base'
 
 class KataEventTest < TestBase
 
-  def self.id58_prefix
-    'Lw2'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 0, '2R6', %w(
+  version_test 0, 'Lw22R6', %w(
   | v0 example 
   ) do
     assert_equal kata_event_k5ZTk0_2, kata_event(V0_KATA_ID, 2)
     assert_equal kata_event_k5ZTk0_3, kata_event(V0_KATA_ID, 3)
   end
 
-  version_test 0, '2R8', %w( 
+  version_test 0, 'Lw22R8', %w( 
   | v0 example via HTTP GET 
   ) do
     args = {'id':V0_KATA_ID, 'index':3 }
@@ -26,14 +20,14 @@ class KataEventTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, '1P3', %w( 
+  version_test 1, 'Lw21P3', %w( 
   | v1 example 
   ) do
     assert_equal kata_event_rUqcey_1, kata_event(V1_KATA_ID, 1)
     assert_equal kata_event_rUqcey_2, kata_event(V1_KATA_ID, 2)
   end
 
-  version_test 1, '1P5', %w( 
+  version_test 1, 'Lw21P5', %w( 
   | v1 example via HTTP GET 
   ) do
     args = {'id':V1_KATA_ID, 'index':2}
@@ -44,7 +38,7 @@ class KataEventTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, 'f5T', %w(
+  version_test 0, 'Lw2f5T', %w(
   | retrieve already existing individual kata_event() {test-data copied into saver}
   | is "polyfilled" to make it look like version=1
   ) do
@@ -72,7 +66,7 @@ class KataEventTest < TestBase
 
   # . . . . . . . . . . . .
 
-  version_test 1, 'rp9', %w(
+  version_test 1, 'Lw2rp9', %w(
   | retrieve already existing individual kata_event() {test-data copied into saver}
   ) do
     actual = kata_event(id='H8NAvN', index=0)
@@ -99,7 +93,7 @@ class KataEventTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # kata_event(id, index < 0)
 
-  version_test 0, 'Hx6', %w(
+  version_test 0, 'Lw2Hx6', %w(
   | kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5rTJv5'
@@ -108,7 +102,7 @@ class KataEventTest < TestBase
     assert_equal kata_event(id, 1), kata_event(id, -3)
   end
 
-  version_test 1, 'Hx7', %w(
+  version_test 1, 'Lw2Hx7', %w(
   | kata_event(id, index=-N) retrieves the Nth most recent event
   ) do
     id = '5U2J18'
@@ -117,7 +111,7 @@ class KataEventTest < TestBase
     assert_equal kata_event(id, 1), kata_event(id, -3)
   end
 
-  version_test 2, 'Hx8', %w(
+  version_test 2, 'Lw2Hx8', %w(
   | kata_event(id, index=-N) raises when N is out of bounds
   ) do
     in_kata do |id|
@@ -131,7 +125,7 @@ class KataEventTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 0, '4dJ', %w(
+  versions_test 0, 'Lw24dJ', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   | even when only the creation event exists
   ) do
@@ -146,7 +140,7 @@ class KataEventTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, '9De', %w(
+  version_test 2, 'Lw29De', %w(
   | kata_event(id, index=0) polyfills stdout,stderr,status,colour
   | because these are needed now that the initial index=0 traffic-light
   | is shown on the main kata/edit page allowing you to click the

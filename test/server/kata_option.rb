@@ -3,13 +3,8 @@
 require_relative 'test_base'
 
 class KataOptionTest < TestBase
-  def self.id58_prefix
-    'Ks3'
-  end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '460', %w(
+  versions_test 'Ks3460', %w(
   | kata_option_get('theme') defaults to 'light' as that is better on projectors
   ) do
     in_kata do |id|
@@ -17,7 +12,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '461', %w(
+  versions_test 'Ks3461', %w(
   | kata_option_set('theme', dark|light) sets the theme option
   | kata_option_get('theme') gets the theme option
   ) do
@@ -29,7 +24,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '462', %w(
+  versions_test 'Ks3462', %w(
   | kata_option_set('theme', not-dark-not-light) raises
   ) do
     in_kata do |id|
@@ -39,7 +34,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '560', %w(
+  versions_test 'Ks3560', %w(
   | kata_option_get('colour') defaults to 'on'
   ) do
     in_kata do |id|
@@ -47,7 +42,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '561', %w(
+  versions_test 'Ks3561', %w(
   | kata_option_set('colour', on|off) sets the colour option
   | kata_option_get('colour') gets the colour option
   ) do
@@ -59,7 +54,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '562', %w(
+  versions_test 'Ks3562', %w(
   | kata_option_set('colour', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -69,7 +64,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '660', %w(
+  versions_test 'Ks3660', %w(
   | kata_option_get('predict') defaults to 'off'
   ) do
     in_kata do |id|
@@ -77,7 +72,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '661', %w(
+  versions_test 'Ks3661', %w(
   | kata_option_set('predict', on|off) sets the predict option
   | kata_option_get('predict') gets the predict option
   ) do
@@ -89,7 +84,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '662', %w(
+  versions_test 'Ks3662', %w(
   | kata_option_set('predict', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -99,7 +94,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '760', %w(
+  versions_test 'Ks3760', %w(
   | kata_option_get('revert') defaults to 'off'
   ) do
     in_kata do |id|
@@ -109,7 +104,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '761', %w(
+  versions_test 'Ks3761', %w(
   | kata_option_set('revert', on|off) sets the revert option
   | kata_option_get('revert') gets the revert option
   ) do
@@ -131,7 +126,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '762', %w(
+  versions_test 'Ks3762', %w(
   | kata_option_set('revert', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -143,7 +138,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '860', %w(
+  versions_test 'Ks3860', %w(
   | kata_option_get(unknown key) raises
   ) do
     in_kata do |id|
@@ -152,7 +147,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test '861', %w(
+  versions_test 'Ks3861', %w(
   | kata_option_set(unknown key) raises
   ) do
     in_kata do |id|

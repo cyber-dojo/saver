@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class IdentityTest < TestBase
 
-  def self.id58_prefix
-    '1B5'
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  test '2C6', %w[
+  test '1B52C6', %w[
   | the user running all the server tests has
   | uid=19663(saver), gid=65533(nogroup) ] do
     assert_equal %w( saver 19663 ), [user_name, uid]

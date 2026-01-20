@@ -3,13 +3,8 @@
 require_relative 'test_base'
 
 class KataForkTest < TestBase
-  def self.id58_prefix
-    'c5C'
-  end
 
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '760', %w(
+  versions_test 'c5C760', %w(
   | bad id raises
   ) do
     assert_raises { kata_fork(id58, -1) }
@@ -17,7 +12,7 @@ class KataForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '761', %w(
+  versions_test 'c5C761', %w(
   | bad_index raises
   ) do
     in_kata do |id|
@@ -27,7 +22,7 @@ class KataForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '762', %w[
+  versions_test 'c5C762', %w[
   | fork returns id of new kata
   | whose manifest and files match the kata forked from
   | and whose version is always 2
@@ -82,7 +77,7 @@ class KataForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '763', %w[
+  versions_test 'c5C763', %w[
   | fork from kata in a group
   | leaves no trace of the original group
   ] do

@@ -4,15 +4,12 @@ require_relative 'test_base'
 require_source 'model/liner_v0'
 
 class LinerV0Test < TestBase
-  def self.id58_prefix
-    'B45'
-  end
 
   include Liner_v0
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7AA', %w(
+  test 'B457AA', %w(
   | lined(event) splits lines files/stdout/stderr and does not alter argument
   ) do
     assert_equal LINED_EVENT, lined(UNLINED_EVENT)
@@ -24,7 +21,7 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7AB', %w(
+  test 'B457AB', %w(
   | unlined(event) rejoins files/stdout/stderr and does not alter argument
   ) do
     assert_equal UNLINED_EVENT, unlined(LINED_EVENT)
@@ -36,7 +33,7 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7A3', %w(
+  test 'B457A3', %w(
   | unlined(event) has truncated fields when event has
   ) do
     lined = {
@@ -66,7 +63,7 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  test '7A4', %w(
+  test 'B457A4', %w(
   | lined(event) has truncated fields when event has
   ) do
     unlined = {

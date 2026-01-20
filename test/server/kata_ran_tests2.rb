@@ -1,13 +1,8 @@
 require_relative 'test_base'
 
 class KataRanTests2Test < TestBase
-  def self.id58_prefix
-    'Sp5'
-  end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_01_test 'E04', %w(
+  versions_01_test 'Sp5E04', %w(
   | when one file has been edited
   | a kata_ran_test2 event 
   | results in one event
@@ -53,7 +48,7 @@ class KataRanTests2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'E05', %w(
+  test 'Sp5E05', %w(
   | when one file has been edited
   | a kata_ran_test2 event 
   | results in two events

@@ -7,13 +7,9 @@ class KataFileCreateTest < TestBase
     @version = 2
   end
 
-  def self.id58_prefix
-    'DcA'
-  end
-
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'B01', %w(
+  test 'DcAB01', %w(
   | when no files have been edited
   | a kata_file_create event 
   | results in a single create-file event
@@ -41,7 +37,7 @@ class KataFileCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'B02', %w(
+  test 'DcAB02', %w(
   | when one other file has been edited
   | a kata_file_create event 
   | results in two events
@@ -80,7 +76,7 @@ class KataFileCreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'B03', %w(
+  versions_01_test 'DcAB03', %w(
   | in versions 0 and 1, kata_file_create
   | returns unchanged index argument and does nothing
   ) do

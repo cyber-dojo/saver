@@ -2,11 +2,7 @@ require_relative 'test_base'
 
 class KataEventsTest < TestBase
 
-  def self.id58_prefix
-    'D9w'
-  end
-
-  version_test 0, 'f5S', %w(
+  version_test 0, 'D9wf5S', %w(
   | already existing kata_events() summary {test-data copied into saver}
   | is "polyfilled" to make it look like version=1
   ) do
@@ -29,7 +25,7 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 1, 'rp8', %w(
+  version_test 1, 'D9wrp8', %w(
   | already existing kata_events() summary {test-data copied into saver}
   ) do
     id = '5U2J18'
@@ -53,7 +49,7 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'ds0', %w( 
+  version_test 2, 'D9wds0', %w( 
   | kata_events v2 
   ) do
     stdout = { 'content' => 'so', 'truncated' => false }
@@ -97,7 +93,7 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'eh4', %w( 
+  versions_test 'D9weh4', %w( 
   | polyfill creation event with
   | diff_added_count=0
   | diff_deleted_count=0
