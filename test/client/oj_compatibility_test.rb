@@ -4,13 +4,7 @@ require 'oj'
 
 class OjCompatibilityTest < TestBase
 
-  def self.id58_prefix
-    '93C'
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  test 'CB3',
+  test '93CCB3',
   %w[ Oj.strict_load() is compatible with JSON.parse() ] do
     s = any_hash.to_json
     assert_equal JSON.parse(s), Oj.strict_load(s)
@@ -18,7 +12,7 @@ class OjCompatibilityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB4',
+  test '93CCB4',
   %w[ Oj.dump() is compatible with JSON.generate() ] do
     o = any_hash
     assert_equal JSON.generate(o), Oj.dump(o)
@@ -26,7 +20,7 @@ class OjCompatibilityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB5',
+  test '93CCB5',
   %w( Oj.dump() requires strict mode for full JSON.generate() compatibility ) do
     symbol = :image_name
     o = { symbol => 'cyberdojofoundation/python_pytest' }
@@ -37,7 +31,7 @@ class OjCompatibilityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB6',
+  test '93CCB6',
   %w( Oj setting strict mode as default to simplify dump calls ) do
     symbol = :image_name
     o = { symbol => 'cyberdojofoundation/python_pytest' }
@@ -48,7 +42,7 @@ class OjCompatibilityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB7',
+  test '93CCB7',
   %w[ Oj.generate() requires options to mimic JSON.pretty_generate() ] do
     oj_pretty = Oj.generate(any_hash, {
       :space => ' ',
@@ -62,7 +56,7 @@ class OjCompatibilityTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB8',
+  test '93CCB8',
   %w[ Oj.strict_load() throws different exception to JSON.parse() ] do
     not_json = "xxxx{[}]"
     assert_raises(JSON::ParserError) { JSON.parse(not_json) }

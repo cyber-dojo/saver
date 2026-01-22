@@ -108,8 +108,8 @@ class Id58TestBase < Minitest::Test
   def self.checked_id58(id58, lines)
     method = "test '#{id58}',"
     pointer = ' ' * method.index("'") + '!'
-    proposition = lines.join(' ').split('|').join("\n|")
-    pointee = ['',pointer,method,"'#{proposition}'",'',''].join("\n")
+    proposition = lines.join(' ').split('|').join("\n| ")
+    pointee = ['', pointer, method, "'#{proposition}'", '', ''].join("\n")
 
     pointer.prepend("\n\n")
     raise "#{pointer}empty#{pointee}" if id58 === ''

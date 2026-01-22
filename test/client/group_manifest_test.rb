@@ -2,14 +2,8 @@ require_relative 'test_base'
 
 class GroupManifestTest < TestBase
 
-  def self.id58_prefix
-    '5Zt'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 0, '472', %w(
-  already existing group_manifest {test-data copied into saver}
+  version_test 0, '5Zt472', %w(
+  | already existing group_manifest {test-data copied into saver}
   ) do
     manifest = group_manifest(id='chy6BJ')
     assert_equal 0, manifest['version'], :version
@@ -31,8 +25,8 @@ class GroupManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Q61', %w(
-  group_manifest has created and version keys
+  versions_test '5ZtQ61', %w(
+  | group_manifest has created and version keys
   ) do
     in_group do |id|
       manifest = group_manifest(id)
