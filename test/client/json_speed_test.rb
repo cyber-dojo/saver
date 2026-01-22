@@ -4,13 +4,7 @@ require 'oj'
 class JsonSpeedTest < TestBase
 
 =begin
-  def self.id58_prefix
-    '60E'
-  end
-
-  # - - - - - - - - - - - - - - - - - - -
-
-  test 'A06', %w( test speed of alternative implementations ) do
+  test '60EA06', %w( test speed of alternative implementations ) do
     one = '{"s":23,"t":[1,2,3,4,5,6,7],"u":"blah"}'
     all = [one] * 1242
     unlined = all.join(',')

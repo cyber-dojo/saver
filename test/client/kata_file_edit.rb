@@ -2,16 +2,10 @@ require_relative 'test_base'
 
 class KataFileEditTest < TestBase
 
-  def self.id58_prefix
-    'Dcc'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, 'E01', %w(
-  |when no files have been edited
-  |a kata_file_edit event 
-  |does NOT create any new events
+  version_test 2, 'DccE01', %w(
+  | when no files have been edited
+  | a kata_file_edit event 
+  | does NOT create any new events
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -28,10 +22,10 @@ class KataFileEditTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'E02', %w(
-  |when one file has been edited
-  |a kata_file_edit event 
-  |results in a single edit-file event 
+  version_test 2, 'DccE02', %w(
+  | when one file has been edited
+  | a kata_file_edit event 
+  | results in a single edit-file event 
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']

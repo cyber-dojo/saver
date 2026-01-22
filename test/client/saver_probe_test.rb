@@ -3,21 +3,17 @@ require_source 'prober'
 
 class SaverProbeTest < TestBase
 
-  def self.id58_prefix
-    '6E3'
-  end
-
-  test '602',
+  test '6E3602',
   %w( alive? is always true ) do
     assert prober.alive?
   end
 
-  test '603',
+  test '6E3603',
   %w( ready? is always true ) do
     assert prober.ready?
   end
 
-  test '604', %w( sha is sha of image's git commit ) do
+  test '6E3604', %w( sha is sha of image's git commit ) do
     sha = prober.sha
     assert_equal 40, sha.size
     sha.each_char do |ch|

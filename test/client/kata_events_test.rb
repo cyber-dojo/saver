@@ -2,13 +2,7 @@ require_relative 'test_base'
 
 class KataEventsTest < TestBase
 
-  def self.id58_prefix
-    'D9w'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 0, 'f5S', %w(
+  version_test 0, 'D9wf5S', %w(
   | already existing kata_events() summary {test-data copied into saver}
   | is "polyfilled" to make it look like version=1
   ) do
@@ -31,7 +25,7 @@ class KataEventsTest < TestBase
 
   # . . . . . . . . . . . .
 
-  version_test 1, 'rp8', %w(
+  version_test 1, 'D9wrp8', %w(
   | already existing kata_events() summary {test-data copied into saver}
   ) do
     id = '5U2J18'
@@ -54,7 +48,7 @@ class KataEventsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 0, 'f5T', %w(
+  version_test 0, 'D9wf5T', %w(
   | retrieve already existing individual kata_event() {test-data copied into saver}
   | is "polyfilled" to make it look like version=1
   ) do
@@ -82,7 +76,7 @@ class KataEventsTest < TestBase
 
   # . . . . . . . . . . . .
 
-  version_test 1, 'rp9', %w(
+  version_test 1, 'D9wrp9', %w(
   | retrieve already existing individual kata_event() {test-data copied into saver}
   ) do
     actual = kata_event(id='H8NAvN', index=0)
@@ -110,7 +104,7 @@ class KataEventsTest < TestBase
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # kata_event(id, index < 0)
 
-  version_test 0, '2dJ', %w(
+  version_test 0, 'D9w2dJ', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   ) do
     id = '5rTJv5'
@@ -119,7 +113,7 @@ class KataEventsTest < TestBase
     assert_equal last, actual
   end
 
-  version_test 0, '3dJ', %w(
+  version_test 0, 'D9w3dJ', %w(
   | kata_event(id, index=-2) retrieves the 2nd most recent event
   ) do
     id = '5rTJv5'
@@ -128,7 +122,7 @@ class KataEventsTest < TestBase
     assert_equal second_last, actual
   end
 
-  version_test 0, '4dJ', %w(
+  version_test 0, 'D9w4dJ', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   | even when only the creation event exists
   ) do
@@ -141,7 +135,7 @@ class KataEventsTest < TestBase
 
   # . . . . . . . . . . . .
 
-  version_test 1, 'Hx7', %w(
+  version_test 1, 'D9wHx7', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   ) do
     id = '5U2J18'
@@ -150,7 +144,7 @@ class KataEventsTest < TestBase
     assert_equal last, actual
   end
 
-  version_test 1, 'Hx8', %w(
+  version_test 1, 'D9wHx8', %w(
   | kata_event(id, index=-2) retrieves the second most recent event
   ) do
     id = '5U2J18'
@@ -159,7 +153,7 @@ class KataEventsTest < TestBase
     assert_equal second_last, actual
   end
 
-  version_test 1, 'Hx9', %w(
+  version_test 1, 'D9wHx9', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   | even when only the creation event exists
   ) do

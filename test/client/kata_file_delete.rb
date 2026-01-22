@@ -2,16 +2,10 @@ require_relative 'test_base'
 
 class KataFileDeleteTest < TestBase
 
-  def self.id58_prefix
-    'Dcc'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, 'C01', %w(
-  |when no files have been edited
-  |a kata_file_delete event
-  |results in a single delete-file event 
+  version_test 2, 'DccC01', %w(
+  | when no files have been edited
+  | a kata_file_delete event
+  | results in a single delete-file event 
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -33,13 +27,13 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'C02', %w(
-  |when one file has been edited
-  |and a different file has been deleted
-  |a kata_file_delete event 
-  |results in two events
-  |the first for the edit
-  |the second for the delete
+  version_test 2, 'DccC02', %w(
+  | when one file has been edited
+  | and a different file has been deleted
+  | a kata_file_delete event 
+  | results in two events
+  | the first for the edit
+  | the second for the delete
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -70,13 +64,13 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'C03', %w(
-  |when one file has been edited
-  |and the same file has been deleted
-  |a kata_file_delete event 
-  |results in two events
-  |the first for the edit
-  |the second for the delete
+  version_test 2, 'DccC03', %w(
+  | when one file has been edited
+  | and the same file has been deleted
+  | a kata_file_delete event 
+  | results in two events
+  | the first for the edit
+  | the second for the delete
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']

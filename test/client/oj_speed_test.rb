@@ -4,13 +4,7 @@ require 'oj'
 
 class OjSpeedTest < TestBase
 
-  def self.id58_prefix
-    '4AA'
-  end
-
-  # - - - - - - - - - - - - - - - - -
-
-  test 'CB1',
+  test '4AACB1',
   %w[ Oj.dump() is faster than JSON.generate() ] do
     o = any_hash
     oj_gem = -> { Oj.dump(o) }
@@ -27,7 +21,7 @@ class OjSpeedTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  test 'CB2',
+  test '4AACB2',
   %w[ Oj.strict_load() is faster than JSON.parse() ] do
     s = any_hash.to_json
     assert s.is_a?(String)

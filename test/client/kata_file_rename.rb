@@ -2,16 +2,10 @@ require_relative 'test_base'
 
 class KataFileRenameTest < TestBase
 
-  def self.id58_prefix
-    'Dcc'
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, 'D01', %w(
-  |when no other file has been edited
-  |a kata_file_rename event
-  |results in a single rename-file event 
+  version_test 2, 'DccD01', %w(
+  | when no other file has been edited
+  | a kata_file_rename event
+  | results in a single rename-file event 
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -36,13 +30,13 @@ class KataFileRenameTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'D02', %w(
-  |when one file has been edited
-  |and a different file has been renamed
-  |a kata_file_rename event 
-  |results in two events
-  |the first for the edit
-  |the second for the rename
+  version_test 2, 'DccD02', %w(
+  | when one file has been edited
+  | and a different file has been renamed
+  | a kata_file_rename event 
+  | results in two events
+  | the first for the edit
+  | the second for the rename
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -75,13 +69,13 @@ class KataFileRenameTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  version_test 2, 'D03', %w(
-  |when one file has been edited
-  |and the same file has been renamed
-  |a kata_file_rename event 
-  |results in two events
-  |the first for the edit
-  |the second for the rename
+  version_test 2, 'DccD03', %w(
+  | when one file has been edited
+  | and the same file has been renamed
+  | a kata_file_rename event 
+  | results in two events
+  | the first for the edit
+  | the second for the rename
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']

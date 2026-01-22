@@ -3,11 +3,7 @@ require 'tempfile'
 
 class FileSpeedTest < TestBase
 
-  def self.id58_prefix
-    '34E'
-  end
-
-  test '4D7', %w( test affect on speed of locking an append ) do
+  test '34E4D7', %w( test affect on speed of locking an append ) do
     f0 = Tempfile.new('append-speed-test', '/tmp')
     f1 = Tempfile.new('append-speed-test', '/tmp')
     append_mode = File::WRONLY | File::APPEND
@@ -44,7 +40,7 @@ class FileSpeedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  test '4D8', %w( test affect on speed of locking a read ) do
+  test '34E4D8', %w( test affect on speed of locking a read ) do
     f0 = Tempfile.new('read-speed-test', '/tmp')
     f1 = Tempfile.new('read-speed-test', '/tmp')
     write_mode = File::WRONLY

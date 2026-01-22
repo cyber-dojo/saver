@@ -2,25 +2,19 @@ require_relative 'test_base'
 
 class KataExistsTest < TestBase
 
-  def self.id58_prefix
-    'Ws5'
-  end
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  versions_test '760', %w(
-  |kata_exists? is false,
-  |for a well-formed id that does not exist
+  versions_test 'Ws5760', %w(
+  | kata_exists? is false,
+  | for a well-formed id that does not exist
   ) do
     refute kata_exists?('123AbZ')
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '761', %w(
-  |kata_exists? is true,
-  |for a well-formed id
-  |from previous kata_create() or kata_create_custom()
+  versions_test 'Ws5761', %w(
+  | kata_exists? is true,
+  | for a well-formed id
+  | from previous kata_create() or kata_create_custom()
   ) do
     in_kata do |id|
       assert kata_exists?(id), :in_kata
@@ -29,9 +23,9 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '762', %w(
-  |kata_exists? is false,
-  |for a malformed id
+  versions_test 'Ws5762', %w(
+  | kata_exists? is false,
+  | for a malformed id
   ) do
     refute kata_exists?(42), 'Integer'
     refute kata_exists?(nil), 'nil'
@@ -45,10 +39,10 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '764', %w(
-  |kata_exists? is true
-  |for id from original kata
-  |when there was no explicit version in the manifest
+  versions_test 'Ws5764', %w(
+  | kata_exists? is true
+  | for id from original kata
+  | when there was no explicit version in the manifest
   ) do
     assert kata_exists?('5rTJv5'), :original_no_explicit_version
     assert kata_exists?('k5ZTk0'), :original_no_explicit_version
