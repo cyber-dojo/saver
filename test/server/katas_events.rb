@@ -37,21 +37,23 @@ class KatasEventsTest < TestBase
     externals.instance_exec do
       @time = TimeStub.new(now, now, now, now, now, now, now)
     end
-    files = { 'cyber-dojo.sh' => { 'content' => 'pytest *_test.rb' } }
+    files = nil
     stdout = { 'content' => 'so', 'truncated' => false }
     stderr = { 'content' => 'se', 'truncated' => true }
-    summary = { 'colour' => 'red' }
+    red_summary = { 'colour' => 'red' }
     in_group do |gid|
       ids = []
       in_kata(gid) do |id|
+        files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, 1, files, stdout, stderr, "0", summary)
+        kata_ran_tests(id, 1, files, stdout, stderr, "0", red_summary)
       end
       in_kata(gid) do |id|
+        files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, 1, files, stdout, stderr,   '0', summary)
-        kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary)
-        kata_ran_tests(id, 3, files, stdout, stderr, '137', summary)
+        kata_ran_tests(id, 1, files, stdout, stderr,   '0', red_summary)
+        kata_ran_tests(id, 2, files, stdout, stderr,   '0', red_summary)
+        kata_ran_tests(id, 3, files, stdout, stderr, '137', red_summary)
       end
       actual = katas_events([ids[0], ids[1]], [1, 3])
       expected = {
@@ -64,8 +66,8 @@ class KatasEventsTest < TestBase
             'stdout' => stdout,
             'stderr' => stderr,
             'status' => '0',
-            'diff_added_count' => 1, 
-            'diff_deleted_count' => 281
+            'diff_added_count' => 0, 
+            'diff_deleted_count' => 0
           }
         },
         ids[1] => {

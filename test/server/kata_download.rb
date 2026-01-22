@@ -9,14 +9,15 @@ class KataDownloadTest < TestBase
   | kata_exists? is false,
   | for a well-formed id that does not exist
   ) do
-    files = { "cyber-dojo.sh" => { "content" => "pytest *_test.rb" }}
-    stdout = { "content" => "so", "truncated" => false }
-    stderr = { "content" => "se", "truncated" => true }
-    summary = { "colour" => "red" }
+    stdout = { 'content' => 'so', 'truncated' => false }
+    stderr = { 'content' => 'se', 'truncated' => true }
+    summary = { 'colour' => 'red' }
 
     in_kata do |id|
-      kata_ran_tests(id, 1, files, stdout, stderr,   "0", summary)
-      kata_ran_tests(id, 2, files, stdout, stderr,   "1", summary)
+      files = kata_event(id, 0)['files']
+      expected_cyber_dojo_sh = files['cyber-dojo.sh']['content']
+      kata_ran_tests(id, 1, files, stdout, stderr,   '0', summary)
+      kata_ran_tests(id, 2, files, stdout, stderr,   '1', summary)
       year, month, day = 2021, 7, 11
       externals.instance_exec { @time = TimeStub.new([year, month, day]) }
       tgz_filename, encoded64 = *model.kata_download(id:id)
@@ -28,13 +29,14 @@ class KataDownloadTest < TestBase
         dir_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
         shell.assert_cd_exec(tmp_dir, "[ -d #{dir_name} ]")
         dir_path = "#{tmp_dir}/#{dir_name}"
-        shell.assert_cd_exec(dir_path, "[ -d .git ]")
-        tags = shell.assert_cd_exec(dir_path, "git tag")
+        shell.assert_cd_exec(dir_path, '[ -d .git ]')
+        tags = shell.assert_cd_exec(dir_path, 'git tag')
         assert_equal 3, tags.split("\n").count
-        assert_last_commit_message(dir_path, "2 ran tests, no prediction, got red")
-        cyber_dojo_sh = shell.assert_cd_exec(dir_path, "cat files/cyber-dojo.sh")
-        assert_equal "pytest *_test.rb", cyber_dojo_sh
-        readme_md = shell.assert_cd_exec(dir_path, "cat README.md")
+        assert_last_commit_message(dir_path, '2 ran tests, no prediction, got red')
+        actual_cyber_dojo_sh = shell.assert_cd_exec(dir_path, 'cat files/cyber-dojo.sh')
+        #assert_equal 'pytest *_test.rb', cyber_dojo_sh
+        assert_equal expected_cyber_dojo_sh, actual_cyber_dojo_sh
+        readme_md = shell.assert_cd_exec(dir_path, 'cat README.md')
         url = "https://cyber-dojo.org/kata/edit/#{id}"
         link = "# This a copy of [your cyber-dojo exercise](#{url}):"
         assert readme_md.include?(link)

@@ -51,11 +51,10 @@ class KataRanTestsTest < TestBase
     gid = group_create(manifest)
     id = group_join(gid)
     index = 1
-    data = bats
-    files = data['files']
-    stdout = data['stdout']
-    stderr = data['stderr']
-    status = data['status']
+    files = kata_event(id, 0)['files']
+    stdout = bats['stdout']
+    stderr = bats['stderr']
+    status = bats['status']
 
     index, summary = *yield(id, files, stdout, stderr, status)
 

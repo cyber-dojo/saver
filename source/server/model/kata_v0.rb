@@ -139,15 +139,15 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    ran_tests2(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    predicted_right2(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    predicted_wrong2(id, index, files, stdout, stderr, status, summary)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
