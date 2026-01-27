@@ -28,8 +28,14 @@ require 'tmpdir'
 # This means that the index in each event no longer corresponds to
 # just the red/amber/green ran-tests events. In the above, there are
 # two ran-tests events at indexes 3,6 which would previously have been 1,2
-# Because of this, ran_tests2() now returns the 'major_index' which 
-# corresponds to the previous red/amber/green index.
+# Because of this, ran_tests() et-all now returns three indexes:
+#   index       - events[i].index == i
+#   major_index - the previous red/amber/green index
+#   minor_index - the non red/amber/green index between major_indexes
+# For example, the events.json above
+#   0=create, 1=rename, 2=edit, 3=ran-tests, 4=edit, 5=edit, 6=ran-tests
+# correspond to major_index.minor_index values of
+#   0->0.0    1->0.1    2->0.2  3->1.0       4->1.1  5->1.2  6->2.0
 
 class Kata_v2
 
@@ -237,18 +243,15 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    ran_tests2(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    predicted_right2(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    predicted_wrong2(id, index, files, stdout, stderr, status, summary)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
