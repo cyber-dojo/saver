@@ -46,7 +46,7 @@ class KataPredictedWrong2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 2, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -58,7 +58,7 @@ class KataPredictedWrong2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 2, next_index
 
-      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 3, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end
@@ -92,7 +92,7 @@ class KataPredictedWrong2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 6, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -104,7 +104,7 @@ class KataPredictedWrong2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 9, next_index
 
-      actual = kata_predicted_wrong2(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 10, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end

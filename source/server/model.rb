@@ -101,20 +101,6 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests2(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).ran_tests2(id, index, files, stdout, stderr, status, summary)
-  end
-
-  def kata_predicted_right2(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_right2(id, index, files, stdout, stderr, status, summary)
-  end
-
-  def kata_predicted_wrong2(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_wrong2(id, index, files, stdout, stderr, status, summary)
-  end
-  
-  # - - - - - - - - - - - - - - - - - - - -
-
   def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
     kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
   end
