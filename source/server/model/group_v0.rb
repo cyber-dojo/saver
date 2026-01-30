@@ -65,9 +65,12 @@ class Group_v0
     end
     katas_events = disk.assert_all(read_events_files_commands)
     indexes.each.with_index(0) do |(group_index,kata_id),index|
+      events = events_parse(katas_events[index])
+      polyfill_events(events)
+      polyfill_major_minor_events(events)
       results[group_index.to_s] = {
         'id' => kata_id,
-        'events' => polyfill_events(events_parse(katas_events[index]))
+        'events' => events
       }
     end
     results

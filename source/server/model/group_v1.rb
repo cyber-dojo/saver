@@ -74,9 +74,11 @@ class Group_v1
     end
     katas_events = disk.assert_all(read_events_files_commands)
     indexes.each.with_index(0) do |(group_index,kata_id),index|
+      events = json_parse('[' + katas_events[index] + ']')
+      polyfill_major_minor_events(events)
       result[group_index.to_s] = {
         'id' => kata_id,
-        'events' => json_parse('[' + katas_events[index] + ']')
+        'events' => events
       }
     end
     result

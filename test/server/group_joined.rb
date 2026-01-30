@@ -53,24 +53,40 @@ class GroupJoinedTest < TestBase
   def expected
     {
       V0_GROUP_ID => {
-        "32" => { # mouse
-          "id" => V0_KATA_ID,
-          "events" => [
-            { "index" => 0, "time" => [2019,1,16,12,44,55,800239], "event" => "created" },
-            { "index" => 1, "time" => [2019,1,16,12,45,40,544806], "colour" => "red"  , "duration" => 1.46448,  "predicted" => "red" },
-            { "index" => 2, "time" => [2019,1,16,12,45,46,82887 ], "colour" => "amber", "duration" => 1.031421, "predicted" => "none" },
-            { "index" => 3, "time" => [2019,1,16,12,45,52,220587], "colour" => "green", "duration" => 1.042027, "predicted" => "none" }
+        '32' => { # mouse
+          'id' => V0_KATA_ID,
+          'events' => [
+            { 'index' => 0, 'major_index' => 0, 'minor_index' => 0,
+              'time' => [2019,1,16,12,44,55,800239], 
+              'event' => 'created' },
+            { 'index' => 1, 'major_index' => 1, 'minor_index' => 0,
+              'time' => [2019,1,16,12,45,40,544806], 'duration' => 1.46448,
+              'colour' => 'red', 'predicted' => 'red' },
+            { 'index' => 2, 'major_index' => 2, 'minor_index' => 0,
+              'time' => [2019,1,16,12,45,46,82887], 'duration' => 1.031421,
+              'colour' => 'amber', 'predicted' => 'none' },
+            { 'index' => 3, 'major_index' => 3, 'minor_index' => 0,
+              'time' => [2019,1,16,12,45,52,220587], 'duration' => 1.042027,
+              'colour' => 'green', 'predicted' => 'none' }
           ]
         }
       },
       V1_GROUP_ID => {
-        "44" => { # rhino
-          "id" => V1_KATA_ID,
-          "events" => [
-            { "index" => 0, "time" => [2020,10,19,12,52,46,396907], "event" => "created" },
-            { "index" => 1, "time" => [2020,10,19,12,52,54,772809], "duration" => 0.491393, "colour" => "red",   "predicted" => "none" },
-            { "index" => 2, "time" => [2020,10,19,12,52,58,547002], "duration" => 0.426736, "colour" => "amber", "predicted" => "none" },
-            { "index" => 3, "time" => [2020,10,19,12,53,3,256202],  "duration" => 0.438522, "colour" => "green", "predicted" => "none" }
+        '44' => { # rhino
+          'id' => V1_KATA_ID,
+          'events' => [
+            { 'index' => 0, 'major_index' => 0, 'minor_index' => 0,
+              'time' => [2020,10,19,12,52,46,396907], 
+              'event' => 'created' },
+            { 'index' => 1, 'major_index' => 1, 'minor_index' => 0,
+              'time' => [2020,10,19,12,52,54,772809], 'duration' => 0.491393, 
+              'colour' => 'red',   'predicted' => 'none' },
+            { 'index' => 2, 'major_index' => 2, 'minor_index' => 0,
+              'time' => [2020,10,19,12,52,58,547002], 'duration' => 0.426736, 
+              'colour' => 'amber', 'predicted' => 'none' },
+            { 'index' => 3, 'major_index' => 3, 'minor_index' => 0,
+              'time' => [2020,10,19,12,53,3,256202],  'duration' => 0.438522, 
+              'colour' => 'green', 'predicted' => 'none' }
           ]
         }
       }
