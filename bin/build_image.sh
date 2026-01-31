@@ -2,8 +2,8 @@
 set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 source "${ROOT_DIR}/bin/lib.sh"
+source "${ROOT_DIR}/bin/echo_env_vars.sh"
 
 show_help()
 {
@@ -62,13 +62,6 @@ build_image()
     docker --log-level=ERROR compose build server
   fi
 
-  echo
-  echo "Building with --build-args"
-  echo "  COMMIT_SHA=${COMMIT_SHA}"
-  echo "To change this run:"
-  echo "$ COMMIT_SHA=... make image_${type}"
-  echo
-
   if [ "${type}" == 'client' ]; then
     docker --log-level=ERROR compose build client
   fi
@@ -87,8 +80,10 @@ build_image()
     docker --log-level=ERROR tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     # Tag image-name for local development where savers name comes from echo-env-vars
     docker --log-level=ERROR tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
+    echo
     echo "  echo CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
     echo "  echo CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
+    echo
     echo "${image_name}"
   fi
 }

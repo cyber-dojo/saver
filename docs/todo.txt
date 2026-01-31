@@ -1,4 +1,8 @@
 
+- ?drop support for v0, v1
+
+- group_joined JSON response does not polyfill colour=created for index=0
+
 - fill in example of kata_XXX methods in saver's docs/api.md
 All the following will benefit from seeing the format of, eg 
 files == { 'filename' => {'content' => '...', 'truncated' => false }} etc

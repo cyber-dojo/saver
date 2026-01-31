@@ -2,8 +2,8 @@
 set -Eeu
 
 export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 source "${ROOT_DIR}/bin/lib.sh"
+source "${ROOT_DIR}/bin/echo_env_vars.sh"
 
 readonly VERSION="${1}"  # {0|1|2}
 # shellcheck disable=SC2046
@@ -26,7 +26,7 @@ docker exec "${CONTAINER}" \
 
 echo "Filename == ${DST_TGZ_FILENAME}"
 echo
-echo "Now add the following tar_file to copy_in_saver_test_data() in run/lib.sh"
+echo "Now add the following tar_file to copy_in_saver_test_data() in bin/lib.sh"
 echo
 echo "almost_full_group.v${VERSION}.${GID}.tgz"
 echo
