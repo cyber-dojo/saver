@@ -1,19 +1,25 @@
 
-- ?drop support for v0, v1
+- In web's revert_test.rb instead of 
+    @files[filename] = 'Hello'
+  if you write
+    @files[filename] = {'content' => 'Hello'}
+  then it seems to cause saver to silently drop its incoming call.
+  There needs to be some pydantic-like checking of the parameters.
 
-- group_joined JSON response does not polyfill colour=created for index=0
+- drop support for v0, v1 ?
+  drop write support for v0, v1 ?
 
 - fill in example of kata_XXX methods in saver's docs/api.md
-All the following will benefit from seeing the format of, eg 
-files == { 'filename' => {'content' => '...', 'truncated' => false }} etc
-- kata_file_create()
-- kata_file_delete()
-- kata_file_rename()
-- kata_file_switch()
-- kata_ran_tests()
-- kata_predicted_right()
-- kata_predicted_wrong()
-- kata_reverted()
-- kata_checked_out()
+  All the following will benefit from seeing the format of, eg 
+  files == { 'filename' => {'content' => '...', 'truncated' => false }} etc
+    - kata_file_create()
+    - kata_file_delete()
+    - kata_file_rename()
+    - kata_file_switch()
+    - kata_ran_tests()
+    - kata_predicted_right()
+    - kata_predicted_wrong()
+    - kata_reverted()
+    - kata_checked_out()
 
 - update saver api.md document with info on new return type.
