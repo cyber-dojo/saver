@@ -163,8 +163,8 @@ class RackDispatchingTest < TestBase
   def with_captured_stdout_stderr
     old_stdout = $stdout
     old_stderr = $stderr
-    $stdout = StringIO.new('', 'w')
-    $stderr = StringIO.new('', 'w')
+    $stdout = StringIO.new(+'', +'w')
+    $stderr = StringIO.new(+'', +'w')
     response = yield
     [response, $stdout.string, $stderr.string]
   ensure
