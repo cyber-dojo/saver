@@ -1,10 +1,28 @@
 require_relative 'test_base'
 
-class KataRanTests2Test < TestBase
+class KataPredictedWrongTest < TestBase
 
-  versions_01_test 'Sp5E04', %w(
+  versions_test 'B1DE03', %w(
+  | kata_predicted_wrong gives same git-commit-message in all versions
+  ) do
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      data = bats
+      stdout = data['stdout']
+      stderr = data['stderr']
+      status = data['status']
+      summary = red_summary.merge({ 'predicted' => 'green' })
+      kata_predicted_wrong(id, index=1, files, stdout, stderr, status, summary)
+      assert_tag_commit_message(id, 1, '1 ran tests, predicted green, got red')
+      [index, summary]
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'B1DE04', %w(
   | when one file has been edited
-  | a kata_ran_test2 event 
+  | a kata_predicted_wrong2 event 
   | results in one event
   | and returns a dict containing 
   | next_index, and major_index which is an index of
@@ -28,7 +46,7 @@ class KataRanTests2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 2, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -40,7 +58,7 @@ class KataRanTests2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 2, next_index
 
-      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 3, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end
@@ -48,9 +66,9 @@ class KataRanTests2Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'Sp5E05', %w(
+  test 'B1DE05', %w(
   | when one file has been edited
-  | a kata_ran_test2 event 
+  | a kata_predicted_wrong2 event 
   | results in two events
   | and returns a dict containing 
   | next_index, and major_index which is an index of
@@ -74,7 +92,7 @@ class KataRanTests2Test < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 6, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
@@ -86,7 +104,7 @@ class KataRanTests2Test < TestBase
       next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
       assert_equal 9, next_index
 
-      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_wrong(id, next_index, files, stdout, stderr, status, red_summary)
       expected = { 'next_index' => 10, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end
