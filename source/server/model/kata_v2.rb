@@ -566,6 +566,12 @@ end
 def edited_filename(previous_files, current_files)
   previous_files.each do |filename, values|
     previous_content = previous_files[filename]['content']
+    if !current_files.keys.include?(filename)
+      # Can occur for v2 katas created before file-events became live.
+      # Can also occur if there is a saver outage that misses a file-delete event.
+      # See test/server/kata_ran_tests_with_outage.rb
+      next
+    end
     current_content = current_files[filename]['content']
     if previous_content != current_content
       return filename
