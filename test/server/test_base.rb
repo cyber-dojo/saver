@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative 'id58_test_base'
 require_relative 'capture_stdout_stderr'
 require_relative 'data/kata_test_data'
