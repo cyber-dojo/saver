@@ -285,12 +285,12 @@ jobs:
       - name: Run Snyk container scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run:
+        run: |
           snyk container test "${IMAGE_NAME}"
-            -debug
             --policy-path=.snyk
             --sarif
             --sarif-file-output="${SARIF_FILENAME}"
+          ls -al
 
       - name: Setup Kosli CLI
         if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
