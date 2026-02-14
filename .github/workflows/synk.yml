@@ -1,7 +1,7 @@
 name: Snyk container scan
 
 on:
-  push:
+  workflow_dispatch:
 
 env:
   KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
