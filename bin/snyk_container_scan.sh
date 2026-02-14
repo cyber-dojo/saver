@@ -45,16 +45,28 @@ if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   cat "${SNYK_LOG_FILENAME}"
   echo
   echo '============================================='
-  echo ERROR: Snyk log contains the word 'Forbidden'
+  echo ERROR: Snyk log contains 'Forbidden'
   echo "Sarif file exists?: $(sarif_file_exists)"
   echo "Snyk exit status: ${STATUS}"
   echo '============================================='
   echo
-  STATUS=42
-else
-  echo "Snyk exit status: ${STATUS}"
-  echo "Sarif file exists?: $(sarif_file_exists)"
+  exit 42
 fi
+
+if grep 'Authentication error' "${SNYK_LOG_FILENAME}" ; then
+  cat "${SNYK_LOG_FILENAME}"
+  echo
+  echo '============================================='
+  echo ERROR: Snyk log contains 'Authentication error'
+  echo "Sarif file exists?: $(sarif_file_exists)"
+  echo "Snyk exit status: ${STATUS}"
+  echo '============================================='
+  echo
+  exit 43
+fi
+
+echo "Snyk exit status: ${STATUS}"
+echo "Sarif file exists?: $(sarif_file_exists)"
 
 if [ "$(sarif_file_exists)" == 'true' ]; then 
   echo
