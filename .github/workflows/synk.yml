@@ -1,0 +1,101 @@
+name: Snyk container scan
+
+on:
+  workflow_dispatch:
+
+env:
+  KOSLI_HOST:      ${{ vars.KOSLI_HOST }}              # https://app.kosli.com
+  KOSLI_ORG:       ${{ vars.KOSLI_ORG }}               # cyber-dojo
+  KOSLI_FLOW:      ${{ vars.KOSLI_FLOW }}              # saver-ci
+  KOSLI_TRAIL:     ${{ github.sha }}
+
+  AWS_ECR_ID:          ${{ vars.AWS_ECR_ID }}
+  AWS_REGION:          ${{ vars.AWS_REGION }}
+  DOCKER_API_VERSION:  ${{ vars.DOCKER_API_VERSION }}
+  SERVICE_NAME:        ${{ github.event.repository.name }}  # saver
+
+jobs:
+
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_registry:             ${{ steps.vars.outputs.ecr_registry }}
+      aws_region:               ${{ steps.vars.outputs.aws_region }}
+      gh_actions_iam_role_name: ${{ steps.vars.outputs.gh_actions_iam_role_name }}
+      service_name:             ${{ steps.vars.outputs.service_name }}
+      image_tag:                ${{ steps.vars.outputs.image_tag }}
+      image_name:               ${{ steps.vars.outputs.image_name }}
+      kosli_trail:              ${{ steps.vars.outputs.kosli_trail }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare outputs for workflow jobs
+        id: vars
+        run: |
+          ECR_REGISTRY="${AWS_ECR_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"          
+          IMAGE_TAG="${GITHUB_SHA:0:7}"                  
+          IMAGE_NAME="${ECR_REGISTRY}/${{ env.SERVICE_NAME }}:${IMAGE_TAG}"          
+          {
+            echo "ecr_registry=${ECR_REGISTRY}"                 
+            echo "aws_region=${AWS_REGION}"                    
+            echo "gh_actions_iam_role_name=gh_actions_services" 
+            echo "service_name=${{ env.SERVICE_NAME }}"         
+            echo "image_tag=${IMAGE_TAG}"                       
+            echo "image_name=${IMAGE_NAME}"     
+            echo "kosli_trail=${KOSLI_TRAIL}"
+          } >> "${GITHUB_OUTPUT}"
+
+
+  build-image:
+    needs: [setup]
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build.yml@main
+    with:
+      checkout_repository: cyber-dojo/saver
+      checkout_ref: ${{ github.sha }}
+      checkout_fetch_depth: 1
+      image_name: ${{ needs.setup.outputs.ecr_registry }}/${{ needs.setup.outputs.service_name }}
+      image_tag: ${{ needs.setup.outputs.image_tag }}
+      image_build_args: |
+        COMMIT_SHA=${{ github.sha }}
+      kosli_flow: ${{ vars.KOSLI_FLOW }}
+      kosli_trail: ${{ needs.setup.outputs.kosli_trail }}
+      kosli_reference_name: ${{ needs.setup.outputs.service_name }}
+      attest_to_kosli: false
+    secrets:
+      kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
+
+
+  snyk-container-scan:
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    env:
+      IMAGE_NAME:     ${{ needs.build-image.outputs.tagged_image_name }}
+      SARIF_FILENAME: snyk.container.scan.json
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Download docker image
+        uses: cyber-dojo/download-artifact@main
+        with:
+          image_digest: ${{ needs.build-image.outputs.digest }}
+
+      - uses: actions/checkout@v4
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk container scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run:
+          make snyk-container-scan
