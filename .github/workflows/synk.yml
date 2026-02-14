@@ -67,7 +67,7 @@ jobs:
       kosli_flow: ${{ vars.KOSLI_FLOW }}
       kosli_trail: ${{ needs.setup.outputs.kosli_trail }}
       kosli_reference_name: ${{ needs.setup.outputs.service_name }}
-      attest_to_kosli: 'false'
+      attest_to_kosli: false
     secrets:
       kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
 
