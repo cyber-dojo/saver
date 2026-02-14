@@ -36,8 +36,8 @@ snyk container test "$(image_name)" -debug \
   --policy-path="${ROOT_DIR}/.snyk" \
   --sarif \
   --sarif-file-output="${ROOT_DIR}/${SARIF_FILENAME}" \
-  | tee "${SNYK_LOG_FILENAME}"
-STATUS="${PIPESTATUS[0]}"
+  > "${SNYK_LOG_FILENAME}"
+STATUS=$?
 set -e
 
 
@@ -51,6 +51,13 @@ if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   echo '============================================='
   echo
   exit 42
+else
+  echo "Sarif file exists?: $(sarif_file_exists)"
+  echo "Snyk exit status: ${STATUS}"
+  echo
+  if [ "$(sarif_file_exists)" == 'true' ]; then 
+    jq . "${ROOT_DIR}/${SARIF_FILENAME}"
+  fi
 fi
 
 exit "${STATUS}"
