@@ -7,6 +7,9 @@ source "${ROOT_DIR}/bin/echo_env_vars.sh"
 # shellcheck disable=SC2046
 export $(echo_env_vars)
 
+readonly SARIF_FILENAME=${SARIF_FILENAME:-snyk.container.scan.json}
+readonly SNYK_LOG_FILENAME="${ROOT_DIR}/snyk.log"
+
 function image_name()
 {
   if [ "${IMAGE_NAME:-}" == '' ]; then
@@ -16,8 +19,15 @@ function image_name()
   fi
 }
 
-readonly SARIF_FILENAME=${SARIF_FILENAME:-snyk.container.scan.json}
-readonly SNYK_LOG_FILENAME="${ROOT_DIR}/snyk.log"
+function sarif_file_exists()
+{
+  if [ -f "${ROOT_DIR}/${SARIF_FILENAME}" ]; then
+    echo true
+  else 
+    echo false
+  fi
+}
+
 
 exit_non_zero_unless_installed snyk
 
@@ -30,11 +40,14 @@ snyk container test "$(image_name)" -debug \
 STATUS="${PIPESTATUS[0]}"
 set -e
 
-if [ grep Forbidden "${SNYK_LOG_FILENAME}" ]; then
+
+if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   cat "${SNYK_LOG_FILENAME}"
   echo
   echo '============================================='
   echo ERROR: Snyk log contains the word 'Forbidden'
+  echo "Sarif file exists?: $(sarif_file_exists)"
+  echo "Snyk exit status: ${STATUS}"
   echo '============================================='
   echo
   exit 42
