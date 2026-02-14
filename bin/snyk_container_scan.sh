@@ -30,7 +30,7 @@ function sarif_file_exists()
 
 exit_non_zero_unless_installed snyk
 
-rm "${ROOT_DIR}/${SARIF_FILENAME}" || true
+rm "${ROOT_DIR}/${SARIF_FILENAME}" &> /dev/null || true
 
 set +e
 snyk container test "$(image_name)" -debug \
