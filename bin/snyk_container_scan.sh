@@ -28,29 +28,32 @@ function sarif_file_exists()
   fi
 }
 
-exit_non_zero_unless_installed snyk
+exit_non_zero_unless_installed snyk jq
 
 rm "${ROOT_DIR}/${SARIF_FILENAME}" &> /dev/null || true
 
 set +e
+
 snyk container test "$(image_name)" -debug \
   --policy-path="${ROOT_DIR}/.snyk" \
   --sarif \
   --sarif-file-output="${ROOT_DIR}/${SARIF_FILENAME}" \
   &> "${SNYK_LOG_FILENAME}"
-STATUS=$?
+
+SNYK_STATUS=$?
+
 set -e
+
+EXIT_STATUS="${SNYK_STATUS}"
 
 if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   cat "${SNYK_LOG_FILENAME}"
   echo
   echo '============================================='
   echo ERROR: Snyk log contains 'Forbidden'
-  echo "Sarif file exists?: $(sarif_file_exists)"
-  echo "Snyk exit status: ${STATUS}"
   echo '============================================='
   echo
-  exit 42
+  EXIT_STATUS=42
 fi
 
 if grep 'Authentication error' "${SNYK_LOG_FILENAME}" ; then
@@ -58,19 +61,17 @@ if grep 'Authentication error' "${SNYK_LOG_FILENAME}" ; then
   echo
   echo '============================================='
   echo ERROR: Snyk log contains 'Authentication error'
-  echo "Sarif file exists?: $(sarif_file_exists)"
-  echo "Snyk exit status: ${STATUS}"
   echo '============================================='
   echo
-  exit 43
+  EXIT_STATUS=43
 fi
 
-echo "Snyk exit status: ${STATUS}"
-echo "Sarif file exists?: $(sarif_file_exists)"
+echo "Snyk exit status: ${SNYK_STATUS}"
 
+echo "Sarif file exists?: $(sarif_file_exists)"
 if [ "$(sarif_file_exists)" == 'true' ]; then 
   echo
   jq . "${ROOT_DIR}/${SARIF_FILENAME}"
 fi
 
-exit "${STATUS}"
+exit "${EXIT_STATUS}"
