@@ -28,18 +28,18 @@ function sarif_file_exists()
   fi
 }
 
-
 exit_non_zero_unless_installed snyk
+
+rm "${ROOT_DIR}/${SARIF_FILENAME}" || true
 
 set +e
 snyk container test "$(image_name)" -debug \
   --policy-path="${ROOT_DIR}/.snyk" \
   --sarif \
   --sarif-file-output="${ROOT_DIR}/${SARIF_FILENAME}" \
-  > "${SNYK_LOG_FILENAME}"
+  &> "${SNYK_LOG_FILENAME}"
 STATUS=$?
 set -e
-
 
 if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   cat "${SNYK_LOG_FILENAME}"
@@ -50,14 +50,15 @@ if grep Forbidden "${SNYK_LOG_FILENAME}" ; then
   echo "Snyk exit status: ${STATUS}"
   echo '============================================='
   echo
-  exit 42
+  STATUS=42
 else
-  echo "Sarif file exists?: $(sarif_file_exists)"
   echo "Snyk exit status: ${STATUS}"
+  echo "Sarif file exists?: $(sarif_file_exists)"
+fi
+
+if [ "$(sarif_file_exists)" == 'true' ]; then 
   echo
-  if [ "$(sarif_file_exists)" == 'true' ]; then 
-    jq . "${ROOT_DIR}/${SARIF_FILENAME}"
-  fi
+  jq . "${ROOT_DIR}/${SARIF_FILENAME}"
 fi
 
 exit "${STATUS}"

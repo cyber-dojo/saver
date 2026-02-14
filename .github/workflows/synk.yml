@@ -97,5 +97,7 @@ jobs:
       - name: Run Snyk container scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run:
+        run: |
+          git status
+          git rev-parse --abbrev-ref HEAD
           make snyk-container-scan
