@@ -155,6 +155,37 @@ jobs:
       kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
 
 
+  snyk-container-scan:
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    env:
+      IMAGE_NAME:        ${{ needs.build-image.outputs.tagged_image_name }}
+      KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
+      SARIF_FILENAME:    snyk.container.scan.json
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Download docker image
+        uses: cyber-dojo/download-artifact@main
+        with:
+          image_digest: ${{ needs.build-image.outputs.digest }}
+
+      - uses: actions/checkout@v4
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk container scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          docker image ls
+          make snyk-container-scan
+
+
   unit-tests:
     runs-on: ubuntu-latest
     needs: [build-image]
