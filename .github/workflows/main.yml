@@ -156,8 +156,11 @@ jobs:
 
 
   snyk-container-scan:
-    runs-on: ubuntu-latest
     needs: [build-image]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     env:
       IMAGE_NAME:        ${{ needs.build-image.outputs.tagged_image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
