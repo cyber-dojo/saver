@@ -5,5 +5,7 @@ reports/.*
 
 snyk.container.scan.json
 snyk.code.scan.json
-snyk.log
+snyk.log.stdout
+snyk.log.stderr
+
 
