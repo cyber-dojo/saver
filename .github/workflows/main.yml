@@ -196,8 +196,7 @@ jobs:
       - name: Run Snyk container scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          docker image ls
+        run:
           make snyk-container-scan
 
 
