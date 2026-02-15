@@ -173,22 +173,22 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      # - name: Download docker image
-      #   uses: cyber-dojo/download-artifact@main
-      #   with:
-      #     image_digest: ${{ needs.build-image.outputs.digest }}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Download docker image
+        uses: cyber-dojo/download-artifact@main
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/gh_actions_live_snyk_scans
-          aws-region: ${{ env.AWS_REGION }}
-          role-duration-seconds: 2400
-          role-session-name: ${{ github.event.repository.name }}
+          image_digest: ${{ needs.build-image.outputs.digest }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/gh_actions_live_snyk_scans
+      #     aws-region: ${{ env.AWS_REGION }}
+      #     role-duration-seconds: 2400
+      #     role-session-name: ${{ github.event.repository.name }}
+
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
