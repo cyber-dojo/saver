@@ -171,6 +171,8 @@ jobs:
         with:
           egress-policy: audit
 
+      - uses: actions/checkout@v4
+
       # - name: Download docker image
       #   uses: cyber-dojo/download-artifact@main
       #   with:
@@ -190,8 +192,6 @@ jobs:
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
-
-      - uses: actions/checkout@v4
 
       - name: Run Snyk container scan
         env:
