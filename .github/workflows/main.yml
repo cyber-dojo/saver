@@ -166,11 +166,6 @@ jobs:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
       SARIF_FILENAME:    snyk.container.scan.json
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@v2
-        with:
-          egress-policy: audit
-
       - uses: actions/checkout@v4
 
       - name: Configure AWS credentials
@@ -199,9 +194,10 @@ jobs:
         run:
           snyk container test "${IMAGE_NAME}"
             --org=jonjagger
+            --debug
             --policy-path=.snyk
             --sarif
-            --sarif-file-output="${SARIF_FILENAME}"        
+            --sarif-file-output="${SARIF_FILENAME}"
 
       - name: Snyk-container-test's exit code can be zero when no sarif file is produced!
         run:
