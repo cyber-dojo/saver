@@ -206,7 +206,7 @@ jobs:
 
       - name: Snyk-container-test's exit code can be zero when no sarif file is produced!
         run:
-          cat "${SNYK_SARIF_FILENAME}"
+          cat "${SARIF_FILENAME}"
 
 
   unit-tests:
