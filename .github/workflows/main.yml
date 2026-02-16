@@ -166,6 +166,11 @@ jobs:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
       SARIF_FILENAME:    snyk.container.scan.json
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@v4
 
       - name: Configure AWS credentials
