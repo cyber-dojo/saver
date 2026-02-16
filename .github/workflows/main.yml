@@ -156,8 +156,11 @@ jobs:
 
 
   snyk-container-scan:
-    runs-on: ubuntu-latest
     needs: [build-image]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     env:
       IMAGE_NAME:        ${{ needs.build-image.outputs.tagged_image_name }}
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
@@ -168,12 +171,24 @@ jobs:
         with:
           egress-policy: audit
 
+      - uses: actions/checkout@v4
+
       - name: Download docker image
         uses: cyber-dojo/download-artifact@main
         with:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
-      - uses: actions/checkout@v4
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID_BETA }}:role/gh_actions_live_snyk_scans
+      #     aws-region: ${{ env.AWS_REGION }}
+      #     role-duration-seconds: 2400
+      #     role-session-name: ${{ github.event.repository.name }}
+
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -181,9 +196,10 @@ jobs:
       - name: Run Snyk container scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          docker image ls
+        run:
           make snyk-container-scan
+          with:
+            snyk-version: v1.1300.2        
 
 
   unit-tests:
