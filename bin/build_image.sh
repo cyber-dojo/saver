@@ -85,6 +85,7 @@ build_image()
     echo "  echo CYBER_DOJO_SAVER_TAG=${CYBER_DOJO_SAVER_TAG}"
     echo
     echo "${image_name}"
+    echo "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
   fi
 }
 

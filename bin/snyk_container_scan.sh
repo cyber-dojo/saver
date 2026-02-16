@@ -36,6 +36,7 @@ function fail_if_log_contains()
     cat "${filename}"
     echo
     echo ERROR: ${filename} contains ${find}
+    echo "image_name=$(echo_image_name)"
     echo
     EXIT_STATUS=42
   fi
@@ -48,11 +49,12 @@ rm "${ROOT_DIR}/${SARIF_FILENAME}" &> /dev/null || true
 set +e
 
 snyk container test "$(echo_image_name)" -debug \
+  --org=jonjagger \
   --policy-path="${ROOT_DIR}/.snyk" \
   --sarif \
   --sarif-file-output="${ROOT_DIR}/${SARIF_FILENAME}" \
   > "${SNYK_LOG_FILENAME}.stdout" \
- 2> "${SNYK_LOG_FILENAME}.stderr" \
+ 2> "${SNYK_LOG_FILENAME}.stderr" 
 
 SNYK_STATUS=$?
 
