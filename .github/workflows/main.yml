@@ -199,7 +199,6 @@ jobs:
         run:
           snyk container test "${IMAGE_NAME}"
             --org=jonjagger
-            --debug
             --policy-path=.snyk
             --sarif
             --sarif-file-output="${SARIF_FILENAME}"        
