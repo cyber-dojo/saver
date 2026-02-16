@@ -197,7 +197,12 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
-          make snyk-container-scan
+          snyk container test "${IMAGE_NAME}"
+            --org=jonjagger
+            --debug
+            --policy-path=.snyk
+            --sarif
+            --sarif-file-output="${SARIF_FILENAME}"        
 
 
   unit-tests:
