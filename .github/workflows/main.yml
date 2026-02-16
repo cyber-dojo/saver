@@ -198,6 +198,8 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           make snyk-container-scan
+          with:
+            snyk-version: v1.1300.2        
 
 
   unit-tests:
