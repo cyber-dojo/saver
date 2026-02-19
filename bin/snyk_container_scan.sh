@@ -48,7 +48,7 @@ rm "${ROOT_DIR}/${SARIF_FILENAME}" &> /dev/null || true
 
 set +e
 
-snyk container test "$(echo_image_name)" -debug \
+snyk container test "$(echo_image_name)" \
   --org=jonjagger \
   --policy-path="${ROOT_DIR}/.snyk" \
   --sarif \
