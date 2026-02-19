@@ -321,7 +321,6 @@ jobs:
       - pull-request
       - unit-tests
       - integration-tests
-      - snyk-code-scan
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
