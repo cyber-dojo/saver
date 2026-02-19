@@ -186,7 +186,7 @@ jobs:
 
       - name: Pull the docker image
         run:
-          docker pull --platform linux/amd64 "${IMAGE_NAME}"
+          docker pull --platform=linux/amd64 "${IMAGE_NAME}"
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -198,7 +198,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run:
           snyk container test "${IMAGE_NAME}"
-            --org=jonjagger
+            --org=kosli
             --debug
             --policy-path=.snyk
             --sarif
