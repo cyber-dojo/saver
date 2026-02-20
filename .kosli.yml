@@ -7,6 +7,8 @@ trail:
   artifacts:
     - name: saver
       attestations:
+        - name: snyk-container-scan
+          type: snyk
         - name: unit-test
           type: junit
         - name: unit-test-metrics
