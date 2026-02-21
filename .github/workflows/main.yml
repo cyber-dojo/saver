@@ -129,6 +129,7 @@ jobs:
         uses: cyber-dojo/snyk-container-test@main
         with:
           attestation_name: saver.snyk-container-scan
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
 
   unit-tests:
