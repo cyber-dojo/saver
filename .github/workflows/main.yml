@@ -126,7 +126,6 @@ jobs:
         with:
           snyk_token:        ${{ secrets.SNYK_TOKEN }}
           image_name:        ${{ needs.build-image.outputs.tagged_image_name }}
-          kosli_cli_version: ${{ vars.KOSLI_CLI_VERSION }}
           attestation_name:  saver.snyk-container-scan
 
 
