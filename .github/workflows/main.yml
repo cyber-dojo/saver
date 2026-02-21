@@ -125,6 +125,7 @@ jobs:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
       SARIF_FILENAME:    snyk.container.scan.json
     steps:
+      - name: Snyk container test
         uses: cyber-dojo/snyk-container-test@main
         with:
           attestation_name: saver.snyk-container-scan
