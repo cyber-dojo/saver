@@ -124,9 +124,9 @@ jobs:
       - name: Snyk container test
         uses: cyber-dojo/snyk-container-test@main
         with:
-          SNYK_TOKEN:        ${{ secrets.SNYK_TOKEN }}
-          IMAGE_NAME:        ${{ needs.build-image.outputs.tagged_image_name }}
-          KOSLI_CLI_VERSION: ${{ vars.KOSLI_CLI_VERSION }}
+          snyk_token:        ${{ secrets.SNYK_TOKEN }}
+          image_name:        ${{ needs.build-image.outputs.tagged_image_name }}
+          kosli_cli_version: ${{ vars.KOSLI_CLI_VERSION }}
           attestation_name:  saver.snyk-container-scan
 
 
