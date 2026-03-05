@@ -167,12 +167,13 @@ class Kata_v2
 
   def file_create(id, index, files, filename)
     # At this point, the (new) filename is NOT present in files.
-    index = file_edit(id, index, files)
-    files[filename] = { 'content' => '' }
-    summary = { 'colour' => 'file_create', 'filename' => filename }
-    tag_message = "created file '#{filename}'"
-    result = git_commit_tag(id, index, files, summary, tag_message)
-    result['next_index']
+    # index = file_edit(id, index, files)
+    # files[filename] = { 'content' => '' }
+    # summary = { 'colour' => 'file_create', 'filename' => filename }
+    # tag_message = "created file '#{filename}'"
+    # result = git_commit_tag(id, index, files, summary, tag_message)
+    # result['next_index']
+    index
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -564,6 +565,23 @@ end
 # - - - - - - - - - - - - - - - - - - - -
 
 def edited_filename(previous_files, current_files)
+  current_files.each do |filename, values|
+    current_content = current_files[filename]['content']
+    if !previous_files.keys.include?(filename)
+      # Can occur for v2 katas created before file-events became live.
+      # Can also occur if there is a saver outage that misses a file-delete event.
+      # See test/server/kata_ran_tests_with_outage.rb
+      return filename
+    end
+    previous_content = previous_files[filename]['content']
+    if previous_content != current_content
+      return filename
+    end
+  end
+  return nil
+end
+
+def X_edited_filename(previous_files, current_files)
   previous_files.each do |filename, values|
     previous_content = previous_files[filename]['content']
     if !current_files.keys.include?(filename)
