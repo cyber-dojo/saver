@@ -105,22 +105,27 @@ class Kata_v2
   def event(id, index)
     index = index.to_i
     all_events = events(id)
-    last_index = all_events[-1]['index'] 
-    if index > last_index
-      raise "Invalid index #{index}"
-    end
 
     if index < 0
-      if -index > last_index + 1
-        raise "Invalid index #{index}"
-      end
-      index = all_events[index]['index']
+      pos_index = all_events.size + index
+    else
+      pos_index = index
+    end
+
+    unless pos_index >= 0
+      message = "Invalid -ve index #{index} (=> #{pos_index}) [#{plural(all_events.size, :event)}]"
+      raise message
+    end
+
+    unless pos_index < all_events.size
+      message = "Invalid +ve index #{index} [#{plural(all_events.size, :event)}]"
+      raise message
     end
 
     result = { 'files' => {} }
     truncations = nil
 
-    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
+    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{pos_index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
       if filename[-1] == '/' # dir marker
@@ -132,7 +137,7 @@ class Kata_v2
       elsif filename == 'status'
         result['status'] = content
       elsif filename == 'events.json'
-        event = json_parse(content)[index]
+        event = json_parse(content)[pos_index]
         result.merge!(event)
       elsif filename == 'truncations.json'
         truncations = json_parse(content)
@@ -144,7 +149,7 @@ class Kata_v2
       result['stderr']['truncated'] = truncations['stderr']
     end
 
-    if index == 0
+    if pos_index == 0
       result['stdout'] = { 'content' => '', 'truncated' => false}
       result['stderr'] = { 'content' => '', 'truncated' => false}
       result['status'] = 0
@@ -166,7 +171,9 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
-    # At this point, the (new) filename is NOT present in files.
+    # Called just BEFORE filename is created in the browser.
+    # So it is NOT yet present in files.keys
+
     index = file_edit(id, index, files)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
@@ -178,7 +185,9 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_delete(id, index, files, filename)
-    # At this point, the (deleted) filename IS present in files.
+    # Called just BEFORE filename is deleted in the browser.
+    # So it IS present in files.
+
     index = file_edit(id, index, files)
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
@@ -190,7 +199,10 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_rename(id, index, files, old_filename, new_filename)
-    # At this point, new_filename is NOT present in files.
+    # Called just BEFORE the rename in the browser.
+    # So old_filename IS present in files.
+    # And new_filename is NOT present in files.
+
     index = file_edit(id, index, files)
     files[new_filename] = files.delete(old_filename)
     summary = { 
@@ -206,9 +218,15 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_edit(id, index, files)
+    # Called in many places in the browser to indicate
+    # that a file MAY have been edited (since the last save).
     # Creates a saver event if any file has been edited.
-    # The timestamp of the file-edit will only be approximate.
-    current_files = event(id, index - 1)['files']
+    # NOTE WELL: Called at the start of ALL other functions to
+    # catch newly created/edited files.
+
+    all_events = events(id)
+    last_index = all_events[-1]['index'] # all_events.size - 1
+    current_files = event(id, last_index)['files']
     edited_filename = edited_filename(current_files, files)
     if !edited_filename
       return index
@@ -564,14 +582,15 @@ end
 # - - - - - - - - - - - - - - - - - - - -
 
 def edited_filename(previous_files, current_files)
+  current_filenames = current_files.keys
   previous_files.each do |filename, values|
-    previous_content = previous_files[filename]['content']
-    if !current_files.keys.include?(filename)
+    unless current_filenames.include?(filename)
       # Can occur for v2 katas created before file-events became live.
       # Can also occur if there is a saver outage that misses a file-delete event.
       # See test/server/kata_ran_tests_with_outage.rb
       next
     end
+    previous_content = values['content']
     current_content = current_files[filename]['content']
     if previous_content != current_content
       return filename
@@ -589,4 +608,12 @@ def major_index(events, index)
     end
   end
   count
+end
+
+def plural(n, word)
+  if n == 1
+    "#{n} #{word}"
+  else
+    "#{n} #{word}s"
+  end
 end

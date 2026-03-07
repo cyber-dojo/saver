@@ -84,12 +84,12 @@ class KataFileCreateTest < TestBase
       files = kata_event(id, 0)['files']
       refute files.keys.include?('wibble.txt') 
 
-      expected = kata_events(id)
+      before = kata_events(id)
       next_index = kata_file_create(id, index=1, files, 'wibble.txt')
-      actual = kata_events(id)
+      after = kata_events(id)
 
       assert_equal index, next_index
-      assert_equal expected, actual
+      assert_equal before, after
     end
   end
 

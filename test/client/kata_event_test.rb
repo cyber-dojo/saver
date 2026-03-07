@@ -40,7 +40,8 @@ class KataEventTest < TestBase
       error = assert_raises(HttpJsonHash::ServiceError) do
         kata_event(id, bad_index)
       end
-      assert_equal "Invalid index #{bad_index}", error.message
+      expected = "Invalid +ve index #{bad_index} [2 events]"
+      assert_equal expected, error.message
     end
   end
 
@@ -59,7 +60,8 @@ class KataEventTest < TestBase
       error = assert_raises(HttpJsonHash::ServiceError) do
         kata_event(id, bad_index)
       end
-      assert_equal "Invalid index #{bad_index}", error.message
+      expected = "Invalid -ve index #{bad_index} (=> -1) [2 events]"
+      assert_equal expected, error.message
     end
   end
 end
