@@ -113,13 +113,33 @@ class KataEventTest < TestBase
 
   version_test 2, 'Lw2Hx8', %w(
   | kata_event(id, index=-N) raises when N is out of bounds
+  | shows what -N converts to based on number of current events
+  | which is 1 for a newly created kata
   ) do
     in_kata do |id|
       kata_event(id, -1)
       ex = assert_raises(RuntimeError) do
         kata_event(id, -2)
       end
-      assert_equal ex.message, "Invalid index -2"
+      expected = "Invalid -ve index -2 (=> -1) [1 event]"
+      assert_equal expected, ex.message
+    end
+  end
+
+  version_test 2, 'Lw2Hx9', %w(
+  | kata_event(id, index=-N) raises when N is out of bounds
+  | shows what -N converts to based on number of current events
+  | which is >1 when any post create event has occured
+  ) do
+    in_tennis_kata do |id, files|
+      kata_event(id, -1)
+      kata_file_delete(id, index=1, files, 'readme.txt')
+      kata_event(id, -2)
+      ex = assert_raises(RuntimeError) do
+        kata_event(id, -3)
+      end
+      expected = "Invalid -ve index -3 (=> -1) [2 events]"
+      assert_equal expected, ex.message
     end
   end
 

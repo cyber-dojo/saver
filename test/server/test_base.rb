@@ -77,7 +77,7 @@ class TestBase < Id58TestBase
     stdout = { 'content' => 'some-stdout', 'truncated' => false }
     stderr = { 'content' => 'some-stderr', 'truncated' => false }
     status = '0'
-    yield(id, kata_event(id, -1)['files'], stdout, stderr, status)
+    yield(id, kata_event(id, 0)['files'], stdout, stderr, status)
   end
 
   def assert_tag_commit_message(id, tag, expected)
