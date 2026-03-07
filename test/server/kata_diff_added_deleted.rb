@@ -76,19 +76,15 @@ class KataDiffAddedDeletedTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'A6AE04', %w(
-  | when a file is created
-  | a kata_file_edit event 
-  | shows diff_added_lines=0, diff_deleted_lines=0
+  | On file-create-event
+  | there is no new event
   ) do
     in_tennis_kata do |id, files|
       next_index = kata_file_create(id, index=1, files, 'newfile.txt')
 
       events = kata_events(id)
-      assert_equal 2, next_index
-      assert_equal 2, events.size
-
-      assert_equal 0, events[1]['diff_added_count']
-      assert_equal 0, events[1]['diff_deleted_count']
+      assert_equal 1, next_index
+      assert_equal 1, events.size
     end
   end
 

@@ -61,33 +61,28 @@ class KataEventsTest < TestBase
     t3 = [2021,6,12, 7,48,673675]
     t4 = [2021,6,12, 7,59,367523]
     t5 = [2021,6,12, 8,13,367523]
-    t6 = [2021,6,12, 9,34,675236]
-    externals.instance_exec { @time = TimeStub.new(t0, t1, t2, t3, t4, t5, t6) }
+    externals.instance_exec { @time = TimeStub.new(t0, t1, t2, t3, t4, t5) }
 
     in_kata do |id|
       files = kata_event(id, 0)['files']
       
-      kata_file_create(id, 1, files, 'newfile.txt')
+      kata_ran_tests(id, 1, files, stdout, stderr,   '0', summary)
       
-      kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary)
-
       files['newfile.txt'] = { 'content' => 'edited' }
-      kata_file_rename(id, 3, files, 'newfile.txt', 'newfile2.txt')
+      kata_file_rename(id, 2, files, 'newfile.txt', 'newfile2.txt')
 
-      kata_ran_tests(id, 5, files, stdout, stderr,   '0', summary)
-      
-      kata_ran_tests(id, 6, files, stdout, stderr, '137', summary)
+      kata_ran_tests(id, 4, files, stdout, stderr,   '0', summary)      
+      kata_ran_tests(id, 5, files, stdout, stderr, '137', summary)
 
       actual = kata_events(id)
-      assert_equal 7, actual.size
+      assert_equal 6, actual.size
 
       assert_equal kata_create_event(0, t0), actual[0], 0
-      assert_equal file_create_event(1, 0, 1, t1, 'newfile.txt'), actual[1], 1
-      assert_equal rag_event(2, 1, 0, t2, 'red', 0, 0), actual[2], 2
-      assert_equal file_edit_event(3, 1, 1, t3, 'newfile.txt', 1, 0), actual[3], 3
-      assert_equal file_rename_event(4, 1, 2, t4, 'newfile.txt', 'newfile2.txt'), actual[4], 4
-      assert_equal rag_event(5, 2, 0, t5, 'red', 0, 0), actual[5], 5
-      assert_equal rag_event(6, 3, 0, t6, 'red', 0, 0), actual[6], 6
+      assert_equal rag_event(1, 1, 0, t1, 'red', 0, 0), actual[1], 1
+      assert_equal file_edit_event(2, 1, 1, t2, 'newfile.txt', 1, 0), actual[2], 2
+      assert_equal file_rename_event(3, 1, 2, t3, 'newfile.txt', 'newfile2.txt'), actual[3], 3
+      assert_equal rag_event(4, 2, 0, t4, 'red', 0, 0), actual[4], 4
+      assert_equal rag_event(5, 3, 0, t5, 'red', 0, 0), actual[5], 5
     end
   end
 
@@ -143,19 +138,6 @@ class KataEventsTest < TestBase
       'colour' => colour,
       'diff_added_count' => diff_added_count,
       'diff_deleted_count' => diff_deleted_count
-    }
-  end
-
-  def file_create_event(index, major, minor, time, filename)
-    {
-      'index' => index,
-      'major_index' => major,
-      'minor_index' => minor,
-      'time' => time,
-      'colour' => 'file_create',
-      'filename' => filename,
-      'diff_added_count' => 0,
-      'diff_deleted_count' => 0
     }
   end
 

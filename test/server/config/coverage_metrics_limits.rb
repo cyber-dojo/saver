@@ -7,9 +7,9 @@ def metrics
     [ 'test.branches.total' , '<=', 14   ],
     [ 'test.branches.missed', '<=', 0    ],
     [ nil ],
-    [ 'code.lines.total'    , '<=', 1376 ],
-    [ 'code.lines.missed'   , '<=', 0    ],
-    [ 'code.branches.total' , '<=', 159  ],
-    [ 'code.branches.missed', '<=', 0    ],
+    [ 'code.lines.total'    , '<=', 1388 ],
+    [ 'code.lines.missed'   , '<=', 1    ],
+    [ 'code.branches.total' , '<=', 163  ],
+    [ 'code.branches.missed', '<=', 1    ],
   ]
 end

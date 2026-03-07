@@ -29,37 +29,41 @@ class KataEventTest < TestBase
   version_test 2, 'Lw21P5', %w( v2 bad +ve index raises ) do
     in_kata do |id|
       index = 0
-      event = kata_event(id, index)
-
+      event = kata_event(id, index) # ok
       files = event['files']
+
       index = 1
-      kata_file_create(id, index, files, 'wibble.txt')
-      kata_event(id, index)
+      next_index = kata_file_rename(id, index, files, 'readme.txt', 'readme.md')
+      assert_equal 2, next_index
+
+      kata_event(id, 1) # ok
 
       bad_index = 2
       error = assert_raises(HttpJsonHash::ServiceError) do
         kata_event(id, bad_index)
       end
-      assert_equal "Invalid index #{bad_index}", error.message
+      expected = "Invalid +ve index #{bad_index} [2 events]"
+      assert_equal expected, error.message
     end
   end
 
   version_test 2, 'Lw21P6', %w( v2 bad -ve index raises ) do
     in_kata do |id|
       index = -1
-      event = kata_event(id, index)
-
+      event = kata_event(id, index) # ok
       files = event['files']
       index = 1
-      kata_file_create(id, index, files, 'wibble.txt')
-      index = -2
-      kata_event(id, index)
+      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme.md')
+      assert_equal 2, next_index
+
+      kata_event(id, -2) # ok
 
       bad_index = -3
       error = assert_raises(HttpJsonHash::ServiceError) do
         kata_event(id, bad_index)
       end
-      assert_equal "Invalid index #{bad_index}", error.message
+      expected = "Invalid -ve index #{bad_index} (=> -1) [2 events]"
+      assert_equal expected, error.message
     end
   end
 end

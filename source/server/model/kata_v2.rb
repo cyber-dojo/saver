@@ -105,22 +105,45 @@ class Kata_v2
   def event(id, index)
     index = index.to_i
     all_events = events(id)
-    last_index = all_events[-1]['index'] 
-    if index > last_index
-      raise "Invalid index #{index}"
-    end
 
     if index < 0
-      if -index > last_index + 1
-        raise "Invalid index #{index}"
-      end
-      index = all_events[index]['index']
+      pos_index = all_events.size + index
+    else
+      pos_index = index
     end
+
+    last_index = all_events[-1]['index'] # == events.size
+
+    unless pos_index >= 0
+      n = all_events.size
+      message = "Invalid -ve index #{index} (=> #{pos_index}) [#{plural('event', n)}]"
+      raise message
+    end
+
+    unless pos_index <= last_index
+      n = all_events.size
+      message = "Invalid +ve index #{index} [#{plural('event', n)}]"
+      raise message
+    end
+
+    inner_event(id, pos_index)
+  end 
+
+  def plural(word, n)
+    if n == 1
+      "#{n} #{word}"
+    else
+      "#{n} #{word}s"
+    end
+  end
+
+  def inner_event(id, pos_index)
+    # index has been range-checked and -ve index converted
 
     result = { 'files' => {} }
     truncations = nil
 
-    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{index}")
+    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{pos_index}")
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
       if filename[-1] == '/' # dir marker
@@ -132,7 +155,7 @@ class Kata_v2
       elsif filename == 'status'
         result['status'] = content
       elsif filename == 'events.json'
-        event = json_parse(content)[index]
+        event = json_parse(content)[pos_index]
         result.merge!(event)
       elsif filename == 'truncations.json'
         truncations = json_parse(content)
@@ -144,7 +167,7 @@ class Kata_v2
       result['stderr']['truncated'] = truncations['stderr']
     end
 
-    if index == 0
+    if pos_index == 0
       result['stdout'] = { 'content' => '', 'truncated' => false}
       result['stderr'] = { 'content' => '', 'truncated' => false}
       result['status'] = 0
@@ -166,13 +189,15 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
-    # At this point, the (new) filename is NOT present in files.
-    # index = file_edit(id, index, files)
-    # files[filename] = { 'content' => '' }
-    # summary = { 'colour' => 'file_create', 'filename' => filename }
-    # tag_message = "created file '#{filename}'"
-    # result = git_commit_tag(id, index, files, summary, tag_message)
-    # result['next_index']
+    # The file-create-event comes in just before the file
+    # is actually created in the browser. 
+    # At this point, it is EMPTY.
+    # That is NOT very interesting in a review.
+    # So we do nothing, and all other events first check for a new file.
+    # For example, if you create a new file, edit it, and then
+    # switch to a new file, switching to a new file will cause
+    # an incoming file-edit event, which will see the new file
+    # with its initial non-empty content.
     index
   end
 
@@ -208,8 +233,21 @@ class Kata_v2
 
   def file_edit(id, index, files)
     # Creates a saver event if any file has been edited.
-    # The timestamp of the file-edit will only be approximate.
-    current_files = event(id, index - 1)['files']
+    # NOTE WELL: Called at the start of ALL other functions to
+    # catch newly created/edited files.
+    # The timestamp of the file-edit will not be when the file
+    # was actually created (when it was empty), but when the
+    # the first event occured thereafter.
+
+    all_events = events(id)
+    last_index = all_events[-1]['index']
+    if 0 <= index && index <= last_index
+      #message = "Invalid next index #{index} [0 <= index <= #{last_index}]"
+      raise 'Out of order event'
+      #raise message
+    end
+
+    current_files = inner_event(id, last_index)['files']
     edited_filename = edited_filename(current_files, files)
     if !edited_filename
       return index
@@ -242,6 +280,7 @@ class Kata_v2
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
+    index = file_edit(id, index, files)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
     tag_message = "reverted to #{info.inspect}"
@@ -249,6 +288,7 @@ class Kata_v2
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
+    index = file_edit(id, index, files)
     info = json_plain(summary['checkout'])
     tag_message = "checked out #{info.inspect}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
@@ -357,6 +397,7 @@ class Kata_v2
       all_events = read_events(worktree)
       last_index = all_events.last['index']
 
+      # QUESTION: should all -ve indexing be handled here?
       unless index == last_index+1
         raise 'Out of order event'
       end
@@ -574,23 +615,6 @@ def edited_filename(previous_files, current_files)
       return filename
     end
     previous_content = previous_files[filename]['content']
-    if previous_content != current_content
-      return filename
-    end
-  end
-  return nil
-end
-
-def X_edited_filename(previous_files, current_files)
-  previous_files.each do |filename, values|
-    previous_content = previous_files[filename]['content']
-    if !current_files.keys.include?(filename)
-      # Can occur for v2 katas created before file-events became live.
-      # Can also occur if there is a saver outage that misses a file-delete event.
-      # See test/server/kata_ran_tests_with_outage.rb
-      next
-    end
-    current_content = current_files[filename]['content']
     if previous_content != current_content
       return filename
     end
