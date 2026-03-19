@@ -37,7 +37,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup kosli cli
         uses: kosli-dev/setup-cli-action@v2
