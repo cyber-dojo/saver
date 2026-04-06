@@ -15,7 +15,7 @@ module External
       stdout = Utf8::clean(stdout)
       stderr = Utf8::clean(stderr)
       exit_status = r.exitstatus
-      unless success?(exit_status) && ok?(stderr)
+      unless success?(exit_status)
         diagnostic = {
           command:command,
           stdout:stdout,
@@ -24,6 +24,10 @@ module External
         }
         raise diagnostic.to_json
       end
+      unless stderr.empty?
+        $stderr.puts stderr
+        $stderr.flush
+      end
       stdout
     end
 
@@ -31,10 +35,6 @@ module External
 
     def success?(status)
       status === 0
-    end
-
-    def ok?(stderr)
-      stderr.empty? || stderr.start_with?('Preparing worktree')
     end
 
     def quoted(s)
