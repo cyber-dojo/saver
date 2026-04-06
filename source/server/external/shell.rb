@@ -24,7 +24,7 @@ module External
         }
         raise diagnostic.to_json
       end
-      unless stderr.empty?
+      unless stderr.empty? || stderr.start_with?('Preparing worktree')
         $stderr.puts stderr
         $stderr.flush
       end
