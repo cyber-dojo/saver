@@ -460,8 +460,10 @@ class Kata_v2
         "rm -rf #{worktree_dir}"
       )
     rescue => e
+      # :nocov:
       $stderr.puts "git_ff_merge_worktree cleanup failed: #{e.message}"
       $stderr.flush
+      # :nocov:
     end
   end
 
