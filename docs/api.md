@@ -435,6 +435,141 @@ A Batch-Method for kata_event(id,index).
 
 
 - - - -
+## GET kata_download(id)
+Returns a gzipped tar archive of the kata's git repository, base64-encoded.
+- parameters
+  * **id:String**. The kata id.
+- returns
+  * an Array of two elements: the suggested filename (`String`) and the base64-encoded tgz content (`String`).
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/kata_download | jq .
+  ```
+  ```bash
+  {
+    "kata_download": [
+      "cyber-dojo-2026-4-6-4ScKVJ.tgz",
+      "H4sIAAAAAAAAA+..."
+    ]
+  }
+  ```
+
+
+- - - -
+## POST kata_file_create(id,index,files,filename)
+Records a new empty file being created in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+- parameters
+  * **id:String**. The kata id.
+  * **index:int**. The next event index.
+  * **files:Hash**. The current files (the new `filename` is not yet present).
+  * **filename:String**. The name of the file being created.
+- returns
+  * the event index to use for the next call.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","index":4,"files":{...},"filename":"utils.sh"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/kata_file_create | jq .
+  ```
+  ```bash
+  {
+    "kata_file_create": 5
+  }
+  ```
+
+
+- - - -
+## POST kata_file_delete(id,index,files,filename)
+Records a file being deleted in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+- parameters
+  * **id:String**. The kata id.
+  * **index:int**. The next event index.
+  * **files:Hash**. The current files (the `filename` to delete is still present).
+  * **filename:String**. The name of the file being deleted.
+- returns
+  * the event index to use for the next call.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","index":5,"files":{...},"filename":"utils.sh"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/kata_file_delete | jq .
+  ```
+  ```bash
+  {
+    "kata_file_delete": 6
+  }
+  ```
+
+
+- - - -
+## POST kata_file_rename(id,index,files,old_filename,new_filename)
+Records a file being renamed in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+- parameters
+  * **id:String**. The kata id.
+  * **index:int**. The next event index.
+  * **files:Hash**. The current files (`old_filename` is present; `new_filename` is not yet present).
+  * **old_filename:String**. The current name of the file.
+  * **new_filename:String**. The new name of the file.
+- returns
+  * the event index to use for the next call.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","index":6,"files":{...},"old_filename":"utils.sh","new_filename":"helpers.sh"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/kata_file_rename | jq .
+  ```
+  ```bash
+  {
+    "kata_file_rename": 7
+  }
+  ```
+
+
+- - - -
+## POST kata_file_edit(id,index,files)
+Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the same `index` is returned.
+- parameters
+  * **id:String**. The kata id.
+  * **index:int**. The next event index.
+  * **files:Hash**. The current files.
+- returns
+  * the (possibly unchanged) event index to use for the next call.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","index":7,"files":{...}}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/kata_file_edit | jq .
+  ```
+  ```bash
+  {
+    "kata_file_edit": 7
+  }
+  ```
+
+
+- - - -
 ## POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)
 Record a test event with no prediction.
 - parameters 
