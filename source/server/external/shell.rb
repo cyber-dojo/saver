@@ -25,8 +25,10 @@ module External
         raise diagnostic.to_json
       end
       unless stderr.empty? || stderr.start_with?('Preparing worktree')
+        # :nocov:
         $stderr.puts stderr
         $stderr.flush
+        # :nocov:
       end
       stdout
     end
