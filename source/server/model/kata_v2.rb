@@ -445,6 +445,19 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  # One Mutex per kata repo, keyed on repo_dir, serialising all
+  # git_ff_merge_worktree calls for the same kata across Puma threads.
+  #
+  # REPO_MUTEXES_LOCK is needed. The Global VM Lock (GIL) can be released
+  # between the "key absent?" check and the default-block assignment,
+  # allowing two threads to each create a different Mutex for the same
+  # repo_dir. Without the lock they would synchronise on different objects
+  # and the race would not be prevented for that operation.
+  #
+  # Known limitation: entries are never removed, so the hash grows by one
+  # small Mutex object per kata ever seen in this process. Each entry is only
+  # a few dozen bytes; a busy server with tens of thousands of katas would
+  # accumulate only a few MB in total.
   REPO_MUTEXES_LOCK = Mutex.new
   REPO_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
 
