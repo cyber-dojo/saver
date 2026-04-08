@@ -445,45 +445,26 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # One Mutex per kata repo, keyed on repo_dir, serialising all
-  # git_ff_merge_worktree calls for the same kata across Puma threads.
-  #
-  # REPO_MUTEXES_LOCK is needed. The Global VM Lock (GIL) can be released
-  # between the "key absent?" check and the default-block assignment,
-  # allowing two threads to each create a different Mutex for the same
-  # repo_dir. Without the lock they would synchronise on different objects
-  # and the race would not be prevented for that operation.
-  #
-  # Known limitation: entries are never removed, so the hash grows by one
-  # small Mutex object per kata ever seen in this process. Each entry is only
-  # a few dozen bytes; a busy server with tens of thousands of katas would
-  # accumulate only a few MB in total.
-  REPO_MUTEXES_LOCK = Mutex.new
-  REPO_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
-
   def git_ff_merge_worktree(repo_dir)
-    mutex = REPO_MUTEXES_LOCK.synchronize { REPO_MUTEXES[repo_dir] }
-    mutex.synchronize do
-      branch = random.alphanumeric(8)
-      worktree_dir = "/tmp/#{branch}"
+    branch = random.alphanumeric(8)
+    worktree_dir = "/tmp/#{branch}"
+    begin
+      shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
+      worktree = External::Disk.new(worktree_dir)
+      yield worktree
+      shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
+    ensure
       begin
-        shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
-        worktree = External::Disk.new(worktree_dir)
-        yield worktree
-        shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
-      ensure
-        begin
-          shell.assert_cd_exec(repo_dir,
-            "git worktree remove --force #{branch}",
-            "git branch --delete --force #{branch}",
-            "rm -rf #{worktree_dir}"
-          )
-        rescue => e
-          # :nocov:
-          $stderr.puts "git_ff_merge_worktree cleanup failed: #{e.message}"
-          $stderr.flush
-          # :nocov:
-        end
+        shell.assert_cd_exec(repo_dir,
+          "git worktree remove --force #{branch}",
+          "git branch --delete --force #{branch}",
+          "rm -rf #{worktree_dir}"
+        )
+      rescue => e
+        # :nocov:
+        $stderr.puts "git_ff_merge_worktree cleanup failed: #{e.message}"
+        $stderr.flush
+        # :nocov:
       end
     end
   end

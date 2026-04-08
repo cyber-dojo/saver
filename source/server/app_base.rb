@@ -41,6 +41,42 @@ class AppBase < Sinatra::Base
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  # One Mutex per kata id, serialising all POST requests for the same kata
+  # across Puma threads. This ensures multi-step operations such as
+  # file_rename (which calls git_ff_merge_worktree twice) are atomic:
+  # no competing thread can interleave between the two commits.
+  #
+  # KATA_MUTEXES_LOCK is needed because the GIL can be released between the
+  # "key absent?" check and the default-block assignment in the Hash, allowing
+  # two threads to each create a different Mutex for the same id. Without the
+  # lock they would synchronise on different objects and the race would not be
+  # prevented for that operation.
+  #
+  # Known limitation: entries are never removed, so the hash grows by one
+  # small Mutex object per kata ever seen in this process. Each entry is only
+  # a few dozen bytes; a busy server with tens of thousands of katas would
+  # accumulate only a few MB in total.
+  KATA_MUTEXES_LOCK = Mutex.new
+  KATA_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
+
+  def self.post_json_with_mutex(klass_name, method_name)
+    post "/#{method_name}", provides:[:json] do
+      # :nocov:
+      respond_to do |format|
+        format.json do
+          id = to_json_object(request_body)['id']
+          mutex = AppBase::KATA_MUTEXES_LOCK.synchronize { AppBase::KATA_MUTEXES[id] }
+          mutex.synchronize do
+            json_result(klass_name, method_name)
+          end
+        end
+      end
+      # :nocov:
+    end
+  end
+
   private
 
   include JsonAdapter
