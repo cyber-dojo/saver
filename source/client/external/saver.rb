@@ -94,6 +94,13 @@ module External
       @http.post(__method__, { id:id, index:index, files:files })
     end
 
+    def kata_ran_tests(id, index, files, stdout, stderr, status, summary)
+      @http.post(__method__, {
+        id:id, index:index, files:files,
+        stdout:stdout, stderr:stderr, status:status, summary:summary
+      })
+    end
+
     # - - - - - - - - - - - - - - - - - -
 
     def kata_option_get(id, name)

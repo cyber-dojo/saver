@@ -176,3 +176,51 @@ end
 ```
 
 A second request for the same kata blocks (sleeps) until the first completes — it does not fail immediately. Read-only routes (`kata_event`, `kata_events`, etc.) are completely unaffected as they do not call `git_ff_merge_worktree`.
+
+---
+
+## Session 3 — closing the two-commit gap in `file_rename` and similar operations
+
+### Diagnosis
+
+Fix 4 (per-call mutex in `git_ff_merge_worktree`) serialises individual git commits but not entire HTTP requests. Some operations call `git_ff_merge_worktree` twice in sequence:
+
+- `file_rename` — calls `file_edit` (1st ff-merge) then the rename commit (2nd ff-merge)
+- `ran_tests`, `predicted_right`, `predicted_wrong`, `reverted`, `checked_out` — all call `file_edit` then `git_commit_tag_sss`
+
+Between the two calls the mutex is released. A competing Puma thread can acquire it, commit at the index the first thread was about to use, and cause the first thread's second commit to raise `'Out of order event'`.
+
+### Reproducing the bug — `test/client/kata_concurrent_saves_test.rb` (DccG02)
+
+`thread_a` calls `kata_ran_tests(id, 1, large_files, ...)`. Its `file_edit` makes a large commit (slow, holding the mutex longer) then releases. `thread_a`'s second ff-merge will try index=2.
+
+100 b_threads each call `kata_ran_tests(id, 2, unique_files_i, ...)` with a unique file edit. Each b_thread's `file_edit` detects its unique change and blocks on the mutex while `thread_a` holds it. When `thread_a` releases after its first commit, one b_thread immediately acquires, commits at index=2, and `thread_a`'s second commit raises `'Out of order event'`.
+
+`kata_ran_tests` is also added to `source/client/external/saver.rb` to make it callable from client tests.
+
+### Fix 5 — Per-request mutex in `app_base.rb` (`post_json_with_mutex`)
+
+The mutex is moved from inside `git_ff_merge_worktree` (per-call) to the HTTP layer (per-request). `app_base.rb` gains:
+
+```ruby
+KATA_MUTEXES_LOCK = Mutex.new
+KATA_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
+
+def self.post_json_with_mutex(klass_name, method_name)
+  post "/#{method_name}", provides:[:json] do
+    respond_to do |format|
+      format.json do
+        id = to_json_object(request_body)['id']
+        mutex = AppBase::KATA_MUTEXES_LOCK.synchronize { AppBase::KATA_MUTEXES[id] }
+        mutex.synchronize do
+          json_result(klass_name, method_name)
+        end
+      end
+    end
+  end
+end
+```
+
+All kata state-mutating POST routes in `app.rb` are switched from `post_json` to `post_json_with_mutex`. The mutex is keyed on `id`, so the entire HTTP request — however many `git_ff_merge_worktree` calls it makes — is atomic with respect to other requests for the same kata.
+
+The `REPO_MUTEXES_LOCK`, `REPO_MUTEXES`, and mutex acquisition are removed from `git_ff_merge_worktree` in `kata_v2.rb`, as the per-request mutex supersedes them.

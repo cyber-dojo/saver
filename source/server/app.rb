@@ -19,7 +19,7 @@ class App < AppBase
    get_json(:model, :group_joined)
   post_json(:model, :group_fork)
 
-   # - - - - - - - - - - - - - - - - -
+  # - - - - - - - - - - - - - - - - -
 
   post_json(:model, :kata_create)
    get_json(:model, :kata_download)
@@ -29,19 +29,20 @@ class App < AppBase
    get_json(:model, :kata_manifest)
   post_json(:model, :kata_fork)
    get_json(:model, :katas_events)
-
-  post_json(:model, :kata_file_create)
-  post_json(:model, :kata_file_delete)
-  post_json(:model, :kata_file_rename)
-  post_json(:model, :kata_file_edit)
-  
-  post_json(:model, :kata_ran_tests)
-  post_json(:model, :kata_predicted_right)
-  post_json(:model, :kata_predicted_wrong)
-  post_json(:model, :kata_reverted)
-  post_json(:model, :kata_checked_out)
-
    get_json(:model, :kata_option_get)
-  post_json(:model, :kata_option_set)
+
+  # - - - - - - - - - - - - - - - - -
+
+  post_json_with_mutex(:model, :kata_file_create)
+  post_json_with_mutex(:model, :kata_file_delete)
+  post_json_with_mutex(:model, :kata_file_rename)
+  post_json_with_mutex(:model, :kata_file_edit)
+
+  post_json_with_mutex(:model, :kata_ran_tests)
+  post_json_with_mutex(:model, :kata_predicted_right)
+  post_json_with_mutex(:model, :kata_predicted_wrong)
+  post_json_with_mutex(:model, :kata_reverted)
+  post_json_with_mutex(:model, :kata_checked_out)
+  post_json_with_mutex(:model, :kata_option_set)
 
 end
