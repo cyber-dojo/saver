@@ -69,13 +69,12 @@ end
 
 `app.rb` still registered `kata_ran_tests2`, `kata_predicted_right2`, `kata_predicted_wrong2`, but these were deleted from `model.rb` in commit `0f8048e` when the web service switched to the non-`2` endpoints. If ever called they would raise `NoMethodError` → 500. Not a current cause of lost saves, but a source of confusion.
 
+Removed dead routes (branch `remove-dead-routes`, merged as #336)
+Removed the three stale `kata_ran_tests2 / predicted_right2 / predicted_wrong2` POST routes from `source/server/app.rb`.
+
 ---
 
 ## Fixes applied
-
-### Fix 1 — Remove dead routes (branch `remove-dead-routes`, merged as #336)
-
-Removed the three stale `kata_ran_tests2 / predicted_right2 / predicted_wrong2` POST routes from `source/server/app.rb`.
 
 ### Fix 2 — Prevent `ensure` cleanup from raising (branch `ensure-worktree-cleanup-does-not-raise`, merged as #337)
 
@@ -115,75 +114,11 @@ end
 
 ---
 
-## Remaining open question
-
-Bug 1 (no per-kata mutex) is not currently triggerable by the web service but remains a latent risk. If the web service ever introduces asynchronous or parallel saver calls for the same kata, saves could be lost. A per-kata mutex keyed on `id` around `git_ff_merge_worktree` calls would close this permanently.
-
----
-
-## Session 2 — surfacing and fixing Bug 1
+## Session 2 — closing the two-commit gap in `file_rename` and similar operations
 
 ### Diagnosis
 
-A new error was reported: `"Diverging branches can't be fast-forwarded"` from `git merge --ff-only` inside `git_ff_merge_worktree`. This is the exact failure mode of Bug 1. Although the previous investigation concluded the web service was sequential, Puma's default configuration runs up to 5 threads, meaning two in-flight requests for the same kata can genuinely overlap at the server even when the browser intends them to be sequential (e.g. a `kata_option_set` and a `kata_file_edit` arriving close together).
-
-The `REPO_MUTEXES` in `disk.rb` only protect individual file reads/writes; there was no serialisation around the git worktree create → commit → merge sequence.
-
-### Reproducing the bug — `test/client/kata_concurrent_saves_test.rb`
-
-Added a client-side test (`DccG01`) that creates a v2 kata and fires 6 Ruby threads concurrently, each calling `kata_option_set` for a different option (theme, colour, predict, revert_red, revert_amber, revert_green). All 6 start from their defaults so none short-circuit via the early-return check. The test asserts `errors` is empty. Without the fix it fails, confirming the race.
-
-### Fix 4 — Per-repo mutex inside `git_ff_merge_worktree` (`kata_v2.rb`)
-
-Added two class-level constants to `Kata_v2`:
-
-```ruby
-REPO_MUTEXES_LOCK = Mutex.new
-REPO_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
-```
-
-`REPO_MUTEXES` is a hash with a default block that lazily creates a `Mutex` per `repo_dir`. `REPO_MUTEXES_LOCK` is a single mutex that protects the hash during first-time insertion, preventing two threads from racing to create the same per-repo mutex.
-
-`git_ff_merge_worktree` now acquires the per-repo mutex before entering the critical section:
-
-```ruby
-def git_ff_merge_worktree(repo_dir)
-  mutex = REPO_MUTEXES_LOCK.synchronize { REPO_MUTEXES[repo_dir] }
-  mutex.synchronize do
-    branch = random.alphanumeric(8)
-    worktree_dir = "/tmp/#{branch}"
-    begin
-      shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
-      worktree = External::Disk.new(worktree_dir)
-      yield worktree
-      shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
-    ensure
-      begin
-        shell.assert_cd_exec(repo_dir,
-          "git worktree remove --force #{branch}",
-          "git branch --delete --force #{branch}",
-          "rm -rf #{worktree_dir}"
-        )
-      rescue => e
-        # :nocov:
-        $stderr.puts "git_ff_merge_worktree cleanup failed: #{e.message}"
-        $stderr.flush
-        # :nocov:
-      end
-    end
-  end
-end
-```
-
-A second request for the same kata blocks (sleeps) until the first completes — it does not fail immediately. Read-only routes (`kata_event`, `kata_events`, etc.) are completely unaffected as they do not call `git_ff_merge_worktree`.
-
----
-
-## Session 3 — closing the two-commit gap in `file_rename` and similar operations
-
-### Diagnosis
-
-Fix 4 (per-call mutex in `git_ff_merge_worktree`) serialises individual git commits but not entire HTTP requests. Some operations call `git_ff_merge_worktree` twice in sequence:
+Fix 4 (a per-call mutex in `git_ff_merge_worktree`) would serialise individual git commits but not entire HTTP requests. Some operations call `git_ff_merge_worktree` twice in sequence:
 
 - `file_rename` — calls `file_edit` (1st ff-merge) then the rename commit (2nd ff-merge)
 - `ran_tests`, `predicted_right`, `predicted_wrong`, `reverted`, `checked_out` — all call `file_edit` then `git_commit_tag_sss`
@@ -200,7 +135,7 @@ Between the two calls the mutex is released. A competing Puma thread can acquire
 
 ### Fix 5 — Per-request mutex in `app_base.rb` (`post_json_with_mutex`)
 
-The mutex is moved from inside `git_ff_merge_worktree` (per-call) to the HTTP layer (per-request). `app_base.rb` gains:
+The mutex is moved to the HTTP layer (per-request). `app_base.rb`:
 
 ```ruby
 KATA_MUTEXES_LOCK = Mutex.new
@@ -223,4 +158,3 @@ end
 
 All kata state-mutating POST routes in `app.rb` are switched from `post_json` to `post_json_with_mutex`. The mutex is keyed on `id`, so the entire HTTP request — however many `git_ff_merge_worktree` calls it makes — is atomic with respect to other requests for the same kata.
 
-The `REPO_MUTEXES_LOCK`, `REPO_MUTEXES`, and mutex acquisition are removed from `git_ff_merge_worktree` in `kata_v2.rb`, as the per-request mutex supersedes them.
