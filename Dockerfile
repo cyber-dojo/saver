@@ -1,9 +1,7 @@
-FROM ghcr.io/cyber-dojo/sinatra-base:3ce6c9b@sha256:7e53acc4239e11722997e85367eb8e995d995ceec05f1cc6430da989bb09b108
+FROM ghcr.io/cyber-dojo/sinatra-base:a2408d5@sha256:d0d4d7f9c44500a5fae8275e777658ac9d2b09ea44e0313a4a56d698437da3e7
 # The FROM statement above is typically set via an automated pull-request from the sinatra-base repo
 LABEL maintainer=jon@jaggersoft.com
 
-RUN apk add --upgrade openssl=3.5.5-r0 # https://security.snyk.io/vuln/SNYK-ALPINE322-OPENSSL-15121113
-RUN apk add --upgrade c-ares=1.34.6-r0 # https://security.snyk.io/vuln/SNYK-ALPINE322-CARES-14409293
 RUN apk add git jq
 
 ARG COMMIT_SHA
