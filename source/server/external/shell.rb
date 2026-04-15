@@ -9,6 +9,13 @@ module External
       assert_exec(["cd #{path}"] + commands)
     end
 
+    def cd_exec(path, command)
+      assert_cd_exec(path, command)
+    rescue => e
+      $stderr.puts e.message
+      $stderr.flush
+    end
+
     def assert_exec(*commands)
       command = 'sh -c ' + quoted(commands.join(' && '))
       stdout,stderr,r = Open3.capture3(command)

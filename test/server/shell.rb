@@ -46,4 +46,13 @@ class ShellTest < TestBase
     assert json['stderr'].end_with?("sh: zzzz: not found\n"), json['stderr']
     assert_equal 127, json['exit_status']
   end
+
+  test 'C89h4k', %w(
+  | cd_exec(path,command) does not raise when the command fails
+  | whereas assert_cd_exec(path,command) does raise for the same command
+  ) do
+    _stdout, stderr = capture_stdout_stderr { shell.cd_exec('.', 'zzzz') }
+    assert stderr.include?('zzzz'), stderr
+    assert_raises { shell.assert_cd_exec('.', 'zzzz') }
+  end
 end
