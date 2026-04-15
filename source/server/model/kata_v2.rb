@@ -454,18 +454,9 @@ class Kata_v2
       yield worktree
       shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
     ensure
-      begin
-        shell.assert_cd_exec(repo_dir,
-          "git worktree remove --force #{branch}",
-          "git branch --delete --force #{branch}",
-          "rm -rf #{worktree_dir}"
-        )
-      rescue => e
-        # :nocov:
-        $stderr.puts "git_ff_merge_worktree cleanup failed: #{e.message}"
-        $stderr.flush
-        # :nocov:
-      end
+      shell.cd_exec(repo_dir, "git worktree remove --force #{branch}")
+      shell.cd_exec(repo_dir, "git branch --delete --force #{branch}")
+      shell.cd_exec(repo_dir, "rm -rf #{worktree_dir}")
     end
   end
 
