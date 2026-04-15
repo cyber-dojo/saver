@@ -14,10 +14,10 @@ class ShellSpy
     @real.assert_cd_exec(path, *commands)
   end
 
-  def assert_exec(*commands)
-    @commands << commands
-    @real.assert_exec(*commands)
-  end
+  # def assert_exec(*commands)
+  #   @commands << commands
+  #   @real.assert_exec(*commands)
+  # end
 
   def cd_exec(path, command)
     @commands << command
