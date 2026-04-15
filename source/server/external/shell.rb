@@ -9,12 +9,23 @@ module External
       assert_exec(["cd #{path}"] + commands)
     end
 
+    def cd_exec(path, command)
+      assert_cd_exec(path, command)
+    rescue => e
+      $stderr.puts e.message
+      $stderr.flush
+    end
+
     def assert_exec(*commands)
       command = 'sh -c ' + quoted(commands.join(' && '))
       stdout,stderr,r = Open3.capture3(command)
       stdout = Utf8::clean(stdout)
       stderr = Utf8::clean(stderr)
       exit_status = r.exitstatus
+      unless stderr.empty? || stderr.start_with?('Preparing worktree')
+        $stderr.puts stderr
+        $stderr.flush
+      end
       unless success?(exit_status)
         diagnostic = {
           command:command,
@@ -23,12 +34,6 @@ module External
           exit_status:exit_status
         }
         raise diagnostic.to_json
-      end
-      unless stderr.empty? || stderr.start_with?('Preparing worktree')
-        # :nocov:
-        $stderr.puts stderr
-        $stderr.flush
-        # :nocov:
       end
       stdout
     end
