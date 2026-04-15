@@ -375,7 +375,7 @@ class Kata_v2
       last_index = all_events.last['index']
 
       unless index == last_index+1
-        raise 'Out of order event'
+        raise "Out of order event for #{id}"
       end
 
       # Remove files/
