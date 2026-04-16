@@ -132,7 +132,7 @@ jobs:
 
   new-snyk-scan:
     needs: [build-image]
-    uses: cyber-dojo/live-snyk-scans/.github/workflows/artifact_snyk_test.yml@main
+    uses: cyber-dojo/snyk-scanning/.github/workflows/artifact_snyk_test.yml@main
     with:
       artifact_name:        ${{ needs.build-image.outputs.tagged_image_name }}
       artifact_fingerprint: ${{ needs.build-image.outputs.digest }}
