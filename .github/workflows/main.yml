@@ -134,6 +134,7 @@ jobs:
     needs: [build-image]
     uses: cyber-dojo/snyk-scanning/.github/workflows/artifact_snyk_test.yml@main
     with:
+      aws_rolename:         gh_actions_services
       artifact_name:        ${{ needs.build-image.outputs.tagged_image_name }}
       artifact_fingerprint: ${{ needs.build-image.outputs.digest }}
       repo_name:            ${{ github.event.repository.name }}
