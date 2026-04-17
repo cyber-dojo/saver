@@ -163,11 +163,11 @@ jobs:
           version: ${{ vars.KOSLI_CLI_VERSION }}
 
       - name: Attest the snyk-scan results
+        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         env:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
           TRAIL_NAMES_JSON: ${{ needs.snyk-scan.outputs.trail_names_json }}
           POLICY_FILENAME: snyk-vuln-compliance.rego
-        if: ${{ github.ref == 'refs/heads/main' && (success() || failure()) }}
         run: |
           TRAIL_NAMES="$(jq --raw-output '. | join(" ")' <<< "${TRAIL_NAMES_JSON}")"
           kosli evaluate trails "${TRAIL_NAMES}" \
