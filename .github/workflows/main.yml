@@ -168,17 +168,18 @@ jobs:
           KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
           TRAIL_NAMES_JSON: ${{ needs.snyk-scan.outputs.trail_names_json }}
           POLICY_FILENAME: snyk-vuln-compliance.rego
+          EVAL_JSON_FILENAME: evaluation.json
         run: |
           TRAIL_NAMES="$(jq --raw-output '. | join(" ")' <<< "${TRAIL_NAMES_JSON}")"
-          kosli evaluate trails "${TRAIL_NAMES}" \
+          kosli evaluate trails ${TRAIL_NAMES} \
             --policy "${POLICY_FILENAME}" \
-            --show-input \
             --output json \
-            > evaluation.json
+            > ${EVAL_JSON_FILENAME}
 
           kosli attest generic \
-            --compliant="$(jq '.allow' evaluation.json)" \
-            --attachments="${POLICY_FILENAME},evaluation.json" \
+            --compliant="$(jq '.allow' ${EVAL_JSON_FILENAME})" \
+            --attachments="${POLICY_FILENAME}" \
+            --user-data ${EVAL_JSON_FILENAME} \
             --name=saver.new-snyk-container-scan
 
 
