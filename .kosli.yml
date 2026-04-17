@@ -9,6 +9,9 @@ trail:
       attestations:
         - name: snyk-container-scan
           type: snyk
+        - name: new-snyk-container-scan
+          type: generic
+
         - name: unit-test
           type: junit
         - name: unit-test-metrics
