@@ -136,8 +136,8 @@ jobs:
     with:
       aws_rolename:  gh_actions_services
       artifact_name: ${{ needs.build-image.outputs.tagged_image_name }}
-      kosli_flow: ${{env.KOSLI_FLOW}}
-      kosli_trail: ${{env.KOSLI_TRAIL}}
+      kosli_flow: ${{vars.KOSLI_FLOW}}
+      kosli_trail: ${{github.sha}}
       kosli_slot: saver.new-snyk-container-scan
     secrets:
       snyk_token:      ${{ secrets.SNYK_TOKEN }}
