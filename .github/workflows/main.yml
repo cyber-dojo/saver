@@ -299,7 +299,6 @@ jobs:
       - integration-tests
       - snyk-container-scan
       - snyk-scan
-      - attest-snyk-scan-result
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
