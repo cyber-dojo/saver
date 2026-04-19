@@ -109,12 +109,10 @@ Determines if a group with the given `id` exists.
   ```
 
 - - - -
-## POST group_join(id,indexes)
+## POST group_join(id)
 Creates a new kata in the group with the given `id` and returns the kata's id.
 - parameters 
   * **id:String**. The group id.
-  * **indexes:Array[int]**
-  Currently unused (and defaulted). For a planned feature.  
 - returns 
   * the `id` of the created kata, or `null` if the group is already full.
 - example
