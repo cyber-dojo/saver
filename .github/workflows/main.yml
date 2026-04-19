@@ -115,7 +115,7 @@ jobs:
 
 
   # https://github.com/cyber-dojo/snyk-container-test/blob/main/action.yml
-  snyk-container-scan:
+  snyk-container-scan-old:
     needs: [build-image]
     runs-on: ubuntu-latest
     permissions:
@@ -131,14 +131,14 @@ jobs:
           attestation_name:  saver.snyk-container-scan
 
 
-  snyk-scan:
+  snyk-container-scan:
     needs: [build-image]
     uses: cyber-dojo/snyk-scanning/.github/workflows/artifact_snyk_test.yml@main
     with:
-      aws_rolename:  gh_actions_services
+      aws_rolename: gh_actions_services
       artifact_name: ${{ needs.build-image.outputs.tagged_image_name }}
-      kosli_flow: ${{vars.KOSLI_FLOW}}
-      kosli_trail: ${{github.sha}}
+      kosli_flow: ${{ vars.KOSLI_FLOW }}
+      kosli_trail: ${{ github.sha }}
       kosli_attestation_name: saver.new-snyk-container-scan
     secrets:
       snyk_token:      ${{ secrets.SNYK_TOKEN }}
@@ -257,8 +257,8 @@ jobs:
       - pull-request
       - unit-tests
       - integration-tests
+      - snyk-container-scan-old
       - snyk-container-scan
-      - snyk-scan
     env:
       KOSLI_FINGERPRINT: ${{ needs.build-image.outputs.digest }}
     steps:
