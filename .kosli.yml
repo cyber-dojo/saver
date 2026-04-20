@@ -8,8 +8,6 @@ trail:
     - name: saver
       attestations:
         - name: snyk-container-scan
-          type: snyk
-        - name: new-snyk-container-scan
           type: generic
 
         - name: unit-test
