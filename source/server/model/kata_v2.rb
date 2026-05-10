@@ -85,6 +85,9 @@ class Kata_v2
   def manifest(id)
     result = read_manifest(id)
     polyfill_manifest_defaults(result)
+    default_options.each_key do |name|
+      result[name] = option_get(id, name)
+    end
     result
   end
 
