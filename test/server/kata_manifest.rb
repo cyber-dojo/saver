@@ -70,6 +70,16 @@ class KataManifestTest < TestBase
 
   include KataTestData
 
+  version_test 2, '5KsK8T', %w(
+  | kata_manifest returns actual persisted option value after option_set
+  ) do
+    in_kata do |id|
+      kata_option_set(id, 'theme', 'dark')
+      actual = kata_manifest(id)
+      assert_equal 'dark', actual['theme']
+    end
+  end
+
   version_test 2, '5KsK8S', %w(
   | kata_manifest
   ) do
