@@ -50,7 +50,7 @@ class DiskAssertTest < TestBase
     error = assert_raises(Errno::ENOSPC) {
       disk.assert(file_append_command(filename, content*16))
     }
-    message = "No space left on device @ io_write - /one_k/#{filename}"
+    message = "No space left on device @ rb_sys_fail_on_write - /one_k/#{filename}"
     assert_equal message, error.message
   end
 
