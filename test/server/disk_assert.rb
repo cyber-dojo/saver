@@ -16,7 +16,7 @@ class DiskAssertTest < TestBase
     error = assert_raises(RuntimeError) {
       disk.assert(dir_exists_command(dirname))
     }
-    assert_equal 'command != true', error.message
+    assert_equal "command != true: #{dir_exists_command(dirname).inspect}", error.message
     refute disk.run(dir_exists_command(dirname))
   end
 
@@ -31,6 +31,20 @@ class DiskAssertTest < TestBase
     disk.assert(file_create_command(filename, content))
     read = disk.assert(file_read_command(filename))
     assert_equal content, read
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  disk_tests 'FA253A',
+  'assert() raises with command and error when @last_error is set' do
+    dirname = 'groups/Fw/FP/3a'
+    disk.assert(dir_make_command(dirname))
+    filename = dirname + '/3a.events.json'
+    error = assert_raises(RuntimeError) {
+      disk.assert(file_read_command(filename))
+    }
+    assert_includes error.message, "command != true: #{file_read_command(filename).inspect}"
+    assert_includes error.message, 'No such file or directory'
   end
 
   # - - - - - - - - - - - - - - - - - - - - -

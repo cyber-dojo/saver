@@ -28,7 +28,7 @@ module External
       #   -p creates intermediate dirs as required.
       #   -v verbose mode, output each dir actually made
       command = "mkdir -vp '#{path_name(dirname)}'"
-      stdout,stderr,r = Open3.capture3(command)
+      stdout, stderr, r = Open3.capture3(command)
       status = r.exitstatus
       stdout != '' && stderr == '' && status == 0
     end
@@ -44,7 +44,8 @@ module External
       end
       true
     rescue Errno::ENOENT, # dir does not exist
-           Errno::EEXIST  # file already exists
+           Errno::EEXIST => e # file already exists
+      @last_error = e
       false
     end
 
@@ -59,7 +60,8 @@ module External
         fd.write(content)
       end
       true
-    rescue Errno::ENOENT # dir does not exist
+    rescue Errno::ENOENT => e # dir does not exist
+      @last_error = e
       false
     end
 
@@ -75,7 +77,8 @@ module External
       end
       true
     rescue Errno::EISDIR, # file is a dir!
-           Errno::ENOENT  # file does not exist
+           Errno::ENOENT => e # file does not exist
+      @last_error = e
       false
     end
 
@@ -88,7 +91,8 @@ module External
         fd.read
       end
     rescue Errno::EISDIR, # file is a dir!,
-           Errno::ENOENT  # file does not exist
+           Errno::ENOENT => e # file does not exist
+      @last_error = e
       false
     end
 
