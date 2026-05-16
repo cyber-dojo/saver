@@ -45,8 +45,25 @@ class DiskAssertAllTest < TestBase
     error = assert_raises(RuntimeError) {
       disk.assert_all(@commands)
     }
-    assert_equal "commands[3] != true", error.message
+    assert_includes error.message, "commands[3] != true: #{@commands[3].inspect}"
+    assert_includes error.message, 'No such file or directory'
     assert_equal content, disk.run(file_read_command(there_yes)), :does_not_execute_subsequent_commands
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  disk_tests '21C418', %w(
+  assert_all() raises
+  with command but no error
+  when failing command does not set last_error
+  ) do
+    dirname = 'server/assert-all/e3/t4/18'
+    command(true, dir_make_command(dirname))
+    command(false, dir_exists_command('server/assert-all/e3/t4/18/no-subdir'))
+    error = assert_raises(RuntimeError) {
+      disk.assert_all(@commands)
+    }
+    assert_equal "commands[1] != true: #{@commands[1].inspect}", error.message
   end
 
   private

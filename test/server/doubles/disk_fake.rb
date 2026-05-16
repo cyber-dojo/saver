@@ -24,6 +24,7 @@ class DiskFake
       files[path] = value
       true
     else
+      @last_error = file?(path) ? "File exists - #{path}" : "No such file or directory - #{path}"
       false
     end
   end
@@ -34,6 +35,7 @@ class DiskFake
       files[path] = value
       true
     else
+      @last_error = "No such file or directory - #{path}"
       false
     end
   end
@@ -44,12 +46,16 @@ class DiskFake
       files[path] += value
       true
     else
+      @last_error = "No such file or directory - #{path}"
       false
     end
   end
 
   def file_read(key)
-    files[path_name(key)] || false
+    path = path_name(key)
+    result = files[path]
+    @last_error = "No such file or directory - #{path}" unless result
+    result || false
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - -

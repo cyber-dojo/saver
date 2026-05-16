@@ -37,11 +37,14 @@ module DiskApi
     if result
       result
     else
-      raise "command != true"
+      msg = "command != true: #{command.inspect}"
+      msg += " (#{@last_error})" if @last_error
+      raise msg
     end
   end
 
   def run(command)
+    @last_error = nil
     assert_well_formed_command(command)
     name, *args = command
     {
@@ -62,7 +65,9 @@ module DiskApi
       if r
         false
       else
-        raise "commands[#{index}] != true"
+        msg = "commands[#{index}] != true: #{commands[index].inspect}"
+        msg += " (#{@last_error})" if @last_error
+        raise msg
       end
     end
   end
