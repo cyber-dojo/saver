@@ -31,12 +31,5 @@ class Externals
     @shell ||= External::Shell.new
   end
 
-  def allow_legacy_writes?
-    @allow_legacy_writes.nil? ? true : @allow_legacy_writes
-  end
-
-  def allow_legacy_writes=(value)
-    @allow_legacy_writes = value
-  end
 
 end

@@ -10,7 +10,7 @@ class KataForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'c5C761', %w(
+  version_test 2, 'c5C761', %w(
   | bad_index raises
   ) do
     in_kata do |id|

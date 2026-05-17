@@ -2,7 +2,7 @@ require_relative 'test_base'
 
 class GroupJoinTest < TestBase
 
-  versions_test 'Gw41s9', %w(
+  version_test 2, 'Gw41s9', %w(
   | group is initially empty
   ) do
     in_group do |id|
@@ -74,13 +74,11 @@ class GroupJoinTest < TestBase
 
   versions_01_test 'Gw46A7', %w(
   | group_join raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 groups
   ) do
-    in_group do |gid|
-      externals.allow_legacy_writes = false
-      assert_raises(NoLongerImplementedError) do
-        group_join(gid)
-      end
+    gids = { 0 => 'FxWwrr', 1 => 'REf1t8' }
+    assert_raises(NoLongerImplementedError) do
+      group_join(gids[version])
     end
   end
 
@@ -88,12 +86,11 @@ class GroupJoinTest < TestBase
 
   versions_01_test 'Gw46A8', %w(
   | almost-full v0/v1 group has 63 members
-  | and group_join raises NoLongerImplementedError when writes are disabled
+  | and group_join raises NoLongerImplementedError
   ) do
     gids = { 0 => 'AWCQdE', 1 => 'X9UunP' }
     gid = gids[version]
     assert_equal 63, group_joined(gid).size
-    externals.allow_legacy_writes = false
     assert_raises(NoLongerImplementedError) do
       group_join(gid)
     end

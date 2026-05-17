@@ -2,12 +2,19 @@ require_relative 'test_base'
 
 class KataOptionTest < TestBase
 
-  versions_test 'Ks3460', %w(
+  version_test 2, 'Ks3460', %w(
   | kata_option_get('theme') defaults to 'light' as that is better on projectors
   ) do
     in_kata do |id|
       assert_equal 'light', kata_option_get(id, 'theme')
     end
+  end
+
+  versions_01_test 'Ks3469', %w(
+  | kata_option_get('theme') defaults to 'light' on pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_equal 'light', kata_option_get(kids[version], 'theme')
   end
 
   version_test 2, 'Ks3461', %w(
@@ -32,12 +39,19 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ks3560', %w(
+  version_test 2, 'Ks3560', %w(
   | kata_option_get('colour') defaults to 'on'
   ) do
     in_kata do |id|
       assert_equal 'on', kata_option_get(id, 'colour')
     end
+  end
+
+  versions_01_test 'Ks3569', %w(
+  | kata_option_get('colour') defaults to 'on' on pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_equal 'on', kata_option_get(kids[version], 'colour')
   end
 
   version_test 2, 'Ks3561', %w(
@@ -62,12 +76,19 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ks3660', %w(
+  version_test 2, 'Ks3660', %w(
   | kata_option_get('predict') defaults to 'off'
   ) do
     in_kata do |id|
       assert_equal 'off', kata_option_get(id, 'predict')
     end
+  end
+
+  versions_01_test 'Ks3669', %w(
+  | kata_option_get('predict') defaults to 'off' on pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_equal 'off', kata_option_get(kids[version], 'predict')
   end
 
   version_test 2, 'Ks3661', %w(
@@ -92,7 +113,7 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ks3760', %w(
+  version_test 2, 'Ks3760', %w(
   | kata_option_get('revert') defaults to 'off'
   ) do
     in_kata do |id|
@@ -100,6 +121,15 @@ class KataOptionTest < TestBase
       assert_equal 'off', kata_option_get(id, 'revert_amber')
       assert_equal 'off', kata_option_get(id, 'revert_green')
     end
+  end
+
+  versions_01_test 'Ks3769', %w(
+  | kata_option_get('revert') defaults to 'off' on pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_equal 'off', kata_option_get(kids[version], 'revert_red')
+    assert_equal 'off', kata_option_get(kids[version], 'revert_amber')
+    assert_equal 'off', kata_option_get(kids[version], 'revert_green')
   end
 
   version_test 2, 'Ks3761', %w(
@@ -136,13 +166,21 @@ class KataOptionTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ks3860', %w(
+  version_test 2, 'Ks3860', %w(
   | kata_option_get(unknown key) raises
   ) do
     in_kata do |id|
       assert_raises { kata_option_get(id, 'salmon') }
       assert_raises { kata_option_get(id, 'revert_blue') }
     end
+  end
+
+  versions_01_test 'Ks3869', %w(
+  | kata_option_get(unknown key) raises on pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_raises { kata_option_get(kids[version], 'salmon') }
+    assert_raises { kata_option_get(kids[version], 'revert_blue') }
   end
 
   version_test 2, 'Ks3861', %w(
@@ -158,13 +196,11 @@ class KataOptionTest < TestBase
 
   versions_01_test 'Ks3863', %w(
   | kata_option_set raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      externals.allow_legacy_writes = false
-      assert_raises(NoLongerImplementedError) do
-        kata_option_set(id, 'theme', 'dark')
-      end
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert_raises(NoLongerImplementedError) do
+      kata_option_set(kids[version], 'theme', 'dark')
     end
   end
 end

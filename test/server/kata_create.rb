@@ -2,7 +2,7 @@ require_relative 'test_base'
 
 class KataCreateTest < TestBase
 
-  versions_test 'e09h35', %w(
+  version_test 2, 'e09h35', %w(
   | POST /kata_create(manifest)
   | has status 200
   | returns the id: of a new kata
@@ -17,6 +17,16 @@ class KataCreateTest < TestBase
       assert kata_exists?(id), :exists
       assert_equal version, kata_manifest(id)['version'], :version
     end
+  end
+
+  versions_01_test 'e09h36', %w(
+  | POST /kata_create(manifest)
+  | has status 505 on v0/v1
+  ) do
+    capture_stdout_stderr {
+      post_json '/kata_create', { manifest:custom_manifest }.to_json
+    }
+    assert_equal 505, last_response.status
   end
 
 end

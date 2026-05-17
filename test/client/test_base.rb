@@ -116,6 +116,12 @@ class TestBase < Id58TestBase
     end
   end
 
+  def self.versions_01_test(id58_suffix, *lines, &block)
+    (0..1).each do |version|
+      version_test(version, id58_suffix, *lines, &block)
+    end
+  end
+
   def self.version_test(version, id58_suffix, *lines, &block)
     lines.unshift("<version:#{version}>")
     test(id58_suffix, *lines, version) do

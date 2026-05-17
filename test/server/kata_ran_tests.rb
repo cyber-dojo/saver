@@ -45,9 +45,8 @@ class KataRanTestsTest < TestBase
 
   versions_01_test 'Sp4DkA', %w(
   | kata_ran_tests raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 katas
   ) do
-    externals.allow_legacy_writes = false
     id = version == 0 ? V0_KATA_ID : V1_KATA_ID
     files = kata_event(id, 0)['files']
     data = bats

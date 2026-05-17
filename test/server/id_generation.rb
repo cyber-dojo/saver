@@ -41,7 +41,7 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'A6D14a', %w(
+  version_test 2, 'A6D14a', %w(
   | kata-id generator will skip id that already exists as a group
   ) do
     in_group do |group_id|
@@ -51,9 +51,19 @@ class IdGenerationTest < TestBase
     end
   end
 
+  versions_01_test 'A6D14c', %w(
+  | kata-id generator will skip id that already exists as a pre-existing v0/v1 group
+  ) do
+    gids = { 0 => 'FxWwrr', 1 => 'REf1t8' }
+    group_id = gids[version]
+    id = "x67Wp#{version}"
+    id_generator = stubbed_id_generator(group_id + id)
+    assert_equal id, id_generator.kata_id
+  end
+
   # - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'A6D14b', %w(
+  version_test 2, 'A6D14b', %w(
   | group-id generator will skip id that already exists as a kata
   ) do
     in_kata do |kata_id|
@@ -61,6 +71,16 @@ class IdGenerationTest < TestBase
       id_generator = stubbed_id_generator(kata_id + id)
       assert_equal id, id_generator.group_id
     end
+  end
+
+  versions_01_test 'A6D14d', %w(
+  | group-id generator will skip id that already exists as a pre-existing v0/v1 kata
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    kata_id = kids[version]
+    id = "hY86s#{version}"
+    id_generator = stubbed_id_generator(kata_id + id)
+    assert_equal id, id_generator.group_id
   end
 
   # - - - - - - - - - - - - - - - - - - -

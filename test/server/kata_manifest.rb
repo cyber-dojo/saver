@@ -50,21 +50,31 @@ class KataManifestTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '5KsQ62', %w(
+  version_test 2, '5KsQ62', %w(
   | retrieved kata_manifest has created and version keys
   ) do
     now = [2018,11,30, 9,34,56,6453]
-      externals.instance_exec {
-        @time = TimeStub.new(now)
-      }
-      in_kata do |id|
-        saved = kata_manifest(id)
-        assert saved.keys.include?('created'), :created_key
-        assert_equal now, saved['created'], :created
-        assert saved.keys.include?('version'), :version_key
-        assert_equal version, saved['version'], :version
-      end
-   end
+    externals.instance_exec {
+      @time = TimeStub.new(now)
+    }
+    in_kata do |id|
+      saved = kata_manifest(id)
+      assert saved.keys.include?('created'), :created_key
+      assert_equal now, saved['created'], :created
+      assert saved.keys.include?('version'), :version_key
+      assert_equal version, saved['version'], :version
+    end
+  end
+
+  versions_01_test '5KsQ63', %w(
+  | pre-existing v0/v1 kata_manifest has created and version keys
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    saved = kata_manifest(kids[version])
+    assert saved.keys.include?('created'), :created_key
+    assert saved.keys.include?('version'), :version_key
+    assert_equal version, saved['version'], :version
+  end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

@@ -10,7 +10,7 @@ class GroupForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'D2k761', %w(
+  version_test 2, 'D2k761', %w(
   | bad_index raises
   ) do
     in_kata do |id|
