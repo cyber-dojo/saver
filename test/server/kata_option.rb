@@ -10,7 +10,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3461', %w(
+  version_test 2, 'Ks3461', %w(
   | kata_option_set('theme', dark|light) sets the theme option
   | kata_option_get('theme') gets the theme option
   ) do
@@ -22,7 +22,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3462', %w(
+  version_test 2, 'Ks3462', %w(
   | kata_option_set('theme', not-dark-not-light) raises
   ) do
     in_kata do |id|
@@ -40,7 +40,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3561', %w(
+  version_test 2, 'Ks3561', %w(
   | kata_option_set('colour', on|off) sets the colour option
   | kata_option_get('colour') gets the colour option
   ) do
@@ -52,7 +52,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3562', %w(
+  version_test 2, 'Ks3562', %w(
   | kata_option_set('colour', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -70,7 +70,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3661', %w(
+  version_test 2, 'Ks3661', %w(
   | kata_option_set('predict', on|off) sets the predict option
   | kata_option_get('predict') gets the predict option
   ) do
@@ -82,7 +82,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3662', %w(
+  version_test 2, 'Ks3662', %w(
   | kata_option_set('predict', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -102,7 +102,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3761', %w(
+  version_test 2, 'Ks3761', %w(
   | kata_option_set('revert', on|off) sets the revert option
   | kata_option_get('revert') gets the revert option
   ) do
@@ -124,7 +124,7 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3762', %w(
+  version_test 2, 'Ks3762', %w(
   | kata_option_set('revert', not-on-not-off) raises
   ) do
     in_kata do |id|
@@ -145,12 +145,26 @@ class KataOptionTest < TestBase
     end
   end
 
-  versions_test 'Ks3861', %w(
+  version_test 2, 'Ks3861', %w(
   | kata_option_set(unknown key) raises
   ) do
     in_kata do |id|
       assert_raises { kata_option_set(id, 'salmon', 'atlantic') }
       assert_raises { kata_option_set(id, 'revert_blue', 'atlantic') }
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'Ks3863', %w(
+  | kata_option_set raises NoLongerImplementedError
+  | when legacy writes are disabled
+  ) do
+    in_kata do |id|
+      externals.allow_legacy_writes = false
+      assert_raises(NoLongerImplementedError) do
+        kata_option_set(id, 'theme', 'dark')
+      end
     end
   end
 end

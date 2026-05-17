@@ -1,6 +1,7 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v0'
+require_relative 'legacy_write_guard'
 require_relative 'liner_v0'
 require_relative 'options'
 require_relative 'poly_filler'
@@ -36,6 +37,7 @@ class Group_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
+    assert_write_allowed
     manifest = json_manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
@@ -80,6 +82,7 @@ class Group_v0
 
   include IdPather
   include JsonAdapter
+  include LegacyWriteGuard
   include Liner_v0
   include Options
   include PolyFiller

@@ -1,6 +1,7 @@
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v1'
+require_relative 'legacy_write_guard'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
@@ -43,6 +44,7 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
+    assert_write_allowed
     taken = katas_indexes(id).map{ |index,_| index }
     indexes -= taken
     manifest = self.manifest(id)
@@ -88,6 +90,7 @@ class Group_v1
 
   include IdPather
   include JsonAdapter
+  include LegacyWriteGuard
   include Options
   include PolyFiller
 

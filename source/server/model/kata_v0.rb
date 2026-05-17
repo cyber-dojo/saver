@@ -1,6 +1,7 @@
 require_relative 'fork'
 require_relative 'id_generator'
 require_relative 'id_pather'
+require_relative 'legacy_write_guard'
 require_relative 'liner_v0'
 require_relative 'options'
 require_relative 'poly_filler'
@@ -107,41 +108,55 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
+    assert_write_allowed
     index
   end
 
   def file_delete(id, index, files, filename)
+    assert_write_allowed
     index
   end
 
   def file_rename(id, index, files, old_filename, new_filename)
+    assert_write_allowed
     index
   end
 
   def file_edit(id, index, files)
+    assert_write_allowed
     index
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
+  end
+
+  def option_set(id, name, value)
+    assert_write_allowed
+    super
   end
 
   include Fork
@@ -150,6 +165,7 @@ class Kata_v0
   private
 
   include IdPather
+  include LegacyWriteGuard
   include JsonAdapter
   include Liner_v0
   include PolyFiller

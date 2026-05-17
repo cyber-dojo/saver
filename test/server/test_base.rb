@@ -9,6 +9,7 @@ require_relative 'helpers/externals'
 require_relative 'helpers/model'
 require_relative 'helpers/rack'
 require_relative 'require_source'
+require_source 'no_longer_implemented_error'
 require 'json'
 
 class TestBase < Id58TestBase

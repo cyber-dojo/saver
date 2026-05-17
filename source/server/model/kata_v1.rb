@@ -1,6 +1,7 @@
 require_relative 'fork'
 require_relative 'id_generator'
 require_relative 'id_pather'
+require_relative 'legacy_write_guard'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
@@ -82,6 +83,9 @@ class Kata_v1
       index = all[index]['index']
     end
     result = json_parse(disk.assert(event_file_read_command(id, index)))
+    # v1 stored 'truncated' in individual file entries; v2 does not.
+    # Strip it so callers see a consistent file representation.
+    result['files']&.each_value { |f| f.delete('truncated') }
     result
   end
 
@@ -100,6 +104,7 @@ class Kata_v1
 
     (0...ids.size).each do |i|
       j = json_parse(all[i])
+      j['files']&.each_value { |f| f.delete('truncated') } # see event()
       id = ids[i]
       index = indexes[i]
       result[id] ||= {}
@@ -112,41 +117,55 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
+    assert_write_allowed
     index
   end
 
   def file_delete(id, index, files, filename)
+    assert_write_allowed
     index
   end
 
   def file_rename(id, index, files, old_filename, new_filename)
+    assert_write_allowed
     index
   end
 
   def file_edit(id, index, files)
+    assert_write_allowed
     index
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
+    assert_write_allowed
     universal_append(id, index, files, stdout, stderr, status, summary)
+  end
+
+  def option_set(id, name, value)
+    assert_write_allowed
+    super
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -158,6 +177,7 @@ class Kata_v1
 
   include IdPather
   include JsonAdapter
+  include LegacyWriteGuard
   include PolyFiller
 
   # - - - - - - - - - - - - - - - - - - - - - -

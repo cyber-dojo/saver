@@ -56,18 +56,15 @@ class KataFileEditTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'DcCE03', %w(
-  | in versions 0 and 1, kata_file_edit
-  | returns unchanged index argument and does nothing
+  | kata_file_edit raises NoLongerImplementedError
+  | when legacy writes are disabled
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-
-      expected = kata_events(id)
-      next_index = kata_file_edit(id, index=1, files)
-      actual = kata_events(id)
-
-      assert_equal index, next_index
-      assert_equal expected, actual
+      externals.allow_legacy_writes = false
+      assert_raises(NoLongerImplementedError) do
+        kata_file_edit(id, 1, files)
+      end
     end
   end
 end

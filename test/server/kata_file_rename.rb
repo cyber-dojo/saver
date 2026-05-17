@@ -118,19 +118,15 @@ class KataFileRenameTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'DcDD04', %w(
-  | in versions 0 and 1, kata_file_rename
-  | returns unchanged index argument and does nothing
+  | kata_file_rename raises NoLongerImplementedError
+  | when legacy writes are disabled
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      assert files.keys.include?('readme.txt') 
-
-      expected = kata_events(id)
-      next_index = kata_file_rename(id, index=1, files, 'readme.txt', 'readme2.txt')
-      actual = kata_events(id)
-
-      assert_equal index, next_index
-      assert_equal expected, actual
+      externals.allow_legacy_writes = false
+      assert_raises(NoLongerImplementedError) do
+        kata_file_rename(id, 1, files, 'readme.txt', 'readme2.txt')
+      end
     end
   end
 
