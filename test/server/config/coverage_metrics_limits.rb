@@ -2,14 +2,14 @@
 def metrics
   [
     [ nil ],
-    [ 'test.lines.total'    , '<=', 2378 ],
+    [ 'test.lines.total'    , '<=', 2456 ],
     [ 'test.lines.missed'   , '<=', 0    ],
-    [ 'test.branches.total' , '<=', 18   ],
+    [ 'test.branches.total' , '<=', 24   ],
     [ 'test.branches.missed', '<=', 0    ],
     [ nil ],
-    [ 'code.lines.total'    , '<=', 1410 ],
+    [ 'code.lines.total'    , '<=', 1315 ],
     [ 'code.lines.missed'   , '<=', 0    ],
-    [ 'code.branches.total' , '<=', 167  ],
+    [ 'code.branches.total' , '<=', 161  ],
     [ 'code.branches.missed', '<=', 0    ],
   ]
 end
