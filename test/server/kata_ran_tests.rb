@@ -43,11 +43,23 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_01_test 'Sp4DkA', %w(
+  version_test 0, 'Sp4DkA', %w(
   | kata_ran_tests raises NoLongerImplementedError
-  | on v0/v1 katas
+  | on v0 katas
   ) do
-    id = version == 0 ? V0_KATA_ID : V1_KATA_ID
+    id = V0_KATA_ID
+    files = kata_event(id, 0)['files']
+    data = bats
+    assert_raises(NoLongerImplementedError) do
+      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
+    end
+  end
+
+  version_test 1, 'Sp4DkB', %w(
+  | kata_ran_tests raises NoLongerImplementedError
+  | on v1 katas
+  ) do
+    id = V1_KATA_ID
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
