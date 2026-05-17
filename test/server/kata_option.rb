@@ -203,4 +203,18 @@ class KataOptionTest < TestBase
       kata_option_set(kids[version], 'theme', 'dark')
     end
   end
+
+  version_test 0, 'Ks3864', %w(
+  | kata_option_get('theme') returns stored value on pre-existing v0 kata
+  | where theme was previously set to 'dark'
+  ) do
+    id = 'qNLm3j'
+    dir = "/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
+    disk.run(disk.dir_make_command(dir))
+    disk.run_all([
+      disk.file_create_command("#{dir}/manifest.json", '{"id":"qNLm3j"}'),
+      disk.file_create_command("#{dir}/theme", "\ndark"),
+    ])
+    assert_equal 'dark', kata_option_get(id, 'theme')
+  end
 end

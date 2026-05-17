@@ -82,8 +82,6 @@ class TestBase < Id58TestBase
   end
 
   def assert_tag_commit_message(id, tag, expected)
-    return unless version == 2
-
     dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
     stdout = shell.assert_cd_exec(dir, "git tag --list --format='%(contents)' #{tag}")
     line = stdout.lines[0]
