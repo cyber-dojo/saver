@@ -22,16 +22,15 @@ class KataPredictedRightTest < TestBase
 
   versions_01_test '535E04', %w(
   | kata_predicted_right raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      data = bats
-      summary = red_summary.merge({ 'predicted' => 'red' })
-      externals.allow_legacy_writes = false
-      assert_raises(NoLongerImplementedError) do
-        kata_predicted_right(id, 1, files, data['stdout'], data['stderr'], data['status'], summary)
-      end
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    data = bats
+    summary = red_summary.merge({ 'predicted' => 'red' })
+    assert_raises(NoLongerImplementedError) do
+      kata_predicted_right(id, 1, files, data['stdout'], data['stderr'], data['status'], summary)
     end
   end
 

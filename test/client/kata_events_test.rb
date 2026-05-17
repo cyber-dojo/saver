@@ -122,7 +122,7 @@ class KataEventsTest < TestBase
     assert_equal second_last, actual
   end
 
-  version_test 0, 'D9w4dJ', %w(
+  version_test 2, 'D9w4dJ', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   | even when only the creation event exists
   ) do
@@ -155,13 +155,12 @@ class KataEventsTest < TestBase
 
   version_test 1, 'D9wHx9', %w(
   | kata_event(id, index=-1) retrieves the most recent event
-  | even when only the creation event exists
+  | checking against the known last index of a pre-existing v1 kata
   ) do
-    in_kata do |id|
-      last = kata_event(id, 0)
-      actual = kata_event(id, -1)
-      assert_equal last, actual
-    end
+    id = '5U2J18'
+    last = kata_event(id, 3)
+    actual = kata_event(id, -1)
+    assert_equal last, actual
   end
 
 end

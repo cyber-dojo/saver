@@ -62,16 +62,15 @@ class KataRevertedTest < TestBase
 
   versions_01_test '67DDk8', %w(
   | kata_reverted raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      data = bats
-      reverted_summary = { 'colour' => 'red', 'revert' => [id, 0] }
-      externals.allow_legacy_writes = false
-      assert_raises(NoLongerImplementedError) do
-        kata_reverted(id, 1, files, data['stdout'], data['stderr'], data['status'], reverted_summary)
-      end
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    data = bats
+    reverted_summary = { 'colour' => 'red', 'revert' => [id, 0] }
+    assert_raises(NoLongerImplementedError) do
+      kata_reverted(id, 1, files, data['stdout'], data['stderr'], data['status'], reverted_summary)
     end
   end
 

@@ -2,7 +2,7 @@ require_relative 'test_base'
 
 class GroupJoinTest < TestBase
 
-  versions_test 'Gw41s9', %w(
+  version_test 2, 'Gw41s9', %w(
   | group is initially empty
   ) do
     in_group do |id|
@@ -12,7 +12,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Gw46A5', %w(
+  version_test 2, 'Gw46A5', %w(
   | when you join a group you increase its size by one,
   | and are a member of the group
   ) do
@@ -43,18 +43,13 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Gw46A6', %w(
+  version_test 2, 'Gw46A6', %w(
     when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.
     # See bin/create_almost_full_group.sh
     # See test/server/data/almost_full_group.V?.*.tgz
-    gids = {
-      0 => 'AWCQdE',
-      1 => 'X9UunP',
-      2 => 'U8Tt6y'
-    }
-    gid = gids[version]
+    gid = 'U8Tt6y'
 
     last = group_join(gid)
     refute_nil last, :not_full
@@ -65,6 +60,16 @@ class GroupJoinTest < TestBase
     expected_indexes = (0..63).to_a
     actual_indexes = joined(gid).keys.map{ |key| key.to_i }
     assert_equal expected_indexes, actual_indexes.sort
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'Gw46A9', %w[
+  | group_join on pre-existing v0/v1 group raises
+  ] do
+    gids = { 0 => 'AWCQdE', 1 => 'X9UunP' }
+    gid = gids[version]
+    assert_raises(HttpJsonHash::ServiceError) { group_join(gid) }
   end
 
   private

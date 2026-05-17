@@ -2,7 +2,7 @@ require_relative 'test_base'
 
 class CreateTest < TestBase
 
-  versions_test 'f26q32', %w(
+  version_test 2, 'f26q32', %w(
   | POST /group_create()
   | has status 200
   | returns the id: of a new group
@@ -19,7 +19,7 @@ class CreateTest < TestBase
 
   # - - - - - - - - - - - - - - - - -
 
-  versions_test 'f26q34', %w(
+  version_test 2, 'f26q34', %w(
   | POST /kata_create()
   | has status 200
   | returns the id: of a new kata

@@ -78,14 +78,13 @@ class KataFileCreateTest < TestBase
 
   versions_01_test 'DcAB03', %w(
   | kata_file_create raises NoLongerImplementedError
-  | when legacy writes are disabled
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      externals.allow_legacy_writes = false
-      assert_raises(NoLongerImplementedError) do
-        kata_file_create(id, 1, files, 'wibble.txt')
-      end
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    assert_raises(NoLongerImplementedError) do
+      kata_file_create(id, 1, files, 'wibble.txt')
     end
   end
 

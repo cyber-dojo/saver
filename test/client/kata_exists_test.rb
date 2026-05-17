@@ -11,14 +11,22 @@ class KataExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ws5761', %w(
+  version_test 2, 'Ws5761', %w(
   | kata_exists? is true,
   | for a well-formed id
-  | from previous kata_create() or kata_create_custom()
+  | from previous kata_create()
   ) do
     in_kata do |id|
       assert kata_exists?(id), :in_kata
     end
+  end
+
+  versions_01_test 'Ws5768', %w(
+  | kata_exists? is true,
+  | for a pre-existing v0/v1 kata id
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    assert kata_exists?(kids[version])
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
