@@ -30,6 +30,8 @@ class App < AppBase
   post_json(:model, :kata_fork)
    get_json(:model, :katas_events)
    get_json(:model, :kata_option_get)
+   get_json(:model, :diff_lines)
+   get_json(:model, :diff_summary)
 
   # - - - - - - - - - - - - - - - - -
 

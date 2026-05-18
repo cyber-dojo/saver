@@ -161,15 +161,14 @@ class RackDispatchingTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def with_captured_stdout_stderr
-    old_stdout = $stdout
-    old_stderr = $stderr
-    $stdout = StringIO.new(+'', 'w')
-    $stderr = StringIO.new(+'', 'w')
+    captured_stdout = StringIO.new(+'', 'w')
+    captured_stderr = StringIO.new(+'', 'w')
+    old_stdout_stream = Thread.current[:stdout_stream]
+    Thread.current[:stdout_stream] = captured_stdout
     response = yield
-    [response, $stdout.string, $stderr.string]
+    [response, captured_stdout.string, captured_stderr.string]
   ensure
-    $stderr = old_stderr
-    $stdout = old_stdout
+    Thread.current[:stdout_stream] = old_stdout_stream
   end
 
 end

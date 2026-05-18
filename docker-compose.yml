@@ -23,6 +23,7 @@ services:
       - ./test/client:/saver/test:ro
 
   server:
+    platform: linux/amd64
     build:
       context: .
       args:

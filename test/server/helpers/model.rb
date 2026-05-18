@@ -136,4 +136,12 @@ module TestHelpersModel
     model.kata_fork(id:id, index:index)
   end
 
+  def diff_summary(id, was_index, now_index)
+    model.diff_summary(id:id, was_index:was_index, now_index:now_index)
+  end
+
+  def diff_lines(id, was_index, now_index)
+    model.diff_lines(id:id, was_index:was_index, now_index:now_index)
+  end
+
 end

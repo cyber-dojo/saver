@@ -132,6 +132,14 @@ class Kata_v0
     raise_not_implemented
   end
 
+  def diff_lines(id, was_index, now_index)
+    raise_not_implemented
+  end
+
+  def diff_summary(id, was_index, now_index)
+    raise_not_implemented
+  end
+
   include Fork
   include Options
 

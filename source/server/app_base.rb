@@ -123,7 +123,7 @@ class AppBase < Sinatra::Base
       status(500)
     end
     message = Utf8.clean(error.message)
-    $stdout.puts(json_pretty({
+    stdout_stream.puts(json_pretty({
       exception: {
         path: Utf8.clean(request.path),
         body: Utf8.clean(request_body),
@@ -132,12 +132,16 @@ class AppBase < Sinatra::Base
         time: Time.now
       }
     }))
-    $stdout.flush
+    stdout_stream.flush
     content_type('application/json')
     body(json_pretty({ exception: message }))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+
+  def stdout_stream
+    Thread.current[:stdout_stream] || $stdout
+  end
 
   def request_body
     request.body.rewind # For idempotence

@@ -1,6 +1,9 @@
 require 'English'
+require 'etc'
 require 'minitest/autorun'
 require 'minitest/reporters'
+
+Minitest.parallel_executor = Minitest::Parallel::Executor.new(Etc.nprocessors)
 require_relative 'require_source'
 require_relative 'slim_json_reporter'
 
@@ -19,9 +22,12 @@ class Id58TestBase < Minitest::Test
     super
   end
 
+  parallelize_me!
+
   @@args = (ARGV.sort.uniq - ['--']) # eg 2m4
   @@seen_ids = {}
   @@timings = {}
+  TIMINGS_LOCK = Mutex.new
 
   def self.test(id58, *lines, &test_block)
     source_file, source_line = *self.location(&test_block)
@@ -38,7 +44,7 @@ class Id58TestBase < Minitest::Test
           self.instance_exec(&test_block)
           t2 = Time.now
           stripped = trimmed(name58.split("\n").join)
-          @@timings[id58+' '+source_file+':'+source_line+' '+stripped] = (t2 - t1)
+          TIMINGS_LOCK.synchronize { @@timings[id58+' '+source_file+':'+source_line+' '+stripped] = (t2 - t1) }
         ensure
           unless $!.nil?
             puts($!.message)
@@ -85,10 +91,8 @@ class Id58TestBase < Minitest::Test
       puts "Slowest #{size} tests are..."
     end
     sorted.each.with_index { |(name,secs),index|
+      break if index === size
       puts "%3.4f %-72s" % [secs,name]
-      if index === size
-        break
-      end
     }
     puts
   end
