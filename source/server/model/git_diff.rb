@@ -14,6 +14,8 @@ module GitDiff
   private
 
   def diff_plus(id, was_index, now_index, options)
+    validate_diff_index(id, was_index)
+    validate_diff_index(id, now_index)
     cmd = [
       'git diff',
       '--unified=99999999999',
@@ -79,6 +81,13 @@ module GitDiff
 
   def same_lines(lines)
     lines.each_with_index.map { |line, i| { type: :same, line: line, number: i + 1 } }
+  end
+
+  def validate_diff_index(id, index)
+    all_events = events(id)
+    unless index < all_events.size
+      raise "Invalid +ve index #{index} [#{plural(all_events.size, :event)}]"
+    end
   end
 
 end
