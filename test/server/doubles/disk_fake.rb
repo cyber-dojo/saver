@@ -75,19 +75,11 @@ class DiskFake
   # - - - - - - - - - - - - - - - - - - - - - - - -
 
   def dirs
-    DiskFake::dirs
+    @dirs ||= {}
   end
 
   def files
-    DiskFake::files
+    @files ||= {}
   end
-
-  class << self
-    attr :dirs
-    attr :files
-  end
-
-  @dirs = {}
-  @files = {}
 
 end
