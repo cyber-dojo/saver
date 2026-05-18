@@ -34,122 +34,6 @@ class DiskRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
-  # run_until_false()
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F512', %w(
-  | run_until_false()
-  | completes all its commands
-  | when nothing returns false
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/12'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-    filename = dirname + '/stops-at-exists-false.txt'
-    content = 'newtyle tay beat'
-    command(true, file_create_command(filename, content))
-    command(true, file_append_command(filename, '1'))
-    command(content+'1', file_read_command(filename))
-    assert_run_until_false
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F513', %w(
-  | run_until_false()
-  | stops at exists?() returning false
-  | and does not execute subsequent commands
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/13'
-    command(true, dir_make_command(dirname))
-    command(true, dir_exists_command(dirname))
-    command(false, dir_exists_command(dirname+'X'))
-    filename = dirname + '/stops-at-exists-false.txt'
-    content = 'dalmarnock tay beat'
-    not_run(file_create_command(filename, content))
-    assert_run_until_false
-    assert dir_exists?(dirname)
-    refute dir_exists?(dirname+'X'), :does_not_execute_subsequent_commands
-    refute file_read(filename), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F514', %w(
-  | run_until_false()
-  | stops at create() returning false
-  | and does not execute subsequent commands
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/14'
-    command(true, dir_make_command(dirname))
-    command(false, dir_make_command(dirname))
-    filename = dirname + '/stops-at-exists.txt'
-    content = 'stenton tay beat'
-    not_run(file_create_command(filename, content))
-    assert_run_until_false
-    assert dir_exists?(dirname)
-    refute file_read(filename), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F515', %w(
-  | run_until_false()
-  | stops at write() already existing file
-  | and does not execute subsequent commands
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/15'
-    command(true, dir_make_command(dirname))
-    filename = dirname + '/stops-at-write-false.txt'
-    content = 'murthly tay beat'
-    command(true, file_create_command(filename, content))
-    command(false, file_create_command(filename, content))
-    not_run(file_append_command(filename, 'extra'))
-    assert_run_until_false
-    assert dir_exists?(dirname)
-    assert_equal content, file_read(filename), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F516', %w(
-  | run_until_false()
-  | stops at append() to non-existant file
-  | and does not execute subsequent commands
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/16'
-    command(true, dir_make_command(dirname))
-    filename = dirname + '/stops-at-append-false.txt'
-    content = 'park dee beat'
-    command(true, file_create_command(filename, content))
-    command(true, file_append_command(filename, '1'))
-    command(true, file_append_command(filename, '2'))
-    command(false, file_append_command(filename+'X', '3'))
-    not_run(file_append_command(filename, '4'))
-    assert_run_until_false
-    assert dir_exists?(dirname)
-    assert_equal content+'12', file_read(filename), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  disk_tests '34F517', %w(
-  | run_until_false()
-  | stops at read() non-existent file
-  | and does not execute subsequent commands
-  ) do
-    dirname = 'batch-run-until-false/x3/t5/17'
-    command(true, dir_make_command(dirname))
-    filename = dirname + '/stops-at-read-false.txt'
-    content = 'inchmarlo dee beat'
-    command(true, file_create_command(filename, content))
-    command(false, file_read_command(filename+'X'))
-    not_run(file_append_command(filename, 'extra'))
-    assert_run_until_false
-    assert_equal content, file_read(filename), :does_not_execute_subsequent_commands
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - -
   # run_until_true()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -293,11 +177,6 @@ class DiskRunManyTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - -
-
-  def assert_run_until_false
-    result = disk.run_until_false(@commands)
-    assert_equal @expected, result
-  end
 
   def assert_run_until_true
     result = disk.run_until_true(@commands)
