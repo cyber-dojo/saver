@@ -3,7 +3,8 @@ require_relative 'test_base'
 class KataOptionTest < TestBase
 
   def id58_setup
-    @id = kata_create(custom_manifest)
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    @id = version <= 1 ? kids[version] : kata_create(custom_manifest)
   end
 
   attr_reader :id
@@ -16,7 +17,7 @@ class KataOptionTest < TestBase
     assert_equal 'light', kata_option_get('theme')
   end
 
-  versions_test 'f27461', %w(
+  version_test 2, 'f27461', %w(
   | kata_option_set('theme', dark|light) sets the theme option
   | kata_option_get('theme') gets the theme option
   ) do
@@ -42,7 +43,7 @@ class KataOptionTest < TestBase
     assert_equal 'on', kata_option_get('colour')
   end
 
-  versions_test 'f27561', %w(
+  version_test 2, 'f27561', %w(
   | kata_option_set('colour', on|off) sets the colour option
   | kata_option_get('colour') gets the colour option
   ) do
@@ -68,7 +69,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('predict')
   end
 
-  versions_test 'f27661', %w(
+  version_test 2, 'f27661', %w(
   | kata_option_set('predict', on|off) sets the predict option
   | kata_option_get('predict') gets the predict option
   ) do
@@ -96,7 +97,7 @@ class KataOptionTest < TestBase
     assert_equal 'off', kata_option_get('revert_green')
   end
 
-  versions_test 'f27761', %w(
+  version_test 2, 'f27761', %w(
   | kata_option_set('revert', on|off) sets the revert option
   | kata_option_get('revert') gets the revert option
   ) do
@@ -128,6 +129,14 @@ class KataOptionTest < TestBase
     capture_stdout_stderr {
       assert_raises { kata_option_set('revert_green', 'maybe') }
     }
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'f27863', %w[
+  | kata_option_set on v0/v1 kata raises
+  ] do
+    assert_raises(HttpJsonHash::ServiceError) { kata_option_set('theme', 'dark') }
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

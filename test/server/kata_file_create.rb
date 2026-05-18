@@ -77,19 +77,14 @@ class KataFileCreateTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'DcAB03', %w(
-  | in versions 0 and 1, kata_file_create
-  | returns unchanged index argument and does nothing
+  | kata_file_create raises NoLongerImplementedError
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      refute files.keys.include?('wibble.txt') 
-
-      before = kata_events(id)
-      next_index = kata_file_create(id, index=1, files, 'wibble.txt')
-      after = kata_events(id)
-
-      assert_equal index, next_index
-      assert_equal before, after
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    assert_raises(NoLongerImplementedError) do
+      kata_file_create(id, 1, files, 'wibble.txt')
     end
   end
 

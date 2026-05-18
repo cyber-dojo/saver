@@ -93,7 +93,7 @@ class KataEventsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'D9weh4', %w( 
+  version_test 2, 'D9weh4', %w(
   | polyfill creation event with
   | diff_added_count=0
   | diff_deleted_count=0
@@ -109,12 +109,10 @@ class KataEventsTest < TestBase
         'minor_index' => 0,
         'colour' => 'create', 
         'time' => t0, 
-        'event' => 'created'
+        'event' => 'created',
+        'diff_added_count' => 0,
+        'diff_deleted_count' => 0
       }]
-      if @version == 2
-        expected[0]['diff_added_count'] = 0
-        expected[0]['diff_deleted_count'] = 0
-      end
       assert_equal expected, actual
     end
   end

@@ -145,7 +145,7 @@ class KataEventTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 0, 'Lw24dJ', %w(
+  version_test 2, 'Lw24dJ', %w(
   | kata_event(id, index=-1) retrieves the most recent event
   | even when only the creation event exists
   ) do

@@ -23,7 +23,7 @@ class GroupManifestTest < TestBase
     assert_equal 'chy6BJ', manifest['id'], :id
   end
 
-  versions_test '5ZtQ61', %w(
+  version_test 2, '5ZtQ61', %w(
   | retrieved group_manifest has created and version keys
   ) do
     now = [2019,3,17, 7,13,36,3428]
@@ -37,6 +37,16 @@ class GroupManifestTest < TestBase
       assert manifest.keys.include?('version'), :version_key
       assert_equal version, manifest['version'], :version
     end
+  end
+
+  versions_01_test '5ZtQ62', %w(
+  | pre-existing v0/v1 group_manifest has created and version keys
+  ) do
+    gids = { 0 => 'FxWwrr', 1 => 'REf1t8' }
+    manifest = group_manifest(gids[version])
+    assert manifest.keys.include?('created'), :created_key
+    assert manifest.keys.include?('version'), :version_key
+    assert_equal version, manifest['version'], :version
   end
 
 end

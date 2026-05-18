@@ -2,8 +2,8 @@ require_relative 'test_base'
 
 class KataRanTestsTest < TestBase
 
-  versions_test 'Sp4Dk1', %w(
-  | kata_ran_tests gives same results in all versions
+  version_test 2, 'Sp4Dk1', %w(
+  | kata_ran_tests stores a ran-tests event with correct commit message
   ) do
     in_kata do |id, files, stdout, stderr, status|
       kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
@@ -14,8 +14,8 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Sp4Dk8', %w(
-  | kata_ran_tests returns the next index in all versions
+  version_test 2, 'Sp4Dk8', %w(
+  | kata_ran_tests returns next_index incremented by 1
   ) do
     in_kata do |id, files, stdout, stderr, status|
       result = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
@@ -38,6 +38,32 @@ class KataRanTestsTest < TestBase
       }
       assert_equal "Out of order event for #{id}", error.message
       [index=1, red_summary]
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 0, 'Sp4DkA', %w(
+  | kata_ran_tests raises NoLongerImplementedError
+  | on v0 katas
+  ) do
+    id = V0_KATA_ID
+    files = kata_event(id, 0)['files']
+    data = bats
+    assert_raises(NoLongerImplementedError) do
+      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
+    end
+  end
+
+  version_test 1, 'Sp4DkB', %w(
+  | kata_ran_tests raises NoLongerImplementedError
+  | on v1 katas
+  ) do
+    id = V1_KATA_ID
+    files = kata_event(id, 0)['files']
+    data = bats
+    assert_raises(NoLongerImplementedError) do
+      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
     end
   end
 

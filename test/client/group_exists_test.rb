@@ -11,14 +11,22 @@ class GroupExistsTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Ws6861', %w(
+  version_test 2, 'Ws6861', %w(
   | group_exists? is true,
   | for a well-formed id
-  | from previous group_create or group_create_custom
+  | from previous group_create()
   ) do
     in_group do |id|
       assert group_exists?(id), :in_group
     end
+  end
+
+  versions_01_test 'Ws6868', %w(
+  | group_exists? is true,
+  | for a pre-existing v0/v1 group id
+  ) do
+    gids = { 0 => 'FxWwrr', 1 => 'REf1t8' }
+    assert group_exists?(gids[version])
   end
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

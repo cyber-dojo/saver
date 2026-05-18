@@ -40,12 +40,18 @@ class GroupJoinedTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'QS4xD4', %w(
+  version_test 2, 'QS4xD4', %w(
   | empty Hash is returned for a kata-id not in a group
   ) do
     in_kata do |id|
       assert_equal({}, group_joined(id))
     end
+  end
+
+  version_test 1, 'QS4xD5', %w(
+  | empty Hash is returned for a pre-existing v1 kata-id not in a group
+  ) do
+    assert_equal({}, group_joined('H8NAvN'))
   end
 
   private

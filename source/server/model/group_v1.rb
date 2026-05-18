@@ -1,6 +1,6 @@
-require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'kata_v1'
+require_relative 'not_implemented'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
@@ -20,15 +20,7 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-    manifest.merge!(default_options)
-    manifest['version'] = 1
-    manifest['created'] = time.now
-    id = manifest['id'] = IdGenerator.new(@externals).group_id
-    disk.assert_all([
-      manifest_create_command(id, json_plain(manifest)),
-      katas_create_command(id, '')
-    ])
-    id
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - -
@@ -43,23 +35,7 @@ class Group_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def join(id, indexes)
-    taken = katas_indexes(id).map{ |index,_| index }
-    indexes -= taken
-    manifest = self.manifest(id)
-    manifest.delete('id')
-    manifest['group_id'] = id
-    commands = indexes.map{ |index| dir_make_command(id, index) }
-    results = disk.run_until_true(commands)
-    result_index = results.find_index(true)
-    if result_index.nil?
-      nil # full
-    else
-      index = indexes[result_index]
-      manifest['group_index'] = index
-      kata_id = @kata.create(manifest)
-      disk.assert(katas_append_command(id, "#{kata_id} #{index}\n"))
-      kata_id
-    end
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -88,6 +64,7 @@ class Group_v1
 
   include IdPather
   include JsonAdapter
+  include NotImplemented
   include Options
   include PolyFiller
 
@@ -116,29 +93,11 @@ class Group_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def dir_make_command(id, *parts)
-    disk.dir_make_command(dir_name(id, *parts))
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def manifest_create_command(id, manifest_src)
-    disk.file_create_command(manifest_filename(id), manifest_src)
-  end
-
   def manifest_read_command(id)
     disk.file_read_command(manifest_filename(id))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-
-  def katas_create_command(id, src)
-    disk.file_create_command(katas_filename(id), src)
-  end
-
-  def katas_append_command(id, src)
-    disk.file_append_command(katas_filename(id), src)
-  end
 
   def katas_read_command(id)
     disk.file_read_command(katas_filename(id))
@@ -146,11 +105,6 @@ class Group_v1
 
   # - - - - - - - - - - - - - -
   # names of dirs/files
-
-  def dir_name(id, *parts)
-    group_id_path(id, *parts)
-    # eg id == 'wAtCfj' ==> '/cyber-dojo/groups/wA/tC/fj'
-  end
 
   def manifest_filename(id)
     group_id_path(id, 'manifest.json')
@@ -170,10 +124,6 @@ class Group_v1
 
   def disk
     @externals.disk
-  end
-
-  def time
-    @externals.time
   end
 
 end

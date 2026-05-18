@@ -1,6 +1,6 @@
 require_relative 'fork'
-require_relative 'id_generator'
 require_relative 'id_pather'
+require_relative 'not_implemented'
 require_relative 'liner_v0'
 require_relative 'options'
 require_relative 'poly_filler'
@@ -15,23 +15,7 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-    manifest = manifest.clone
-    manifest.merge!(default_options)
-    manifest['version'] = 0
-    manifest['created'] = time.now
-    id = manifest['id'] = IdGenerator.new(@externals).kata_id
-    files = manifest.delete('visible_files')
-    event0 = {
-      'event' => 'created',
-      'time' => manifest['created']
-    }
-    disk.assert_all([
-      dir_make_command(id, 0),
-      manifest_file_create_command(id, json_plain(manifest)),
-      event_file_create_command(id, 0, json_plain(lined({ 'files' => files }))),
-      events_file_create_command(id, json_plain(event0) + "\n")
-    ])
-    id
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -107,41 +91,45 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
-    index
+    raise_not_implemented
   end
 
   def file_delete(id, index, files, filename)
-    index
+    raise_not_implemented
   end
 
   def file_rename(id, index, files, old_filename, new_filename)
-    index
+    raise_not_implemented
   end
 
   def file_edit(id, index, files)
-    index
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
+  end
+
+  def option_set(id, name, value)
+    raise_not_implemented
   end
 
   include Fork
@@ -150,37 +138,10 @@ class Kata_v0
   private
 
   include IdPather
+  include NotImplemented
   include JsonAdapter
   include Liner_v0
   include PolyFiller
-
-  def universal_append(id, index, files, stdout, stderr, status, summary)
-    summary['time'] = time.now
-    event_n = {
-      'files' => files,
-      'stdout' => stdout,
-      'stderr' => stderr,
-      'status' => status
-    }
-    disk.assert_all([
-      # A failing make_command() ensures the append_command() is not run.
-      dir_exists_command(id),
-      dir_make_command(id, index),
-      event_file_create_command(id, index, json_plain(lined(event_n))),
-      events_file_append_command(id, json_plain(summary) + "\n")
-    ])
-    { 'next_index' => index + 1, 'major_index' => index, 'minor_index' => 0 }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def dir_make_command(id, *parts)
-    disk.dir_make_command(dir_name(id, *parts))
-  end
-
-  def dir_exists_command(id, *parts)
-    disk.dir_exists_command(dir_name(id, *parts))
-  end
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
@@ -189,10 +150,6 @@ class Kata_v0
   # stores them as event-zero files. This allows a diff of the
   # first traffic-light but means manifest() has to recombine two
   # files.
-
-  def manifest_file_create_command(id, manifest_src)
-    disk.file_create_command(manifest_filename(id), manifest_src)
-  end
 
   def manifest_file_read_command(id)
     disk.file_read_command(manifest_filename(id))
@@ -207,14 +164,6 @@ class Kata_v0
   # This is an optimization for universal_append() which need only
   # append to the end of the file.
 
-  def events_file_create_command(id, event0_src)
-    disk.file_create_command(events_filename(id), event0_src)
-  end
-
-  def events_file_append_command(id, eventN_src)
-    disk.file_append_command(events_filename(id), eventN_src)
-  end
-
   def events_file_read_command(id)
     disk.file_read_command(events_filename(id))
   end
@@ -225,22 +174,12 @@ class Kata_v0
   # The visible-files are stored in a lined-format so they be easily
   # inspected on disk. Have to be unlined when read back.
 
-  def event_file_create_command(id, index, event_src)
-    disk.file_create_command(event_filename(id, index), event_src)
-  end
-
   def event_file_read_command(id, index)
     disk.file_read_command(event_filename(id, index))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # names of dirs/files
-
-  def dir_name(id, *parts)
-    kata_id_path(id, *parts)
-    # eg id == 'k5ZTk0', parts = [  ] ==> '/cyber-dojo/katas/k5/ZT/k0'
-    # eg id == 'k5ZTk0', parts = [31] ==> '/cyber-dojo/katas/k5/ZT/k0/31'
-  end
 
   def manifest_filename(id)
     kata_id_path(id, 'manifest.json')
@@ -277,10 +216,6 @@ class Kata_v0
 
   def disk
     @externals.disk
-  end
-
-  def time
-    @externals.time
   end
 
 end

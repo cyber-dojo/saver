@@ -2,8 +2,8 @@ require_relative 'test_base'
 
 class KataCheckedOutTest < TestBase
 
-  versions_test '77BDk7', %w(
-  | kata_checked_out gives same git-commit-message in all versions
+  version_test 2, '77BDk7', %w(
+  | kata_checked_out stores a checked-out event with correct commit message
   ) do
     in_group do |gid|
       id1 = group_join(gid)
@@ -36,8 +36,8 @@ class KataCheckedOutTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '77BDk8', %w(
-  | kata_checked_out event has checkout field in all versions
+  version_test 2, '77BDk8', %w(
+  | kata_checked_out event has checkout field
   ) do
     in_group do |gid|
       id1 = group_join(gid)
@@ -78,6 +78,25 @@ class KataCheckedOutTest < TestBase
       actual = kata_events(id2)[next_index - 1]
       assert actual.keys.include?('checkout'), :no_checkout_key
       assert_equal expected, actual['checkout']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test '77BDkA', %w(
+  | kata_checked_out raises NoLongerImplementedError
+  | on v0/v1 katas
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    data = bats
+    checkout_summary = {
+      'colour' => 'red',
+      'checkout' => { 'id' => id, 'index' => 0, 'avatarIndex' => 0 }
+    }
+    assert_raises(NoLongerImplementedError) do
+      kata_checked_out(id, 1, files, data['stdout'], data['stderr'], data['status'], checkout_summary)
     end
   end
 

@@ -2,8 +2,8 @@ require_relative 'test_base'
 
 class KataRevertedTest < TestBase
 
-  versions_test '67DDk6', %w(
-  | kata_reverted gives same git-commit-message in all versions
+  version_test 2, '67DDk6', %w(
+  | kata_reverted stores a reverted event with correct commit message
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -27,8 +27,8 @@ class KataRevertedTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test '67DDk7', %w(
-  | kata_reverted has revert field in all versions 
+  version_test 2, '67DDk7', %w(
+  | kata_reverted event has revert field
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
@@ -55,6 +55,22 @@ class KataRevertedTest < TestBase
       actual = kata_events(id)[next_index - 1]
       assert actual.keys.include?('revert'), :no_revert_key
       assert_equal expected, actual['revert']
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test '67DDk8', %w(
+  | kata_reverted raises NoLongerImplementedError
+  | on v0/v1 katas
+  ) do
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    data = bats
+    reverted_summary = { 'colour' => 'red', 'revert' => [id, 0] }
+    assert_raises(NoLongerImplementedError) do
+      kata_reverted(id, 1, files, data['stdout'], data['stderr'], data['status'], reverted_summary)
     end
   end
 

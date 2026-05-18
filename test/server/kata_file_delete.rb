@@ -108,19 +108,14 @@ class KataFileDeleteTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'DcBC04', %w(
-  | in versions 0 and 1, kata_file_delete
-  | returns unchanged index argument and does nothing
+  | kata_file_delete raises NoLongerImplementedError
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      assert files.keys.include?('readme.txt') 
-
-      expected = kata_events(id)
-      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
-      actual = kata_events(id)
-
-      assert_equal index, next_index
-      assert_equal expected, actual
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    assert_raises(NoLongerImplementedError) do
+      kata_file_delete(id, 1, files, 'readme.txt')
     end
   end
 

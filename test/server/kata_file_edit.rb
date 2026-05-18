@@ -56,18 +56,14 @@ class KataFileEditTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   versions_01_test 'DcCE03', %w(
-  | in versions 0 and 1, kata_file_edit
-  | returns unchanged index argument and does nothing
+  | kata_file_edit raises NoLongerImplementedError
+  | on v0/v1 katas
   ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-
-      expected = kata_events(id)
-      next_index = kata_file_edit(id, index=1, files)
-      actual = kata_events(id)
-
-      assert_equal index, next_index
-      assert_equal expected, actual
+    kids = { 0 => 'k5ZTk0', 1 => 'rUqcey' }
+    id = kids[version]
+    files = kata_event(id, 0)['files']
+    assert_raises(NoLongerImplementedError) do
+      kata_file_edit(id, 1, files)
     end
   end
 end

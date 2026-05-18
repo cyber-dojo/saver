@@ -41,12 +41,10 @@ module KataTestData
           "content" => "Write a program that prints the numbers from 1 to 100, but...\n\nnumbers that are exact multiples of 3, or that contain 3, must print a string containing \"Fizz\"\n   For example 9 -> \"...Fizz...\"\n   For example 31 -> \"...Fizz...\"\n\nnumbers that are exact multiples of 5, or that contain 5, must print a string containing \"Buzz\"\n   For example 10 -> \"...Buzz...\"\n   For example 51 -> \"...Buzz...\"\n"
         },
         "report/style.txt" => {
-          "content" => "",
-          "truncated" => false
+          "content" => ""
         },
         "report/coverage.txt" => {
-          "content" => "Name            Stmts   Miss  Cover   Missing\n---------------------------------------------\nhiker.py            5      0   100%\ntest_hiker.py       8      0   100%\n---------------------------------------------\nTOTAL              13      0   100%\n",
-          "truncated" => false
+          "content" => "Name            Stmts   Miss  Cover   Missing\n---------------------------------------------\nhiker.py            5      0   100%\ntest_hiker.py       8      0   100%\n---------------------------------------------\nTOTAL              13      0   100%\n"
         }
       },
       "stdout" => {
@@ -85,8 +83,7 @@ module KataTestData
           "content" => ""
         },
         "report/coverage.txt" => {
-          "content" => "Name            Stmts   Miss  Cover   Missing\n---------------------------------------------\nhiker.py            5      0   100%\ntest_hiker.py      12      0   100%\n---------------------------------------------\nTOTAL              17      0   100%\n",
-          "truncated" => false
+          "content" => "Name            Stmts   Miss  Cover   Missing\n---------------------------------------------\nhiker.py            5      0   100%\ntest_hiker.py      12      0   100%\n---------------------------------------------\nTOTAL              17      0   100%\n"
         }
       },
       "stdout" => {

@@ -3,6 +3,7 @@ require 'sinatra/base'
 silently { require 'sinatra/contrib' } # N x "warning: method redefined"
 require_relative 'lib/json_adapter'
 require_relative 'lib/utf8_clean'
+require_relative 'no_longer_implemented_error'
 require_relative 'request_error'
 require 'json'
 
@@ -114,7 +115,9 @@ class AppBase < Sinatra::Base
 
   error do
     error = $!
-    if error.is_a?(RequestError)
+    if error.is_a?(NoLongerImplementedError)
+      status(505)
+    elsif error.is_a?(RequestError)
       status(400)
     else
       status(500)

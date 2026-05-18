@@ -1,6 +1,6 @@
 require_relative 'fork'
-require_relative 'id_generator'
 require_relative 'id_pather'
+require_relative 'not_implemented'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
@@ -35,24 +35,7 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def create(manifest)
-    manifest.merge!(default_options)
-    manifest['version'] = 1
-    manifest['created'] = time.now
-    id = manifest['id'] = IdGenerator.new(@externals).kata_id
-    event_summary = {
-      'index' => 0,
-      'time' => manifest['created'],
-      'event' => 'created'
-    }
-    event0 = {
-      'files' => manifest['visible_files']
-    }
-    disk.assert_all([
-      manifest_file_create_command(id, json_plain(manifest)),
-      events_file_create_command(id, json_plain(event_summary)),
-      event_file_create_command(id, 0, json_plain(event0.merge(event_summary)))
-    ])
-    id
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -82,6 +65,9 @@ class Kata_v1
       index = all[index]['index']
     end
     result = json_parse(disk.assert(event_file_read_command(id, index)))
+    # v1 stored 'truncated' in individual file entries; v2 does not.
+    # Strip it so callers see a consistent file representation.
+    result['files'].each_value { |f| f.delete('truncated') }
     result
   end
 
@@ -100,6 +86,7 @@ class Kata_v1
 
     (0...ids.size).each do |i|
       j = json_parse(all[i])
+      j['files'].each_value { |f| f.delete('truncated') } # see event()
       id = ids[i]
       index = indexes[i]
       result[id] ||= {}
@@ -112,41 +99,45 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def file_create(id, index, files, filename)
-    index
+    raise_not_implemented
   end
 
   def file_delete(id, index, files, filename)
-    index
+    raise_not_implemented
   end
 
   def file_rename(id, index, files, old_filename, new_filename)
-    index
+    raise_not_implemented
   end
 
   def file_edit(id, index, files)
-    index
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def ran_tests(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def reverted(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
-    universal_append(id, index, files, stdout, stderr, status, summary)
+    raise_not_implemented
+  end
+
+  def option_set(id, name, value)
+    raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -158,26 +149,8 @@ class Kata_v1
 
   include IdPather
   include JsonAdapter
+  include NotImplemented
   include PolyFiller
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  def universal_append(id, index, files, stdout, stderr, status, summary)
-    summary['index'] = index # See point 6 at top of file
-    summary['time'] = time.now
-    event_n = {
-       'files' => files,
-      'stdout' => stdout,
-      'stderr' => stderr,
-      'status' => status
-    }
-    disk.assert_all([
-      # A failing create_command() ensures the append_command() is not run.
-      event_file_create_command(id, index, json_plain(event_n.merge(summary))),
-      events_file_append_command(id, ",\n" + json_plain(summary))
-    ])
-    { 'next_index' => index + 1, 'major_index' => index, 'minor_index' => 0 }
-  end
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # manifest
@@ -187,10 +160,6 @@ class Kata_v1
   # start-point services. In practice it creates coupling, and it
   # doesn't work anyway, since start-points change over time.
 
-  def manifest_file_create_command(id, manifest_src)
-    disk.file_create_command(manifest_filename(id), manifest_src)
-  end
-
   def manifest_file_read_command(id)
     disk.file_read_command(manifest_filename(id))
   end
@@ -198,24 +167,12 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
   # events
 
-  def events_file_create_command(id, event0_src)
-    disk.file_create_command(events_filename(id), event0_src)
-  end
-
-  def events_file_append_command(id, eventN_src)
-    disk.file_append_command(events_filename(id), eventN_src)
-  end
-
   def events_file_read_command(id)
     disk.file_read_command(events_filename(id))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
   # event
-
-  def event_file_create_command(id, index, event_src)
-    disk.file_create_command(event_filename(id,index), event_src)
-  end
 
   def event_file_read_command(id, index)
     disk.file_read_command(event_filename(id,index))
@@ -262,10 +219,6 @@ class Kata_v1
 
   def disk
     @externals.disk
-  end
-
-  def time
-    @externals.time
   end
 
 end

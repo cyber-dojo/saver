@@ -7,6 +7,15 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test 'B457A5', %w(
+  | lined_file('content' => '') returns [''] not []
+  | because ''.lines returns []
+  ) do
+    assert_equal({ 'content' => [''] }, lined_file({ 'content' => '' }))
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'B457AA', %w(
   | lined(event) splits lines files/stdout/stderr and does not alter argument
   ) do

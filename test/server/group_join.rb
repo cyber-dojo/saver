@@ -2,7 +2,7 @@ require_relative 'test_base'
 
 class GroupJoinTest < TestBase
 
-  versions_test 'Gw41s9', %w(
+  version_test 2, 'Gw41s9', %w(
   | group is initially empty
   ) do
     in_group do |id|
@@ -12,8 +12,8 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Gw46A5', %w(
-  | when you join a group you increase its size by one,
+  version_test 2, 'Gw46A5', %w(
+  | when you join a group you increase its size by one
   | and are a member of the group
   ) do
     in_group do |group_id|
@@ -43,7 +43,7 @@ class GroupJoinTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  versions_test 'Gw46A6', %w(
+  version_test 2, 'Gw46A6', %w(
   | when 64 avatars have joined the group is full
   ) do
     # Pre-created almost full groups.
@@ -68,6 +68,32 @@ class GroupJoinTest < TestBase
     expected_indexes = (0..63).to_a
     actual_indexes = joined(gid).keys.map{ |key| key.to_i }
     assert_equal expected_indexes, actual_indexes.sort
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'Gw46A7', %w(
+  | group_join raises NoLongerImplementedError
+  | on v0/v1 groups
+  ) do
+    gids = { 0 => 'FxWwrr', 1 => 'REf1t8' }
+    assert_raises(NoLongerImplementedError) do
+      group_join(gids[version])
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_01_test 'Gw46A8', %w(
+  | almost-full v0/v1 group has 63 members
+  | and group_join raises NoLongerImplementedError
+  ) do
+    gids = { 0 => 'AWCQdE', 1 => 'X9UunP' }
+    gid = gids[version]
+    assert_equal 63, group_joined(gid).size
+    assert_raises(NoLongerImplementedError) do
+      group_join(gid)
+    end
   end
 
   private
