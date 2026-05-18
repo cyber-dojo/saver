@@ -42,7 +42,7 @@ module GitDiff
 
   def strip_files(filename)
     return nil if filename.nil?
-    filename.start_with?('files/') ? filename['files/'.size..] : filename
+    filename['files/'.size..]
   end
 
   def fill_identical_renamed_files(id, now_index, diffs, options)
