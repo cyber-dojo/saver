@@ -639,6 +639,90 @@ that exist in the kata being forked are *not* copied.
 
 
 - - - -
+# Diff API
+
+## GET diff_lines(id,was_index,now_index)
+A diff of two sets of files (designated with `was_index` and `now_index`) from the kata with the given `id`.
+Every line of every file is returned - not just the changed lines with a few unchanged lines either side
+as a normal `git diff` would give. Unchanged files and files renamed with identical content are also included.
+- parameters
+  * **id:String**. The kata id.
+  * **was_index:Integer**. The event index of the first set of files.
+  * **now_index:Integer**. The event index of the second set of files.
+- returns
+  * an Array of Hashes, one per file. Each Hash has the following keys:
+    - `"type"` - one of `"created"`, `"deleted"`, `"renamed"`, `"changed"`, `"unchanged"`.
+    - `"old_filename"` - the filename at `was_index`, or `null` if `"type"` is `"created"`.
+    - `"new_filename"` - the filename at `now_index`, or `null` if `"type"` is `"deleted"`.
+    - `"lines"` - an Array of Hashes, each with `"type"` (`"added"`, `"deleted"`, `"same"`, or `"section"`).
+    - `"line_counts"` - a Hash with `"added"`, `"deleted"`, and `"same"` counts.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","was_index":3,"now_index":4}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/diff_lines | jq .
+  ```
+  ```bash
+  {
+    "diff_lines": [
+      {
+        "type": "changed",
+        "old_filename": "hiker.py",
+        "new_filename": "hiker.py",
+        "lines": [
+          { "type": "same",    "line": "class Hiker:", "number": 1 },
+          { "type": "section", "index": 0 },
+          { "type": "deleted", "line": "    pass",     "number": 2 },
+          { "type": "added",   "line": "    def answer(self):", "number": 2 },
+          { "type": "added",   "line": "        return 42",    "number": 3 }
+        ],
+        "line_counts": { "added": 2, "deleted": 1, "same": 1 }
+      },
+      ...
+    ]
+  }
+  ```
+
+
+- - - -
+## GET diff_summary(id,was_index,now_index)
+The same as `diff_lines` except the returned Hashes do *not* include the `"lines"` key.
+- parameters
+  * **id:String**. The kata id.
+  * **was_index:Integer**. The event index of the first set of files.
+  * **now_index:Integer**. The event index of the second set of files.
+- returns
+  * an Array of Hashes with `"type"`, `"old_filename"`, `"new_filename"`, and `"line_counts"` (no `"lines"`).
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"4ScKVJ","was_index":3,"now_index":4}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/diff_summary | jq .
+  ```
+  ```bash
+  {
+    "diff_summary": [
+      {
+        "type": "changed",
+        "old_filename": "hiker.py",
+        "new_filename": "hiker.py",
+        "line_counts": { "added": 2, "deleted": 1, "same": 1 }
+      },
+      ...
+    ]
+  }
+  ```
+
+
+- - - -
 # Probe API
 
 ## GET alive?
