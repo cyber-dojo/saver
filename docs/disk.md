@@ -8,7 +8,6 @@ Disk API
 - - - -
 - [POST run(command)](#post-runcommand)
 - [POST run_all](#post-run_allcommands)
-- [POST run_until_false](#post-run_until_falsecommands)
 - [POST run_until_true](#post-run_until_truecommands)
 
 
@@ -115,26 +114,6 @@ Runs [commands](#commands) until one is **true**.
   ```
 
 - - - -
-## POST run_until_false(commands)
-Runs [commands](#commands) until one is **false**.
-- result 
-  - The `commands` results (including the last **false** one) in an array.
-- example
-  ```bash
-  $ DIRNAME=/cyber-dojo/groups/1q/K4/d9
-  $ curl \
-    --data '{"commands":[["dir_make","${DIRNAME}"],["dir_make","${DIRNAME}"]]}' \
-    --fail \    
-    --header 'Content-type: application/json' \
-    --silent \
-    --request POST \
-      https://${DOMAIN}:${PORT}/run_until_false
-  ```
-  ```bash
-  {"run_until_false":[true,false]}
-  ```
-
-- - - -
 ## commands
 An array of commands.
 
@@ -146,9 +125,9 @@ There are 5 commands:
   * [file_append_command](#file_append_command)
   * [file_read_command](#file_read_command)
 
-They can all be used in the 6 methods `assert`, `run`, `assert_all`, `run_all`, `run_until_true`, `run_until_false`.   
+They can all be used in the 5 methods `assert`, `run`, `assert_all`, `run_all`, `run_until_true`.   
 The 2 methods `assert` and `assert_all` raise instead of returning **false**.  
-The 6 methods _always_ raise when
+The 5 methods _always_ raise when
   * there is no space left on the file-system.  
   * `command` or `commands` is malformed (eg unknown, incorrect arity, not a String)
 

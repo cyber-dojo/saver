@@ -1,4 +1,5 @@
 require_relative 'fork'
+require_relative 'git_diff'
 require_relative 'id_generator'
 require_relative 'id_pather'
 require_relative 'options'
@@ -319,6 +320,7 @@ class Kata_v2
   end
 
   include Fork
+  include GitDiff
   include Options
 
   private

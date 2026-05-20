@@ -106,6 +106,14 @@ class TestBase < Id58TestBase
     saver.kata_fork(id, index)
   end
 
+  def diff_lines(id, was_index, now_index)
+    saver.diff_lines(id, was_index, now_index)
+  end
+
+  def diff_summary(id, was_index, now_index)
+    saver.diff_summary(id, was_index, now_index)
+  end
+
   # - - - - - - - - - - - - - - - - - -
 
   def self.versions_test(id58_suffix, *lines, &block)
@@ -135,6 +143,11 @@ class TestBase < Id58TestBase
 
   def in_kata
     yield kata_create(custom_manifest)
+  end
+
+  def in_tennis_kata
+    id = kata_create(custom_manifest)
+    yield(id, kata_event(id, 0)['files'])
   end
 
   def custom_manifest

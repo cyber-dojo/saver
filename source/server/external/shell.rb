@@ -12,8 +12,8 @@ module External
     def cd_exec(path, command)
       assert_cd_exec(path, command)
     rescue => e
-      $stderr.puts e.message
-      $stderr.flush
+      stderr_stream.puts e.message
+      stderr_stream.flush
     end
 
     def assert_exec(*commands)
@@ -23,8 +23,8 @@ module External
       stderr = Utf8::clean(stderr)
       exit_status = r.exitstatus
       unless stderr.empty? || stderr.start_with?('Preparing worktree')
-        $stderr.puts stderr
-        $stderr.flush
+        stderr_stream.puts stderr
+        stderr_stream.flush
       end
       unless success?(exit_status)
         diagnostic = {
@@ -39,6 +39,10 @@ module External
     end
 
     private
+
+    def stderr_stream
+      Thread.current[:stderr_stream] || $stderr
+    end
 
     def success?(status)
       status === 0

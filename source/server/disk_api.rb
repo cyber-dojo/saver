@@ -80,10 +80,6 @@ module DiskApi
     run_until(commands) { |r| r }
   end
 
-  def run_until_false(commands)
-    run_until(commands) { |r| !r }
-  end
-
   private
 
   include CommandChecker

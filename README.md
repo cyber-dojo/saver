@@ -64,6 +64,12 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 * [POST kata_fork(id,index)](docs/api.md#post-kata_forkidindex)
 
 
+## [Diff API](docs/api.md#diff-api)
+
+* [GET diff_lines(id,was_index,now_index)](docs/api.md#get-diff_linesidwas_indexnow_index)
+* [GET diff_summary(id,was_index,now_index)](docs/api.md#get-diff_summaryidwas_indexnow_index)
+
+
 ## [Probe API](docs/api.md#probe-api)
 
 * [GET alive?](docs/api.md#get-alive)  

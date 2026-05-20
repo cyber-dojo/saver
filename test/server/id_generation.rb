@@ -51,6 +51,18 @@ class IdGenerationTest < TestBase
     end
   end
 
+  version_test 2, 'A6D14f', %w(
+  | kata-id generator retries when dir creation fails
+  | because the kata directory already exists
+  | (id is absent as a group but present as a kata - the rescue-next path)
+  ) do
+    in_kata do |kata_id|
+      id = 'zP3q8V'
+      id_generator = stubbed_id_generator(kata_id + id)
+      assert_equal id, id_generator.kata_id
+    end
+  end
+
   versions_01_test 'A6D14c', %w(
   | kata-id generator will skip id that already exists as a pre-existing v0/v1 group
   ) do

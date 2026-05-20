@@ -141,6 +141,14 @@ class Model
     kata(id).option_set(id, name, value)
   end
 
+  def diff_lines(id:, was_index:, now_index:)
+    kata(id).diff_lines(id, was_index, now_index)
+  end
+
+  def diff_summary(id:, was_index:, now_index:)
+    kata(id).diff_summary(id, was_index, now_index)
+  end
+
   CURRENT_VERSION = 2
 
   private
