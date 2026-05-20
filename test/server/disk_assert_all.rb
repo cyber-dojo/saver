@@ -12,7 +12,7 @@ class DiskAssertAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '21C416',
+  test '21C416',
   'assert_all() returns array of results when all commands are true' do
     dirname = 'server/assert-all/e3/t4/16'
     command(true, dir_make_command(dirname))
@@ -28,7 +28,7 @@ class DiskAssertAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '21C417', %w(
+  test '21C417', %w(
   assert_all() raises
   when any command is not true
   and subsequent commands are not executed
@@ -52,7 +52,7 @@ class DiskAssertAllTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '21C418', %w(
+  test '21C418', %w(
   assert_all() raises
   with command but no error
   when failing command does not set last_error
