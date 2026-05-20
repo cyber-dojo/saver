@@ -1,3 +1,4 @@
+require 'fileutils'
 require_relative 'silently'
 require 'sinatra/base'
 silently { require 'sinatra/contrib' } # N x "warning: method redefined"
@@ -25,7 +26,8 @@ class AppBase < Sinatra::Base
     get "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json do
-          json_result(klass_name, method_name)
+          args = to_json_object(request_body)
+          json_with_flock(args) { json_result(klass_name, method_name, args) }
         end
       end
     end
@@ -37,45 +39,10 @@ class AppBase < Sinatra::Base
     post "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json do
-          json_result(klass_name, method_name)
+          args = to_json_object(request_body)
+          json_with_flock(args) { json_result(klass_name, method_name, args) }
         end
       end
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  # One Mutex per kata id, serialising all POST requests for the same kata
-  # across Puma threads. This ensures multi-step operations such as
-  # file_rename (which calls git_ff_merge_worktree twice) are atomic:
-  # no competing thread can interleave between the two commits.
-  #
-  # KATA_MUTEXES_LOCK is needed because the GIL can be released between the
-  # "key absent?" check and the default-block assignment in the Hash, allowing
-  # two threads to each create a different Mutex for the same id. Without the
-  # lock they would synchronise on different objects and the race would not be
-  # prevented for that operation.
-  #
-  # Known limitation: entries are never removed, so the hash grows by one
-  # small Mutex object per kata ever seen in this process. Each entry is only
-  # a few dozen bytes; a busy server with tens of thousands of katas would
-  # accumulate only a few MB in total.
-  KATA_MUTEXES_LOCK = Mutex.new
-  KATA_MUTEXES = Hash.new { |h, k| h[k] = Mutex.new }
-
-  def self.post_json_with_mutex(klass_name, method_name)
-    post "/#{method_name}", provides:[:json] do
-      # :nocov:
-      respond_to do |format|
-        format.json do
-          id = to_json_object(request_body)['id']
-          mutex = AppBase::KATA_MUTEXES_LOCK.synchronize { AppBase::KATA_MUTEXES[id] }
-          mutex.synchronize do
-            json_result(klass_name, method_name)
-          end
-        end
-      end
-      # :nocov:
     end
   end
 
@@ -84,8 +51,27 @@ class AppBase < Sinatra::Base
   include JsonAdapter
   include Utf8
 
-  def json_result(klass_name, method_name)
-    args = to_json_object(request_body)
+  def json_with_flock(args)
+    # Serialise all requests for the same kata/group id across both Puma
+    # threads and Puma worker processes. An OS-level flock(LOCK_EX) is used
+    # so the lock is visible to every worker process, unlike a Ruby Mutex
+    # which is in-process only. When id is absent or not a String (e.g.
+    # kata_create, group_create, or a malformed id) no lock is needed.
+    id = args['id']
+    unless id.is_a?(String) && id.length >= 6
+      yield
+    else
+      root = @externals.disk.root_dir
+      lock_dir = File.join('', root, 'locks', id[0..1], id[2..3])
+      FileUtils.mkdir_p(lock_dir)
+      File.open(File.join(lock_dir, "#{id[4..5]}.lock"), File::RDWR | File::CREAT, 0600) do |f|
+        f.flock(File::LOCK_EX)
+        yield
+      end
+    end
+  end
+
+  def json_result(klass_name, method_name, args)
     named_args = Hash[args.map{ |key,value| [key.to_sym, value] }]
     target = @externals.public_send(klass_name)
     result = target.public_send(method_name, **named_args)
@@ -144,9 +130,8 @@ class AppBase < Sinatra::Base
   end
 
   def request_body
-    request.body.rewind # For idempotence
-    body = request.body.read
-    body
+    request.body.rewind
+    request.body.read
   end
 
 end

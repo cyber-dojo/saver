@@ -56,7 +56,6 @@ module External
       # be caught by RackDispatcher --> status=500
       mode = File::WRONLY | File::TRUNC | File::CREAT
       File.open(path_name(filename), mode) do |fd|
-        fd.flock(File::LOCK_EX)
         fd.write(content)
       end
       true
@@ -72,7 +71,6 @@ module External
       # be caught by RackDispatcher --> status=500
       mode = File::WRONLY | File::APPEND
       File.open(path_name(filename), mode) do |fd|
-        fd.flock(File::LOCK_EX)
         fd.write(content)
       end
       true
@@ -87,7 +85,6 @@ module External
     def file_read(filename)
       mode = File::RDONLY
       File.open(path_name(filename), mode) do |fd|
-        fd.flock(File::LOCK_EX)
         fd.read
       end
     rescue Errno::EISDIR, # file is a dir!,
