@@ -10,7 +10,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests 'FA2538',
+  test 'FA2538',
   'assert() raises when its command is not true' do
     dirname = 'groups/Fw/FP/3p'
     error = assert_raises(RuntimeError) {
@@ -22,7 +22,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests 'FA2539',
+  test 'FA2539',
   'assert() returns command result when command is true' do
     dirname = 'groups/sw/EP/7K'
     filename = dirname + '/' + '3.events.json'
@@ -35,7 +35,7 @@ class DiskAssertTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests 'FA253A',
+  test 'FA253A',
   'assert() raises with command and error when @last_error is set' do
     dirname = 'groups/Fw/FP/3a'
     disk.assert(dir_make_command(dirname))

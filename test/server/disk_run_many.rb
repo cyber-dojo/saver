@@ -14,7 +14,7 @@ class DiskRunManyTest < TestBase
   # run_all()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F314', %w(
+  test '34F314', %w(
   | run_all() runs all its commands
   | not stopping when any return false
   ) do
@@ -37,7 +37,7 @@ class DiskRunManyTest < TestBase
   # run_until_true()
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F712', %w(
+  test '34F712', %w(
   | run_until_true()
   | completes all its commands
   | when nothing returns true
@@ -54,7 +54,7 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F713', %w(
+  test '34F713', %w(
   | run_until_true()
   | stops at exists?() returning true
   | and does not execute subsequent commands
@@ -74,7 +74,7 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F714', %w(
+  test '34F714', %w(
   | run_until_true()
   | stops at create() returning true
   | and does not execute subsequent commands
@@ -95,7 +95,7 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F715', %w(
+  test '34F715', %w(
   | run_until_true()
   | stops at write() returning true
   | and does not execute subsequent commands
@@ -117,7 +117,7 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F716', %w(
+  test '34F716', %w(
   | run_until_true()
   | stops at append() returning true
   | and does not execute subsequent commands
@@ -140,7 +140,7 @@ class DiskRunManyTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  disk_tests '34F717', %w(
+  test '34F717', %w(
   | run_until_true()
   | stops at read() a file that exists
   | and does not execute subsequent commands

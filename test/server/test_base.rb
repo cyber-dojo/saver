@@ -1,7 +1,6 @@
 require_relative 'id58_test_base'
 require_relative 'capture_stdout_stderr'
 require_relative 'data/kata_test_data'
-require_relative 'doubles/disk_fake'
 require_relative 'doubles/random_stub'
 require_relative 'doubles/time_stub'
 require_relative 'helpers/disk'
@@ -37,16 +36,6 @@ class TestBase < Id58TestBase
     manifest = manifest_Tennis_refactoring_Python_unitttest
     manifest['version'] = version
     manifest
-  end
-
-  def self.disk_tests(id58_suffix, *lines, &block)
-    test(id58_suffix, ['<disk:Real>'] + lines) do
-      instance_exec(&block)
-    end
-    test(id58_suffix, ['<disk:Fake>'] + lines) do
-      externals.instance_variable_set('@disk', DiskFake.new)
-      instance_eval(&block)
-    end
   end
 
   def self.versions_test(id58_suffix, *lines, &block)
