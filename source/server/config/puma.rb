@@ -3,24 +3,19 @@
 environment 'production'
 rackup "#{__dir__}/config.ru"
 
-# Do NOT set workers > 1.
+# All requests are serialised per kata/group id via json_with_flock
+# (app_base.rb), which holds an OS-level flock(LOCK_EX) on a per-id lock
+# file for the entire duration of each request. This prevents two concurrent
+# requests for the same kata from interleaving (e.g. two kata_ran_tests calls
+# whose git_ff_merge_worktree sequences would otherwise overlap and cause an
+# 'Out of order event' error).
 #
-# The server serialises concurrent writes to the same kata using
-# post_json_with_mutex (app_base.rb), which holds a per-kata Ruby Mutex
-# for the entire duration of each write request. This prevents a second
-# write to the same kata from interleaving with the first (e.g. two
-# concurrent kata_ran_tests calls whose git_ff_merge_worktree sequences
-# would otherwise overlap and cause an 'Out of order event' error).
+# Because flock is an OS-level primitive, the lock is shared across all Puma
+# worker processes: whichever worker holds the lock for a given id, every
+# other worker trying to acquire the same lock will block until it is released.
+# Different kata ids lock on different files and are therefore independent.
 #
-# A Ruby Mutex is in-process state. With workers > 1, Puma forks N
-# separate OS processes, each with its own independent copy of every
-# mutex. Two concurrent writes to the same kata can land in different
-# worker processes, each acquiring its own per-kata mutex without
-# knowledge of the other, and the race condition returns.
-#
-# The test KataConcurrentSavesTest#DccG02 reproduces this race reliably
-# and will fail when workers > 1.
-#
-# Fixing this properly would require replacing the in-process mutex with
-# a cross-process lock (e.g. a file lock) so that all workers compete on
-# the same lock for a given kata ID.
+# The test KataConcurrentSavesTest#DccG02 reproduces the race reliably and
+# confirms it does not occur with flock locking in place.
+
+workers 4

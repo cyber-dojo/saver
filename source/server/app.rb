@@ -35,16 +35,16 @@ class App < AppBase
 
   # - - - - - - - - - - - - - - - - -
 
-  post_json_with_mutex(:model, :kata_file_create)
-  post_json_with_mutex(:model, :kata_file_delete)
-  post_json_with_mutex(:model, :kata_file_rename)
-  post_json_with_mutex(:model, :kata_file_edit)
+  post_json(:model, :kata_file_create)
+  post_json(:model, :kata_file_delete)
+  post_json(:model, :kata_file_rename)
+  post_json(:model, :kata_file_edit)
 
-  post_json_with_mutex(:model, :kata_ran_tests)
-  post_json_with_mutex(:model, :kata_predicted_right)
-  post_json_with_mutex(:model, :kata_predicted_wrong)
-  post_json_with_mutex(:model, :kata_reverted)
-  post_json_with_mutex(:model, :kata_checked_out)
-  post_json_with_mutex(:model, :kata_option_set)
+  post_json(:model, :kata_ran_tests)
+  post_json(:model, :kata_predicted_right)
+  post_json(:model, :kata_predicted_wrong)
+  post_json(:model, :kata_reverted)
+  post_json(:model, :kata_checked_out)
+  post_json(:model, :kata_option_set)
 
 end

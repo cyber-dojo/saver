@@ -6,11 +6,13 @@ require 'minitest/reporters'
 Minitest.parallel_executor = Minitest::Parallel::Executor.new(Etc.nprocessors)
 require_relative 'require_source'
 require_relative 'slim_json_reporter'
+require_relative 'slow_tests_reporter'
 
 reporters = [
   Minitest::Reporters::DefaultReporter.new,
   Minitest::Reporters::SlimJsonReporter.new,
-  Minitest::Reporters::JUnitReporter.new("#{ENV.fetch('COVERAGE_ROOT')}/junit")
+  Minitest::Reporters::JUnitReporter.new("#{ENV.fetch('COVERAGE_ROOT')}/junit"),
+  Minitest::Reporters::SlowTestsReporter.new
 ]
 Minitest::Reporters.use!(reporters)
 
@@ -26,13 +28,11 @@ class Id58TestBase < Minitest::Test
 
   @@args = (ARGV.sort.uniq - ['--']) # eg 2m4
   @@seen_ids = {}
-  @@timings = {}
-  TIMINGS_LOCK = Mutex.new
+
+  BASE_DIR = File.dirname(__FILE__) + '/'
 
   def self.test(id58, *lines, version, &test_block)
-    source = test_block.source_location
-    source_file = File.basename(source[0])
-    source_line = source[1].to_s
+    source_file, source_line = *self.location(&test_block)
     id58 = checked_id58(id58.to_s, lines)
     if @@args === [] || @@args.any?{ |arg| id58.include?(arg) }
       name58 = lines.join(' ').split('|').join("\n|")
@@ -46,7 +46,8 @@ class Id58TestBase < Minitest::Test
           self.instance_exec(&test_block)
           t2 = Time.now
           stripped = trimmed(name58.split("\n").join)
-          TIMINGS_LOCK.synchronize { @@timings[id58+' '+source_file+':'+source_line+' '+stripped] = (t2 - t1) }
+          key = id58+' '+source_file+':'+source_line+' '+stripped
+          SlowTestsTimings::LOCK.synchronize { SlowTestsTimings::TIMINGS[key] = (t2 - t1) }
         ensure
           unless $!.nil?
             puts($!.message)
@@ -59,28 +60,26 @@ class Id58TestBase < Minitest::Test
     end
   end
 
+  def self.location(&test_block)
+    callers = test_block.send('caller')
+    it = callers.find { |entry| is_test_filename?(entry) }
+    match = it.match(/(.*):(\d+):/)
+    filename = match[1][BASE_DIR.size..-1]
+    line = match[2]
+    [ filename, line ]
+  end
+
+  def self.is_test_filename?(filename)
+    !filename.start_with?("#{BASE_DIR}id58_test_base.rb:") &&
+      !filename.start_with?("#{BASE_DIR}test_base.rb:")
+  end
+
   def trimmed(s)
     if s.length > 80
       s[0..80] + '...'
     else
       s
     end
-  end
-
-  Minitest.after_run do
-    slow = @@timings.select{ |_name,secs| secs > 0.000 }
-    sorted = slow.sort_by{ |name,secs| -secs }.to_h
-    max_shown = 5
-    size = sorted.size < max_shown ? sorted.size : max_shown
-    puts
-    if size != 0
-      puts "Slowest #{size} tests are..."
-    end
-    sorted.each.with_index { |(name,secs),index|
-      break if index === size
-      puts "%3.4f %-72s" % [secs,name]
-    }
-    puts
   end
 
   ID58_ALPHABET = %w{
