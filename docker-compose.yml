@@ -42,3 +42,13 @@ services:
       - /cyber-dojo:uid=19663,gid=65533
       - /tmp
 
+  differ:
+    image: ${CYBER_DOJO_DIFFER_IMAGE}:${CYBER_DOJO_DIFFER_TAG}
+    user: nobody
+    ports: [ "${CYBER_DOJO_DIFFER_PORT}:${CYBER_DOJO_DIFFER_PORT}" ]
+    env_file: [ .env ]
+    read_only: true
+    restart: no
+    tmpfs:
+      - /tmp
+
