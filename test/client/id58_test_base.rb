@@ -29,10 +29,10 @@ class Id58TestBase < Minitest::Test
   @@args = (ARGV.sort.uniq - ['--']) # eg 2m4
   @@seen_ids = {}
 
+  BASE_DIR = File.dirname(__FILE__) + '/'
+
   def self.test(id58, *lines, version, &test_block)
-    source = test_block.source_location
-    source_file = File.basename(source[0])
-    source_line = source[1].to_s
+    source_file, source_line = *self.location(&test_block)
     id58 = checked_id58(id58.to_s, lines)
     if @@args === [] || @@args.any?{ |arg| id58.include?(arg) }
       name58 = lines.join(' ').split('|').join("\n|")
@@ -58,6 +58,20 @@ class Id58TestBase < Minitest::Test
       name = "#{id58}:#{name58}"
       define_method("test_\n\n#{name}".to_sym, &execute_around)
     end
+  end
+
+  def self.location(&test_block)
+    callers = test_block.send('caller')
+    it = callers.find { |entry| is_test_filename?(entry) }
+    match = it.match(/(.*):(\d+):/)
+    filename = match[1][BASE_DIR.size..-1]
+    line = match[2]
+    [ filename, line ]
+  end
+
+  def self.is_test_filename?(filename)
+    !filename.start_with?("#{BASE_DIR}id58_test_base.rb:") &&
+      !filename.start_with?("#{BASE_DIR}test_base.rb:")
   end
 
   def trimmed(s)
