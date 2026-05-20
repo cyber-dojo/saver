@@ -35,7 +35,6 @@ class Id58TestBase < Minitest::Test
     if @@args === [] || @@args.any?{ |arg| id58.include?(arg) }
       name58 = lines.join(' ').split('|').join("\n|")
       execute_around = lambda {
-        ENV['ID58'] = id58
         @id58 = id58
         @name58 = name58
         id58_setup
