@@ -9,7 +9,6 @@ class Minitest::Reporters::SlowTestsReporter < Minitest::Reporters::BaseReporter
   def report
     super
     sorted = SlowTestsTimings::TIMINGS.sort_by { |_name, secs| -secs }.first(5)
-    return if sorted.empty?
     puts
     puts 'Slowest tests are...'
     sorted.each do |(name, secs)|
