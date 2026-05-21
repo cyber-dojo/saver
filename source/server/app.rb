@@ -17,7 +17,7 @@ class App < AppBase
    get_json(:model, :group_manifest)
   post_json(:model, :group_join)
    get_json(:model, :group_joined)
-  post_json(:model, :group_fork)
+  post_json(:model, :group_fork, lock: false)
 
   # - - - - - - - - - - - - - - - - -
 
@@ -27,7 +27,7 @@ class App < AppBase
    get_json(:model, :kata_events)
    get_json(:model, :kata_event)
    get_json(:model, :kata_manifest)
-  post_json(:model, :kata_fork)
+  post_json(:model, :kata_fork, lock: false)
    get_json(:model, :katas_events)
    get_json(:model, :kata_option_get)
    get_json(:model, :diff_lines)
