@@ -1,3 +1,4 @@
+require_relative 'differ_diff'
 require_relative 'fork'
 require_relative 'id_pather'
 require_relative 'not_implemented'
@@ -142,14 +143,7 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def diff_lines(id, was_index, now_index)
-    raise_not_implemented
-  end
-
-  def diff_summary(id, was_index, now_index)
-    raise_not_implemented
-  end
-
+  include DifferDiff
   include Fork
   include Options
 

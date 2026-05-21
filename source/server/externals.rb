@@ -1,3 +1,4 @@
+require_relative 'external/differ'
 require_relative 'external/disk'
 require_relative 'external/random'
 require_relative 'external/shell'
@@ -6,6 +7,10 @@ require_relative 'model'
 require_relative 'prober'
 
 class Externals
+
+  def differ
+    @differ ||= External::Differ.new
+  end
 
   def disk
     @disk ||= External::Disk.new('cyber-dojo')
@@ -30,6 +35,5 @@ class Externals
   def shell
     @shell ||= External::Shell.new
   end
-
 
 end
