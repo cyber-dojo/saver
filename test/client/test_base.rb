@@ -15,7 +15,7 @@ class TestBase < Id58TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def externals
-    @exernals ||= Externals.new
+    @externals ||= Externals.new
   end
 
   def saver
