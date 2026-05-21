@@ -11,20 +11,20 @@ class KataDiffLinesTest < TestBase
   | v0 kata: diff_lines returns line-by-line diffs between events
   ) do
     result = diff_lines(V0_KATA_ID, 2, 3)
-    hiker = result.find { |d| d['new_filename'] == 'hiker.rb' }
-    assert_equal 'changed', hiker['type']
-    assert_equal 'hiker.rb', hiker['old_filename']
-    assert_equal({ 'added' => 1, 'deleted' => 1, 'same' => 3 }, hiker['line_counts'])
+    hiker = result.find { |d| d[:new_filename] == 'hiker.rb' }
+    assert_equal :changed, hiker[:type]
+    assert_equal 'hiker.rb', hiker[:old_filename]
+    assert_equal({ added: 1, deleted: 1, same: 3 }, hiker[:line_counts])
   end
 
   test 'F3D6F2', %w(
   | v1 kata: diff_lines returns line-by-line diffs between events
   ) do
     result = diff_lines(V1_KATA_ID, 1, 2)
-    test_hiker = result.find { |d| d['new_filename'] == 'test_hiker.py' }
-    assert_equal 'changed', test_hiker['type']
-    assert_equal 'test_hiker.py', test_hiker['old_filename']
-    assert_equal({ 'added' => 6, 'deleted' => 0, 'same' => 15 }, test_hiker['line_counts'])
+    test_hiker = result.find { |d| d[:new_filename] == 'test_hiker.py' }
+    assert_equal :changed, test_hiker[:type]
+    assert_equal 'test_hiker.py', test_hiker[:old_filename]
+    assert_equal({ added: 6, deleted: 0, same: 15 }, test_hiker[:line_counts])
   end
 
   test 'F3D6F3', %w(
