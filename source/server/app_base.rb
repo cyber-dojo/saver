@@ -27,7 +27,7 @@ class AppBase < Sinatra::Base
       respond_to do |format|
         format.json do
           args = to_json_object(request_body)
-          json_with_flock(args) { json_result(klass_name, method_name, args) }
+          json_result(klass_name, method_name, args)
         end
       end
     end
@@ -35,12 +35,16 @@ class AppBase < Sinatra::Base
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.post_json(klass_name, method_name)
+  def self.post_json(klass_name, method_name, lock: true)
     post "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json do
           args = to_json_object(request_body)
-          json_with_flock(args) { json_result(klass_name, method_name, args) }
+          if lock
+            json_with_flock(args) { json_result(klass_name, method_name, args) }
+          else
+            json_result(klass_name, method_name, args)
+          end
         end
       end
     end
@@ -65,7 +69,9 @@ class AppBase < Sinatra::Base
       lock_dir = File.join('', root, 'locks', id[0..1], id[2..3])
       FileUtils.mkdir_p(lock_dir)
       File.open(File.join(lock_dir, "#{id[4..5]}.lock"), File::RDWR | File::CREAT, 0600) do |f|
-        f.flock(File::LOCK_EX)
+        unless f.flock(File::LOCK_EX | File::LOCK_NB)
+          raise "Out of order event for #{id}"
+        end
         yield
       end
     end
