@@ -12,14 +12,19 @@ class App < AppBase
 
   # - - - - - - - - - - - - - - - - -
 
+   get_json(:model, :diff_lines)
+   get_json(:model, :diff_summary)
+
+  # - - - - - - - - - - - - - - - - -
+
   post_json(:model, :group_create)
    get_json(:model, :group_exists?)
    get_json(:model, :group_manifest)
   post_json(:model, :group_join)
    get_json(:model, :group_joined)
-  post_json(:model, :group_fork, lock: false)
 
-  # - - - - - - - - - - - - - - - - -
+  post_json(:model, :group_fork)
+  post_json(:model, :kata_fork)
 
   post_json(:model, :kata_create)
    get_json(:model, :kata_download)
@@ -27,13 +32,8 @@ class App < AppBase
    get_json(:model, :kata_events)
    get_json(:model, :kata_event)
    get_json(:model, :kata_manifest)
-  post_json(:model, :kata_fork, lock: false)
    get_json(:model, :katas_events)
    get_json(:model, :kata_option_get)
-   get_json(:model, :diff_lines)
-   get_json(:model, :diff_summary)
-
-  # - - - - - - - - - - - - - - - - -
 
   post_json(:model, :kata_file_create)
   post_json(:model, :kata_file_delete)
