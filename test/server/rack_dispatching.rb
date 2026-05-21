@@ -55,6 +55,35 @@ class RackDispatchingTest < TestBase
     assert_equal 200, response.status
   end
 
+  test 'FF0E44', %w(
+  | post_json dispatches without flock for kata_fork
+  | covering the lock: false branch in app_base
+  ) do
+    manifest = manifest_Tennis_refactoring_Python_unitttest.merge('version' => 2)
+    response = post_json('/kata_create', { 'manifest' => manifest }.to_json)
+    assert_equal 200, response.status
+    id = JSON.parse(response.body)['kata_create']
+    response = post_json('/kata_fork', { 'id' => id, 'index' => 0 }.to_json)
+    assert_equal 200, response.status
+  end
+
+  test 'FF0E45', %w(
+  | json_with_flock raises when lock is already held
+  | covering the out-of-order event branch in app_base
+  ) do
+    @version = 2
+    in_kata do |id|
+      saver_app = App.allocate
+      saver_app.instance_variable_set(:@externals, externals)
+      saver_app.send(:json_with_flock, { 'id' => id }) do
+        error = assert_raises(RuntimeError) do
+          saver_app.send(:json_with_flock, { 'id' => id }) { }
+        end
+        assert_equal "Out of order event for #{id}", error.message
+      end
+    end
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 400
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
