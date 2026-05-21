@@ -373,9 +373,39 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    all_events = worktree_commit(id, index, files, stdout, stderr, status, summary, tag_message)
+    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
+
+    { 
+      'next_index' => index + 1, 
+      'major_index' => major_index(all_events, index),
+      'minor_index' => 0
+    }
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  def worktree_commit(id, index, files, stdout, stderr, status, summary, tag_message)
+    # Out-of-sync detection has two layers, each catching a different scenario.
+    #
+    # 1. Sequential stale index (inside the worktree block):
+    #    The client sends an index that is behind the current last_index, but
+    #    there is no concurrent request. Without the explicit check, the worktree
+    #    commit and the git merge --ff-only would both SUCCEED, silently writing
+    #    corrupt data (e.g. two events.json entries with the same index). The
+    #    unless check catches this before any git work is done.
+    #
+    # 2. Concurrent write (rescue block):
+    #    Two requests for the same kata arrive simultaneously. Both create their
+    #    worktrees from the same HEAD, both pass the index check (they both see
+    #    the same last_index), and both commit to their respective worktree
+    #    branches. Whichever request reaches git merge --ff-only second will fail
+    #    because HEAD has already moved forward. The rescue detects this by
+    #    re-reading events.json from the main repo: if last_index >= index, a
+    #    concurrent write succeeded first, so "Out of order event" is raised.
+    #    Any other failure (e.g. disk error) is re-raised as-is.
     all_events = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
-      # Update events in worktree
       all_events = read_events(worktree)
       last_index = all_events.last['index']
 
@@ -401,19 +431,19 @@ class Kata_v2
       regex1 = /\d+ files? changed, (\d+) insertions?\(\+\), (\d+) deletion/
       regex2 = /\d+ files? changed, (\d+) insertions?\(\+\)/
       regex3 = /\d+ files? changed, (\d+) deletions?\(\-\)/
-      if m = info.match(regex1) 
+      if m = info.match(regex1)
         added_count, deleted_count = *m.captures
       elsif m = info.match(regex2)
         added_count, deleted_count = *m.captures, 0
       elsif m = info.match(regex3)
         added_count, deleted_count = 0, *m.captures
-      else 
+      else
         added_count, deleted_count = 0, 0
       end
 
       # Write the new event
-      all_events << summary.merge!({ 
-        'index' => index, 
+      all_events << summary.merge!({
+        'index' => index,
         'time' => time.now,
         'diff_added_count' => added_count.to_i,
         'diff_deleted_count' => deleted_count.to_i
@@ -437,15 +467,13 @@ class Kata_v2
       # Commit
       shell.assert_cd_exec(worktree.root_dir, "git commit --message '#{index} #{tag_message}' --quiet")
     end
-
-    # git_ff_merge_worktree succeeded, so tag
-    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
-
-    { 
-      'next_index' => index + 1, 
-      'major_index' => major_index(all_events, index),
-      'minor_index' => 0
-    }
+    all_events
+  rescue
+    current_events = read_events(disk, id)
+    if current_events.last['index'] >= index
+      raise "Out of order event for #{id}"
+    end
+    raise
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

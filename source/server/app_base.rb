@@ -1,4 +1,3 @@
-require 'fileutils'
 require_relative 'silently'
 require 'sinatra/base'
 silently { require 'sinatra/contrib' } # N x "warning: method redefined"
@@ -35,16 +34,12 @@ class AppBase < Sinatra::Base
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def self.post_json(klass_name, method_name, lock: true)
+  def self.post_json(klass_name, method_name)
     post "/#{method_name}", provides:[:json] do
       respond_to do |format|
         format.json do
           args = to_json_object(request_body)
-          if lock
-            json_with_flock(args) { json_result(klass_name, method_name, args) }
-          else
-            json_result(klass_name, method_name, args)
-          end
+          json_result(klass_name, method_name, args)
         end
       end
     end
@@ -54,28 +49,6 @@ class AppBase < Sinatra::Base
 
   include JsonAdapter
   include Utf8
-
-  def json_with_flock(args)
-    # Serialise all requests for the same kata/group id across both Puma
-    # threads and Puma worker processes. An OS-level flock(LOCK_EX) is used
-    # so the lock is visible to every worker process, unlike a Ruby Mutex
-    # which is in-process only. When id is absent or not a String (e.g.
-    # kata_create, group_create, or a malformed id) no lock is needed.
-    id = args['id']
-    unless id.is_a?(String) && id.length >= 6
-      yield
-    else
-      root = @externals.disk.root_dir
-      lock_dir = File.join('', root, 'locks', id[0..1], id[2..3])
-      FileUtils.mkdir_p(lock_dir)
-      File.open(File.join(lock_dir, "#{id[4..5]}.lock"), File::RDWR | File::CREAT, 0600) do |f|
-        unless f.flock(File::LOCK_EX | File::LOCK_NB)
-          raise "Out of order event for #{id}"
-        end
-        yield
-      end
-    end
-  end
 
   def json_result(klass_name, method_name, args)
     named_args = Hash[args.map{ |key,value| [key.to_sym, value] }]
