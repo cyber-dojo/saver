@@ -1,6 +1,6 @@
 require_relative 'test_base'
 
-class KataDiffLinesTest < TestBase
+class KataDiffV0Test < TestBase
 
   def initialize(arg)
     super(arg)
@@ -24,7 +24,7 @@ class KataDiffLinesTest < TestBase
     assert_equal :changed, hiker[:type]
     assert_equal 'hiker.rb', hiker[:old_filename]
     assert_equal({ added: 1, deleted: 1, same: 3 }, hiker[:line_counts])
-    assert_nil hiker[:lines]
+    refute hiker.key?(:lines)
   end
 
 end
