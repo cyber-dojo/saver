@@ -58,6 +58,8 @@ jobs:
         uses: cyber-dojo/kosli-begin-trail@main
         with:
           flow_description: "Group/Kata model+persistence"
+          flow_tags: |
+            env=${{ env.KOSLI_AWS_BETA }}
 
 
   pull-request:
