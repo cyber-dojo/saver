@@ -8,6 +8,7 @@ require_relative '../lib/json_adapter'
 require_relative '../lib/tarfile_reader'
 require_relative '../lib/utf8_clean'
 require 'base64'
+require 'stringio'
 require 'tmpdir'
 
 # 1. Uses git repo to store data
@@ -129,7 +130,7 @@ class Kata_v2
     result = { 'files' => {} }
     truncations = nil
 
-    tar_file = shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{pos_index}")
+    tar_file = git_archive(id, pos_index)
     reader = TarFile::Reader.new(tar_file)
     reader.files.each do |filename, content|
       if filename[-1] == '/' # dir marker
@@ -474,6 +475,50 @@ class Kata_v2
       raise "Out of order event for #{id}"
     end
     raise
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  # Reads the kata git tree at the commit tagged pos_index as a tar stream.
+  #
+  # A save commits its event (git merge --ff-only) and then, as a separate
+  # step, writes that index's numeric tag (git tag <index> HEAD). A concurrent
+  # reader can observe the new index in events.json before its numeric tag
+  # exists, so "git archive <index>" fails with "fatal: not a valid object
+  # name". The caller has already validated pos_index against events.json, so
+  # this failure is the transient tag-write window: retry briefly until the
+  # writer finishes. The retried failures are expected, so their stderr is
+  # silenced; if the retries are exhausted (a genuine missing object) the
+  # exception is re-raised, still carrying the full git diagnostic for the
+  # app error handler to report.
+  GIT_ARCHIVE_NO_SUCH_OBJECT = 'not a valid object name'
+  GIT_ARCHIVE_MAX_RETRIES    = 100
+  GIT_ARCHIVE_RETRY_SECONDS  = 0.01
+
+  def git_archive(id, pos_index)
+    attempts = 0
+    begin
+      with_silenced_stderr do
+        shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{pos_index}")
+      end
+    rescue => error
+      raise unless error.message.include?(GIT_ARCHIVE_NO_SUCH_OBJECT)
+      attempts += 1
+      raise if attempts > GIT_ARCHIVE_MAX_RETRIES
+      sleep(GIT_ARCHIVE_RETRY_SECONDS)
+      retry
+    end
+  end
+
+  # Runs the block with shell stderr logging diverted to a throwaway buffer,
+  # so an expected/recoverable git failure does not pollute the server log.
+  # Any raised exception still carries the full diagnostic in its message.
+  def with_silenced_stderr
+    previous = Thread.current[:stderr_stream]
+    Thread.current[:stderr_stream] = StringIO.new(+'', 'w')
+    yield
+  ensure
+    Thread.current[:stderr_stream] = previous
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
