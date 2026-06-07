@@ -137,11 +137,11 @@ class KataTornReadTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # Tn6Wb3 is a slow (~190 sequential git saves), timing-dependent live
-  # demonstration of the torn read. It passes now that events() reads via git,
-  # but it is commented out of routine suite runs: it is heavy and not a
-  # reliable guard (the deterministic Tn6Wb1/Tn6Wb2 above are). Re-enable by
-  # removing the =begin/=end around it.
+  # Tn6Wb3 is a slow (~104s: ~190 sequential git saves), timing-dependent live
+  # demonstration of the torn read. A re-run after step A confirmed it now
+  # reports zero torn reads (it caught 34/91,091 before events() read via git).
+  # Commented out of routine suite runs: heavy, and not a reliable guard (the
+  # deterministic Tn6Wb1/Tn6Wb2 are). Re-enable by removing the =begin/=end.
 =begin
   version_test 2, 'Tn6Wb3', %w(
   | Live demonstration of the torn read under real concurrency, in-process (no

@@ -103,14 +103,15 @@ class KataRanTestsTest < TestBase
     # Wrap the shell so the next "git archive --format=tar 1" reproduces the
     # window: tag 1 is momentarily absent (a genuine git failure) and then
     # restored, exactly as a concurrent winner's "git tag 1 HEAD" closes it.
-    window_shell = Class.new do
+    tag_race_shell = Class.new do
+      attr_reader :reproduced
       def initialize(real)
         @real = real
-        @opened = false
+        @reproduced = false
       end
       def assert_cd_exec(path, *commands)
-        if !@opened && commands.flatten.any? { |c| c.to_s.start_with?('git archive') }
-          @opened = true
+        if !@reproduced && commands.flatten.any? { |c| c.to_s.start_with?('git archive') }
+          @reproduced = true
           @real.assert_cd_exec(path, 'git tag --delete 1')
           begin
             @real.assert_cd_exec(path, *commands)
@@ -126,7 +127,7 @@ class KataRanTestsTest < TestBase
       end
     end.new(shell)
 
-    externals.instance_variable_set('@shell', window_shell)
+    externals.instance_variable_set('@shell', tag_race_shell)
 
     # The losing concurrent save (same index 1) must report out-of-order,
     # not the raw "not a valid object name" git diagnostic.
@@ -134,6 +135,10 @@ class KataRanTestsTest < TestBase
       kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
     }
     assert_equal "Out of order event for #{id}", error.message
+    # Confirm the race was actually reproduced: a stale save reports
+    # "Out of order event" anyway, so without this the test could pass without
+    # exercising the git archive recovery at all.
+    assert tag_race_shell.reproduced, 'tag-write race was never reproduced'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -146,16 +151,13 @@ class KataRanTestsTest < TestBase
     gid = group_create(custom_manifest)
     id  = group_join(gid)
 
-    fail_shell = Class.new do
-      def assert_cd_exec(*)
-        raise 'simulated git archive failure'
-      end
-    end.new
-
-    externals.instance_variable_set('@shell', fail_shell)
+    archive_shell = shell_failing_git_archive_with('simulated git archive failure')
+    externals.instance_variable_set('@shell', archive_shell)
 
     error = assert_raises(RuntimeError) { kata_event(id, 0) }
     assert_equal 'simulated git archive failure', error.message
+    # git archive was reached and re-raised immediately, with no retry.
+    assert_equal 1, archive_shell.git_archive_calls
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -168,16 +170,36 @@ class KataRanTestsTest < TestBase
     gid = group_create(custom_manifest)
     id  = group_join(gid)
 
-    always_missing_shell = Class.new do
-      def assert_cd_exec(*)
-        raise 'fatal: not a valid object name: 0'
-      end
-    end.new
-
-    externals.instance_variable_set('@shell', always_missing_shell)
+    archive_shell = shell_failing_git_archive_with('fatal: not a valid object name: 0')
+    externals.instance_variable_set('@shell', archive_shell)
 
     error = assert_raises(RuntimeError) { kata_event(id, 0) }
     assert_equal 'fatal: not a valid object name: 0', error.message
+    # git archive was retried to exhaustion before re-raising.
+    assert_equal Kata_v2::GIT_ARCHIVE_MAX_RETRIES + 1, archive_shell.git_archive_calls
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  # A shell that passes every command through to the real shell except
+  # "git archive", which it fails with the given message. Lets event()'s
+  # events read (git show) succeed so the failure isolates to git_archive.
+  def shell_failing_git_archive_with(message)
+    Class.new do
+      attr_reader :git_archive_calls
+      def initialize(real, message)
+        @real = real
+        @message = message
+        @git_archive_calls = 0
+      end
+      def assert_cd_exec(path, *commands)
+        if commands.flatten.any? { |c| c.to_s.start_with?('git archive') }
+          @git_archive_calls += 1
+          raise @message
+        end
+        @real.assert_cd_exec(path, *commands)
+      end
+    end.new(shell, message)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -

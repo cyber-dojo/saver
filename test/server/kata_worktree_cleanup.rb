@@ -27,7 +27,9 @@ class KataWorktreeCleanupTest < TestBase
   |
   | The spy records all shell commands issued during kata_ran_tests (with
   | unchanged files). The full sequence is:
-  |   [-12] ["git archive --format=tar 0"]        # file_edit -> event()
+  |   [-14] ["git show HEAD:events.json"]          # file_edit -> events()
+  |   [-13] ["git show HEAD:events.json"]          # file_edit -> event() -> events()
+  |   [-12] ["git archive --format=tar 0"]         # file_edit -> event()
   |   [-11] ["git worktree add /tmp/BRANCH"]
   |   [-10] ["git rm -r files/"]
   |    [-9] ["git add ."]
@@ -39,7 +41,9 @@ class KataWorktreeCleanupTest < TestBase
   |    [-3] "git branch --delete --force BRANCH"   <- cd_exec
   |    [-2] "rm -rf /tmp/BRANCH"                   <- cd_exec
   |    [-1] [["git tag 1 HEAD"]]
-  | The three cd_exec cleanup calls are always at positions -4, -3, -2.
+  | The events reads go through git (git show) since the reads-via-git change,
+  | adding the two leading commands. The three cd_exec cleanup calls remain at
+  | positions -4, -3, -2 (counted from the end, so unaffected).
   ) do
     in_kata do |id|
       files   = kata_event(id, 0)['files']
@@ -51,6 +55,12 @@ class KataWorktreeCleanupTest < TestBase
       externals.instance_variable_set('@shell', spy)
 
       kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
+
+      # Pin the leading reads-via-git commands so the documented sequence
+      # cannot silently drift (e.g. an events read added or removed).
+      assert_equal ["git show HEAD:events.json"],  spy.commands[0]
+      assert_equal ["git show HEAD:events.json"],  spy.commands[1]
+      assert_equal ["git archive --format=tar 0"], spy.commands[2]
 
       branch = spy.commands[-4].split.last
       assert_equal "git worktree remove --force #{branch}", spy.commands[-4]

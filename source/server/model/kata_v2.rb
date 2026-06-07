@@ -293,6 +293,10 @@ class Kata_v2
       return
     end
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
+      # Read the worktree directly, not via git (unlike option_get's main-repo
+      # read): the worktree is a private checkout this option_set just created
+      # (unique branch), so nothing else rewrites it (no torn-read race), and we
+      # need its base snapshot to modify and commit, not the live main HEAD.
       options = read_options(worktree)
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
@@ -407,6 +411,12 @@ class Kata_v2
     #    Any other failure (e.g. disk error) is re-raised as-is.
     all_events = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
+      # Read the worktree directly, not via git (unlike the main-repo reads).
+      # Safe and required: the worktree is a private checkout this save just
+      # created (git worktree add, unique branch), so nothing else rewrites it
+      # (no torn-read race); and we need its base snapshot (the HEAD this commit
+      # builds on), not the live main HEAD a git read would return, which a
+      # concurrent winner may already have advanced.
       all_events = read_events(worktree)
       last_index = all_events.last['index']
 
