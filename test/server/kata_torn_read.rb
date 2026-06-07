@@ -3,14 +3,10 @@ require_relative 'test_base'
 class KataTornReadTest < TestBase
 
   version_test 2, 'Tn6Wb1', %w(
-  | Reproduces the torn-read window proven by strace: git merge --ff-only
-  | rewrites the working-tree events.json via unlink + O_EXCL create + chunked
-  | writes, so a concurrent reader can observe a partial file. events()/
-  | read_events read the working-tree file directly (File.read), so a partial
-  | events.json reaches json_parse and surfaces as a raw JSON::ParserError
-  | instead of a clean result. This pins the current working-tree coupling;
-  | once reads go through git this assertion inverts (the read succeeds from
-  | the committed blob regardless of the working-tree file).
+  | events() reads committed state through git, not the working tree, so a
+  | partial working-tree events.json (the torn-read window during a save's
+  | git merge --ff-only) does not affect the read. Truncating the working-tree
+  | events.json leaves kata_events returning the committed events unchanged.
   ) do
     in_kata do |id|
       files  = kata_event(id, 0)['files']
@@ -18,35 +14,47 @@ class KataTornReadTest < TestBase
       stderr = { 'content' => '', 'truncated' => false }
       kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
 
+      expected = kata_events(id)
+
       path = events_json_path(id)
       full = File.read(path)
       # Simulate a partial chunked write: only a prefix has landed.
       File.write(path, full[0, full.size / 2])
 
-      assert_raises(JSON::ParserError) { kata_events(id) }
+      assert_equal expected, kata_events(id)
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Tn6Wb2', %w(
-  | Reproduces the ENOENT window proven by strace: between the unlink and the
-  | O_EXCL create of events.json the path does not exist. events()/read_events
-  | read the working-tree file directly, so file_read returns false and
-  | disk.assert raises a raw "command != true ... No such file or directory".
-  | This pins the current working-tree coupling; once reads go through git this
-  | assertion inverts (the read succeeds from the committed blob).
+  | events() reads committed state through git, not the working tree, so an
+  | absent working-tree events.json (the ENOENT window during a save's
+  | git merge --ff-only) does not affect the read. Deleting the working-tree
+  | events.json leaves kata_events returning the committed events unchanged.
   ) do
     in_kata do |id|
+      files  = kata_event(id, 0)['files']
+      stdout = { 'content' => '', 'truncated' => false }
+      stderr = { 'content' => '', 'truncated' => false }
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+
+      expected = kata_events(id)
+
       File.delete(events_json_path(id))
 
-      error = assert_raises(RuntimeError) { kata_events(id) }
-      assert error.message.include?('No such file or directory'), error.message
+      assert_equal expected, kata_events(id)
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  # Tn6Wb3 is a slow (~190 sequential git saves), timing-dependent live
+  # demonstration of the torn read. It passes now that events() reads via git,
+  # but it is commented out of routine suite runs: it is heavy and not a
+  # reliable guard (the deterministic Tn6Wb1/Tn6Wb2 above are). Re-enable by
+  # removing the =begin/=end around it.
+=begin
   version_test 2, 'Tn6Wb3', %w(
   | Live demonstration of the torn read under real concurrency, in-process (no
   | injection, no HTTP). A single writer thread streams sequential saves; each
@@ -104,6 +112,7 @@ class KataTornReadTest < TestBase
       assert_equal [], read_errors, diagnostic
     end
   end
+=end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

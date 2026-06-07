@@ -96,7 +96,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    result = read_events(disk, id)
+    result = read_events_via_git(id)
     event = result[0]
     event['colour'] = 'create'
     event['diff_added_count'] = 0
@@ -519,6 +519,23 @@ class Kata_v2
     yield
   ensure
     Thread.current[:stderr_stream] = previous
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  # Reads the kata's committed events.json through git rather than off the
+  # working tree. HEAD (the kata's main branch) advances atomically on a save's
+  # git merge --ff-only, and the committed blob exists before the ref moves, so
+  # this always returns a whole, consistent events.json. A plain working-tree
+  # File.read can instead observe the torn-read window while the merge rewrites
+  # the file (unlink + O_EXCL create + chunked write). See docs/reads-via-git.md.
+  def read_events_via_git(id)
+    json_parse(Utf8.clean(git_show(id, 'events.json')))
+  end
+
+  # Reads filename from the kata's git tree at HEAD as a string.
+  def git_show(id, filename)
+    shell.assert_cd_exec(repo_dir(id), "git show HEAD:#{filename}")
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
