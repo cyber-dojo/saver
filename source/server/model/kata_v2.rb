@@ -108,8 +108,14 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
+    event_from(id, index, events(id))
+  end
+
+  # Like event(id, index) but reuses an already-read events list, so callers
+  # that already have it (e.g. file_edit) don't trigger a second git show of
+  # events.json. See docs/reads-via-git.md.
+  def event_from(id, index, all_events)
     index = index.to_i
-    all_events = events(id)
 
     if index < 0
       pos_index = all_events.size + index
@@ -231,7 +237,7 @@ class Kata_v2
 
     all_events = events(id)
     last_index = all_events[-1]['index'] # all_events.size - 1
-    current_files = event(id, last_index)['files']
+    current_files = event_from(id, last_index, all_events)['files']
     edited_filename = edited_filename(current_files, files)
     if !edited_filename
       return index

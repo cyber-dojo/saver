@@ -27,8 +27,7 @@ class KataWorktreeCleanupTest < TestBase
   |
   | The spy records all shell commands issued during kata_ran_tests (with
   | unchanged files). The full sequence is:
-  |   [-14] ["git show HEAD:events.json"]          # file_edit -> events()
-  |   [-13] ["git show HEAD:events.json"]          # file_edit -> event() -> events()
+  |   [-13] ["git show HEAD:events.json"]          # file_edit -> events() (passed into event)
   |   [-12] ["git archive --format=tar 0"]         # file_edit -> event()
   |   [-11] ["git worktree add /tmp/BRANCH"]
   |   [-10] ["git rm -r files/"]
@@ -41,7 +40,8 @@ class KataWorktreeCleanupTest < TestBase
   |    [-3] "git branch --delete --force BRANCH"   <- cd_exec
   |    [-2] "rm -rf /tmp/BRANCH"                   <- cd_exec
   |    [-1] [["git tag 1 HEAD"]]
-  | The events reads go through git (git show), and main is advanced by an
+  | events.json is read via git once (file_edit reads it and passes it into
+  | event(), so there is no second git show), and main is advanced by an
   | update-ref compare-and-swap rather than git merge --ff-only (no working-tree
   | checkout). The three cd_exec cleanup calls remain at positions -4, -3, -2
   | (counted from the end, so unaffected).
@@ -58,10 +58,12 @@ class KataWorktreeCleanupTest < TestBase
       kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
 
       # Pin the leading reads-via-git commands so the documented sequence
-      # cannot silently drift (e.g. an events read added or removed).
+      # cannot silently drift (e.g. an events read added or removed). file_edit
+      # reads events.json once and passes it into event(), so there is exactly
+      # one git show of events.json per save.
       assert_equal ["git show HEAD:events.json"],  spy.commands[0]
-      assert_equal ["git show HEAD:events.json"],  spy.commands[1]
-      assert_equal ["git archive --format=tar 0"], spy.commands[2]
+      assert_equal ["git archive --format=tar 0"], spy.commands[1]
+      assert_equal 1, spy.commands.count { |c| c == ["git show HEAD:events.json"] }
 
       branch = spy.commands[-4].split.last
       assert_equal "git worktree remove --force #{branch}", spy.commands[-4]
