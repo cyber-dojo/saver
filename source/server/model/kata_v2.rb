@@ -96,7 +96,7 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def events(id)
-    result = read_events(disk, id)
+    result = read_events_via_git(id)
     event = result[0]
     event['colour'] = 'create'
     event['diff_added_count'] = 0
@@ -280,7 +280,7 @@ class Kata_v2
 
   def option_get(id, name)
     fail_unless_known_option(name)
-    read_options(disk, id)[name]
+    read_options_via_git(id)[name]
   end
 
   def option_set(id, name, value)
@@ -293,6 +293,10 @@ class Kata_v2
       return
     end
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
+      # Read the worktree directly, not via git (unlike option_get's main-repo
+      # read): the worktree is a private checkout this option_set just created
+      # (unique branch), so nothing else rewrites it (no torn-read race), and we
+      # need its base snapshot to modify and commit, not the live main HEAD.
       options = read_options(worktree)
       options[name] = value
       write_files(worktree, '', { options_filename => json_pretty(options) })
@@ -407,6 +411,12 @@ class Kata_v2
     #    Any other failure (e.g. disk error) is re-raised as-is.
     all_events = nil
     git_ff_merge_worktree(repo_dir(id)) do |worktree|
+      # Read the worktree directly, not via git (unlike the main-repo reads).
+      # Safe and required: the worktree is a private checkout this save just
+      # created (git worktree add, unique branch), so nothing else rewrites it
+      # (no torn-read race); and we need its base snapshot (the HEAD this commit
+      # builds on), not the live main HEAD a git read would return, which a
+      # concurrent winner may already have advanced.
       all_events = read_events(worktree)
       last_index = all_events.last['index']
 
@@ -470,7 +480,12 @@ class Kata_v2
     end
     all_events
   rescue
-    current_events = read_events(disk, id)
+    # Read the tip through git, not the working tree: a concurrent save's
+    # git merge --ff-only may be rewriting the working-tree events.json right
+    # now, and reading it directly here would mask the out-of-order with a raw
+    # torn-read diagnostic. HEAD advances atomically, so this sees the latest
+    # committed events. See read_events_via_git and docs/reads-via-git.md.
+    current_events = read_events_via_git(id)
     if current_events.last['index'] >= index
       raise "Out of order event for #{id}"
     end
@@ -523,6 +538,33 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  # Reads the kata's committed events.json through git rather than off the
+  # working tree. HEAD (the kata's main branch) advances atomically on a save's
+  # git merge --ff-only, and the committed blob exists before the ref moves, so
+  # this always returns a whole, consistent events.json. A plain working-tree
+  # File.read can instead observe the torn-read window while the merge rewrites
+  # the file (unlink + O_EXCL create + chunked write). See docs/reads-via-git.md.
+  def read_events_via_git(id)
+    json_parse(Utf8.clean(git_show(id, 'events.json')))
+  end
+
+  # Reads the kata's committed options.json through git rather than off the
+  # working tree. options.json is rewritten by option_set's git merge --ff-only,
+  # so a working-tree File.read can hit the torn-read window; reading at HEAD
+  # (which advances atomically) cannot. See git_show and docs/reads-via-git.md.
+  # Note this is the by-id read only; option_set reads options.json from its own
+  # /tmp worktree via read_options(worktree), which stays a working-tree read.
+  def read_options_via_git(id)
+    json_parse(Utf8.clean(git_show(id, 'options.json')))
+  end
+
+  # Reads filename from the kata's git tree at HEAD as a string.
+  def git_show(id, filename)
+    shell.assert_cd_exec(repo_dir(id), "git show HEAD:#{filename}")
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
   def git_ff_merge_worktree(repo_dir)
     branch = random.alphanumeric(8)
     worktree_dir = "/tmp/#{branch}"
@@ -540,22 +582,33 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def read_events(disk, id=nil)
-    # eg
-    # [
-    #  { "index": 0, ..., "event": "created" },
-    #  { "index": 1, ..., "colour": "red"    },
-    #  { "index": 2, ..., "colour": "amber"  }
-    # ]
-    read_json(disk, events_filename(id))
+  # Reads events.json from a /tmp worktree. The by-id reads of the main repo go
+  # through git now (read_events_via_git), so this is only ever the worktree
+  # variant used inside worktree_commit.
+  # eg
+  # [
+  #  { "index": 0, ..., "event": "created" },
+  #  { "index": 1, ..., "colour": "red"    },
+  #  { "index": 2, ..., "colour": "amber"  }
+  # ]
+  def read_events(worktree)
+    read_json(worktree, events_filename)
   end
 
-  def read_options(disk, id=nil)
-    read_json(disk, options_filename(id))
+  # Reads options.json from a /tmp worktree (only the worktree variant; the
+  # by-id read of the main repo goes through git, read_options_via_git).
+  def read_options(worktree)
+    read_json(worktree, options_filename)
   end
 
   def read_manifest(id)
     # eg { "display_name": "Ruby, MiniTest",...}
+    # Read from the working tree, not via git. manifest.json is written once at
+    # create() and never rewritten (saves rewrite events.json and metadata;
+    # option_set rewrites options.json), so it is immutable and a concurrent
+    # save's git merge --ff-only never refreshes it. It therefore cannot be
+    # caught in a torn-read window and does not need reading via git. See
+    # docs/reads-via-git.md.
     read_json(disk, manifest_filename(id))
   end
 
