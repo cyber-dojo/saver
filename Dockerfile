@@ -4,10 +4,16 @@ LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
 
-# In-process git reads via libgit2 (rugged) - see docs/in-process-git.md.
-# PROTOTYPE: build deps are left in the image for now; a follow-up can strip
-# them (rugged bundles libgit2 statically) or use a multi-stage build.
-RUN apk add --no-cache build-base cmake pkgconf libgit2-dev && gem install rugged
+# In-process git via libgit2 (the rugged gem) - see docs/in-process-git.md.
+# rugged compiles a vendored libgit2 statically into its extension, so the build
+# toolchain (and libgit2-dev) is only needed to compile it: install as a virtual
+# package, build, then drop it. Re-add libgcc for the libgcc_s the compiled
+# extension links at runtime (the only runtime lib not already provided by ruby;
+# libssl/libcrypto/libz/libgmp are).
+RUN apk add --no-cache --virtual .rugged-build-deps build-base cmake pkgconf libgit2-dev \
+ && gem install rugged \
+ && apk del .rugged-build-deps \
+ && apk add --no-cache libgcc
 
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
