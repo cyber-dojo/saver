@@ -280,7 +280,7 @@ class Kata_v2
 
   def option_get(id, name)
     fail_unless_known_option(name)
-    read_options(disk, id)[name]
+    read_options_via_git(id)[name]
   end
 
   def option_set(id, name, value)
@@ -531,6 +531,16 @@ class Kata_v2
   # the file (unlink + O_EXCL create + chunked write). See docs/reads-via-git.md.
   def read_events_via_git(id)
     json_parse(Utf8.clean(git_show(id, 'events.json')))
+  end
+
+  # Reads the kata's committed options.json through git rather than off the
+  # working tree. options.json is rewritten by option_set's git merge --ff-only,
+  # so a working-tree File.read can hit the torn-read window; reading at HEAD
+  # (which advances atomically) cannot. See git_show and docs/reads-via-git.md.
+  # Note this is the by-id read only; option_set reads options.json from its own
+  # /tmp worktree via read_options(worktree), which stays a working-tree read.
+  def read_options_via_git(id)
+    json_parse(Utf8.clean(git_show(id, 'options.json')))
   end
 
   # Reads filename from the kata's git tree at HEAD as a string.

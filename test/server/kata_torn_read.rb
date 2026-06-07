@@ -49,6 +49,44 @@ class KataTornReadTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'Tn6Wb4', %w(
+  | option_get() reads options.json through git, not the working tree, so a
+  | partial working-tree options.json (the torn-read window during a concurrent
+  | option_set's git merge --ff-only) does not affect the read. Truncating the
+  | working-tree options.json leaves kata_option_get returning the committed
+  | value unchanged.
+  ) do
+    in_kata do |id|
+      expected = kata_option_get(id, 'theme')
+
+      path = working_tree_path(id, 'options.json')
+      full = File.read(path)
+      File.write(path, full[0, full.size / 2])
+
+      assert_equal expected, kata_option_get(id, 'theme')
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Tn6Wb5', %w(
+  | option_get() reads options.json through git, not the working tree, so an
+  | absent working-tree options.json (the ENOENT window during a concurrent
+  | option_set's git merge --ff-only) does not affect the read. Deleting the
+  | working-tree options.json leaves kata_option_get returning the committed
+  | value unchanged.
+  ) do
+    in_kata do |id|
+      expected = kata_option_get(id, 'theme')
+
+      File.delete(working_tree_path(id, 'options.json'))
+
+      assert_equal expected, kata_option_get(id, 'theme')
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   # Tn6Wb3 is a slow (~190 sequential git saves), timing-dependent live
   # demonstration of the torn read. It passes now that events() reads via git,
   # but it is commented out of routine suite runs: it is heavy and not a
