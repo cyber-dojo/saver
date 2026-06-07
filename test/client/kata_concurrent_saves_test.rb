@@ -6,8 +6,8 @@ class KataConcurrentSavesTest < TestBase
   | N concurrent kata_ran_tests calls to the same kata-id all use index=1.
   | Exactly one succeeds. The remaining N-1 all get 'Out of order event':
   | either from the index check (sequential case) or from the failed
-  | git merge --ff-only (concurrent case). Even sequential execution cannot
-  | produce more than one success since all threads hardcode index=1.
+  | update-ref compare-and-swap (concurrent case). Even sequential execution
+  | cannot produce more than one success since all threads hardcode index=1.
   ) do
     n = 10
     in_kata do |id|
