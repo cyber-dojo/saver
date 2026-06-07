@@ -36,14 +36,15 @@ class KataWorktreeCleanupTest < TestBase
   |    [-8] ["git diff 0 --staged --shortstat ..."]
   |    [-7] ["git add ."]
   |    [-6] ["git commit --message '...' --quiet"]
-  |    [-5] ["git merge --ff-only BRANCH"]
+  |    [-5] ["git update-ref refs/heads/main BRANCH BRANCH^"]
   |    [-4] "git worktree remove --force BRANCH"   <- cd_exec
   |    [-3] "git branch --delete --force BRANCH"   <- cd_exec
   |    [-2] "rm -rf /tmp/BRANCH"                   <- cd_exec
   |    [-1] [["git tag 1 HEAD"]]
-  | The events reads go through git (git show) since the reads-via-git change,
-  | adding the two leading commands. The three cd_exec cleanup calls remain at
-  | positions -4, -3, -2 (counted from the end, so unaffected).
+  | The events reads go through git (git show), and main is advanced by an
+  | update-ref compare-and-swap rather than git merge --ff-only (no working-tree
+  | checkout). The three cd_exec cleanup calls remain at positions -4, -3, -2
+  | (counted from the end, so unaffected).
   ) do
     in_kata do |id|
       files   = kata_event(id, 0)['files']

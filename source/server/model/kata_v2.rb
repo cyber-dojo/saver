@@ -292,7 +292,7 @@ class Kata_v2
     if option_get(id, name) === value
       return
     end
-    git_ff_merge_worktree(repo_dir(id)) do |worktree|
+    fast_forward_main_via_worktree(repo_dir(id)) do |worktree|
       # Read the worktree directly, not via git (unlike option_get's main-repo
       # read): the worktree is a private checkout this option_set just created
       # (unique branch), so nothing else rewrites it (no torn-read race), and we
@@ -400,21 +400,22 @@ class Kata_v2
     # 1. Sequential stale index (inside the worktree block):
     #    The client sends an index that is behind the current last_index, but
     #    there is no concurrent request. Without the explicit check, the worktree
-    #    commit and the git merge --ff-only would both SUCCEED, silently writing
-    #    corrupt data (e.g. two events.json entries with the same index). The
-    #    unless check catches this before any git work is done.
+    #    commit and the ref update would both SUCCEED, silently writing corrupt
+    #    data (e.g. two events.json entries with the same index). The unless
+    #    check catches this before any git work is done.
     #
     # 2. Concurrent write (rescue block):
     #    Two requests for the same kata arrive simultaneously. Both create their
     #    worktrees from the same HEAD, both pass the index check (they both see
     #    the same last_index), and both commit to their respective worktree
-    #    branches. Whichever request reaches git merge --ff-only second will fail
-    #    because HEAD has already moved forward. The rescue detects this by
-    #    re-reading events.json from the main repo: if last_index >= index, a
-    #    concurrent write succeeded first, so "Out of order event" is raised.
-    #    Any other failure (e.g. disk error) is re-raised as-is.
+    #    branches. Whichever request reaches the update-ref compare-and-swap
+    #    second will fail because main has already moved forward. The rescue
+    #    detects this by re-reading events.json from the main repo: if
+    #    last_index >= index, a concurrent write succeeded first, so "Out of
+    #    order event" is raised. Any other failure (e.g. disk error) is
+    #    re-raised as-is.
     all_events = nil
-    git_ff_merge_worktree(repo_dir(id)) do |worktree|
+    fast_forward_main_via_worktree(repo_dir(id)) do |worktree|
       # Read the worktree directly, not via git (unlike the main-repo reads).
       # Safe and required: the worktree is a private checkout this save just
       # created (git worktree add, unique branch), so nothing else rewrites it
@@ -484,11 +485,11 @@ class Kata_v2
     end
     all_events
   rescue
-    # Read the tip through git, not the working tree: a concurrent save's
-    # git merge --ff-only may be rewriting the working-tree events.json right
-    # now, and reading it directly here would mask the out-of-order with a raw
-    # torn-read diagnostic. HEAD advances atomically, so this sees the latest
-    # committed events. See read_events_via_git and docs/reads-via-git.md.
+    # Read the tip through git, not the working tree: the working tree is stale
+    # (saves no longer refresh it), so it would not give the latest committed
+    # events. HEAD advances atomically via update-ref, so this sees the tip and
+    # resolves out-of-order cleanly. See read_events_via_git and
+    # docs/reads-via-git.md.
     current_events = read_events_via_git(id)
     if current_events.last['index'] >= index
       raise "Out of order event for #{id}"
@@ -500,9 +501,9 @@ class Kata_v2
 
   # Reads the kata git tree at the commit tagged pos_index as a tar stream.
   #
-  # A save commits its event (git merge --ff-only) and then, as a separate
-  # step, writes that index's numeric tag (git tag <index> HEAD). A concurrent
-  # reader can observe the new index in events.json before its numeric tag
+  # A save commits its event (advancing main via git update-ref) and then, as a
+  # separate step, writes that index's numeric tag (git tag <index> HEAD). A
+  # concurrent reader can observe the new index in events.json before its tag
   # exists, so "git archive <index>" fails with "fatal: not a valid object
   # name". The caller has already validated pos_index against events.json, so
   # this failure is the transient tag-write window: retry briefly until the
@@ -543,19 +544,19 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   # Reads the kata's committed events.json through git rather than off the
-  # working tree. HEAD (the kata's main branch) advances atomically on a save's
-  # git merge --ff-only, and the committed blob exists before the ref moves, so
-  # this always returns a whole, consistent events.json. A plain working-tree
-  # File.read can instead observe the torn-read window while the merge rewrites
-  # the file (unlink + O_EXCL create + chunked write). See docs/reads-via-git.md.
+  # working tree. The working tree is stale (saves no longer refresh it; they
+  # advance main with git update-ref, no checkout), so its events.json is not
+  # the latest. HEAD (the kata's main branch) advances atomically and the
+  # committed blob exists before the ref moves, so this always returns the
+  # whole, consistent, latest events.json. See docs/reads-via-git.md.
   def read_events_via_git(id)
     json_parse(Utf8.clean(git_show(id, 'events.json')))
   end
 
   # Reads the kata's committed options.json through git rather than off the
-  # working tree. options.json is rewritten by option_set's git merge --ff-only,
-  # so a working-tree File.read can hit the torn-read window; reading at HEAD
-  # (which advances atomically) cannot. See git_show and docs/reads-via-git.md.
+  # working tree. option_set advances main with git update-ref without a
+  # checkout, so the working-tree options.json is stale; reading at HEAD (which
+  # advances atomically) gives the latest. See git_show and docs/reads-via-git.md.
   # Note this is the by-id read only; option_set reads options.json from its own
   # /tmp worktree via read_options(worktree), which stays a working-tree read.
   def read_options_via_git(id)
@@ -569,14 +570,21 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_ff_merge_worktree(repo_dir)
+  def fast_forward_main_via_worktree(repo_dir)
     branch = random.alphanumeric(8)
     worktree_dir = "/tmp/#{branch}"
     begin
       shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
       worktree = External::Disk.new(worktree_dir)
       yield worktree
-      shell.assert_cd_exec(repo_dir, "git merge --ff-only #{branch}")
+      # Advance main with a compare-and-swap ref update, not git merge --ff-only:
+      # it moves the ref without checking the new tree out, leaving the main
+      # working tree stale (nothing reads it now; see docs/reads-via-git.md).
+      # The block makes exactly one commit, so #{branch}^ is the commit main was
+      # at when this worktree was created. The old-value precondition makes
+      # update-ref fail (raise) if a concurrent save advanced main since then,
+      # which the rescue maps to "Out of order event".
+      shell.assert_cd_exec(repo_dir, "git update-ref refs/heads/main #{branch} #{branch}^")
     ensure
       shell.cd_exec(repo_dir, "git worktree remove --force #{branch}")
       shell.cd_exec(repo_dir, "git branch --delete --force #{branch}")
@@ -608,10 +616,11 @@ class Kata_v2
   def read_manifest(id)
     # eg { "display_name": "Ruby, MiniTest",...}
     # Read from the working tree, not via git. manifest.json is written once at
-    # create() and never rewritten (saves rewrite events.json and metadata;
-    # option_set rewrites options.json), so it is immutable and a concurrent
-    # save's git merge --ff-only never refreshes it. It therefore cannot be
-    # caught in a torn-read window and does not need reading via git. See
+    # create() and never rewritten (saves change events.json and metadata;
+    # option_set changes options.json; nothing changes the manifest), so it is
+    # immutable. Its create-time working-tree copy therefore always equals the
+    # committed content, even now that saves no longer refresh the working tree,
+    # so reading it from the working tree is correct and needs no git. See
     # docs/reads-via-git.md.
     read_json(disk, manifest_filename(id))
   end

@@ -81,9 +81,9 @@ class KataRanTestsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Sp4DkD', %w(
-  | There is a window between the git merge --ff-only (which updates
-  | events.json to include the new index) and the separate git tag
-  | <index> HEAD that records the numeric tag for that index. A concurrent
+  | There is a window between the ref advance (git update-ref, which moves
+  | main to the commit that adds the new index to events.json) and the separate
+  | git tag <index> HEAD that records the numeric tag for that index. A concurrent
   | save that loses the race reads the new last_index from events.json,
   | then calls event() -> git archive --format=tar <index>, which fails
   | with "not a valid object name" because the numeric tag is not written
@@ -226,6 +226,30 @@ class KataRanTestsTest < TestBase
     assert_raises(NoLongerImplementedError) do
       kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkG', %w(
+  | A save advances HEAD with git update-ref, not git merge --ff-only, so it
+  | does NOT refresh the main working tree (the write speedup). Reads via git
+  | still see the new committed state, but the save leaves the working-tree
+  | events.json untouched.
+  ) do
+    id     = kata_create(custom_manifest)
+    files  = kata_event(id, 0)['files']
+    stdout = { 'content' => '', 'truncated' => false }
+    stderr = { 'content' => '', 'truncated' => false }
+
+    path   = working_tree_path(id, 'events.json')
+    before = File.read(path)
+
+    kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+
+    # correctness: the committed state advanced (read via git)
+    assert_equal 2, kata_events(id).size
+    # the speedup: the save did not refresh the working tree
+    assert_equal before, File.read(path)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
