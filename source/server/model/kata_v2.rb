@@ -310,15 +310,19 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def download(id)
-    # If id == 'vqzjS7' then repo_dir(id) is '/cyber-dojo/katas/vq/zj/S7/'
-    # and the root-dir of the tar command is 'S7'.
-    # So using --transform to create root-dir with a name
-    # matching the tzg filename itself.
+    # Build the download from committed git state, not the working tree, so it
+    # is correct even when the working tree is stale (see docs/reads-via-git.md).
+    # git clone gives a fresh repo with the full history and tags and a checkout
+    # of HEAD; remove the local-path origin it adds so the result is a plain repo
+    # the user can push to GitHub. The clone dir is named after the tgz, so the
+    # tarball's root dir matches the filename.
     year, month, day = *time.now
     user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
     Dir.mktmpdir do |tmp_dir|
-      tgz_command = "tar -czf #{tmp_dir}/#{user_name}.tgz --transform s/^./#{user_name}/ ."
-      shell.assert_cd_exec(repo_dir(id), tgz_command)
+      clone_dir = "#{tmp_dir}/#{user_name}"
+      shell.assert_cd_exec(repo_dir(id), "git clone --quiet . #{clone_dir}")
+      shell.assert_cd_exec(clone_dir, "git remote remove origin")
+      shell.assert_cd_exec(tmp_dir, "tar -czf #{user_name}.tgz #{user_name}")
       tgz_file_path = "#{tmp_dir}/#{user_name}.tgz"
       [ "#{user_name}.tgz", Base64.encode64(File.read(tgz_file_path)) ]
     end

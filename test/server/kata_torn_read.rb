@@ -242,13 +242,4 @@ class KataTornReadTest < TestBase
   end
 =end
 
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  # Absolute path of a file in a kata's working tree, e.g.
-  # /cyber-dojo/katas/Sy/G9/sT/events.json (same layout as
-  # assert_tag_commit_message in test_base.rb).
-  def working_tree_path(id, filename)
-    "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}/#{filename}"
-  end
-
 end

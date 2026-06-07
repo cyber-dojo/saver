@@ -1,10 +1,47 @@
 
-Reads via git (make git the sole read path)
-============================================
+Reads via git (read committed state via git, not the working tree)
+==================================================================
 
-A design note, not a description of current behaviour. It records a framing
-that came out of investigating concurrent read/write races in v2 katas, so the
-reasoning is not lost. Nothing here is implemented yet.
+A design note born from investigating concurrent read/write races in v2 katas.
+Parts are now implemented; see "Current status and decisions" below for what is
+done, what was decided against, and what remains. The rest of the note keeps the
+original reasoning.
+
+
+- - - -
+## Current status and decisions
+
+Done:
+- The torn-read fix. events.json, options.json, and the worktree_commit
+  out-of-order rescue now read committed state via `git show HEAD:<file>`
+  instead of the working tree (the A/C/E conversions in the enumeration). The
+  race is fixed and verified.
+- Version dispatch. `Model#kata` derives a v2 kata's version from the presence
+  of its `.git` dir (a cheap stat) instead of reading manifest.json, with a
+  legacy manifest fallback that asserts v0/v1. (`Model#group` is unchanged: v2
+  groups are not git repos.)
+
+Decided against: making the kata repo bare. A bare repo is a different on-disk
+layout, so it would be a de-facto new format (v3) and a population of mixed
+bare/non-bare v2 dirs. We do not want that.
+
+Chosen end-state instead: keep the repo NON-bare, but stop refreshing its
+working tree. Advance `main` with `git update-ref` (compare-and-swap) instead of
+`git merge --ff-only`, so the per-save checkout is skipped and the working tree
+just goes stale. A stale working tree is harmless because the reads that need
+current data already go through git. This is the write speedup, with no bare
+repo and no v3.
+
+manifest.json stays a working-tree read: it is written once at create() and
+never rewritten, so it is immutable and a stale working-tree copy is still
+correct. No manifest conversion is needed for the stale-tree switch.
+
+Remaining work, in order:
+1. download (kata_v2.rb:308-321) tars the working tree, so a stale tree would
+   ship stale content. Convert it to assemble the repo-with-history from git
+   first. This is the one prerequisite for the stale-tree switch.
+2. Replace `git merge --ff-only` with the `git update-ref` CAS advance (the
+   write speedup), leaving the working tree unrefreshed.
 
 
 - - - -
@@ -80,9 +117,11 @@ remove the racy artifact:
    working-tree file in the read path to catch mid-rewrite.
 
 2. Once nothing reads the working tree, the writer no longer needs to refresh
-   it. The fast-forward of `main` can move the ref without checking the new tree
-   out into the main repo (the commit still exists in the object store via the
-   `/tmp` worktree). The main repo effectively becomes bare for the data files.
+   it. Advancing `main` with `git update-ref` (instead of `git merge --ff-only`)
+   moves the ref without checking the new tree out (the commit already exists in
+   the object store via the `/tmp` worktree). The repo stays NON-bare; its
+   working tree just goes stale. We deliberately do NOT go fully bare: that would
+   change the on-disk layout into a de-facto v3 (see the status section above).
 
 Step 2 is what distinguishes this from "just read via git." Reading via git
 fixes the symptom; not refreshing the working tree removes the shared mutable
@@ -93,21 +132,18 @@ there to feed the old read path.
 - - - -
 ## Get a snapshot, not N independent reads
 
-`manifest(id)` (kata_v2.rb:87-94) reads `manifest.json` and then, per option,
-`options.json` as separate reads. If each were its own `git show HEAD:...`,
-HEAD could advance between them and compose files from two different commits.
+This concern turned out to be moot. It would matter only if two *mutable* files
+were read via git and had to agree. After the conversions, the only mutable
+files read via git are `events.json` and `options.json`, and no operation reads
+both via git as a pair: `manifest()` reads `manifest.json` from the working tree
+(immutable) and `options.json` via git, so there is no multi-file git snapshot
+to coordinate.
 
-So a read that spans more than one file must resolve the commit once and read
-every file relative to that one sha:
-
-    sha = git rev-parse HEAD      # or refs/heads/main
-    git show <sha>:manifest.json
-    git show <sha>:options.json
-
-This gives a real point-in-time snapshot. (Today the practical exposure is
-narrow because `worktree_commit` does not rewrite `manifest.json`; only
-`option_set` rewrites `options.json`. But the snapshot rule is the correct shape
-regardless.)
+(Kept for the record: if a future change ever read two mutable files via git
+together, it should resolve one sha once and read both at it, e.g.
+`sha = git rev-parse HEAD` then `git show <sha>:a` / `git show <sha>:b`, rather
+than two independent `git show HEAD:` calls that could straddle a concurrent
+save.)
 
 
 - - - -
@@ -156,8 +192,8 @@ rescue re-reading `events.json` to decide "Out of order event"
     git update-ref refs/heads/main <new-sha> <expected-old-sha>
 
 fails atomically if `main` moved since the writer read it, which is exactly the
-loser-detection, without a checkout. So removing the working tree could also
-replace the merge-plus-rescue dance with something both faster and more precise.
+loser-detection, without a checkout. So this could also replace the
+merge-plus-rescue dance with something both faster and more precise.
 
 What does NOT get faster:
 
@@ -171,9 +207,10 @@ What does NOT get faster:
 - Secondary and indirect: less disk I/O and page-cache churn per save, and less
   read/write disk contention under concurrency. Real but unmeasured.
 
-Confidence note: the git semantics here (bare-repo ref moves, `update-ref`
-compare-and-swap, `merge` needing a working tree) are reasonably certain but have
-not been re-verified from git source in this work.
+Confidence note: the git semantics here (`update-ref` advancing a branch on a
+non-bare repo and leaving the working tree stale, `update-ref` compare-and-swap,
+`merge` needing a working tree) are reasonably certain but have not been
+re-verified from git source in this work.
 
 
 - - - -
@@ -186,17 +223,19 @@ not been re-verified from git source in this work.
   Whether the net is a win needs measuring, not assuming, and runs against the
   overhead-cutting direction of #377-#380.
 
-- Making the main repo bare-for-data is a larger change than swapping the read
-  calls. Anything that assumes a populated working tree must be checked.
-  `download` (kata_v2.rb:308-321) is the awkward one: it `tar`s the repo dir to
-  ship the kata as a real git repo the user can push to GitHub (the generated
-  README literally instructs `git push`). See the download conversion note in
-  the enumeration below for why `git archive` does NOT work here.
+- Stopping the working-tree refresh (the stale-tree switch) requires that
+  nothing reads it for current data. `download` (kata_v2.rb:308-321) is the
+  holdout: it `tar`s the repo dir to ship the kata as a real git repo the user
+  can push to GitHub (the generated README literally instructs `git push`), so a
+  stale tree would ship stale content. It must move to git first. See the
+  download conversion note in the enumeration below for why `git archive` does
+  NOT work here.
 
-- An intermediate option exists: keep the working tree but read via git anyway.
-  That fixes the torn read without the bare-repo work, at the cost of leaving
-  the now-pointless per-save checkout in place. It is a smaller, reversible
-  first step toward the full framing.
+- Where we are now is the safe intermediate state: the working tree is still
+  refreshed by `git merge --ff-only`, but the reads that need current data go
+  through git, so nothing depends on the refresh except `download`. The
+  stale-tree switch (`update-ref` instead of `merge --ff-only`) is the next step
+  once `download` is converted; it is reversible and needs no layout change.
 
 
 - - - -
@@ -258,37 +297,35 @@ Three lines of evidence now agree:
 - - - -
 ## Sequencing and rollout
 
-The two changes have a hard ordering dependency, not just a preferred order:
-the write speedup (ref-only advance, dropping the main-tree checkout) is unsafe
-until nothing reads the working tree. So reads-via-git is the step that unlocks
-the write change, and must land first.
+There is a hard ordering dependency: the write speedup (advancing `main` with
+`update-ref` instead of `merge --ff-only`, leaving the working tree stale) is
+unsafe until nothing reads the working tree for current data.
 
-Step 1: move all reads through git.
-- Independently valuable: it fixes the torn-read race on its own, whether or not
-  step 2 ever happens.
-- The intermediate state is safe and shippable: the ff-merge still refreshes the
-  main working tree, but nothing reads it, so the refresh is harmless waste. The
-  work can pause here indefinitely.
-- Verifiable in isolation: read correctness can be confirmed before the write
-  path is touched at all.
+Step 1 (DONE): move the reads of mutable data through git -- `events.json` (A),
+`options.json` (C), and the rescue read (E). This fixes the torn-read race on
+its own, independently of the write speedup. We are here now: the working tree
+is still refreshed by `merge --ff-only` (harmless waste), and the only thing
+still reading mutable data from it is `download`.
 
-Step 2: stop refreshing the main working tree (ref-only advance, the write
-speedup above). Safe only once step 1 guarantees no reader depends on the
-working tree.
+Step 2: convert `download` to read from git, since its `tar` of the working tree
+would otherwise ship stale content after the switch.
 
-Caveats to hold onto:
+Step 3: the write speedup -- replace `merge --ff-only` with the `update-ref` CAS
+advance, leaving the working tree unrefreshed.
 
-- "All reads" must mean all of them, or step 2 breaks. The full enumeration is
-  in the next section. For the torn-read fix only the reads of files a save
-  actually rewrites need converting (events.json and options.json); the manifest
-  reads are immutable and the download read is special, so they ride with step
-  2. For step 2 (bare repo) every working-tree read must move to git.
+What does NOT need converting:
+- `manifest.json` reads (`read_manifest`): immutable, so a stale working-tree
+  copy stays correct. Stays a working-tree read.
+- version dispatch: was a manifest read on every kata operation; sped up
+  separately by detecting the `.git` dir (see the status section), so it no
+  longer reads `manifest.json` for v2 katas.
 
-- Step 1 alone is a net cost. Reads become git subprocesses (slower per read);
-  the payoff (faster writes) only arrives in step 2. Shipping step 1 and
-  stopping trades read latency for correctness. That is a fine trade if the race
-  is real, but it means the two steps are best planned together rather than
-  step 1 shipped and forgotten.
+So the stale-tree switch needs only events/options/rescue (done) plus `download`
+(step 2) -- NOT "every working-tree read", and no bare repo.
+
+Cost note: reads of mutable data become git subprocesses instead of `File.read`;
+the payoff (skipping the per-save checkout) arrives with the write speedup. So
+the two are best planned together rather than stopping after step 1.
 
 
 - - - -
@@ -297,8 +334,7 @@ Caveats to hold onto:
 Every read primitive (`read_events` / `read_options` / `read_manifest` ->
 `read_json` -> `read` -> `disk.file_read_command`) and every shell command that
 touches a tree, classified by which tree it reads. Only reads of the main repo
-working tree are the shared racy artifact that step 2 (making main bare) would
-break.
+working tree of *mutable* data are broken by the stale-tree switch.
 
 Reads of the main working tree, split by whether the file can actually tear (a
 save rewrites it, so a concurrent reader can be caught in the git merge --ff-only
@@ -321,28 +357,31 @@ Convert A, C, E by reading at `HEAD` (`git show HEAD:<file>`). Each reads a
 single file, so no multi-file snapshot is needed; `HEAD` advances atomically on
 the ff-merge and always resolves, so no retry (unlike the numeric tags).
 
-Immutable, or deferred to step 2 (bare repo). Not part of the torn-read fix:
+Immutable or already handled. Not part of the torn-read fix, and (except
+download) not needed for the stale-tree switch either:
 
 - B. `manifest(id)`, kata_v2.rb:88 (`read_manifest(id)`) reads `manifest.json`.
   manifest.json is written once by `create()` and never rewritten (saves rewrite
   events.json and metadata; `option_set` rewrites options.json), so it is
-  immutable and a save's ff-merge never refreshes it. It cannot tear, so it does
-  not need reading via git for correctness; only the bare-repo goal needs it.
-- `from_path` (model.rb:180), MISSED by this kata_v2-scoped enumeration:
-  `Model#kata` and `Model#group` read manifest.json from the working tree to
-  dispatch on version, before any Kata_vN is instantiated, on every operation.
-  Also immutable (no torn risk), but version-agnostic: v0/v1 katas have no git
-  repo, so this read cannot uniformly use `git show`. Converting it belongs with
-  step 2, where the v0/v1 dispatch has to be designed.
+  immutable: it cannot tear, and a stale working-tree copy stays correct. So it
+  STAYS a working-tree read -- no conversion needed, now or for the stale-tree
+  switch.
+- Version dispatch (`Model#kata`, model.rb): RESOLVED separately. It used to read
+  `manifest.json` on every kata operation just to get the version; it now detects
+  the `.git` dir (=> v2) with a legacy `manifest.json` fallback that asserts
+  v0/v1. So this is no longer a manifest read for v2 katas. (`Model#group` still
+  reads its manifest; v2 groups are flat files, outside this scope.)
 - D. `download(id)`, kata_v2.rb:316 (`tar -czf ... .` in `repo_dir`) reads the
-  whole working tree. NOT a `git archive` swap: `git archive` emits only the
-  tree at a commit, with no `.git` and no history, but download's contract is to
-  ship the whole repo with history so the user can push it to GitHub. The
-  existing test `kata_download.rb` (kL375s) pins that (asserts the unpacked tgz
-  contains a working `.git`, `git tag`, `git log`); a naive `git archive` would
-  fail it. Under a bare main, download must reconstruct a pushable repo another
-  way (tar the bare repo's `.git`, or `git clone` it into a temp dir and tar
-  that).
+  whole working tree -- the one remaining conversion, and the prerequisite for
+  the stale-tree switch (a stale tree would `tar` stale content). NOT a
+  `git archive` swap: `git archive` emits only the tree at a commit, with no
+  `.git` and no history, but download's contract is to ship the whole repo with
+  history so the user can push it to GitHub. The existing test `kata_download.rb`
+  (kL375s) pins that (asserts the unpacked tgz contains a working `.git`,
+  `git tag`, `git log`); a naive `git archive` would fail it. So download must
+  assemble a pushable repo-with-history from git another way (e.g. `git clone`
+  the repo into a temp dir and `tar` that, or build the `.git` from the object
+  store).
 
 Reads that are NOT of the main working tree (no conversion needed for the race):
 
@@ -360,7 +399,8 @@ Reads that are NOT of the main working tree (no conversion needed for the race):
 - J. `download`, kata_v2.rb:319 (`File.read(tgz_file_path)`) reads the freshly
   produced `.tgz` in `Dir.mktmpdir`, i.e. tar's own output, not the kata tree.
 
-Wrinkle for step 2: F and G read the `/tmp/<branch>` worktree created by
-`git worktree add` (:530), which stays checked out for the save's duration.
-Making the main repo bare does not affect them, so step 2 is safe for F and G as
-written. Only A through E need to move off the main working tree.
+Note: F and G read the `/tmp/<branch>` worktree created by `git worktree add`
+(:530), which stays checked out for the save's duration. The stale-tree switch
+only stops refreshing the *main* working tree, so it does not affect F and G.
+Of the main-tree reads, only events/options/rescue (A, C, E -- done) and
+`download` (D) ever needed converting.
