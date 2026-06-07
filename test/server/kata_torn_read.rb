@@ -87,6 +87,56 @@ class KataTornReadTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'Tn6Wb6', %w(
+  | The worktree_commit rescue decides "Out of order event" by reading the tip
+  | committed events.json through git, not the working tree. A concurrent save's
+  | git merge --ff-only can leave the working-tree events.json torn while the
+  | rescue runs; reading it directly would mask the out-of-order with a raw JSON
+  | error. With a truncated working-tree events.json, a stale save still reports
+  | "Out of order event".
+  ) do
+    in_kata do |id|
+      files  = kata_event(id, 0)['files']
+      stdout = { 'content' => '', 'truncated' => false }
+      stderr = { 'content' => '', 'truncated' => false }
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+
+      path = working_tree_path(id, 'events.json')
+      full = File.read(path)
+      File.write(path, full[0, full.size / 2])
+
+      error = assert_raises(RuntimeError) {
+        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      }
+      assert_equal "Out of order event for #{id}", error.message
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Tn6Wb7', %w(
+  | As Tn6Wb6 but for the ENOENT window: with the working-tree events.json
+  | deleted, the worktree_commit rescue still reports "Out of order event"
+  | because it reads the tip through git rather than the missing working-tree
+  | file.
+  ) do
+    in_kata do |id|
+      files  = kata_event(id, 0)['files']
+      stdout = { 'content' => '', 'truncated' => false }
+      stderr = { 'content' => '', 'truncated' => false }
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+
+      File.delete(working_tree_path(id, 'events.json'))
+
+      error = assert_raises(RuntimeError) {
+        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      }
+      assert_equal "Out of order event for #{id}", error.message
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   # Tn6Wb3 is a slow (~190 sequential git saves), timing-dependent live
   # demonstration of the torn read. It passes now that events() reads via git,
   # but it is commented out of routine suite runs: it is heavy and not a

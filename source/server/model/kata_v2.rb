@@ -470,7 +470,12 @@ class Kata_v2
     end
     all_events
   rescue
-    current_events = read_events(disk, id)
+    # Read the tip through git, not the working tree: a concurrent save's
+    # git merge --ff-only may be rewriting the working-tree events.json right
+    # now, and reading it directly here would mask the out-of-order with a raw
+    # torn-read diagnostic. HEAD advances atomically, so this sees the latest
+    # committed events. See read_events_via_git and docs/reads-via-git.md.
+    current_events = read_events_via_git(id)
     if current_events.last['index'] >= index
       raise "Out of order event for #{id}"
     end
@@ -567,18 +572,23 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def read_events(disk, id=nil)
-    # eg
-    # [
-    #  { "index": 0, ..., "event": "created" },
-    #  { "index": 1, ..., "colour": "red"    },
-    #  { "index": 2, ..., "colour": "amber"  }
-    # ]
-    read_json(disk, events_filename(id))
+  # Reads events.json from a /tmp worktree. The by-id reads of the main repo go
+  # through git now (read_events_via_git), so this is only ever the worktree
+  # variant used inside worktree_commit.
+  # eg
+  # [
+  #  { "index": 0, ..., "event": "created" },
+  #  { "index": 1, ..., "colour": "red"    },
+  #  { "index": 2, ..., "colour": "amber"  }
+  # ]
+  def read_events(worktree)
+    read_json(worktree, events_filename)
   end
 
-  def read_options(disk, id=nil)
-    read_json(disk, options_filename(id))
+  # Reads options.json from a /tmp worktree (only the worktree variant; the
+  # by-id read of the main repo goes through git, read_options_via_git).
+  def read_options(worktree)
+    read_json(worktree, options_filename)
   end
 
   def read_manifest(id)
