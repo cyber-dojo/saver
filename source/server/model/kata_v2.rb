@@ -5,10 +5,8 @@ require_relative 'id_pather'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
-require_relative '../lib/tarfile_reader'
 require_relative '../lib/utf8_clean'
 require 'base64'
-require 'stringio'
 require 'tmpdir'
 
 # 1. Uses git repo to store data
@@ -136,12 +134,10 @@ class Kata_v2
     result = { 'files' => {} }
     truncations = nil
 
-    tar_file = git_archive(id, pos_index)
-    reader = TarFile::Reader.new(tar_file)
-    reader.files.each do |filename, content|
-      if filename[-1] == '/' # dir marker
-        next
-      elsif filename.start_with?('files/')
+    git_archive(id, pos_index).each do |filename, content|
+      # tag_tree_blobs yields blobs only (no directory markers), so every
+      # filename is a real path.
+      if filename.start_with?('files/')
         result['files'][filename['files/'.size..-1]] = { 'content' => content }
       elsif ['stdout', 'stderr'].include?(filename)
         result[filename] = { 'content' => content }
@@ -188,7 +184,10 @@ class Kata_v2
     index = file_edit(id, index, files)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
-    tag_message = "created file '#{filename}'"
+    # No quotes around the filename: the old save committed via a shell command
+    # whose quoting stripped them, so historically the stored message had none.
+    # The commit is now in-process (rugged), which uses the message literally.
+    tag_message = "created file #{filename}"
     result = git_commit_tag(id, index, files, summary, tag_message)
     result['next_index']
   end
@@ -202,7 +201,8 @@ class Kata_v2
     index = file_edit(id, index, files)
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
-    tag_message = "deleted file '#{filename}'"
+    # No quotes: see the note in file_create.
+    tag_message = "deleted file #{filename}"
     result = git_commit_tag(id, index, files, summary, tag_message)
     result['next_index']
   end
@@ -244,7 +244,8 @@ class Kata_v2
     end
 
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
-    tag_message = "edited file '#{edited_filename}'"
+    # No quotes: see the note in file_create.
+    tag_message = "edited file #{edited_filename}"
     result = git_commit_tag(id, index, files, summary, tag_message)
     result['next_index']
   end
@@ -272,13 +273,17 @@ class Kata_v2
   def reverted(id, index, files, stdout, stderr, status, summary)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
-    tag_message = "reverted to #{info.inspect}"
+    # info.inspect added escaping that the old shell-quoting path stripped back
+    # out, so the historical message was the plain JSON. The in-process (rugged)
+    # commit uses the message literally, so embed the plain JSON directly.
+    tag_message = "reverted to #{info}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
   def checked_out(id, index, files, stdout, stderr, status, summary)
     info = json_plain(summary['checkout'])
-    tag_message = "checked out #{info.inspect}"
+    # Plain JSON, not info.inspect: see the note in reverted.
+    tag_message = "checked out #{info}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
   end
 
@@ -298,19 +303,16 @@ class Kata_v2
     if option_get(id, name) === value
       return
     end
-    fast_forward_main_via_worktree(repo_dir(id)) do |worktree|
-      # Read the worktree directly, not via git (unlike option_get's main-repo
-      # read): the worktree is a private checkout this option_set just created
-      # (unique branch), so nothing else rewrites it (no torn-read race), and we
-      # need its base snapshot to modify and commit, not the live main HEAD.
-      options = read_options(worktree)
+    # Build the options.json change as an in-process commit on a single base,
+    # then advance main onto it with an update-ref compare-and-swap on that same
+    # base. No worktree, no checkout (the working tree stays stale; option_get
+    # reads via git). The CAS gives loser detection: a concurrent winner makes it
+    # fail. See docs/in-process-git.md.
+    result = git.commit_options(repo_dir(id), "set option #{name} to #{value}") do |options|
       options[name] = value
-      write_files(worktree, '', { options_filename => json_pretty(options) })
-      shell.assert_cd_exec(worktree.root_dir, [
-        'git add .',
-        "git commit --allow-empty --all --message 'set option #{name} to #{value}' --quiet",
-      ])
+      { options_filename => json_pretty(options) }
     end
+    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -388,11 +390,10 @@ class Kata_v2
   end
   
   def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
-    all_events = worktree_commit(id, index, files, stdout, stderr, status, summary, tag_message)
-    shell.assert_cd_exec(repo_dir(id), ["git tag #{index} HEAD"])
+    all_events = commit_event(id, index, files, stdout, stderr, status, summary, tag_message)
 
-    { 
-      'next_index' => index + 1, 
+    {
+      'next_index' => index + 1,
       'major_index' => major_index(all_events, index),
       'minor_index' => 0
     }
@@ -400,80 +401,40 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def worktree_commit(id, index, files, stdout, stderr, status, summary, tag_message)
+  def commit_event(id, index, files, stdout, stderr, status, summary, tag_message)
+    # Builds the event commit in-process (libgit2/rugged) on a single base,
+    # advances main onto it with an update-ref compare-and-swap, then tags it.
+    # No worktree, no working-tree checkout (the working tree stays stale; reads
+    # go via git). See docs/in-process-git.md.
+    #
     # Out-of-sync detection has two layers, each catching a different scenario.
     #
-    # 1. Sequential stale index (inside the worktree block):
-    #    The client sends an index that is behind the current last_index, but
-    #    there is no concurrent request. Without the explicit check, the worktree
-    #    commit and the ref update would both SUCCEED, silently writing corrupt
-    #    data (e.g. two events.json entries with the same index). The unless
-    #    check catches this before any git work is done.
+    # 1. Sequential stale index (inside the commit_on_main block):
+    #    The client sends an index behind the current last_index, with no
+    #    concurrent request. The unless check raises before any commit is
+    #    created, so no corrupt data (e.g. two events with the same index) is
+    #    ever written.
     #
     # 2. Concurrent write (rescue block):
-    #    Two requests for the same kata arrive simultaneously. Both create their
-    #    worktrees from the same HEAD, both pass the index check (they both see
-    #    the same last_index), and both commit to their respective worktree
-    #    branches. Whichever request reaches the update-ref compare-and-swap
-    #    second will fail because main has already moved forward. The rescue
-    #    detects this by re-reading events.json from the main repo: if
-    #    last_index >= index, a concurrent write succeeded first, so "Out of
-    #    order event" is raised. Any other failure (e.g. disk error) is
-    #    re-raised as-is.
+    #    Two saves for the same kata arrive together. Both build their commit on
+    #    the same base_oid (the shared HEAD) and both pass the index check.
+    #    Whichever reaches the update-ref compare-and-swap second fails, because
+    #    main has already moved off base_oid. The rescue re-reads events.json
+    #    from HEAD: if last_index >= index a concurrent write succeeded first, so
+    #    "Out of order event" is raised. Any other failure is re-raised as-is.
     all_events = nil
-    fast_forward_main_via_worktree(repo_dir(id)) do |worktree|
-      # Read the worktree directly, not via git (unlike the main-repo reads).
-      # Safe and required: the worktree is a private checkout this save just
-      # created (git worktree add, unique branch), so nothing else rewrites it
-      # (no torn-read race); and we need its base snapshot (the HEAD this commit
-      # builds on), not the live main HEAD a git read would return, which a
-      # concurrent winner may already have advanced.
-      all_events = read_events(worktree)
-      last_index = all_events.last['index']
-
-      unless index == last_index+1
+    result = git.commit_on_main(repo_dir(id), "#{index} #{tag_message}", content_of(files)) do |base_events, added, deleted|
+      unless index == base_events.last['index'] + 1
         raise "Out of order event for #{id}"
       end
-
-      # Remove files/
-      # Assumes there is always at least one file, and cyber-dojo.sh cannot be deleted.
-      shell.assert_cd_exec(worktree.root_dir, 'git rm -r files/')
-
-      # Write new files/
-      write_files(worktree, 'files', content_of(files))
-
-      # Add all files/
-      shell.assert_cd_exec(worktree.root_dir, 'git add .')
-
-      # Calculate number of added/deleted lines
-      info = shell.assert_cd_exec(worktree.root_dir, "git diff #{index-1} --staged --shortstat --ignore-cr-at-eol")
-      # Eg ' 1 file changed, 2 insertions(+), 1 deletion(-)'
-      # Eg ' 1 file changed, 1 insertion(+)'
-      # Eg ' 1 file changed, 172 deletions(-)'
-      regex1 = /\d+ files? changed, (\d+) insertions?\(\+\), (\d+) deletion/
-      regex2 = /\d+ files? changed, (\d+) insertions?\(\+\)/
-      regex3 = /\d+ files? changed, (\d+) deletions?\(\-\)/
-      if m = info.match(regex1)
-        added_count, deleted_count = *m.captures
-      elsif m = info.match(regex2)
-        added_count, deleted_count = *m.captures, 0
-      elsif m = info.match(regex3)
-        added_count, deleted_count = 0, *m.captures
-      else
-        added_count, deleted_count = 0, 0
-      end
-
-      # Write the new event
-      all_events << summary.merge!({
+      all_events = base_events + [summary.merge!({
         'index' => index,
         'time' => time.now,
-        'diff_added_count' => added_count.to_i,
-        'diff_deleted_count' => deleted_count.to_i
-      })
-      write_files(worktree, '', { events_filename => json_pretty(all_events) })
-
-      # Update metadata
-      write_files(worktree, '', {
+        'diff_added_count' => added,
+        'diff_deleted_count' => deleted
+      })]
+      {
+        events_filename => json_pretty(all_events),
         'stdout' => stdout['content'],
         'stderr' => stderr['content'],
         'status' => status.to_s,
@@ -481,14 +442,15 @@ class Kata_v2
           'stdout' => stdout['truncated'],
           'stderr' => stderr['truncated']
         })
-      })
-
-      # Add new event and metadata
-      shell.assert_cd_exec(worktree.root_dir, 'git add .')
-
-      # Commit
-      shell.assert_cd_exec(worktree.root_dir, "git commit --message '#{index} #{tag_message}' --quiet")
+      }
     end
+
+    # Advance main with a compare-and-swap on the base the commit was built on:
+    # a concurrent winner makes the CAS fail (main no longer at base_oid). Then
+    # tag the new commit with its numeric index.
+    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
+    git.create_tag(repo_dir(id), index, result[:new_oid])
+
     all_events
   rescue
     # Read the tip through git, not the working tree: the working tree is stale
@@ -505,46 +467,41 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # Reads the kata git tree at the commit tagged pos_index as a tar stream.
+  # Reads the kata git tree at the commit tagged pos_index, in-process via
+  # libgit2 (rugged), as { path => content }. (Formerly shelled out to
+  # "git archive --format=tar <index>"; the name is kept for now. See
+  # docs/in-process-git.md.)
   #
   # A save commits its event (advancing main via git update-ref) and then, as a
-  # separate step, writes that index's numeric tag (git tag <index> HEAD). A
-  # concurrent reader can observe the new index in events.json before its tag
-  # exists, so "git archive <index>" fails with "fatal: not a valid object
-  # name". The caller has already validated pos_index against events.json, so
-  # this failure is the transient tag-write window: retry briefly until the
-  # writer finishes. The retried failures are expected, so their stderr is
-  # silenced; if the retries are exhausted (a genuine missing object) the
-  # exception is re-raised, still carrying the full git diagnostic for the
-  # app error handler to report.
-  GIT_ARCHIVE_NO_SUCH_OBJECT = 'not a valid object name'
-  GIT_ARCHIVE_MAX_RETRIES    = 100
-  GIT_ARCHIVE_RETRY_SECONDS  = 0.01
+  # separate step, writes that index's numeric tag (via rugged). A concurrent
+  # reader can observe the new index in events.json before its tag exists, so the
+  # tag lookup raises External::Git::TagNotFound. The caller has already validated
+  # pos_index against events.json, so this is the transient tag-write window:
+  # retry briefly until the writer finishes; if the retries are exhausted (a
+  # genuine missing tag) the exception is re-raised.
+  GIT_ARCHIVE_MAX_RETRIES   = 100
+  GIT_ARCHIVE_RETRY_SECONDS = 0.01
 
   def git_archive(id, pos_index)
     attempts = 0
-    begin
-      with_silenced_stderr do
-        shell.assert_cd_exec(repo_dir(id), "git archive --format=tar #{pos_index}")
+    blobs =
+      begin
+        git.tag_tree_blobs(repo_dir(id), pos_index)
+      rescue External::Git::TagNotFound
+        attempts += 1
+        raise if attempts > GIT_ARCHIVE_MAX_RETRIES
+        sleep(GIT_ARCHIVE_RETRY_SECONDS)
+        retry
       end
-    rescue => error
-      raise unless error.message.include?(GIT_ARCHIVE_NO_SUCH_OBJECT)
-      attempts += 1
-      raise if attempts > GIT_ARCHIVE_MAX_RETRIES
-      sleep(GIT_ARCHIVE_RETRY_SECONDS)
-      retry
-    end
-  end
-
-  # Runs the block with shell stderr logging diverted to a throwaway buffer,
-  # so an expected/recoverable git failure does not pollute the server log.
-  # Any raised exception still carries the full diagnostic in its message.
-  def with_silenced_stderr
-    previous = Thread.current[:stderr_stream]
-    Thread.current[:stderr_stream] = StringIO.new(+'', 'w')
-    yield
-  ensure
-    Thread.current[:stderr_stream] = previous
+    # tag_tree_blobs returns blob bytes tagged ASCII-8BIT. The kata's stored
+    # files, stdout/stderr, events.json and truncations.json are all UTF-8 text,
+    # so retag them as UTF-8 (scrubbing any invalid bytes), exactly as the old
+    # shell path did (git archive's stdout went through External::Shell, which
+    # Utf8.cleans), matching read_events_via_git. Without this, content with
+    # non-ASCII bytes compares unequal to the same text after it has round-tripped
+    # through JSON (file_edit would log a phantom edit), and JSON-serialising the
+    # event response warns (and raises under json 3.0).
+    blobs.transform_values { |content| Utf8.clean(content) }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -563,61 +520,18 @@ class Kata_v2
   # working tree. option_set advances main with git update-ref without a
   # checkout, so the working-tree options.json is stale; reading at HEAD (which
   # advances atomically) gives the latest. See git_show and docs/reads-via-git.md.
-  # Note this is the by-id read only; option_set reads options.json from its own
-  # /tmp worktree via read_options(worktree), which stays a working-tree read.
   def read_options_via_git(id)
     json_parse(Utf8.clean(git_show(id, 'options.json')))
   end
 
-  # Reads filename from the kata's git tree at HEAD as a string.
+  # Reads filename from the kata's git tree at HEAD as a string. Now in-process
+  # via libgit2 (rugged) instead of a "git show" subprocess. See
+  # docs/in-process-git.md.
   def git_show(id, filename)
-    shell.assert_cd_exec(repo_dir(id), "git show HEAD:#{filename}")
+    git.head_blob(repo_dir(id), filename)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
-
-  def fast_forward_main_via_worktree(repo_dir)
-    branch = random.alphanumeric(8)
-    worktree_dir = "/tmp/#{branch}"
-    begin
-      shell.assert_cd_exec(repo_dir, "git worktree add #{worktree_dir}")
-      worktree = External::Disk.new(worktree_dir)
-      yield worktree
-      # Advance main with a compare-and-swap ref update, not git merge --ff-only:
-      # it moves the ref without checking the new tree out, leaving the main
-      # working tree stale (nothing reads it now; see docs/reads-via-git.md).
-      # The block makes exactly one commit, so #{branch}^ is the commit main was
-      # at when this worktree was created. The old-value precondition makes
-      # update-ref fail (raise) if a concurrent save advanced main since then,
-      # which the rescue maps to "Out of order event".
-      shell.assert_cd_exec(repo_dir, "git update-ref refs/heads/main #{branch} #{branch}^")
-    ensure
-      shell.cd_exec(repo_dir, "git worktree remove --force #{branch}")
-      shell.cd_exec(repo_dir, "git branch --delete --force #{branch}")
-      shell.cd_exec(repo_dir, "rm -rf #{worktree_dir}")
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  # Reads events.json from a /tmp worktree. The by-id reads of the main repo go
-  # through git now (read_events_via_git), so this is only ever the worktree
-  # variant used inside worktree_commit.
-  # eg
-  # [
-  #  { "index": 0, ..., "event": "created" },
-  #  { "index": 1, ..., "colour": "red"    },
-  #  { "index": 2, ..., "colour": "amber"  }
-  # ]
-  def read_events(worktree)
-    read_json(worktree, events_filename)
-  end
-
-  # Reads options.json from a /tmp worktree (only the worktree variant; the
-  # by-id read of the main repo goes through git, read_options_via_git).
-  def read_options(worktree)
-    read_json(worktree, options_filename)
-  end
 
   def read_manifest(id)
     # eg { "display_name": "Ruby, MiniTest",...}
@@ -715,8 +629,8 @@ class Kata_v2
     @externals.disk
   end
 
-  def random
-    @externals.random
+  def git
+    @externals.git
   end
 
   def shell

@@ -11,6 +11,10 @@ module TestHelpersExternals
     externals.disk
   end
 
+  def git
+    externals.git
+  end
+
   def model
     externals.model
   end

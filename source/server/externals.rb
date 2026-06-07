@@ -1,5 +1,6 @@
 require_relative 'external/differ'
 require_relative 'external/disk'
+require_relative 'external/git'
 require_relative 'external/random'
 require_relative 'external/shell'
 require_relative 'external/time'
@@ -14,6 +15,10 @@ class Externals
 
   def disk
     @disk ||= External::Disk.new('cyber-dojo')
+  end
+
+  def git
+    @git ||= External::Git.new
   end
 
   def model

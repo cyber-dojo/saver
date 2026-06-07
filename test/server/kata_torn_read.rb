@@ -87,7 +87,7 @@ class KataTornReadTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Tn6Wb6', %w(
-  | The worktree_commit rescue decides "Out of order event" by reading the tip
+  | The commit_event rescue decides "Out of order event" by reading the tip
   | committed events.json through git, not the working tree. The working tree is
   | stale (saves no longer refresh it), so reading it directly could mask the
   | out-of-order with a raw JSON/IO error. With a truncated working-tree
@@ -114,7 +114,7 @@ class KataTornReadTest < TestBase
 
   version_test 2, 'Tn6Wb7', %w(
   | As Tn6Wb6 but with the working-tree events.json absent (deleted): the
-  | worktree_commit rescue still reports "Out of order event" because it reads
+  | commit_event rescue still reports "Out of order event" because it reads
   | the tip through git rather than the missing working-tree file.
   ) do
     in_kata do |id|
