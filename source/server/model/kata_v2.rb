@@ -573,6 +573,12 @@ class Kata_v2
 
   def read_manifest(id)
     # eg { "display_name": "Ruby, MiniTest",...}
+    # Read from the working tree, not via git. manifest.json is written once at
+    # create() and never rewritten (saves rewrite events.json and metadata;
+    # option_set rewrites options.json), so it is immutable and a concurrent
+    # save's git merge --ff-only never refreshes it. It therefore cannot be
+    # caught in a torn-read window and does not need reading via git. See
+    # docs/reads-via-git.md.
     read_json(disk, manifest_filename(id))
   end
 

@@ -279,8 +279,10 @@ working tree.
 Caveats to hold onto:
 
 - "All reads" must mean all of them, or step 2 breaks. The full enumeration is
-  in the next section. Five reads touch the main working tree and must be
-  converted; the rest read a private `/tmp` worktree or already go through git.
+  in the next section. For the torn-read fix only the reads of files a save
+  actually rewrites need converting (events.json and options.json); the manifest
+  reads are immutable and the download read is special, so they ride with step
+  2. For step 2 (bare repo) every working-tree read must move to git.
 
 - Step 1 alone is a net cost. Reads become git subprocesses (slower per read);
   the payoff (faster writes) only arrives in step 2. Shipping step 1 and
@@ -298,39 +300,49 @@ touches a tree, classified by which tree it reads. Only reads of the main repo
 working tree are the shared racy artifact that step 2 (making main bare) would
 break.
 
-Reads of the main working tree. These are the actionable list for step 1, and
-all five must be converted before step 2 is safe:
+Reads of the main working tree, split by whether the file can actually tear (a
+save rewrites it, so a concurrent reader can be caught in the git merge --ff-only
+rewrite window) or is immutable.
 
-- A. `events(id)`, kata_v2.rb:99 (`read_events(disk, id)`) reads `events.json`.
-  Hot path: directly, plus `event()` (:112), `event_batch()`, and every save
-  method through `file_edit()` (:232).
-- B. `manifest(id)`, kata_v2.rb:88 (`read_manifest(id)`) reads `manifest.json`.
+Torn-read reads, to convert (the file is rewritten by a save):
+
+- A. `events(id)`, kata_v2.rb:99 reads `events.json` (rewritten every save).
+  DONE: now reads via `git show HEAD:events.json` (`read_events_via_git` /
+  `git_show`). Hot path: directly, plus `event()`, `event_batch()`, and every
+  save method through `file_edit()`.
 - C. `option_get(id, name)`, kata_v2.rb:283 (`read_options(disk, id)`) reads
-  `options.json`. Reached by the `option_get` endpoint, the per-option loop in
-  `manifest()` (:90-92), and the guard in `option_set()` (:292).
-- D. `download(id)`, kata_v2.rb:316 (`tar -czf ... .` in `repo_dir`) reads the
-  whole working tree.
+  `options.json` (rewritten by `option_set`). Reached by the `option_get`
+  endpoint, the per-option loop in `manifest()`, and the guard in `option_set`.
 - E. `worktree_commit` rescue, kata_v2.rb:473 (`read_events(disk, id)`) reads
-  `events.json` on the error path of every save (out-of-order detection).
+  `events.json` on the error path of every save. It wants the tip (latest
+  committed) to decide "out of order", not a snapshot.
 
-Conversion target for A, B, C and E: read at one resolved commit
-(`git rev-parse` once, then `git show <sha>:events.json` and so on, per the
-snapshot rule above).
+Convert A, C, E by reading at `HEAD` (`git show HEAD:<file>`). Each reads a
+single file, so no multi-file snapshot is needed; `HEAD` advances atomically on
+the ff-merge and always resolves, so no retry (unlike the numeric tags).
 
-D (`download`) is NOT a `git archive` swap. `git archive` emits only the tree at
-a commit, with no `.git` and no history. But download's contract is to ship the
-whole repo with history so the user can push it to GitHub, and the existing test
-`kata_download.rb` (kL375s) pins exactly that: it asserts the unpacked tgz
-contains a working `.git` (`[ -d .git ]`, `git tag` returns the tags, `git log`
-works). A naive `git archive` would strip all of that and fail the test. So if
-the main repo stops keeping a working tree, download must reconstruct a pushable
-repo some other way, for example `tar` the bare repo's `.git`, or `git clone`
-the bare repo into a temp dir and `tar` that. This is genuinely more work than
-the other four reads, and kL375s is the guard that will catch a wrong shortcut.
+Immutable, or deferred to step 2 (bare repo). Not part of the torn-read fix:
 
-E is an error-path read but still a main-tree read, so it counts. Subtlety: it
-deliberately re-reads the latest committed state to decide "out of order", so it
-wants the tip, not the snapshot the triggering read used.
+- B. `manifest(id)`, kata_v2.rb:88 (`read_manifest(id)`) reads `manifest.json`.
+  manifest.json is written once by `create()` and never rewritten (saves rewrite
+  events.json and metadata; `option_set` rewrites options.json), so it is
+  immutable and a save's ff-merge never refreshes it. It cannot tear, so it does
+  not need reading via git for correctness; only the bare-repo goal needs it.
+- `from_path` (model.rb:180), MISSED by this kata_v2-scoped enumeration:
+  `Model#kata` and `Model#group` read manifest.json from the working tree to
+  dispatch on version, before any Kata_vN is instantiated, on every operation.
+  Also immutable (no torn risk), but version-agnostic: v0/v1 katas have no git
+  repo, so this read cannot uniformly use `git show`. Converting it belongs with
+  step 2, where the v0/v1 dispatch has to be designed.
+- D. `download(id)`, kata_v2.rb:316 (`tar -czf ... .` in `repo_dir`) reads the
+  whole working tree. NOT a `git archive` swap: `git archive` emits only the
+  tree at a commit, with no `.git` and no history, but download's contract is to
+  ship the whole repo with history so the user can push it to GitHub. The
+  existing test `kata_download.rb` (kL375s) pins that (asserts the unpacked tgz
+  contains a working `.git`, `git tag`, `git log`); a naive `git archive` would
+  fail it. Under a bare main, download must reconstruct a pushable repo another
+  way (tar the bare repo's `.git`, or `git clone` it into a temp dir and tar
+  that).
 
 Reads that are NOT of the main working tree (no conversion needed for the race):
 

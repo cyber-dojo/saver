@@ -16,7 +16,7 @@ class KataTornReadTest < TestBase
 
       expected = kata_events(id)
 
-      path = events_json_path(id)
+      path = working_tree_path(id, 'events.json')
       full = File.read(path)
       # Simulate a partial chunked write: only a prefix has landed.
       File.write(path, full[0, full.size / 2])
@@ -41,7 +41,7 @@ class KataTornReadTest < TestBase
 
       expected = kata_events(id)
 
-      File.delete(events_json_path(id))
+      File.delete(working_tree_path(id, 'events.json'))
 
       assert_equal expected, kata_events(id)
     end
@@ -116,11 +116,11 @@ class KataTornReadTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # Absolute path of a kata's working-tree events.json, e.g.
+  # Absolute path of a file in a kata's working tree, e.g.
   # /cyber-dojo/katas/Sy/G9/sT/events.json (same layout as
   # assert_tag_commit_message in test_base.rb).
-  def events_json_path(id)
-    "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}/events.json"
+  def working_tree_path(id, filename)
+    "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}/#{filename}"
   end
 
 end
