@@ -1,4 +1,5 @@
 require_relative 'test_base'
+require 'fileutils'
 
 class KataTornReadTest < TestBase
 
@@ -132,6 +133,45 @@ class KataTornReadTest < TestBase
         kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
       }
       assert_equal "Out of order event for #{id}", error.message
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Tn6Wb8', %w(
+  | Model#kata determines a v2 kata's version from the presence of its .git
+  | directory, not by reading manifest.json. A kata operation that does not
+  | itself read the manifest (kata_events reads events via git) therefore works
+  | even when the working-tree manifest.json is absent, proving version dispatch
+  | no longer reads it.
+  ) do
+    in_kata do |id|
+      files  = kata_event(id, 0)['files']
+      stdout = { 'content' => '', 'truncated' => false }
+      stderr = { 'content' => '', 'truncated' => false }
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+
+      expected = kata_events(id)
+
+      File.delete(working_tree_path(id, 'manifest.json'))
+
+      assert_equal expected, kata_events(id)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Tn6Wb9', %w(
+  | kata_version only falls back to reading the manifest when there is no .git
+  | dir, and a v2 kata's manifest reports version 2. So a v2 kata whose .git is
+  | missing (an anomaly, not a real v0/v1) fails loudly rather than being
+  | mis-dispatched as some other version.
+  ) do
+    in_kata do |id|
+      FileUtils.rm_rf(working_tree_path(id, '.git'))
+
+      error = assert_raises(RuntimeError) { kata_events(id) }
+      assert_equal "kata #{id} has no .git but manifest version is 2", error.message
     end
   end
 

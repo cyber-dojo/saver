@@ -15,7 +15,7 @@ class Model
 
   def group_create(manifest:)
     version = from_manifest(manifest)
-    group(version).create(manifest)
+    GROUPS[version].new(@externals).create(manifest)
   end
 
   def group_exists?(id:)
@@ -53,7 +53,7 @@ class Model
 
   def kata_create(manifest:)
     version = from_manifest(manifest)
-    kata(version).create(manifest)
+    KATAS[version].new(@externals).create(manifest)
   end
 
   def kata_exists?(id:)
@@ -159,27 +159,33 @@ class Model
   include JsonAdapter
 
   def group(id)
-    if id?(id)
-      version = from_path(group_id_path(id, 'manifest.json'))
-    else
-      version = id
-    end
-    GROUPS[version].new(@externals)
+    GROUPS[from_path(group_id_path(id, 'manifest.json'))].new(@externals)
   end
 
   def kata(id)
-    if id?(id)
-      version = from_path(kata_id_path(id, 'manifest.json'))
-    else
-      version = id
-    end
-    KATAS[version].new(@externals)
+    KATAS[kata_version(id)].new(@externals)
   end
 
   def from_path(path)
     content = disk.assert(disk.file_read_command(path))
     manifest = json_parse(content)
     manifest['version'].to_i # nil.to_i == 0
+  end
+
+  # A v2 kata is a git repo; v0/v1 are flat files. A .git stat is cheaper than
+  # from_path's manifest read+parse, on a path hit by every kata operation.
+  # Only v2 uses git, so .git present => v2; otherwise fall back to the legacy
+  # manifest read, which must report v0 or v1 (a v2 without .git is an anomaly).
+  def kata_version(id)
+    if disk.run(disk.dir_exists_command(kata_id_path(id, '.git')))
+      2
+    else
+      version = from_path(kata_id_path(id, 'manifest.json'))
+      unless [0, 1].include?(version)
+        fail "kata #{id} has no .git but manifest version is #{version}"
+      end
+      version
+    end
   end
 
   def from_manifest(manifest)
