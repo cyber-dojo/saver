@@ -4,6 +4,11 @@ LABEL maintainer=jon@jaggersoft.com
 
 RUN apk add git jq
 
+# In-process git reads via libgit2 (rugged) - see docs/in-process-git.md.
+# PROTOTYPE: build deps are left in the image for now; a follow-up can strip
+# them (rugged bundles libgit2 statically) or use a multi-stage build.
+RUN apk add --no-cache build-base cmake pkgconf libgit2-dev && gem install rugged
+
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
 

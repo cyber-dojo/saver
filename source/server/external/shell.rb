@@ -22,7 +22,7 @@ module External
       stdout = Utf8::clean(stdout)
       stderr = Utf8::clean(stderr)
       exit_status = r.exitstatus
-      unless stderr.empty? || stderr.start_with?('Preparing worktree')
+      unless stderr.empty?
         stderr_stream.puts stderr
         stderr_stream.flush
       end
