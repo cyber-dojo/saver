@@ -37,6 +37,24 @@ class DiskRunTest < TestBase
     assert disk.run(dir_make_command(dirname))
   end
 
+  test 'FA3504', %w(
+  | dir_make creates all the missing intermediate parent dirs (not just the
+  | leaf) in one call and returns true; a second call on the same dir returns
+  | false, claiming it atomically
+  ) do
+    refute disk.run(dir_exists_command('groups/n4'))
+    refute disk.run(dir_exists_command('groups/n4/s5'))
+    refute disk.run(dir_exists_command('groups/n4/s5/04'))
+
+    assert disk.run(dir_make_command('groups/n4/s5/04'))
+
+    assert disk.run(dir_exists_command('groups/n4'))
+    assert disk.run(dir_exists_command('groups/n4/s5'))
+    assert disk.run(dir_exists_command('groups/n4/s5/04'))
+
+    refute disk.run(dir_make_command('groups/n4/s5/04'))
+  end
+
   # - - - - - - - - - - - - - - - - - - - - - - - - -
   # file_create()
 

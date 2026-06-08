@@ -141,6 +141,32 @@ module External
       Rugged::Repository.new(repo_dir).references.create("refs/tags/#{name}", oid)
     end
 
+    # Creates a kata's git repo in-process, replacing the shell batch
+    # (git init/config/add/commit/tag/branch). Initialises <repo_dir>, records
+    # the committer identity in config (so later commits, which use the repo's
+    # default_signature, work), commits <files> (a repo-relative path => content
+    # map) as the parentless initial commit <message> on refs/heads/main, tags it
+    # 0, and points HEAD at main. The identity is also passed explicitly to this
+    # first commit so it does not depend on libgit2 having refreshed the config
+    # it was just handed. The result is an ordinary git repo, byte-identical to
+    # the old shell-built one, so the save/read and update-ref CAS paths run
+    # against it unchanged. Returns the commit oid. See docs/in-process-git.md.
+    def create(repo_dir, user_name, user_email, message, files)
+      repo = Rugged::Repository.init_at(repo_dir)
+      repo.config['user.name']  = user_name
+      repo.config['user.email'] = user_email
+      index = repo.index
+      files.each { |path, content| index.add(path: path, oid: repo.write(content, :blob), mode: 0100644) }
+      # ::Time, not External::Time (this file is inside module External).
+      signature = { name: user_name, email: user_email, time: ::Time.now }
+      oid = Rugged::Commit.create(repo,
+        tree: index.write_tree(repo), parents: [], message: message,
+        author: signature, committer: signature, update_ref: 'refs/heads/main')
+      repo.references.create('refs/tags/0', oid)
+      repo.head = 'refs/heads/main'
+      oid
+    end
+
     # Builds a commit on top of HEAD that rewrites options.json (and nothing
     # else), in-process. Reads + parses options.json from HEAD's tree, yields it
     # for mutation, commits the writes the block returns, and returns
