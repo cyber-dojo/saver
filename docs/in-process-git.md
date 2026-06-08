@@ -77,6 +77,9 @@ startup-bound and already parallel, the test wall-clock too.
 
 Move to rugged (in-process):
 - create: init, config, add, commit, tag, branch.
+  [LANDED LATER: deferred at first (creation kept shelling out to this git batch
+  while only the save commit and the reads moved in-process), then ported. See
+  "Kata creation (moved in-process later)", below.]
 - the save commit: build the new tree via the index (read the base tree, replace
   files/, set events.json + metadata) and Rugged::Commit.create. No
   git worktree add (no checkout), no worktree/branch/rm-rf cleanup.
@@ -193,7 +196,7 @@ under json 3.0, raise) when json_pretty re-serializes the merged events.
 - - - -
 ## Costs and risks
 
-- A large rewrite of the save and read paths and the create path: the
+- A large rewrite of the save, read and create paths: the
   worktree-based commit becomes index-based, git archive becomes direct blob
   reads, and the External::Shell git usage is replaced by rugged behind the same
   externals abstraction (v2 only; v0/v1 are untouched and are not git repos).
@@ -224,9 +227,10 @@ v2 only:
 The full server suite stays green and dropped from ~25s to ~8s, confirming the
 startup-bound prediction in the saver image (not just the standalone bench).
 
-Kept on the git CLI: download and the update-ref CAS. (git_diff.rb was kept on
-the CLI in the original rollout, then moved in-process in a later change; see
-"Diff endpoints (moved in-process later)", below.)
+Kept on the git CLI: download and the update-ref CAS. (Two things kept on the
+CLI in the original rollout moved in-process in later changes: git_diff.rb and
+kata creation; see "Diff endpoints (moved in-process later)" and "Kata creation
+(moved in-process later)", below.)
 
 Deferred (still on the CLI / worktree):
 - kata_option_set still uses fast_forward_main_via_worktree (git worktree add +
@@ -272,6 +276,36 @@ Residual parity point: the old CLI passed --indent-heuristic, which libgit2 has
 no equivalent for. It only affects WHICH of several equally valid lines a hunk
 attributes a change to in adjacent-similar-line cases, never the counts; no test
 exercises it.
+
+
+- - - -
+## Kata creation (moved in-process later)
+
+The original rollout deferred create (it kept shelling out the
+init/config/add/commit/tag/branch batch) while the save and read paths moved
+in-process. It has since been ported, so a kata create now spawns no
+subprocesses at all.
+
+- The git batch -> External::Git#create. It runs Rugged::Repository.init_at,
+  records the committer identity in config (so later commits' default_signature
+  works), commits the initial files as a parentless commit on refs/heads/main,
+  tags it 0, and points HEAD at main -- all in-process. The committer identity
+  is also passed explicitly to this first commit so it does not depend on
+  libgit2 having refreshed the config it was just handed. The on-disk result is
+  an ordinary git repo, byte-identical to the old shell-built one (the working
+  tree is written first with the same bytes the commit uses), so the save/read
+  and update-ref CAS paths run against it unchanged.
+- The directory creation (External::Disk#dir_make) dropped its `mkdir -vp`
+  subprocess too: it now creates missing parents with FileUtils.mkdir_p and
+  claims the leaf with Dir.mkdir, a single atomic syscall that raises
+  Errno::EEXIST iff the dir already exists. That preserves the load-bearing,
+  atomic "true iff newly made" contract (IdGenerator id-collision detection,
+  group_v2 index claiming) without a process. The file writes were already pure
+  Ruby (File.open), so no file-write subprocess existed to remove.
+
+The dead ShellSpy test double and the now-unused Shell#cd_exec (with its test)
+were removed in the same change, as nothing drove them once the shell calls went
+away.
 
 
 - - - -

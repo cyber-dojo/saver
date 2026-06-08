@@ -1,4 +1,4 @@
-require 'open3'
+require 'fileutils'
 require_relative '../disk_api'
 
 module External
@@ -22,15 +22,22 @@ module External
     # - - - - - - - - - - - - - - - - - - - - - - - -
 
     def dir_make(dirname)
-      # Returns true iff dirname does not already exist and
-      # is made. Can't find a Ruby library method for this
-      # (FileUtils.mkdir_p does not tell) so using shell.
-      #   -p creates intermediate dirs as required.
-      #   -v verbose mode, output each dir actually made
-      command = "mkdir -vp '#{path_name(dirname)}'"
-      stdout, stderr, r = Open3.capture3(command)
-      status = r.exitstatus
-      stdout != '' && stderr == '' && status == 0
+      # Returns true iff dirname did not already exist and is now made (false if
+      # it already existed, or a non-directory is in the way). That boolean is
+      # load-bearing and must be atomic: IdGenerator uses it to detect an id
+      # collision (retry on false) and group_v2 uses it to claim an unused index.
+      # FileUtils.mkdir_p is idempotent and cannot report whether it created
+      # anything, so create any missing parents with it (matching mkdir -p) and
+      # then claim the leaf with Dir.mkdir, a single atomic syscall that raises
+      # Errno::EEXIST iff the leaf already exists. make_dirs feeds dirs sorted
+      # shallow-to-deep, so a parent is always claimed before its children.
+      # Genuine system faults (e.g. ENOSPC, EACCES) propagate, as in file_create.
+      path = path_name(dirname)
+      FileUtils.mkdir_p(File.dirname(path))
+      Dir.mkdir(path)
+      true
+    rescue Errno::EEXIST # already exists, or a non-dir is in the way: "taken"
+      false
     end
 
     # - - - - - - - - - - - - - - - - - - - - - - - -

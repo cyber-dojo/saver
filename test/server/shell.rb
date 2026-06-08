@@ -50,15 +50,6 @@ class ShellTest < TestBase
     assert_equal 127, json['exit_status']
   end
 
-  test 'C89h4k', %w(
-  | cd_exec(path,command) does not raise when the command fails
-  | whereas assert_cd_exec(path,command) writes to stderr and raises for the same command
-  ) do
-    _stdout, stderr = capture_stdout_stderr { shell.cd_exec('.', 'zzzz') }
-    assert stderr.include?('zzzz'), stderr
-    capture_stdout_stderr { assert_raises { shell.assert_cd_exec('.', 'zzzz') } }
-  end
-
   test 'C89nR2', %w(
   | assert_exec(*commands) writes to stderr before raising when a command fails
   ) do

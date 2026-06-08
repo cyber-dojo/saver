@@ -57,25 +57,32 @@ class Kata_v2
 
     # IdGenerator makes the kata dir, eg /cyber-dojo/katas/Rl/mR/cV
     id = manifest['id'] = IdGenerator.new(@externals).kata_id
+
+    # Compute each file's bytes once, so the working-tree write and the initial
+    # commit use identical bytes and the committed tree matches the working tree
+    # (as the old `git add .` made it).
+    manifest_json = json_pretty(manifest)
+    options_json  = json_pretty(default_options)
+    events_json   = json_pretty(events)
+    readme_md     = readme(manifest)
+    files_content = content_of(files)
+
     disk.assert_all([
-      disk.file_create_command(manifest_filename(id), json_pretty(manifest)),
-      disk.file_create_command(options_filename(id), json_pretty(default_options)),
-      disk.file_create_command(events_filename(id), json_pretty(events)),
-      disk.file_create_command(readme_filename(id), readme(manifest))
+      disk.file_create_command(manifest_filename(id), manifest_json),
+      disk.file_create_command(options_filename(id), options_json),
+      disk.file_create_command(events_filename(id), events_json),
+      disk.file_create_command(readme_filename(id), readme_md)
     ])
+    write_files(disk, "#{kata_dir(id)}/files", files_content)
 
-    files_dir = "#{kata_dir(id)}/files"
-    write_files(disk, files_dir, content_of(files))
-
-    shell.assert_cd_exec(repo_dir(id), [
-      "git init --quiet",
-      "git config user.name '#{id}'",
-      "git config user.email '#{id}@cyber-dojo.org'",
-      "git add .",
-      "git commit --message '0 kata creation' --quiet",
-      "git tag 0 HEAD",
-      "git branch -m master main"
-    ])
+    initial_files = {
+      'manifest.json' => manifest_json,
+      'options.json'  => options_json,
+      'events.json'   => events_json,
+      'README.md'     => readme_md
+    }
+    files_content.each { |name, content| initial_files["files/#{name}"] = content }
+    git.create(repo_dir(id), id, "#{id}@cyber-dojo.org", '0 kata creation', initial_files)
 
     id
   end
@@ -312,6 +319,10 @@ class Kata_v2
       options[name] = value
       { options_filename => json_pretty(options) }
     end
+    # Stays a git shell call (not rugged): rugged's high-level API does not expose
+    # update-ref's old-value precondition (libgit2's git_reference_create_matching),
+    # and that precondition is the concurrency mechanism, so it cannot be dropped.
+    # See the fuller note in commit_event and docs/in-process-git.md.
     shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
   end
 
@@ -448,6 +459,15 @@ class Kata_v2
     # Advance main with a compare-and-swap on the base the commit was built on:
     # a concurrent winner makes the CAS fail (main no longer at base_oid). Then
     # tag the new commit with its numeric index.
+    #
+    # This stays a git shell call (not rugged): the CAS is the only step here
+    # that cannot be done in-process via libgit2/rugged. update-ref's old-value
+    # precondition (set main to <new> only if it is still <base>) maps to
+    # libgit2's git_reference_create_matching, but rugged's high-level API does
+    # not surface it -- references offers create (force-overwrite, not a CAS) and
+    # update, neither with an expected-old-value check. That precondition IS the
+    # concurrency mechanism (loser detection), so it cannot be dropped. See
+    # docs/in-process-git.md.
     shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
     git.create_tag(repo_dir(id), index, result[:new_oid])
 
