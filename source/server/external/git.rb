@@ -19,6 +19,17 @@ module External
     # kata_v2.rb and docs/in-process-git.md.
     class TagNotFound < RuntimeError; end
 
+    # Context lines requested from a tree diff. Larger than any kata file, so
+    # libgit2 emits a single hunk per file holding every line (full context),
+    # reproducing the old `git diff --unified=<huge>`. Kept within uint32 (the
+    # libgit2 field width).
+    FULL_CONTEXT = 2_000_000_000
+
+    # The libgit2 line origins that carry a real source line. Everything else a
+    # patch yields (the end-of-file "no newline" markers) is dropped, exactly as
+    # the old textual git-diff parser skipped "\ No newline at end of file".
+    CONTENT_ORIGINS = %i[context addition deletion].freeze
+
     # Returns the bytes of <path> in the commit HEAD points at (the kata's main
     # branch tip), as a String. Equivalent to `git show HEAD:<path>`.
     def head_blob(repo_dir, path)
@@ -33,14 +44,50 @@ module External
     # not rev_parse, which would treat "<index>" as an ambiguous OID prefix).
     def tag_tree_blobs(repo_dir, index)
       repo = Rugged::Repository.new(repo_dir)
-      ref = repo.references["refs/tags/#{index}"]
-      raise TagNotFound, "no tag #{index}" if ref.nil?
-      tree = repo.lookup(ref.target_id).tree
-      blobs = {}
-      tree.walk(:postorder) do |root, entry|
-        blobs["#{root}#{entry[:name]}"] = repo.lookup(entry[:oid]).content if entry[:type] == :blob
+      tree_blobs(repo, tag_tree(repo, index))
+    end
+
+    # Full per-file diff of the files/ subtree between the commits tagged
+    # <was_index> (old) and <now_index> (new), in-process. Mirrors the old
+    # `git diff --unified=<all> --ignore-space-at-eol --find-renames
+    #  <was> <now> -- files/`: it diffs the two files/ subtrees directly, so the
+    # delta paths are already relative to files/ (no "files/" prefix) and rename
+    # detection is confined to files/, exactly as the "-- files/" pathspec did.
+    # Full context (one hunk per file) and ignore_whitespace_eol match the old
+    # flags (the latter is the closest libgit2 option to --ignore-space-at-eol;
+    # see docs/in-process-git.md); find_similar! restores git's default rename
+    # detection, which libgit2 does not do on its own. Returns an Array of plain
+    # descriptors (no rugged objects leak), one per changed file:
+    #   { status:, old_path:, new_path:,
+    #     lines: [ { origin:, content:, old_lineno:, new_lineno: }, ... ] }
+    # status is libgit2's :added/:deleted/:modified/:renamed; only real content
+    # lines are kept (see CONTENT_ORIGINS). Unchanged files do not appear (the
+    # caller adds them). Raises TagNotFound if either tag is missing.
+    def diff(repo_dir, was_index, now_index)
+      repo = Rugged::Repository.new(repo_dir)
+      was = files_subtree(repo, was_index)
+      now = files_subtree(repo, now_index)
+      diff = was.diff(now, context_lines: FULL_CONTEXT, ignore_whitespace_eol: true)
+      diff.find_similar!
+      diff.patches.map do |patch|
+        delta = patch.delta
+        {
+          status: delta.status,
+          old_path: delta.old_file[:path],
+          new_path: delta.new_file[:path],
+          lines: content_lines(patch)
+        }
       end
-      blobs
+    end
+
+    # { relpath => bytes } for every blob in the files/ subtree of the commit
+    # tagged <index>, with relpath relative to files/ (no "files/" prefix). Lets
+    # the diff endpoint list the kata's files and read their content at an index
+    # in-process, replacing `git ls-tree -- files/` and `git show <i>:files/<f>`.
+    # Raises TagNotFound if the tag is missing.
+    def files_blobs(repo_dir, index)
+      repo = Rugged::Repository.new(repo_dir)
+      tree_blobs(repo, files_subtree(repo, index))
     end
 
     # Builds the next commit on top of HEAD, in-process, on a single consistent
@@ -118,6 +165,51 @@ module External
     end
 
     private
+
+    # The tree of the commit tagged <index> (a lightweight numeric tag). Uses
+    # the ref lookup, not rev_parse, which would treat "<index>" as an ambiguous
+    # OID prefix. Raises TagNotFound if refs/tags/<index> does not exist yet (a
+    # save writes the tag after advancing the ref, so a concurrent reader can see
+    # the index before its tag exists; the caller retries over that window).
+    def tag_tree(repo, index)
+      ref = repo.references["refs/tags/#{index}"]
+      raise TagNotFound, "no tag #{index}" if ref.nil?
+      repo.lookup(ref.target_id).tree
+    end
+
+    # The files/ subtree (a Rugged::Tree) of the commit tagged <index>. A kata
+    # always has a files/ directory, so this is a plain lookup.
+    def files_subtree(repo, index)
+      repo.lookup(tag_tree(repo, index).path('files')[:oid])
+    end
+
+    # { path => bytes } for every blob under <tree>, path relative to <tree>.
+    def tree_blobs(repo, tree)
+      blobs = {}
+      tree.walk(:postorder) do |root, entry|
+        blobs["#{root}#{entry[:name]}"] = repo.lookup(entry[:oid]).content if entry[:type] == :blob
+      end
+      blobs
+    end
+
+    # The real source lines of <patch>, as plain hashes, in diff order. Drops the
+    # end-of-file "no newline" markers (and any other non-content origin); see
+    # CONTENT_ORIGINS. content keeps its trailing newline (the caller strips it).
+    def content_lines(patch)
+      lines = []
+      patch.each_hunk do |hunk|
+        hunk.each_line do |line|
+          next unless CONTENT_ORIGINS.include?(line.line_origin)
+          lines << {
+            origin: line.line_origin,
+            content: line.content,
+            old_lineno: line.old_lineno,
+            new_lineno: line.new_lineno
+          }
+        end
+      end
+      lines
+    end
 
     # Parses <filename> from <tree> as JSON. rugged returns blob bytes tagged
     # ASCII-8BIT; our JSON files are valid UTF-8 (always written via
