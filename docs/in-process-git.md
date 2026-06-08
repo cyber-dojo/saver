@@ -2,12 +2,19 @@
 In-process git for the save and read hot paths (libgit2 / rugged)
 =================================================================
 
-A design note. The hot path is now IMPLEMENTED: the v2 save commit and the
-events/event/options reads run in-process via libgit2 (the rugged gem), while
-the diff endpoints, the concurrency ref-advance (update-ref CAS), and download
-stay on the git CLI. The one remaining worktree user is kata_option_set, left on
-the CLI for now (see "What landed", below). This note records the original plan,
-the spike, the benchmark, and the parity findings that came out of the build.
+A design note. The hot path is now IMPLEMENTED: the v2 save commit, the
+events/event/options reads, AND the diff endpoints (diff_lines / diff_summary)
+run in-process via libgit2 (the rugged gem). Only the concurrency ref-advance
+(the update-ref CAS) and download stay on the git CLI. The one remaining
+worktree user is kata_option_set, left on the CLI for now (see "What landed",
+below). This note records the original plan, the spike, the benchmark, and the
+parity findings that came out of the build.
+
+UPDATE: the diff endpoints have since moved in-process too. The original plan
+(below) deliberately deferred them as "the biggest parity risk"; that risk was
+taken on and resolved by building the diff from libgit2's structured deltas
+(External::Git#diff + GitDiffBuilder) instead of re-parsing textual git-diff
+output. See "Diff endpoints (moved in-process later)", below.
 
 Measured result: the server test suite dropped from ~25s to ~8s (about 3x),
 matching the startup-bound prediction below.
@@ -85,6 +92,10 @@ Keep on the git CLI (unchanged):
 - git_diff.rb (diff_lines / diff_summary): stays exactly as it is. This removes
   the biggest parity risk (textual git-diff output parsed by git_diff_parser.rb
   vs rugged's structured deltas) from scope entirely.
+  [SUPERSEDED: this is the original plan. The diff endpoints later moved
+  in-process too, taking on exactly this parity risk and resolving it by
+  building from structured deltas rather than parsing text. See "Diff endpoints
+  (moved in-process later)", below.]
 - download: the git clone stays a shell call (rare; works on the repo as built).
 
 So a save goes from ~14 git subprocesses to ~1 (the CAS) plus in-process rugged
@@ -136,6 +147,9 @@ were created by rugged is an ordinary git repo, so the shell `git diff`,
 `git show`, `git ls-tree`, and `git clone` in git_diff.rb and download keep
 working against it unchanged. The prototype's test run confirms this concretely
 (the diff suite runs its shell diffs against rugged-written commits).
+
+(This safety argument applied while diff was still on the CLI. diff has since
+moved in-process; download still relies on it.)
 
 
 - - - -
@@ -210,7 +224,9 @@ v2 only:
 The full server suite stays green and dropped from ~25s to ~8s, confirming the
 startup-bound prediction in the saver image (not just the standalone bench).
 
-Kept on the git CLI, as planned: git_diff.rb, download, and the update-ref CAS.
+Kept on the git CLI: download and the update-ref CAS. (git_diff.rb was kept on
+the CLI in the original rollout, then moved in-process in a later change; see
+"Diff endpoints (moved in-process later)", below.)
 
 Deferred (still on the CLI / worktree):
 - kata_option_set still uses fast_forward_main_via_worktree (git worktree add +
@@ -224,6 +240,41 @@ Deferred (still on the CLI / worktree):
 
 
 - - - -
+## Diff endpoints (moved in-process later)
+
+The original plan above kept git_diff.rb on the git CLI to leave "the biggest
+parity risk" out of scope. That risk has since been taken on: diff_lines and
+diff_summary now run in-process via libgit2, with no git subprocess.
+
+The parity risk was the diff OUTPUT: re-parsing textual `git diff` output
+(git_diff_parser.rb) versus libgit2's structured deltas. It is resolved by NOT
+re-parsing text at all. External::Git#diff diffs the two files/ subtrees directly
+and returns plain per-file descriptors (status + structured hunk lines);
+GitDiffBuilder turns those into the same {type, old/new_filename, line_counts,
+lines} hashes the parser produced. git_diff_parser.rb and
+git_diff_parse_filenames.rb (and their unit tests) are gone; git_diff.rb's
+behavior is unchanged and is pinned by the existing kata_diff (D4E5*),
+kata_file_rename, kata_file_delete, and kata_diff_added_deleted tests, all green.
+
+Mapping from the three old shell calls:
+- `git diff --unified=<huge> --no-prefix --ignore-space-at-eol --find-renames
+  <was> <now> -- files/` -> External::Git#diff. Diffing the files/ subtrees
+  directly gives files/-relative paths (so --no-prefix and the strip_files step
+  are unneeded) and confines rename detection to files/ (as -- files/ did).
+  context_lines is a large value (FULL_CONTEXT, one hunk per file, = the huge
+  --unified), ignore_whitespace_eol matches --ignore-space-at-eol, and
+  diff.find_similar! restores git's default rename detection (libgit2 does not
+  detect renames on its own).
+- `git ls-tree -r --name-only <index> -- files/` -> External::Git#files_blobs keys.
+- `git show <index>:files/<file>` -> External::Git#files_blobs values.
+
+Residual parity point: the old CLI passed --indent-heuristic, which libgit2 has
+no equivalent for. It only affects WHICH of several equally valid lines a hunk
+attributes a change to in adjacent-similar-line cases, never the counts; no test
+exercises it.
+
+
+- - - -
 ## Recommendation and rollout (DONE for the hot path)
 
 High value (the only remaining lever for both production and test speed once
@@ -231,5 +282,5 @@ parallelism is maxed). All go/no-go gates came in green: rugged builds in Alpine
 commit/read/diff-stat work in-process, the CAS is handled by keeping the one
 shell call, the standalone benchmark showed ~9x (saves) / ~21x (reads), and the
 in-image full suite confirmed it end to end (~25s -> ~8s, green). The diff
-endpoints can move in-process later, separately, if ever; option_set is the next
+endpoints have since moved in-process too (see above); option_set is the next
 candidate if the remaining worktree machinery is worth removing.
