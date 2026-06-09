@@ -3,13 +3,14 @@ require 'json'
 
 module External
 
-  # In-process git reads via libgit2 (the rugged gem), avoiding a git subprocess
-  # (~20ms of process startup) per read. Used for the latest-committed-state
-  # reads (events.json, options.json) that currently shell out to
-  # "git show HEAD:<file>". See docs/in-process-git.md.
+  # In-process git reads via libgit2 (the rugged gem), avoiding a per-read git
+  # subprocess (~20ms of process startup). Used for the latest-committed-state
+  # reads (events.json, options.json). Equivalent to "git show HEAD:<file>".
+  # See docs/in-process-git.md.
   #
-  # PROTOTYPE: opens the repo per call. If that proves costly, cache the
-  # Rugged::Repository handle per repo_dir.
+  # Opens the repo per call rather than caching a Rugged::Repository handle
+  # per repo_dir. If that per-open cost proves significant, we could consider
+  # caching the handle.
   class Git
 
     # Raised when the numeric tag for an index is not present yet. A save writes
@@ -48,15 +49,16 @@ module External
     end
 
     # Full per-file diff of the files/ subtree between the commits tagged
-    # <was_index> (old) and <now_index> (new), in-process. Mirrors the old
+    # <was_index> (old) and <now_index> (new), in-process. Equivalent to
     # `git diff --unified=<all> --ignore-space-at-eol --find-renames
     #  <was> <now> -- files/`: it diffs the two files/ subtrees directly, so the
     # delta paths are already relative to files/ (no "files/" prefix) and rename
-    # detection is confined to files/, exactly as the "-- files/" pathspec did.
-    # Full context (one hunk per file) and ignore_whitespace_eol match the old
-    # flags (the latter is the closest libgit2 option to --ignore-space-at-eol;
-    # see docs/in-process-git.md); find_similar! restores git's default rename
-    # detection, which libgit2 does not do on its own. Returns an Array of plain
+    # detection is confined to files/, as the "-- files/" pathspec does. Full
+    # context (one hunk per file) and ignore_whitespace_eol give the same result
+    # as those flags (ignore_whitespace_eol is the closest libgit2 option to
+    # --ignore-space-at-eol; see docs/in-process-git.md); find_similar! restores
+    # git's default rename detection, which libgit2 does not do on its own.
+    # Returns an Array of plain
     # descriptors (no rugged objects leak), one per changed file:
     #   { status:, old_path:, new_path:,
     #     lines: [ { origin:, content:, old_lineno:, new_lineno: }, ... ] }
@@ -83,7 +85,7 @@ module External
     # { relpath => bytes } for every blob in the files/ subtree of the commit
     # tagged <index>, with relpath relative to files/ (no "files/" prefix). Lets
     # the diff endpoint list the kata's files and read their content at an index
-    # in-process, replacing `git ls-tree -- files/` and `git show <i>:files/<f>`.
+    # in-process. Equivalent to `git ls-tree -- files/` and `git show <i>:files/<f>`.
     # Raises TagNotFound if the tag is missing.
     def files_blobs(repo_dir, index)
       repo = Rugged::Repository.new(repo_dir)
@@ -141,16 +143,16 @@ module External
       Rugged::Repository.new(repo_dir).references.create("refs/tags/#{name}", oid)
     end
 
-    # Creates a kata's git repo in-process, replacing the shell batch
-    # (git init/config/add/commit/tag/branch). Initialises <repo_dir>, records
+    # Creates a kata's git repo in-process. Equivalent to the shell batch
+    # `git init/config/add/commit/tag/branch`. Initialises <repo_dir>, records
     # the committer identity in config (so later commits, which use the repo's
     # default_signature, work), commits <files> (a repo-relative path => content
     # map) as the parentless initial commit <message> on refs/heads/main, tags it
     # 0, and points HEAD at main. The identity is also passed explicitly to this
     # first commit so it does not depend on libgit2 having refreshed the config
-    # it was just handed. The result is an ordinary git repo, byte-identical to
-    # the old shell-built one, so the save/read and update-ref CAS paths run
-    # against it unchanged. Returns the commit oid. See docs/in-process-git.md.
+    # it was just handed. The result is an ordinary git repo, against which the
+    # save/read and update-ref CAS paths run unchanged. Returns the commit oid.
+    # See docs/in-process-git.md.
     def create(repo_dir, user_name, user_email, message, files)
       repo = Rugged::Repository.init_at(repo_dir)
       repo.config['user.name']  = user_name
