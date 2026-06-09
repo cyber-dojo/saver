@@ -2,10 +2,9 @@ require_relative '../lib/utf8_clean'
 
 class GitDiffBuilder
   # Builds the saver's per-file diff hashes from the structured diff produced
-  # in-process by libgit2 (External::Git#diff). Replaces the old GitDiffParser,
-  # which parsed the textual output of the `git diff` command. The input is the
-  # Array of file descriptors External::Git#diff returns; the output matches the
-  # old parser's shape exactly (pinned by test/server/kata_diff.rb):
+  # in-process by libgit2 (External::Git#diff). The input is the Array of file
+  # descriptors External::Git#diff returns; the output shape is pinned by
+  # test/server/kata_diff.rb:
   #   { type:, old_filename:, new_filename:,
   #     line_counts: { added:, deleted:, same: }, lines? }
   # where :lines is present only when options[:lines] is truthy. A change region

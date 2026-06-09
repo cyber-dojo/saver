@@ -488,9 +488,9 @@ class Kata_v2
   # - - - - - - - - - - - - - - - - - - - - - -
 
   # Reads the kata git tree at the commit tagged pos_index, in-process via
-  # libgit2 (rugged), as { path => content }. (Formerly shelled out to
-  # "git archive --format=tar <index>"; the name is kept for now. See
-  # docs/in-process-git.md.)
+  # libgit2 (rugged), as { path => content }. Equivalent to
+  # "git archive --format=tar <index>" (hence the method name). See
+  # docs/in-process-git.md.
   #
   # A save commits its event (advancing main via git update-ref) and then, as a
   # separate step, writes that index's numeric tag (via rugged). A concurrent
@@ -544,8 +544,8 @@ class Kata_v2
     json_parse(Utf8.clean(git_show(id, 'options.json')))
   end
 
-  # Reads filename from the kata's git tree at HEAD as a string. Now in-process
-  # via libgit2 (rugged) instead of a "git show" subprocess. See
+  # Reads filename from the kata's git tree at HEAD as a string, in-process via
+  # libgit2 (rugged). Equivalent to "git show HEAD:<filename>". See
   # docs/in-process-git.md.
   def git_show(id, filename)
     git.head_blob(repo_dir(id), filename)
