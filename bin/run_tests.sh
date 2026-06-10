@@ -5,6 +5,12 @@ export ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "${ROOT_DIR}/bin/lib.sh"
 source "${ROOT_DIR}/bin/echo_env_vars.sh"
 
+# Run as our own docker-compose project so this repo's containers, and
+# those of sibling repos, can run at once without colliding on fixed
+# container names. Override to run a second saver alongside the first,
+# eg: COMPOSE_PROJECT_NAME=saver2 bin/run_tests.sh server
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-saver}"
+
 show_help()
 {
     local -r MY_NAME=$(basename "${BASH_SOURCE[0]}")
@@ -30,12 +36,10 @@ check_args()
     'server')
       export TYPE=server
       export USER="${CYBER_DOJO_SAVER_SERVER_USER}"
-      export CONTAINER_NAME="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
       ;;
     'client')
       export TYPE=client
       export USER="${CYBER_DOJO_SAVER_CLIENT_USER}"
-      export CONTAINER_NAME="${CYBER_DOJO_SAVER_CLIENT_CONTAINER_NAME}"
       ;;
     '')
       show_help
@@ -106,6 +110,9 @@ run_tests()
   containers_down
   create_space_limited_volume
   docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
+  # Resolved here (not in check_args) because the container does not exist
+  # until the compose up above has brought it up.
+  export CONTAINER_NAME="$(service_container "${TYPE}")"
   echo_warnings "${TYPE}"
   copy_in_saver_test_data
   run_tests_in_container "$@"

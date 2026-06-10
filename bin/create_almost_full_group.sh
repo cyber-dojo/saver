@@ -8,11 +8,17 @@ source "${ROOT_DIR}/bin/echo_env_vars.sh"
 readonly VERSION="${1}"  # {0|1|2}
 # shellcheck disable=SC2046
 export $(echo_env_vars)
-readonly CONTAINER="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
+
+# Run as our own docker-compose project so this repo's containers, and
+# those of sibling repos, can run at once without colliding on fixed
+# container names.
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-saver}"
 readonly USER="${CYBER_DOJO_SAVER_SERVER_USER}"
 
 # TODO: Need to start a custom-start-points container
 docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 server
+# Resolved after compose up because the container does not exist before it.
+readonly CONTAINER="$(service_container server)"
 docker exec "${CONTAINER}" bash -c "rm -rf /cyber-dojo/*"
 readonly GID=$(docker exec --user "${USER}" "${CONTAINER}" bash -c "ruby /saver/test/data/create_almost_full_group.rb ${VERSION}")
 

@@ -45,6 +45,21 @@ installed()
   fi
 }
 
+service_container()
+{
+  # Echo the container id of the given docker-compose service within
+  # this repo's project. The project is COMPOSE_PROJECT_NAME (set by the
+  # entry scripts), defaulting to saver so the helpers work against a
+  # plain run when the var is not exported in the shell. Resolving by
+  # label (rather than a fixed container_name) lets several saver runs,
+  # and runs in sibling repos, coexist without colliding.
+  local -r service="${1}"
+  docker ps \
+    --filter "label=com.docker.compose.project=${COMPOSE_PROJECT_NAME:-saver}" \
+    --filter "label=com.docker.compose.service=${service}" \
+    --format '{{.ID}}'
+}
+
 create_space_limited_volume()
 {
   docker volume create --driver local \
@@ -58,7 +73,7 @@ create_space_limited_volume()
 copy_in_saver_test_data()
 {
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
-  local -r CID="${CYBER_DOJO_SAVER_SERVER_CONTAINER_NAME}"
+  local -r CID="$(service_container server)"
   # You cannot docker cp to a tmpfs, so tar-piping...
 
   if [ "${CI:-}" == 'true' ]; then
