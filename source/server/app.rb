@@ -12,8 +12,8 @@ class App < AppBase
 
   # - - - - - - - - - - - - - - - - -
 
-   get_json(:model, :diff_lines)
-   get_json(:model, :diff_summary)
+  post_json(:model, :cluster_create)
+   get_json(:model, :cluster_manifest)
 
   # - - - - - - - - - - - - - - - - -
 
@@ -46,5 +46,8 @@ class App < AppBase
   post_json(:model, :kata_reverted)
   post_json(:model, :kata_checked_out)
   post_json(:model, :kata_option_set)
+
+   get_json(:model, :diff_lines)
+   get_json(:model, :diff_summary)
 
 end

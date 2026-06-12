@@ -147,6 +147,28 @@ module KataTestData
     }
   end
 
+  def manifest_Tennis_refactoring_Ruby_minitest
+    {
+      'display_name' => 'Tennis refactoring, Ruby minitest',
+      'filename_extension' => ['.rb'],
+      'image_name' => 'cyberdojofoundation/ruby_mini_test',
+      'visible_files' => {
+        'cyber-dojo.sh' => {
+          'content' => "ruby tennis_test.rb\n"
+        },
+        'readme.txt' => {
+          'content' => "Tennis has a rather quirky scoring system, and to newcomers it\ncan be a little difficult to keep track of. The local tennis club\nhas some code that is currently being used to update the scoreboard\nwhen a player scores a point.\n \nYour job is to refactor the code until you are happy to work with it.\nThe future is uncertain, new features may be needed, and you want to\nbe thoroughly on top of your game when that happens.\n \nSummary of Tennis scoring:\n1. A game is won by the first player to have won at least four points\n   in total and at least two points more than the opponent.\n2. The running score of each game is described in a manner peculiar\n   to tennis: scores from zero to three points are described as 'love',\n   'fifteen', 'thirty', and 'forty' respectively.\n3. If at least three points have been scored by each player, and the\n   scores are equal, the score is 'deuce'.\n4. If at least three points have been scored by each side and a player\n   has one more point than the opponent, the score of the game is\n   'advantage' for the player in the lead."
+        },
+        'tennis.rb' => {
+          'content' => "class TennisGame1\n  POINT_NAMES = %w(Love Fifteen Thirty Forty).freeze\n\n  def initialize(player1_name, player2_name)\n    @player1_name = player1_name\n    @player2_name = player2_name\n    @p1points = 0\n    @p2points = 0\n  end\n\n  def won_point(player_name)\n    if player_name == @player1_name\n      @p1points += 1\n    else\n      @p2points += 1\n    end\n  end\n\n  def score\n    if @p1points == @p2points\n      tied_score\n    elsif @p1points >= 4 || @p2points >= 4\n      end_game_score\n    else\n      running_score\n    end\n  end\n\n  private\n\n  def tied_score\n    return 'Deuce' if @p1points >= 3\n    POINT_NAMES[@p1points] + '-All'\n  end\n\n  def end_game_score\n    lead = @p1points - @p2points\n    leader = lead > 0 ? @player1_name : @player2_name\n    lead.abs == 1 ? 'Advantage ' + leader : 'Win for ' + leader\n  end\n\n  def running_score\n    POINT_NAMES[@p1points] + '-' + POINT_NAMES[@p2points]\n  end\nend\n"
+        },
+        'tennis_test.rb' => {
+          'content' => "require 'minitest/autorun'\nrequire_relative 'tennis'\n\nclass TennisTest < Minitest::Test\n  TEST_CASES = [\n    [0, 0, 'Love-All'],\n    [1, 1, 'Fifteen-All'],\n    [2, 2, 'Thirty-All'],\n    [3, 3, 'Deuce'],\n    [4, 4, 'Deuce'],\n    [1, 0, 'Fifteen-Love'],\n    [0, 1, 'Love-Fifteen'],\n    [4, 0, 'Win for player1'],\n    [0, 4, 'Win for player2'],\n    [4, 3, 'Advantage player1'],\n    [3, 4, 'Advantage player2'],\n  ].freeze\n\n  def play_game(p1_points, p2_points)\n    game = TennisGame1.new('player1', 'player2')\n    [p1_points, p2_points].max.times do |i|\n      game.won_point('player1') if i < p1_points\n      game.won_point('player2') if i < p2_points\n    end\n    game\n  end\n\n  def test_score\n    TEST_CASES.each do |p1_points, p2_points, expected|\n      game = play_game(p1_points, p2_points)\n      assert_equal expected, game.score\n    end\n  end\nend\n"
+        }
+      }
+    }.clone
+  end
+
   def manifest_Tennis_refactoring_Python_unitttest
     {
       'display_name' => 'Tennis refactoring, Python unitttest',

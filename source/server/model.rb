@@ -6,6 +6,7 @@ require_relative 'model/group_v2'
 require_relative 'model/kata_v0'
 require_relative 'model/kata_v1'
 require_relative 'model/kata_v2'
+require_relative 'model/cluster'
 
 class Model
 
@@ -28,6 +29,42 @@ class Model
 
   def group_manifest(id:)
     group(id).manifest(id)
+  end
+
+  def cluster_create(manifest:)
+    Cluster.new(@externals).create(manifest)
+  end
+
+  def cluster_manifest(id:)
+    Cluster.new(@externals).manifest(id)
+  end
+
+  # True if a cluster with this id exists.
+  def cluster_exists?(id:)
+    unless id?(id)
+      return false
+    end
+    disk.run(disk.dir_exists_command(cluster_id_path(id)))
+  end
+
+  # The id-chain from the given entity up to the topmost one, ordered
+  # bottom-to-top as [{type,id}, ...]; eg a kata in a cluster returns
+  # [{kata},{group},{cluster}]. The top id is the last entry's id. Each step
+  # appends its entry and advances id to its parent (group_id, then cluster_id).
+  def id_hierarchy(id:)
+    result = []
+    if kata_exists?(id:id)
+      result << { 'type' => 'kata', 'id' => id }
+      id = kata_manifest(id:id)['group_id']
+    end
+    if group_exists?(id:id)
+      result << { 'type' => 'group', 'id' => id }
+      id = group_manifest(id:id)['cluster_id']
+    end
+    if cluster_exists?(id:id)
+      result << { 'type' => 'cluster', 'id' => id }
+    end
+    result
   end
 
   def group_join(id:, indexes:AVATAR_INDEXES.shuffle)

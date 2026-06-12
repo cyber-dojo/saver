@@ -28,6 +28,18 @@ module TestHelpersModel
     model.group_fork(id:id, index:index)
   end
 
+  def cluster_create(manifest)
+    model.cluster_create(manifest:manifest)
+  end
+
+  def id_hierarchy(id)
+    model.id_hierarchy(id:id)
+  end
+
+  def cluster_manifest(id)
+    model.cluster_manifest(id:id)
+  end
+
   AVATAR_INDEXES = (0..63).to_a
 
   # - - - - - - - - - - - - - - -

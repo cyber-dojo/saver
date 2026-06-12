@@ -21,11 +21,15 @@ class IdGenerator
   end
 
   def group_id
-    generate_id(:group_id_path, :kata_id_path)
+    generate_id(:group_id_path, :kata_id_path, :cluster_id_path)
   end
 
   def kata_id
-    generate_id(:kata_id_path, :group_id_path)
+    generate_id(:kata_id_path, :group_id_path, :cluster_id_path)
+  end
+
+  def cluster_id
+    generate_id(:cluster_id_path, :group_id_path, :kata_id_path)
   end
 
   private
@@ -34,15 +38,14 @@ class IdGenerator
 
   include IdPather
 
-  def generate_id(pather, not_pather)
+  def generate_id(pather, *not_pathers)
     256.times.find do
       id = SIZE.times.map{ ALPHABET[random_index] }.join
       if reserved?(id)
         next
       end
-      # Ensure group IDs and kata IDs do not clash with each other
-      dir_exists_command = disk.dir_exists_command(method(not_pather).call(id))
-      if disk.run(dir_exists_command)
+      # Ensure ids do not clash across groups, katas and clusters.
+      if not_pathers.any? { |np| disk.run(disk.dir_exists_command(method(np).call(id))) }
         next
       end
 
