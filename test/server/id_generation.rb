@@ -97,6 +97,38 @@ class IdGenerationTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - -
 
+  test 'A6D14g', %w(
+  | kata-id generator will skip an id that already exists as a cluster
+  ) do
+    cluster_id = cluster_create(
+      'exercise' => 'Tennis',
+      'ltfs' => [
+        manifest_Tennis_refactoring_Python_unitttest,
+        manifest_Tennis_refactoring_Ruby_minitest
+      ]
+    )
+    id = 'kP4mR9'
+    id_generator = stubbed_id_generator(cluster_id + id)
+    assert_equal id, id_generator.kata_id
+  end
+
+  test 'A6D14h', %w(
+  | group-id generator will skip an id that already exists as a cluster
+  ) do
+    cluster_id = cluster_create(
+      'exercise' => 'Tennis',
+      'ltfs' => [
+        manifest_Tennis_refactoring_Python_unitttest,
+        manifest_Tennis_refactoring_Ruby_minitest
+      ]
+    )
+    id = 'gT7wQ2'
+    id_generator = stubbed_id_generator(cluster_id + id)
+    assert_equal id, id_generator.group_id
+  end
+
+  # - - - - - - - - - - - - - - - - - - -
+
   test 'A6D068', %w(
   | id?(s) true examples
   ) do
