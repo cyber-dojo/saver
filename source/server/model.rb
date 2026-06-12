@@ -14,23 +14,6 @@ class Model
     @externals = externals
   end
 
-  def group_create(manifest:)
-    version = from_manifest(manifest)
-    GROUPS[version].new(@externals).create(manifest)
-  end
-
-  def group_exists?(id:)
-    unless id?(id)
-      return false
-    end
-    dir_name = group_id_path(id)
-    disk.run(disk.dir_exists_command(dir_name))
-  end
-
-  def group_manifest(id:)
-    group(id).manifest(id)
-  end
-
   def cluster_create(manifest:)
     Cluster.new(@externals).create(manifest)
   end
@@ -51,7 +34,7 @@ class Model
   # bottom-to-top as [{type,id}, ...]; eg a kata in a cluster returns
   # [{kata},{group},{cluster}]. The top id is the last entry's id. Each step
   # appends its entry and advances id to its parent (group_id, then cluster_id).
-  def id_hierarchy(id:)
+  def cluster_hierarchy(id:)
     result = []
     if kata_exists?(id:id)
       result << { 'type' => 'kata', 'id' => id }
@@ -65,6 +48,25 @@ class Model
       result << { 'type' => 'cluster', 'id' => id }
     end
     result
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def group_create(manifest:)
+    version = from_manifest(manifest)
+    GROUPS[version].new(@externals).create(manifest)
+  end
+
+  def group_exists?(id:)
+    unless id?(id)
+      return false
+    end
+    dir_name = group_id_path(id)
+    disk.run(disk.dir_exists_command(dir_name))
+  end
+
+  def group_manifest(id:)
+    group(id).manifest(id)
   end
 
   def group_join(id:, indexes:AVATAR_INDEXES.shuffle)
@@ -87,6 +89,8 @@ class Model
   def group_fork(id:, index:)
     kata(id).fork(Group_v2, id, index)
   end
+
+  # - - - - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:)
     version = from_manifest(manifest)
@@ -177,6 +181,8 @@ class Model
   def kata_option_set(id:, name:, value:)
     kata(id).option_set(id, name, value)
   end
+
+  # - - - - - - - - - - - - - - - - - - - -
 
   def diff_lines(id:, was_index:, now_index:)
     kata(id).diff_lines(id, was_index, now_index)

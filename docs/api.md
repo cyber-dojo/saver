@@ -8,6 +8,131 @@
 
 
 - - - -
+# Cluster API
+
+A cluster is the umbrella over a multi-LTF practice: it offers 2..4
+language-test-frameworks, holding one ordinary group per LTF (its children).
+A cluster is never joined directly; a joiner joins one of its child groups.
+
+## POST cluster_create(manifest)
+Creates a cluster from the given `manifest` and returns its id.
+The manifest holds the group-wide `exercise` and an `ltfs` array (2..4 per-LTF
+group manifests). For each ltf a child group is created, carrying a `cluster_id`
+back-pointer, and the cluster references the children.
+- parameters
+  * **manifest:Hash** with `exercise:String` and `ltfs:Array[Hash]`, the 2..4
+    per-LTF group manifests (as built by
+    [creator](https://github.com/cyber-dojo/creator)).
+- returns
+  * the `id` of the created cluster.
+  * status 400 if `ltfs` does not hold 2..4 entries.
+- example
+  ```bash
+  $ curl \
+    --data '{"manifest":{"exercise":"Tennis","ltfs":[...]}}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/cluster_create | jq .
+  ```
+  ```bash
+  {
+    "cluster_create": "dFg8Us"
+  }
+  ```
+
+
+- - - -
+## GET cluster_manifest(id)
+Gets the manifest of the cluster with the given `id`: its `exercise` and its
+`children` (one per LTF, each `{ltf_display_name, group_id}`).
+- parameters
+  * **id:String**. The cluster id.
+- returns
+  * the manifest of the cluster with the given `id`.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/cluster_manifest | jq .
+  ```
+  ```bash
+  {
+    "cluster_manifest": {
+      "id": "dFg8Us",
+      "exercise": "Tennis",
+      "children": [
+        { "ltf_display_name": "Python, unittest", "group_id": "g1AbCd" },
+        { "ltf_display_name": "Ruby, MiniTest",   "group_id": "g2EfGh" }
+      ]
+    }
+  }
+  ```
+
+
+- - - -
+## GET cluster_exists?(id)
+Determines if a cluster with the given `id` exists.
+- parameters
+  * **id:String**. The cluster id.
+- returns
+  * `true` if a cluster with the given `id` exists, otherwise `false`.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/cluster_exists? | jq .
+  ```
+  ```bash
+  {
+    "cluster_exists?": true
+  }
+  ```
+
+
+- - - -
+## GET cluster_hierarchy(id)
+Returns the chain of ids from the given `id` up to its topmost containing entity,
+ordered bottom-to-top as `[{type,id}, ...]` where `type` is `kata`, `group` or
+`cluster`. The first entry is the given id; the last entry's id is the topmost.
+Lets a caller resolve any id up to the practice it belongs to (eg a kata up to
+its cluster).
+- parameters
+  * **id:String**. A kata, group or cluster id.
+- returns
+  * the id chain. A solo kata returns just itself; a kata in a cluster returns
+    its kata, then group, then cluster.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"5rTJv5"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/cluster_hierarchy | jq .
+  ```
+  ```bash
+  {
+    "cluster_hierarchy": [
+      { "type": "kata",    "id": "5rTJv5" },
+      { "type": "group",   "id": "g1AbCd" },
+      { "type": "cluster", "id": "dFg8Us" }
+    ]
+  }
+  ```
+
+
+- - - -
 # Group API
 
 ## POST group_create(manifest)
@@ -109,10 +234,16 @@ Determines if a group with the given `id` exists.
   ```
 
 - - - -
-## POST group_join(id)
+## POST group_join(id, indexes)
 Creates a new kata in the group with the given `id` and returns the kata's id.
 - parameters 
   * **id:String**. The group id.
+  * **indexes:Array[int]** (optional). The candidate avatar indexes (from 0..63)
+    in preference order. The first index not already taken in the group is
+    allocated. Defaults to a shuffled 0..63. Pass a custom order to influence
+    which avatar a joiner gets. For example, in a cluster, list the avatars not
+    yet used elsewhere in the cluster first, so avatars stay distinct across the
+    cluster's groups.
 - returns 
   * the `id` of the created kata, or `null` if the group is already full.
 - example

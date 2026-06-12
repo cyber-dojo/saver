@@ -32,12 +32,16 @@ module TestHelpersModel
     model.cluster_create(manifest:manifest)
   end
 
-  def id_hierarchy(id)
-    model.id_hierarchy(id:id)
+  def cluster_hierarchy(id)
+    model.cluster_hierarchy(id:id)
   end
 
   def cluster_manifest(id)
     model.cluster_manifest(id:id)
+  end
+
+  def cluster_exists?(id)
+    model.cluster_exists?(id:id)
   end
 
   AVATAR_INDEXES = (0..63).to_a

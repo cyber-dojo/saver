@@ -32,6 +32,13 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 
 # API
 
+## [Cluster API](docs/api.md#cluster-api)
+
+* [POST cluster_create(manifest)](docs/api.md#post-cluster_createmanifest)
+* [GET cluster_manifest(id)](docs/api.md#get-cluster_manifestid)
+* [GET cluster_exists?(id)](docs/api.md#get-cluster_existsid)
+* [GET cluster_hierarchy(id)](docs/api.md#get-cluster_hierarchyid)
+
 ## [Group API](docs/api.md#group-api)
 
 * [POST group_create(manifest)](docs/api.md#post-group_createmanifest)
