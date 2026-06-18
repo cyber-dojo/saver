@@ -117,6 +117,17 @@ class KataEventsTest < TestBase
     end
   end
 
+  # - - - - - - - - - - - - - - - - - - - - -
+
+  versions_test 'D9wn0X', %w(
+  | kata_events for a well-formed id that does not exist
+  | raises a RequestError (HTTP 400 client error)
+  | rather than a generic error (HTTP 500 server error)
+  ) do
+    error = assert_raises(RequestError) { kata_events('123AbZ') }
+    assert_equal 'kata 123AbZ does not exist', error.message
+  end
+
   private
 
   def kata_create_event(index, time)

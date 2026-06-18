@@ -49,4 +49,30 @@ class GroupManifestTest < TestBase
     assert_equal version, manifest['version'], :version
   end
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_test '5ZtN0X', %w(
+  | group_manifest for a well-formed id that does not exist
+  | raises a RequestError (HTTP 400 client error)
+  | rather than a generic error (HTTP 500 server error)
+  ) do
+    error = assert_raises(RequestError) { group_manifest('123AbZ') }
+    assert_equal 'group 123AbZ does not exist', error.message
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, '5ZtN11', %w(
+  | group_manifest re-raises the original error, rather than masking it as
+  | "does not exist", when the group exists but its manifest is unreadable.
+  | Covers the group_exists?==true branch of the rescue.
+  ) do
+    in_group do |id|
+      path = "/groups/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}/manifest.json"
+      disk.run(disk.file_write_command(path, '{ this is not valid json'))
+      assert group_exists?(id), :group_dir_still_exists
+      assert_raises(JSON::ParserError) { group_manifest(id) }
+    end
+  end
+
 end
