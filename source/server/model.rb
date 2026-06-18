@@ -20,6 +20,13 @@ class Model
 
   def cluster_manifest(id:)
     Cluster.new(@externals).manifest(id)
+  rescue StandardError => error
+    # Classify a failed cluster resolution: a well-formed but non-existent
+    # cluster-id is a client error (400), not the generic server error (500)
+    # raised by Cluster#manifest's disk.assert read. Real failures on a cluster
+    # that does exist are re-raised unchanged.
+    raise error if cluster_exists?(id:id)
+    fail RequestError, "cluster #{id} does not exist"
   end
 
   # True if a cluster with this id exists.
@@ -46,6 +53,12 @@ class Model
     end
     if cluster_exists?(id:id)
       result << { 'type' => 'cluster', 'id' => id }
+    end
+    # An empty result means the original id matched no kata, group or cluster
+    # (id is only reassigned inside a block that also appends an entry). That is
+    # a client error (400), not an empty hierarchy.
+    if result.empty?
+      fail RequestError, "id #{id} does not exist"
     end
     result
   end
@@ -203,6 +216,13 @@ class Model
 
   def group(id)
     GROUPS[from_path(group_id_path(id, 'manifest.json'))].new(@externals)
+  rescue StandardError => error
+    # Classify a failed group resolution: a well-formed but non-existent
+    # gid is a client error (400), not the generic server error (500) raised
+    # by from_path's manifest read. Real failures on a group that does exist
+    # are re-raised unchanged.
+    raise error if group_exists?(id:id)
+    fail RequestError, "group #{id} does not exist"
   end
 
   def kata(id)
@@ -229,6 +249,13 @@ class Model
       end
       version
     end
+  rescue StandardError => error
+    # Classify a failed version-detection: a well-formed but non-existent
+    # kata-id is a client error (400), not the generic server error (500)
+    # raised by from_path's manifest read. Real failures on a kata that does
+    # exist are re-raised unchanged.
+    raise error if kata_exists?(id:id)
+    fail RequestError, "kata #{id} does not exist"
   end
 
   def from_manifest(manifest)

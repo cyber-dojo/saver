@@ -88,4 +88,14 @@ class ClusterHierarchyTest < TestBase
     end
   end
 
+  test 'Hy1a11', %w(
+  | cluster_hierarchy for a well-formed id that does not exist
+  | raises a RequestError (HTTP 400 client error)
+  | rather than returning [] (an id matching no kata, group or cluster
+  | is a client error, not an empty hierarchy)
+  ) do
+    error = assert_raises(RequestError) { cluster_hierarchy('123AbZ') }
+    assert_equal 'id 123AbZ does not exist', error.message
+  end
+
 end
