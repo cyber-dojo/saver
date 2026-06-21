@@ -4,9 +4,9 @@ require_relative 'id_pather'
 require_relative '../request_error'
 require_relative '../lib/json_adapter'
 
-# A cluster is the umbrella over a multi-LTF practice. It holds the group-wide
-# exercise and references its child groups (one ordinary Group_v2 per LTF). It
-# is NOT a group and is never joined directly; joining resolves to a child group.
+# A cluster is the umbrella over a multi-LTF practice. It references its groups
+# (one ordinary Group_v2 per LTF, each carrying its own exercise). It is NOT a
+# group and is never joined directly; joining resolves to one of its groups.
 class Cluster
 
   # Stores the externals (disk, time, random, ...) used to persist the cluster.
@@ -15,29 +15,29 @@ class Cluster
   end
 
   # Creates the cluster: generates its id, creates one Group_v2 child per ltf
-  # (each carrying cluster_id), stores the cluster referencing the children, and
-  # returns the cluster id. A cluster offers 2..4 LTFs (a single-LTF practice is a
-  # bare Group_v2, not a cluster), so any other ltfs.size raises RequestError.
-  def create(manifest)
-    ltfs = manifest.fetch('ltfs')
-    unless (2..4).include?(ltfs.size)
-      fail RequestError, "ltfs.size:#{ltfs.size}: (a cluster offers 2..4 LTFs)"
+  # manifest (each carrying its own exercise and cluster_id), stores the cluster
+  # referencing its groups (a map of group_id to that group's manifest), and
+  # returns the cluster id. A cluster offers 2..5 LTFs (a single-LTF practice is a
+  # bare Group_v2, not a cluster), so any other manifests.size raises RequestError.
+  def create(manifests)
+    unless (2..5).include?(manifests.size)
+      fail RequestError, "ltfs.size:#{manifests.size}: (a cluster offers 2..5 LTFs)"
     end
     id = IdGenerator.new(@externals).cluster_id
-    children = ltfs.map do |ltf|
-      group_id = Group_v2.new(@externals).create(ltf.merge('cluster_id' => id))
-      { 'ltf_display_name' => ltf['display_name'], 'group_id' => group_id }
+    groups = {}
+    manifests.each do |manifest|
+      group_id = Group_v2.new(@externals).create(manifest.merge('cluster_id' => id))
+      groups[group_id] = manifest
     end
     disk.assert(manifest_create_command(id, json_plain({
-      'id'       => id,
-      'created'  => time.now,
-      'exercise' => manifest['exercise'],
-      'children' => children
+      'id'      => id,
+      'created' => time.now,
+      'groups'  => groups
     })))
     id
   end
 
-  # Returns the cluster's stored manifest (exercise + children).
+  # Returns the cluster's stored manifest (groups).
   def manifest(id)
     json_parse(disk.assert(manifest_read_command(id)))
   end

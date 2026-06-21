@@ -32,12 +32,24 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 
 # API
 
+## [Probe API](docs/api.md#probe-api)
+
+* [GET alive?](docs/api.md#get-alive)  
+* [GET ready?](docs/api.md#get-ready)
+* [GET sha](docs/api.md#get-sha)
+
+
+## [ID API](docs/api.md#id-api)
+
+* [GET id_chain(id)](docs/api.md#get-id_chainid)
+
+
 ## [Cluster API](docs/api.md#cluster-api)
 
 * [POST cluster_create(manifest)](docs/api.md#post-cluster_createmanifest)
 * [GET cluster_manifest(id)](docs/api.md#get-cluster_manifestid)
 * [GET cluster_exists?(id)](docs/api.md#get-cluster_existsid)
-* [GET cluster_hierarchy(id)](docs/api.md#get-cluster_hierarchyid)
+
 
 ## [Group API](docs/api.md#group-api)
 
@@ -47,6 +59,7 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 * [POST group_join(id,indexes)](docs/api.md#post-group_joinidindexes)
 * [GET group_joined(id)](docs/api.md#get-group_joinedid)
 * [POST group_fork(id,index)](docs/api.md#post-group_forkidindex)
+
 
 ## [Kata API](docs/api.md#kata-api)
 
@@ -76,12 +89,6 @@ $ make {metrics_coverage_server|metrics_coverage_client}
 * [GET diff_lines(id,was_index,now_index)](docs/api.md#get-diff_linesidwas_indexnow_index)
 * [GET diff_summary(id,was_index,now_index)](docs/api.md#get-diff_summaryidwas_indexnow_index)
 
-
-## [Probe API](docs/api.md#probe-api)
-
-* [GET alive?](docs/api.md#get-alive)  
-* [GET ready?](docs/api.md#get-ready)
-* [GET sha](docs/api.md#get-sha)
 
 # Screenshots
 

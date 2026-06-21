@@ -101,8 +101,7 @@ class IdGenerationTest < TestBase
   | kata-id generator will skip an id that already exists as a cluster
   ) do
     cluster_id = cluster_create(
-      'exercise' => 'Tennis',
-      'ltfs' => [
+      [
         manifest_Tennis_refactoring_Python_unitttest,
         manifest_Tennis_refactoring_Ruby_minitest
       ]
@@ -116,8 +115,7 @@ class IdGenerationTest < TestBase
   | group-id generator will skip an id that already exists as a cluster
   ) do
     cluster_id = cluster_create(
-      'exercise' => 'Tennis',
-      'ltfs' => [
+      [
         manifest_Tennis_refactoring_Python_unitttest,
         manifest_Tennis_refactoring_Ruby_minitest
       ]

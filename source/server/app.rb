@@ -15,7 +15,7 @@ class App < AppBase
   post_json(:model, :cluster_create)
    get_json(:model, :cluster_manifest)
    get_json(:model, :cluster_exists?)
-   get_json(:model, :cluster_hierarchy)
+   get_json(:model, :id_chain)
 
   # - - - - - - - - - - - - - - - - -
 
