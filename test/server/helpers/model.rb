@@ -28,12 +28,12 @@ module TestHelpersModel
     model.group_fork(id:id, index:index)
   end
 
-  def cluster_create(manifest)
-    model.cluster_create(manifest:manifest)
+  def cluster_create(manifests)
+    model.cluster_create(manifests:manifests)
   end
 
-  def cluster_hierarchy(id)
-    model.cluster_hierarchy(id:id)
+  def id_chain(id)
+    model.id_chain(id:id)
   end
 
   def cluster_manifest(id)

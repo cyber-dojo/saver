@@ -2,12 +2,6 @@ require_relative 'test_base'
 
 class ClusterManifestTest < TestBase
 
-  def two_ltf_cluster
-    cluster_create('exercise' => 'Tennis', 'ltfs' => [
-      manifest_Tennis_refactoring_Python_unitttest,
-      manifest_Tennis_refactoring_Ruby_minitest ])
-  end
-
   test 'Cm5d10', %w(
   | cluster_manifest for a well-formed id that does not exist
   | raises a RequestError (HTTP 400 client error)

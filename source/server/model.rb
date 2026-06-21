@@ -14,34 +14,11 @@ class Model
     @externals = externals
   end
 
-  def cluster_create(manifest:)
-    Cluster.new(@externals).create(manifest)
-  end
-
-  def cluster_manifest(id:)
-    Cluster.new(@externals).manifest(id)
-  rescue StandardError => error
-    # Classify a failed cluster resolution: a well-formed but non-existent
-    # cluster-id is a client error (400), not the generic server error (500)
-    # raised by Cluster#manifest's disk.assert read. Real failures on a cluster
-    # that does exist are re-raised unchanged.
-    raise error if cluster_exists?(id:id)
-    fail RequestError, "cluster #{id} does not exist"
-  end
-
-  # True if a cluster with this id exists.
-  def cluster_exists?(id:)
-    unless id?(id)
-      return false
-    end
-    disk.run(disk.dir_exists_command(cluster_id_path(id)))
-  end
-
   # The id-chain from the given entity up to the topmost one, ordered
   # bottom-to-top as [{type,id}, ...]; eg a kata in a cluster returns
   # [{kata},{group},{cluster}]. The top id is the last entry's id. Each step
   # appends its entry and advances id to its parent (group_id, then cluster_id).
-  def cluster_hierarchy(id:)
+  def id_chain(id:)
     result = []
     if kata_exists?(id:id)
       result << { 'type' => 'kata', 'id' => id }
@@ -61,6 +38,31 @@ class Model
       fail RequestError, "id #{id} does not exist"
     end
     result
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  def cluster_create(manifests:)
+    Cluster.new(@externals).create(manifests)
+  end
+
+  def cluster_manifest(id:)
+    Cluster.new(@externals).manifest(id)
+  rescue StandardError => error
+    # Classify a failed cluster resolution: a well-formed but non-existent
+    # cluster-id is a client error (400), not the generic server error (500)
+    # raised by Cluster#manifest's disk.assert read. Real failures on a cluster
+    # that does exist are re-raised unchanged.
+    raise error if cluster_exists?(id:id)
+    fail RequestError, "cluster #{id} does not exist"
+  end
+
+  # True if a cluster with this id exists.
+  def cluster_exists?(id:)
+    unless id?(id)
+      return false
+    end
+    disk.run(disk.dir_exists_command(cluster_id_path(id)))
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -

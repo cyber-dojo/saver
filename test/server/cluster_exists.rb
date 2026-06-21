@@ -2,12 +2,6 @@ require_relative 'test_base'
 
 class ClusterExistsTest < TestBase
 
-  def two_ltf_cluster
-    cluster_create('exercise' => 'Tennis', 'ltfs' => [
-      manifest_Tennis_refactoring_Python_unitttest,
-      manifest_Tennis_refactoring_Ruby_minitest ])
-  end
-
   test 'Ce7b01', %w(
   | cluster_exists? is true for a created cluster
   ) do
@@ -24,7 +18,7 @@ class ClusterExistsTest < TestBase
   | cluster_exists? is false for a group id or a kata id (neither is a cluster)
   ) do
     cluster_id = two_ltf_cluster
-    group_id = cluster_manifest(cluster_id)['children'].first['group_id']
+    group_id = cluster_manifest(cluster_id)['groups'].keys.first
     kata_id  = group_join(group_id)
     refute cluster_exists?(group_id), :group_id_is_not_a_cluster
     refute cluster_exists?(kata_id),  :kata_id_is_not_a_cluster

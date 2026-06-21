@@ -100,39 +100,6 @@ Determines if a cluster with the given `id` exists.
 
 
 - - - -
-## GET cluster_hierarchy(id)
-Returns the chain of ids from the given `id` up to its topmost containing entity,
-ordered bottom-to-top as `[{type,id}, ...]` where `type` is `kata`, `group` or
-`cluster`. The first entry is the given id; the last entry's id is the topmost.
-Lets a caller resolve any id up to the practice it belongs to (eg a kata up to
-its cluster).
-- parameters
-  * **id:String**. A kata, group or cluster id.
-- returns
-  * the id chain. A solo kata returns just itself; a kata in a cluster returns
-    its kata, then group, then cluster.
-- example
-  ```bash
-  $ curl \
-    --data '{"id":"5rTJv5"}' \
-    --fail \
-    --header 'Content-type: application/json' \
-    --silent \
-    --request GET \
-      https://${DOMAIN}:${PORT}/cluster_hierarchy | jq .
-  ```
-  ```bash
-  {
-    "cluster_hierarchy": [
-      { "type": "kata",    "id": "5rTJv5" },
-      { "type": "group",   "id": "g1AbCd" },
-      { "type": "cluster", "id": "dFg8Us" }
-    ]
-  }
-  ```
-
-
-- - - -
 # Group API
 
 ## POST group_create(manifest)
@@ -765,6 +732,41 @@ that exist in the kata being forked are *not* copied.
   ```bash
   {
     "kata_fork": "a8gVRN"
+  }
+  ```
+
+- - - -
+# ID API
+
+- - - -
+## GET id_chain(id)
+Returns the chain of ids from the given `id` up to its topmost containing entity,
+ordered bottom-to-top as `[{type,id}, ...]` where `type` is `kata`, `group` or
+`cluster`. The first entry is the given id; the last entry's id is the topmost.
+Lets a caller resolve any id up to the practice it belongs to (eg a kata up to
+its cluster).
+- parameters
+  * **id:String**. A kata, group or cluster id.
+- returns
+  * the id chain. A solo kata returns just itself; a kata in a cluster returns
+    its kata, then group, then cluster.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"5rTJv5"}' \
+    --fail \
+    --header 'Content-type: application/json' \
+    --silent \
+    --request GET \
+      https://${DOMAIN}:${PORT}/id_chain | jq .
+  ```
+  ```bash
+  {
+    "id_chain": [
+      { "type": "kata",    "id": "5rTJv5" },
+      { "type": "group",   "id": "g1AbCd" },
+      { "type": "cluster", "id": "dFg8Us" }
+    ]
   }
   ```
 

@@ -24,6 +24,13 @@ class TestBase < Id58TestBase
     yield group_create(custom_manifest)
   end
 
+  # Creates a minimal 2-LTF Tennis cluster and returns its id.
+  def two_ltf_cluster
+    cluster_create([
+      manifest_Tennis_refactoring_Python_unitttest,
+      manifest_Tennis_refactoring_Ruby_minitest ])
+  end
+
   def in_kata(gid = nil, &block)
     if gid.nil?
       yield kata_create(custom_manifest)
