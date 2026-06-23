@@ -8,7 +8,7 @@ trail:
     - name: saver
       attestations:
         - name: snyk-container-scan
-          type: generic
+          type: decision
 
         - name: unit-test
           type: junit
