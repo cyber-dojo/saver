@@ -7,6 +7,12 @@ trail:
   artifacts:
     - name: saver
       attestations:
+        - name: provenance
+          type: decision
+
+        - name: sbom
+          type: decision
+
         - name: snyk-container-scan
           type: decision
 
