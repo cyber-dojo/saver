@@ -127,10 +127,9 @@ remove_all_but_latest()
   for image_name in $(echo "${docker_image_ls}" | grep "${name}:")
   do
     if [ "${image_name}" != "${name}:latest" ]; then
-      docker image rm --force "${image_name}"
+      docker image rm --force "${image_name}" || echo "  skipped ${image_name} (in use)"
     fi
   done
-  docker system prune --force
 }
 
 echo_warnings()
