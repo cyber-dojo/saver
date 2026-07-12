@@ -2,4 +2,12 @@
 # If this file contains only comments, then no vulnerabilities are ignored.
 # Referenced in the workflow's synk-test.
 
+ignore:
+  # CVE-2026-33630 | c-ares (via git -> libcurl) | Score 7.5 | No fix in Alpine v3.24 yet; c-ares DNS path unreached (saver's git use is local-only)
+  SNYK-ALPINE324-CARES-17896522:
+    - '*':
+        reason: No fix available in Alpine v3.24; see docs/vulns/readme.txt
+        expires: 2026-08-11T00:00:00.000Z
+        created: 2026-07-12T00:00:00.000Z
+
 patch: {}
