@@ -1,13 +1,17 @@
 require_relative 'test_base'
+require 'securerandom'
 
 class KataConcurrentSavesTest < TestBase
 
   version_test 2, 'DccG02', %w(
-  | N concurrent kata_ran_tests calls to the same kata-id all use index=1.
-  | Exactly one succeeds. The remaining N-1 all get 'Out of order event':
-  | either from the index check (sequential case) or from the failed
-  | update-ref compare-and-swap (concurrent case). Even sequential execution
-  | cannot produce more than one success since all threads hardcode index=1.
+  | N concurrent kata_ran_tests calls to the same kata-id, each from a DIFFERENT
+  | laptop_id, all use index=1 (genuine mobbing: N laptops racing the same
+  | next-event slot). Exactly one succeeds. The remaining N-1 all get
+  | 'Out of order event': either from losing the update-ref compare-and-swap
+  | (concurrent case) or from the mobbing check rejecting a behind index whose
+  | intervening event was written by a different laptop (sequential case).
+  | Distinct laptop_ids are essential: with a shared laptop_id a behind write is
+  | accepted as self-lag, so more than one call could succeed.
   ) do
     n = 10
     in_kata do |id|
@@ -17,12 +21,13 @@ class KataConcurrentSavesTest < TestBase
       status  = 0
       summary = { 'colour' => 'red', 'predicted' => 'none' }
 
+      laptop_ids = n.times.map { SecureRandom.hex(32) }
       errors = []
       mu = Mutex.new
 
-      n.times.map do
+      n.times.map do |i|
         Thread.new do
-          saver.kata_ran_tests(id, 1, files, stdout, stderr, status, summary, laptop_id)
+          saver.kata_ran_tests(id, 1, files, stdout, stderr, status, summary, laptop_ids[i])
         rescue => error
           mu.synchronize { errors << error.message }
         end
