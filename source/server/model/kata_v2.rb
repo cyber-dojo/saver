@@ -412,7 +412,14 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def commit_event(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
+  # A same-laptop test-family write that loses the update-ref compare-and-swap is
+  # re-appended on the new head (self-lag), retrying up to this many times. The
+  # bound is generous: concurrent same-laptop writes for one kata are few (a
+  # browser fires only a couple at once) and each retry drains one winner, so this
+  # only caps pathological contention.
+  COMMIT_EVENT_MAX_RETRIES = 10
+
+  def commit_event(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts = 0)
     # Builds the event commit in-process (libgit2/rugged) on a single base,
     # advances main onto it with an update-ref compare-and-swap, then tags it.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
@@ -430,12 +437,15 @@ class Kata_v2
     #      (genuine mobbing). A behind index whose missed events are all this same
     #      laptop's own writes is accepted (self-lag).
     #
-    # 2. Concurrent write (the method-level rescue below):
+    # 2. Concurrent write (the rescue below):
     #    Two saves for the same kata arrive together, build on the same base_oid,
     #    and both pass layer 1. Whichever reaches the update-ref compare-and-swap
-    #    second fails (main has moved off base_oid). The rescue re-reads the tip via
-    #    git: if last_index >= index a concurrent write won, so "Out of order event"
-    #    is raised; any other failure is re-raised as-is.
+    #    second fails (main has moved off base_oid). The rescue resolves the loser:
+    #    a genuine verdict rejection (a different laptop, or an ahead index)
+    #    re-raises; a file-event loser is dropped as "Out of order" (superseded -
+    #    its files are already in the winner); a test-family loser from this same
+    #    laptop is self-lag, so it retries onto the new head and commits in order
+    #    rather than falsely raising. Bounded by COMMIT_EVENT_MAX_RETRIES.
     all_events = nil
     place_at = nil
     result = git.commit_on_main(repo_dir(id), "#{index} #{tag_message}", content_of(files)) do |base_events, added, deleted|
@@ -506,17 +516,35 @@ class Kata_v2
     git.create_tag(repo_dir(id), place_at, result[:new_oid])
 
     all_events
-  rescue
-    # Read the tip through git, not the working tree: the working tree is stale
-    # (saves no longer refresh it), so it would not give the latest committed
-    # events. HEAD advances atomically via update-ref, so this sees the tip and
-    # resolves out-of-order cleanly. See read_events_via_git and
-    # docs/reads-via-git.md.
+  rescue => error
+    # Layer 1 (the commit_on_main verdict) rejected this write - an ahead index, or
+    # a behind index whose missed events include a different laptop (genuine
+    # mobbing). That is a real out-of-order: never retry.
+    raise if error.message.include?('Out of order event')
+
+    # Otherwise the update-ref compare-and-swap lost: a concurrent write for this
+    # kata advanced main off the base this commit was built on. Read the tip via
+    # git (the working tree is stale; HEAD advances atomically via update-ref, so
+    # this sees the latest committed events - see read_events_via_git and
+    # docs/reads-via-git.md).
     current_events = read_events_via_git(id)
-    if current_events.last['index'] >= index
+    if current_events.last['index'] < index
+      # The tip did not pass us - an unexpected failure, re-raise as-is.
+      raise
+    end
+
+    # A concurrent same-kata write won the compare-and-swap.
+    # - file-event loser: superseded (the winner's files already include this
+    #   event's file changes), so drop it as "Out of order" (the web client's
+    #   inter-test .catch discards it silently, no dialog). No retry.
+    # - test-family loser from this same laptop: self-lag. Rebuild on the new head
+    #   and re-append so it lands after the winner in order. On retry,
+    #   commit_on_main's verdict self-lag-accepts this same laptop, or raises for a
+    #   different laptop (caught above). Bounded against pathological contention.
+    if summary['colour'].to_s.start_with?('file_') || attempts >= COMMIT_EVENT_MAX_RETRIES
       raise "Out of order event for #{id}"
     end
-    raise
+    commit_event(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts + 1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
