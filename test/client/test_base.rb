@@ -76,20 +76,33 @@ class TestBase < Id58TestBase
 
   # - - - - - - - - - - - - - - - - - -
 
-  def kata_file_create(id, index, files, filename)
-    saver.kata_file_create(id, index, files, filename)
+  # An arbitrary well-formed laptop_id (SecureRandom.hex(32) format), passed
+  # explicitly by tests on every event-write as a real client now does. Its
+  # specific value is not significant.
+  def laptop_id
+    'd4f9a0c71e2b85630af1c9e4b7028d5f6a3c1e8092b4d7f60a5e3c19b8d24f70'
   end
 
-  def kata_file_delete(id, index, files, filename)
-    saver.kata_file_delete(id, index, files, filename)
+  # A second well-formed laptop_id, distinct from laptop_id, for tests that need
+  # two different laptops (genuine mobbing).
+  def another_laptop_id
+    'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
   end
 
-  def kata_file_rename(id, index, files, old_filename, new_filename)
-    saver.kata_file_rename(id, index, files, old_filename, new_filename)
+  def kata_file_create(id, index, files, filename, laptop_id)
+    saver.kata_file_create(id, index, files, filename, laptop_id)
   end
 
-  def kata_file_edit(id, index, files)
-    saver.kata_file_edit(id, index, files)
+  def kata_file_delete(id, index, files, filename, laptop_id)
+    saver.kata_file_delete(id, index, files, filename, laptop_id)
+  end
+
+  def kata_file_rename(id, index, files, old_filename, new_filename, laptop_id)
+    saver.kata_file_rename(id, index, files, old_filename, new_filename, laptop_id)
+  end
+
+  def kata_file_edit(id, index, files, laptop_id)
+    saver.kata_file_edit(id, index, files, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - -

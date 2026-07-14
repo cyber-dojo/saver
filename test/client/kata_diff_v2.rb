@@ -10,7 +10,7 @@ class KataDiffV2Test < TestBase
     in_tennis_kata do |id, files|
       original_content = files['cyber-dojo.sh']['content']
       files['cyber-dojo.sh']['content'] = original_content + "Hello\nWorld\n"
-      kata_file_edit(id, 1, files)
+      kata_file_edit(id, 1, files, laptop_id)
       assert_diff(id, 0, 1, {
         'type'         => 'changed',
         'old_filename' => 'cyber-dojo.sh',
@@ -336,8 +336,8 @@ class KataDiffV2Test < TestBase
     was['cyber-dojo.sh'] = files0['cyber-dojo.sh'] + "\n# was"
     now = files0.merge(@now_files)
     now['cyber-dojo.sh'] = files0['cyber-dojo.sh'] + "\n# now"
-    kata_file_edit(id, 1, plain(was))
-    kata_file_edit(id, 2, plain(now))
+    kata_file_edit(id, 1, plain(was), laptop_id)
+    kata_file_edit(id, 2, plain(now), laptop_id)
     [id, 1, 2]
   end
 

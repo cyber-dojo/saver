@@ -67,16 +67,16 @@ class KataEventsTest < TestBase
     in_kata do |id|
       files = kata_event(id, 0)['files']
       
-      kata_file_create(id, 1, files, 'newfile.txt')
+      kata_file_create(id, 1, files, 'newfile.txt', laptop_id)
       
-      kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary)
+      kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary, laptop_id)
 
       files['newfile.txt'] = { 'content' => 'edited' }
-      kata_file_rename(id, 3, files, 'newfile.txt', 'newfile2.txt')
+      kata_file_rename(id, 3, files, 'newfile.txt', 'newfile2.txt', laptop_id)
 
-      kata_ran_tests(id, 5, files, stdout, stderr,   '0', summary)
+      kata_ran_tests(id, 5, files, stdout, stderr,   '0', summary, laptop_id)
       
-      kata_ran_tests(id, 6, files, stdout, stderr, '137', summary)
+      kata_ran_tests(id, 6, files, stdout, stderr, '137', summary, laptop_id)
 
       actual = kata_events(id)
       assert_equal 7, actual.size
@@ -151,7 +151,8 @@ class KataEventsTest < TestBase
       'time' => time,
       'colour' => colour,
       'diff_added_count' => diff_added_count,
-      'diff_deleted_count' => diff_deleted_count
+      'diff_deleted_count' => diff_deleted_count,
+      'laptop_id' => laptop_id
     }
   end
 
@@ -164,7 +165,8 @@ class KataEventsTest < TestBase
       'colour' => 'file_create',
       'filename' => filename,
       'diff_added_count' => 0,
-      'diff_deleted_count' => 0
+      'diff_deleted_count' => 0,
+      'laptop_id' => laptop_id
     }
   end
 
@@ -177,7 +179,8 @@ class KataEventsTest < TestBase
       'colour' => 'file_edit',
       'filename' => filename,
       'diff_added_count' => diff_added_count,
-      'diff_deleted_count' => diff_deleted_count
+      'diff_deleted_count' => diff_deleted_count,
+      'laptop_id' => laptop_id
     }
   end
 
@@ -191,7 +194,8 @@ class KataEventsTest < TestBase
       'old_filename' => old_filename,
       'new_filename' => new_filename,
       'diff_added_count' => 0,
-      'diff_deleted_count' => 0
+      'diff_deleted_count' => 0,
+      'laptop_id' => laptop_id
     }
   end
 

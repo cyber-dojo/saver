@@ -133,7 +133,7 @@ class KataEventTest < TestBase
   ) do
     in_tennis_kata do |id, files|
       kata_event(id, -1)
-      kata_file_delete(id, index=1, files, 'readme.txt')
+      kata_file_delete(id, index=1, files, 'readme.txt', laptop_id)
       kata_event(id, -2)
       ex = assert_raises(RuntimeError) do
         kata_event(id, -3)

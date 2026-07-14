@@ -184,58 +184,58 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(id, index, files, filename)
+  def file_create(id, index, files, filename, laptop_id)
     # Called just BEFORE filename is created in the browser.
     # So it is NOT yet present in files.keys
 
-    index = file_edit(id, index, files)
+    index = file_edit(id, index, files, laptop_id)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
     # No quotes around the filename: the old save committed via a shell command
     # whose quoting stripped them, so historically the stored message had none.
     # The commit is now in-process (rugged), which uses the message literally.
     tag_message = "created file #{filename}"
-    result = git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message, laptop_id)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_delete(id, index, files, filename)
+  def file_delete(id, index, files, filename, laptop_id)
     # Called just BEFORE filename is deleted in the browser.
     # So it IS present in files.
 
-    index = file_edit(id, index, files)
+    index = file_edit(id, index, files, laptop_id)
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     # No quotes: see the note in file_create.
     tag_message = "deleted file #{filename}"
-    result = git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message, laptop_id)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_rename(id, index, files, old_filename, new_filename)
+  def file_rename(id, index, files, old_filename, new_filename, laptop_id)
     # Called just BEFORE the rename in the browser.
     # So old_filename IS present in files.
     # And new_filename is NOT present in files.
 
-    index = file_edit(id, index, files)
+    index = file_edit(id, index, files, laptop_id)
     files[new_filename] = files.delete(old_filename)
-    summary = { 
-      'colour' => 'file_rename', 
+    summary = {
+      'colour' => 'file_rename',
       'old_filename' => old_filename,
-      'new_filename' => new_filename 
+      'new_filename' => new_filename
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    result = git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message, laptop_id)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_edit(id, index, files)
+  def file_edit(id, index, files, laptop_id)
     # Called in many places in the browser to indicate
     # that a file MAY have been edited (since the last save).
     # Creates a saver event if any file has been edited.
@@ -253,45 +253,45 @@ class Kata_v2
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     # No quotes: see the note in file_create.
     tag_message = "edited file #{edited_filename}"
-    result = git_commit_tag(id, index, files, summary, tag_message)
+    result = git_commit_tag(id, index, files, summary, tag_message, laptop_id)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def ran_tests(id, index, files, stdout, stderr, status, summary)
-    index = file_edit(id, index, files)
+  def ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
+    index = file_edit(id, index, files, laptop_id)
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
-  def predicted_right(id, index, files, stdout, stderr, status, summary)
-    index = file_edit(id, index, files)
+  def predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
+    index = file_edit(id, index, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
-  def predicted_wrong(id, index, files, stdout, stderr, status, summary)
-    index = file_edit(id, index, files)
+  def predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
+    index = file_edit(id, index, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
-  def reverted(id, index, files, stdout, stderr, status, summary)
+  def reverted(id, index, files, stdout, stderr, status, summary, laptop_id)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
     # info.inspect added escaping that the old shell-quoting path stripped back
     # out, so the historical message was the plain JSON. The in-process (rugged)
     # commit uses the message literally, so embed the plain JSON directly.
     tag_message = "reverted to #{info}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
-  def checked_out(id, index, files, stdout, stderr, status, summary)
+  def checked_out(id, index, files, stdout, stderr, status, summary, laptop_id)
     info = json_plain(summary['checkout'])
     # Plain JSON, not info.inspect: see the note in reverted.
     tag_message = "checked out #{info}"
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -393,18 +393,18 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, index, files, summary, tag_message)
+  def git_commit_tag(id, index, files, summary, tag_message, laptop_id)
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
+    git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
-  
-  def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message)
-    all_events = commit_event(id, index, files, stdout, stderr, status, summary, tag_message)
+
+  def git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    all_events = commit_event(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
 
     {
-      'next_index' => index + 1,
+      'next_index' => all_events.last['index'] + 1,
       'major_index' => major_index(all_events, index),
       'minor_index' => 0
     }
@@ -412,7 +412,7 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def commit_event(id, index, files, stdout, stderr, status, summary, tag_message)
+  def commit_event(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
     # Builds the event commit in-process (libgit2/rugged) on a single base,
     # advances main onto it with an update-ref compare-and-swap, then tags it.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
@@ -420,30 +420,64 @@ class Kata_v2
     #
     # Out-of-sync detection has two layers, each catching a different scenario.
     #
-    # 1. Sequential stale index (inside the commit_on_main block):
-    #    The client sends an index behind the current last_index, with no
-    #    concurrent request. The unless check raises before any commit is
-    #    created, so no corrupt data (e.g. two events with the same index) is
-    #    ever written.
+    # 1. Per-write placement + detection (inside the commit_on_main block, before
+    #    any commit is created, so no corrupt data is ever written):
+    #    - no laptop_id: today's check - the client index must be exactly the next
+    #      position (last_index + 1), else "Out of order event".
+    #    - laptop_id present: the saver places the event at head + 1; it rejects an
+    #      index ahead of that, and rejects an index behind head when the events
+    #      the browser missed (index .. head) include a different laptop's write
+    #      (genuine mobbing). A behind index whose missed events are all this same
+    #      laptop's own writes is accepted (self-lag).
     #
-    # 2. Concurrent write (rescue block):
-    #    Two saves for the same kata arrive together. Both build their commit on
-    #    the same base_oid (the shared HEAD) and both pass the index check.
-    #    Whichever reaches the update-ref compare-and-swap second fails, because
-    #    main has already moved off base_oid. The rescue re-reads events.json
-    #    from HEAD: if last_index >= index a concurrent write succeeded first, so
-    #    "Out of order event" is raised. Any other failure is re-raised as-is.
+    # 2. Concurrent write (the method-level rescue below):
+    #    Two saves for the same kata arrive together, build on the same base_oid,
+    #    and both pass layer 1. Whichever reaches the update-ref compare-and-swap
+    #    second fails (main has moved off base_oid). The rescue re-reads the tip via
+    #    git: if last_index >= index a concurrent write won, so "Out of order event"
+    #    is raised; any other failure is re-raised as-is.
     all_events = nil
+    place_at = nil
     result = git.commit_on_main(repo_dir(id), "#{index} #{tag_message}", content_of(files)) do |base_events, added, deleted|
-      unless index == base_events.last['index'] + 1
-        raise "Out of order event for #{id}"
+      if laptop_id.nil?
+        # No laptop_id (legacy events, or a client not yet sending one): today's
+        # behavior unchanged - the client index must be exactly the next position.
+        unless index == base_events.last['index'] + 1
+          raise "Out of order event for #{id}"
+        end
+        place_at = index
+      else
+        # laptop_id present: placement is saver-authoritative (the saver, not web,
+        # decides it: head + 1). An index ahead of head + 1 claims a position that
+        # does not exist and is rejected. An index behind head means the browser
+        # missed commits; accept it only when every event it has not yet seen
+        # (index .. head) was written by this same laptop (its own lost-response
+        # writes), otherwise a different laptop got in and it is rejected as
+        # mobbing.
+        head = base_events.last['index']
+        place_at = head + 1
+        unless index == place_at
+          if index > place_at
+            raise "Out of order event for #{id}"
+          end
+          intervening = base_events.select { |event| event['index'] >= index }
+          unless intervening.all? { |event| event['laptop_id'] == laptop_id }
+            raise "Out of order event for #{id}"
+          end
+        end
       end
-      all_events = base_events + [summary.merge!({
-        'index' => index,
+      new_event = summary.merge!({
+        'index' => place_at,
         'time' => time.now,
         'diff_added_count' => added,
         'diff_deleted_count' => deleted
-      })]
+      })
+      # Only stamp the writing laptop when a well-formed id was supplied. A nil,
+      # absent, or malformed laptop_id stores no laptop_id key at all, so such an
+      # event is indistinguishable from a pre-laptop_id event and its writer is
+      # treated as unknown. Only the genuine minted format is trusted.
+      new_event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
+      all_events = base_events + [new_event]
       {
         events_filename => json_pretty(all_events),
         'stdout' => stdout['content'],
@@ -469,7 +503,7 @@ class Kata_v2
     # concurrency mechanism (loser detection), so it cannot be dropped. See
     # docs/in-process-git.md.
     shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
-    git.create_tag(repo_dir(id), index, result[:new_oid])
+    git.create_tag(repo_dir(id), place_at, result[:new_oid])
 
     all_events
   rescue
@@ -483,6 +517,16 @@ class Kata_v2
       raise "Out of order event for #{id}"
     end
     raise
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  # A laptop_id is the 64-char lowercase-hex cookie minted by web
+  # (SecureRandom.hex(32)). Anything else (nil, wrong length, non-hex,
+  # uppercase) is not trusted and is not stored, so the event reads as having
+  # an unknown writer.
+  def valid_laptop_id?(laptop_id)
+    laptop_id.is_a?(String) && laptop_id.match?(/\A[0-9a-f]{64}\z/)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

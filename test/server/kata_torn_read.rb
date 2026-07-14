@@ -13,7 +13,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
       expected = kata_events(id)
 
@@ -38,7 +38,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
       expected = kata_events(id)
 
@@ -91,20 +91,20 @@ class KataTornReadTest < TestBase
   | committed events.json through git, not the working tree. The working tree is
   | stale (saves no longer refresh it), so reading it directly could mask the
   | out-of-order with a raw JSON/IO error. With a truncated working-tree
-  | events.json, a stale save still reports "Out of order event".
+  | events.json, a different-laptop stale save still reports "Out of order event".
   ) do
     in_kata do |id|
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
       path = working_tree_path(id, 'events.json')
       full = File.read(path)
       File.write(path, full[0, full.size / 2])
 
       error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
       }
       assert_equal "Out of order event for #{id}", error.message
     end
@@ -121,12 +121,12 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
       File.delete(working_tree_path(id, 'events.json'))
 
       error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
       }
       assert_equal "Out of order event for #{id}", error.message
     end
@@ -145,7 +145,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
       expected = kata_events(id)
 
@@ -201,7 +201,7 @@ class KataTornReadTest < TestBase
 
       # Grow events.json first so each later save rewrites it across more
       # write() chunks, widening the torn-read window.
-      40.times { |i| kata_ran_tests(id, i + 1, files, stdout, stderr, 0, red_summary) }
+      40.times { |i| kata_ran_tests(id, i + 1, files, stdout, stderr, 0, red_summary, laptop_id) }
       next_index = 41
 
       stop        = false
@@ -225,7 +225,7 @@ class KataTornReadTest < TestBase
       # Single writer: sequential saves keep git merge --ff-only continuously
       # rewriting the working-tree events.json that the readers are reading.
       150.times do
-        kata_ran_tests(id, next_index, files, stdout, stderr, 0, red_summary)
+        kata_ran_tests(id, next_index, files, stdout, stderr, 0, red_summary, laptop_id)
         next_index += 1
       end
 

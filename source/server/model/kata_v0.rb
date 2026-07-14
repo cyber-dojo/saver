@@ -91,41 +91,41 @@ class Kata_v0
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(id, index, files, filename)
+  def file_create(id, index, files, filename, laptop_id)
     raise_not_implemented
   end
 
-  def file_delete(id, index, files, filename)
+  def file_delete(id, index, files, filename, laptop_id)
     raise_not_implemented
   end
 
-  def file_rename(id, index, files, old_filename, new_filename)
+  def file_rename(id, index, files, old_filename, new_filename, laptop_id)
     raise_not_implemented
   end
 
-  def file_edit(id, index, files)
+  def file_edit(id, index, files, laptop_id)
     raise_not_implemented
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def ran_tests(id, index, files, stdout, stderr, status, summary)
+  def ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
     raise_not_implemented
   end
 
-  def predicted_right(id, index, files, stdout, stderr, status, summary)
+  def predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
     raise_not_implemented
   end
 
-  def predicted_wrong(id, index, files, stdout, stderr, status, summary)
+  def predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
     raise_not_implemented
   end
 
-  def reverted(id, index, files, stdout, stderr, status, summary)
+  def reverted(id, index, files, stdout, stderr, status, summary, laptop_id)
     raise_not_implemented
   end
 
-  def checked_out(id, index, files, stdout, stderr, status, summary)
+  def checked_out(id, index, files, stdout, stderr, status, summary, laptop_id)
     raise_not_implemented
   end
 

@@ -33,7 +33,7 @@ class KataEventTest < TestBase
 
       files = event['files']
       index = 1
-      kata_file_create(id, index, files, 'wibble.txt')
+      kata_file_create(id, index, files, 'wibble.txt', laptop_id)
       kata_event(id, index)
 
       bad_index = 2
@@ -52,7 +52,7 @@ class KataEventTest < TestBase
 
       files = event['files']
       index = 1
-      kata_file_create(id, index, files, 'wibble.txt')
+      kata_file_create(id, index, files, 'wibble.txt', laptop_id)
       index = -2
       kata_event(id, index)
 

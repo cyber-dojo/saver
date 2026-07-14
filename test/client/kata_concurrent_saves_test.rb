@@ -22,7 +22,7 @@ class KataConcurrentSavesTest < TestBase
 
       n.times.map do
         Thread.new do
-          saver.kata_ran_tests(id, 1, files, stdout, stderr, status, summary)
+          saver.kata_ran_tests(id, 1, files, stdout, stderr, status, summary, laptop_id)
         rescue => error
           mu.synchronize { errors << error.message }
         end

@@ -6,7 +6,7 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests stores a ran-tests event with correct commit message
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
       assert_tag_commit_message(id, 1, '1 ran tests, no prediction, got red')
       [index, red_summary]
     end
@@ -18,25 +18,9 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests returns next_index incremented by 1
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      result = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      result = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
       next_index = result['next_index']
       assert_equal 2, next_index
-      [index=1, red_summary]
-    end
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  version_test 2, 'Sp4Dk9', %w(
-  | kata_ran_tests with an already used index
-  | raises "Out of order event" exception
-  ) do
-    in_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
-      }
-      assert_equal "Out of order event for #{id}", error.message
       [index=1, red_summary]
     end
   end
@@ -68,7 +52,7 @@ class KataRanTestsTest < TestBase
     externals.instance_variable_set('@shell', error_shell)
 
     error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
     }
     assert_equal 'simulated update-ref failure', error.message
   end
@@ -92,7 +76,7 @@ class KataRanTestsTest < TestBase
     status = 0
 
     # First save succeeds: events.json gains index 1 and tag 1 is written.
-    kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
+    kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
 
     # Wrap the in-process git so the next tag read reproduces the window: the
     # first tag_tree_blobs raises TagNotFound (tag momentarily absent), then the
@@ -120,7 +104,7 @@ class KataRanTestsTest < TestBase
 
     # The losing concurrent save (same index 1) must report out-of-order.
     error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
     }
     assert_equal "Out of order event for #{id}", error.message
     # Confirm the window was actually reproduced: a stale save reports
@@ -200,7 +184,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
+      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
     end
   end
 
@@ -212,7 +196,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary)
+      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
     end
   end
 
@@ -232,7 +216,7 @@ class KataRanTestsTest < TestBase
     path   = working_tree_path(id, 'events.json')
     before = File.read(path)
 
-    kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary)
+    kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
 
     # correctness: the committed state advanced (read via git)
     assert_equal 2, kata_events(id).size

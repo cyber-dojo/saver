@@ -12,7 +12,7 @@ class KataPredictedRightTest < TestBase
       stderr = data['stderr']
       status = data['status']
       summary = red_summary.merge({ 'predicted' => 'red' })
-      kata_predicted_right(id, index=1, files, stdout, stderr, status, summary)
+      kata_predicted_right(id, index=1, files, stdout, stderr, status, summary, laptop_id)
       assert_tag_commit_message(id, 1, '1 ran tests, predicted red, got red')
       [index, summary]
     end
@@ -30,7 +30,7 @@ class KataPredictedRightTest < TestBase
     data = bats
     summary = red_summary.merge({ 'predicted' => 'red' })
     assert_raises(NoLongerImplementedError) do
-      kata_predicted_right(id, 1, files, data['stdout'], data['stderr'], data['status'], summary)
+      kata_predicted_right(id, 1, files, data['stdout'], data['stderr'], data['status'], summary, laptop_id)
     end
   end
 
@@ -48,11 +48,11 @@ class KataPredictedRightTest < TestBase
       files = kata_event(id, 0)['files']
 
       next_index = 1
-      next_index = kata_file_create(id, next_index, files, 'wibble1.txt')
+      next_index = kata_file_create(id, next_index, files, 'wibble1.txt', laptop_id)
       assert_equal 2, next_index
-      next_index = kata_file_create(id, next_index, files, 'wibble2.txt')
+      next_index = kata_file_create(id, next_index, files, 'wibble2.txt', laptop_id)
       assert_equal 3, next_index
-      next_index = kata_file_rename(id, next_index, files, 'wibble2.txt', 'wibble3.txt')
+      next_index = kata_file_rename(id, next_index, files, 'wibble2.txt', 'wibble3.txt', laptop_id)
       assert_equal 4, next_index
 
       edited_content = files['readme.txt']['content'] + 'Hello world'
@@ -62,19 +62,19 @@ class KataPredictedRightTest < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      actual = kata_predicted_right(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_right(id, next_index, files, stdout, stderr, status, red_summary, laptop_id)
       expected = { 'next_index' => 6, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
 
       next_index = expected['next_index']
-      next_index = kata_file_create(id, next_index, files, 'wibble3.txt')
+      next_index = kata_file_create(id, next_index, files, 'wibble3.txt', laptop_id)
       assert_equal 7, next_index
-      next_index = kata_file_create(id, next_index, files, 'wibble4.txt')
+      next_index = kata_file_create(id, next_index, files, 'wibble4.txt', laptop_id)
       assert_equal 8, next_index
-      next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt')
+      next_index = kata_file_rename(id, next_index, files, 'wibble4.txt', 'wibble5.txt', laptop_id)
       assert_equal 9, next_index
 
-      actual = kata_predicted_right(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_predicted_right(id, next_index, files, stdout, stderr, status, red_summary, laptop_id)
       expected = { 'next_index' => 10, 'major_index' => 2, 'minor_index' => 0 }
       assert_equal expected, actual
     end

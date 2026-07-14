@@ -139,42 +139,49 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_file_create(id:, index:, files:, filename:)
-    kata(id).file_create(id, index, files, filename)
+  # Each event-committing write accepts an optional laptop_id: the id of the
+  # browser (laptop) that made the write, minted as a cookie by web and sent on
+  # every event-write. It is accepted here so the strict-keyword dispatch does
+  # not reject it, but is not yet used or stored: web can start sending it before
+  # the saver acts on it. It powers mobbing detection (telling one laptop's
+  # events from another's) once the saver stamps events with it.
+
+  def kata_file_create(id:, index:, files:, filename:, laptop_id: nil)
+    kata(id).file_create(id, index, files, filename, laptop_id)
   end
 
-  def kata_file_delete(id:, index:, files:, filename:)
-    kata(id).file_delete(id, index, files, filename)
+  def kata_file_delete(id:, index:, files:, filename:, laptop_id: nil)
+    kata(id).file_delete(id, index, files, filename, laptop_id)
   end
 
-  def kata_file_rename(id:, index:, files:, old_filename:, new_filename:)
-    kata(id).file_rename(id, index, files, old_filename, new_filename)
+  def kata_file_rename(id:, index:, files:, old_filename:, new_filename:, laptop_id: nil)
+    kata(id).file_rename(id, index, files, old_filename, new_filename, laptop_id)
   end
 
-  def kata_file_edit(id:, index:, files:)
-    kata(id).file_edit(id, index, files)
+  def kata_file_edit(id:, index:, files:, laptop_id: nil)
+    kata(id).file_edit(id, index, files, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).ran_tests(id, index, files, stdout, stderr, status, summary)
+  def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_right(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_right(id, index, files, stdout, stderr, status, summary)
+  def kata_predicted_right(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary)
+  def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).reverted(id, index, files, stdout, stderr, status, summary)
+  def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).reverted(id, index, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_checked_out(id:, index:, files:, stdout:, stderr:, status:, summary:)
-    kata(id).checked_out(id, index, files, stdout, stderr, status, summary)
+  def kata_checked_out(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).checked_out(id, index, files, stdout, stderr, status, summary, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - -
