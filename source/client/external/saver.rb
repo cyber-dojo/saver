@@ -72,32 +72,33 @@ module External
 
     # - - - - - - - - - - - - - - - - - -
 
-    def kata_file_create(id, index, files, filename)
-      @http.post(__method__, { id:id, index:index, files:files, filename:filename })
+    def kata_file_create(id, index, files, filename, laptop_id = nil)
+      @http.post(__method__, { id:id, index:index, files:files, filename:filename, laptop_id:laptop_id })
     end
 
-    def kata_file_delete(id, index, files, filename)
-      @http.post(__method__, { id:id, index:index, files:files, filename:filename })
+    def kata_file_delete(id, index, files, filename, laptop_id = nil)
+      @http.post(__method__, { id:id, index:index, files:files, filename:filename, laptop_id:laptop_id })
     end
 
-    def kata_file_rename(id, index, files, old_filename, new_filename)
-      @http.post(__method__, { 
-        id:id, 
-        index:index, 
-        files:files, 
-        old_filename:old_filename, 
-        new_filename:new_filename
+    def kata_file_rename(id, index, files, old_filename, new_filename, laptop_id = nil)
+      @http.post(__method__, {
+        id:id,
+        index:index,
+        files:files,
+        old_filename:old_filename,
+        new_filename:new_filename,
+        laptop_id:laptop_id
       })
     end
 
-    def kata_file_edit(id, index, files)
-      @http.post(__method__, { id:id, index:index, files:files })
+    def kata_file_edit(id, index, files, laptop_id = nil)
+      @http.post(__method__, { id:id, index:index, files:files, laptop_id:laptop_id })
     end
 
-    def kata_ran_tests(id, index, files, stdout, stderr, status, summary)
+    def kata_ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id = nil)
       @http.post(__method__, {
         id:id, index:index, files:files,
-        stdout:stdout, stderr:stderr, status:status, summary:summary
+        stdout:stdout, stderr:stderr, status:status, summary:summary, laptop_id:laptop_id
       })
     end
 

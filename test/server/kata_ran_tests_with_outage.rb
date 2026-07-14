@@ -21,7 +21,7 @@ class KataRanTestsWithOutageTest < TestBase
       files.delete('readme.txt')
       next_index = 1
 
-      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary)
+      actual = kata_ran_tests(id, next_index, files, stdout, stderr, status, red_summary, laptop_id)
       expected = { 'next_index' => 2, 'major_index' => 1, 'minor_index' => 0 }
       assert_equal expected, actual
     end

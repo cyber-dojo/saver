@@ -11,7 +11,7 @@ class KataFileDeleteTest < TestBase
       files = kata_event(id, 0)['files']
       assert files.keys.include?('readme.txt') 
 
-      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -42,7 +42,7 @@ class KataFileDeleteTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
-      next_index = kata_file_delete(id, index=1, files, 'tennis.py')
+      next_index = kata_file_delete(id, index=1, files, 'tennis.py', laptop_id)
 
       events = kata_events(id)
       assert_equal 3, next_index
@@ -79,7 +79,7 @@ class KataFileDeleteTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
-      next_index = kata_file_delete(id, index=1, files, 'readme.txt')
+      next_index = kata_file_delete(id, index=1, files, 'readme.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 3, next_index

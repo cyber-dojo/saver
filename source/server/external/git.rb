@@ -93,8 +93,8 @@ module External
     end
 
     # Builds the next commit on top of HEAD, in-process, on a single consistent
-    # base (so the caller's index check and the eventual update-ref CAS both key
-    # off the same base_oid). Replaces the files/ subtree with `files`
+    # base (so the caller's out-of-order detection and the eventual update-ref CAS
+    # both key off the same base_oid). Replaces the files/ subtree with `files`
     # (name => content), computes the files/ line-count delta vs HEAD's tree, and
     # yields (base_events, added, deleted) where base_events is HEAD's
     # events.json parsed. The block returns the remaining path => content writes

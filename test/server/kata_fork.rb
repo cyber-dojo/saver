@@ -48,7 +48,7 @@ class KataForkTest < TestBase
         "duration" => 1.46448,
         "predicted" => "none",
       }
-      kata_ran_tests(kid, index=1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(kid, index=1, files, stdout, stderr, status, red_summary, laptop_id)
 
       fid = kata_fork(kid, index)
 

@@ -77,6 +77,19 @@ class TestBase < Id58TestBase
     yield(id, kata_event(id, 0)['files'], stdout, stderr, status)
   end
 
+  # An arbitrary well-formed laptop_id (SecureRandom.hex(32) format), passed
+  # explicitly by tests on every event-write as a real client now does. Its
+  # specific value is not significant.
+  def laptop_id
+    '9b1c7f0e4a2d6538c1e0fb94a7d213e6f5028b4c9de71a36085fc2b7d419e0a2'
+  end
+
+  # A second well-formed laptop_id, distinct from laptop_id, for tests that need
+  # two different laptops (genuine mobbing).
+  def another_laptop_id
+    'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
+  end
+
   def assert_tag_commit_message(id, tag, expected)
     dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
     stdout = shell.assert_cd_exec(dir, "git tag --list --format='%(contents)' #{tag}")

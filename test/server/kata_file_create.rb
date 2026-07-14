@@ -16,9 +16,9 @@ class KataFileCreateTest < TestBase
   | with the created file having empty content
   ) do
     in_tennis_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
 
-      next_index = kata_file_create(id, index=2, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=2, files, 'wibble.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 3, next_index
@@ -45,13 +45,13 @@ class KataFileCreateTest < TestBase
   | the second for the newly created file
   ) do
     in_tennis_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
 
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
 
       # VIP: at this point 'wibble.txt', the new filename, is NOT in files
-      next_index = kata_file_create(id, index=2, files, 'wibble.txt')
+      next_index = kata_file_create(id, index=2, files, 'wibble.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 4, next_index
@@ -84,7 +84,7 @@ class KataFileCreateTest < TestBase
     id = kids[version]
     files = kata_event(id, 0)['files']
     assert_raises(NoLongerImplementedError) do
-      kata_file_create(id, 1, files, 'wibble.txt')
+      kata_file_create(id, 1, files, 'wibble.txt', laptop_id)
     end
   end
 
