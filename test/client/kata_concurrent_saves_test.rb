@@ -78,4 +78,50 @@ class KataConcurrentSavesTest < TestBase
     end
   end
 
+  version_test 2, 'DccG04', %w(
+  | N concurrent kata_file_edit calls to one kata-id, all SAME laptop_id, all index=1,
+  | all making the SAME edit - a single browser racing its own in-flight inter-test
+  | file_edit saves (eg two rapid file-selects, or waitForITE's 2s bail). A file-event
+  | that loses the update-ref compare-and-swap is DROPPED, not retried: the directional
+  | rescue raises 'Out of order event' for it (its content is already carried by the
+  | concurrent winner, and the browser's inter-test .catch swallows it). Because every
+  | racer makes the same edit, exactly one file_edit commits (at index 1); racers that
+  | lost the CAS are dropped, and any that read the tip after the winner no-op (no diff).
+  | Contrast DccG03, where same-laptop [test] losers RETRY rather than drop.
+  ) do
+    n = 10
+    in_kata do |id|
+      base_files = kata_event(id, 0)['files']
+      filename   = base_files.keys.first
+      edited     = base_files.dup
+      edited[filename] = { 'content' => base_files[filename]['content'] + "\nadded a line\n" }
+
+      laptop_id = SecureRandom.hex(32)
+      errors = []
+      mu = Mutex.new
+
+      n.times.map do
+        Thread.new do
+          saver.kata_file_edit(id, 1, edited, laptop_id)
+        rescue => error
+          mu.synchronize { errors << error.message }
+        end
+      end.each(&:join)
+
+      events = kata_events(id)
+
+      # Same edit from every racer: exactly one file_edit commits; the rest lost the
+      # CAS and were dropped, or read the winner's tip and no-op'd.
+      assert_equal 1, events.count { |e| e['colour'] == 'file_edit' }, events.to_s
+      # A losing file-event is dropped, never retried.
+      assert errors.all? { |e| e.include?('Out of order event') }, errors.to_s
+      # At least one racer genuinely lost the CAS and was dropped (branch a fired).
+      # Relies on real concurrent contention - the saver's documented behaviour for
+      # concurrent same-kata writes (see config/puma.rb), as DccG02/DccG03 also rely on.
+      refute_empty errors, 'expected at least one CAS-loss file-edit drop'
+      # The committed log stays a valid contiguous sequence: [0, 1].
+      assert_equal [0, 1], events.map { |e| e['index'] }, events.to_s
+    end
+  end
+
 end
