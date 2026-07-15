@@ -176,6 +176,119 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'Sp4DkR', %w(
+  | A solo user's [test] fired while its own inter-test file_edit is still in flight
+  | (waitForITE's 2s bail, an unsaved edit in the form) is not mobbing and must
+  | commit. ran_tests runs an internal file_edit first; a stubbed git makes a
+  | competing SAME-laptop file_edit win the slot between that internal file_edit's
+  | base-read and its update-ref, so the internal file_edit loses the CAS and, being
+  | file-family, is dropped (not retried). ran_tests tolerates that drop and commits
+  | the [test] on the new head via self-lag: events 0 (create), 1 (competing
+  | file_edit), 2 (the test).
+  ) do
+    assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
+      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkS', %w(
+  | As Sp4DkR for kata_predicted_right (predicted red, got red). predicted_right also
+  | runs the internal file_edit first, so it tolerates the same dropped-CAS and
+  | commits the predict event on the new head.
+  ) do
+    assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
+      kata_predicted_right(id, 1, files, stdout, stderr, status, red_summary.merge('predicted' => 'red'), laptop_id)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkT', %w(
+  | As Sp4DkR for kata_predicted_wrong (predicted green, got red). predicted_wrong
+  | also runs the internal file_edit first, so it tolerates the same dropped-CAS and
+  | commits the predict event on the new head.
+  ) do
+    assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
+      kata_predicted_wrong(id, 1, files, stdout, stderr, status, red_summary.merge('predicted' => 'green'), laptop_id)
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  # Drives the "a solo user's [test] races its own in-flight inter-test file_edit"
+  # scenario for a test-family write (yielded). Sets up a kata with a pending edit,
+  # installs a git that makes a competing SAME-laptop file_edit win the slot during
+  # the write's internal file_edit (so it loses the CAS and is dropped), runs the
+  # write with stderr captured (the expected CAS-loss "update_ref failed" is a
+  # handled signal, kept out of the test output), and asserts the write still
+  # commits: the competing file_edit lands at index 1 and the test-family event at
+  # index 2. The block gets (id, files, stdout, stderr, status).
+  def assert_test_survives_raced_internal_file_edit
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
+    id  = group_join(gid)
+
+    base_files = kata_event(id, 0)['files']
+    filename   = base_files.keys.first
+    stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
+
+    test_files      = base_files.merge(filename => { 'content' => base_files[filename]['content'] + "\ntest edit\n" })
+    competing_files = base_files.merge(filename => { 'content' => base_files[filename]['content'] + "\ncompeting edit\n" })
+
+    # The competing in-flight inter-test file_edit, same laptop, committed via a
+    # real-git model on the same repo the instant before our update-ref CAS.
+    competing_model = Externals.new.model
+    inject = -> { competing_model.kata_file_edit(id: id, index: 1, files: competing_files, laptop_id: laptop_id) }
+    externals.instance_variable_set('@git', racing_git(git, inject))
+
+    _stdout_captured, stderr_captured = capture_stdout_stderr do
+      yield(id, test_files, stdout, stderr, status)
+    end
+    assert_includes stderr_captured, 'update_ref failed', stderr_captured
+
+    events = kata_events(id)
+    assert_equal [0, 1, 2], events.map { |e| e['index'] }, events.to_s
+    assert_equal 1, events.count { |e| e['colour'] == 'red' }, events.to_s
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  # A git wrapper that delegates to the real one, but the FIRST time commit_on_main
+  # is called (the [test]'s internal file_edit) it fires on_first_commit AFTER the
+  # real commit is built - i.e. after base_oid (the current head) is captured but
+  # before the model's update-ref CAS. on_first_commit commits a competing same-
+  # laptop file_edit that advances main to head+1, so the model's CAS (old = the
+  # now-stale head) loses - exactly as a concurrent in-flight inter-test file_edit
+  # would, but deterministic and single-threaded.
+  def racing_git(real, on_first_commit)
+    Class.new do
+      def initialize(real, on_first_commit)
+        @real = real
+        @on_first_commit = on_first_commit
+        @fired = false
+      end
+      def commit_on_main(repo_dir, message, files, &block)
+        result = @real.commit_on_main(repo_dir, message, files, &block)
+        unless @fired
+          @fired = true
+          @on_first_commit.call
+        end
+        result
+      end
+      def method_missing(name, *args, &block)
+        @real.public_send(name, *args, &block)
+      end
+      def respond_to_missing?(name, include_private = false)
+        @real.respond_to?(name, include_private)
+      end
+    end.new(real, on_first_commit)
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   version_test 0, 'Sp4DkA', %w(
   | kata_ran_tests raises NoLongerImplementedError
   | on v0 katas

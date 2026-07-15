@@ -259,20 +259,37 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
+  # Runs the internal file_edit that captures any pending edit before a test-family
+  # event (ran_tests/predicted_right/predicted_wrong all call it first). A
+  # concurrent same-laptop write can win the slot first, so this file_edit loses
+  # the update-ref compare-and-swap and, being a file-event, is dropped as "Out of
+  # order" (a file-event CAS-loss is not retried). That is benign for a solo user:
+  # the pending edit is still carried by the following test event's own files, so
+  # on that specific drop keep the original index and let the caller commit the
+  # test anyway. The test commit then applies its own verdict - self-lag places it
+  # after the same-laptop winner, or still raises for a different laptop (genuine
+  # mobbing). Any other error propagates.
+  def file_edit_before_test_event(id, index, files, laptop_id)
+    file_edit(id, index, files, laptop_id)
+  rescue => error
+    raise unless error.message.include?('Out of order event')
+    index
+  end
+
   def ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
-    index = file_edit(id, index, files, laptop_id)
+    index = file_edit_before_test_event(id, index, files, laptop_id)
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
   def predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
-    index = file_edit(id, index, files, laptop_id)
+    index = file_edit_before_test_event(id, index, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
 
   def predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
-    index = file_edit(id, index, files, laptop_id)
+    index = file_edit_before_test_event(id, index, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
     git_commit_tag_sss(id, index, files, stdout, stderr, status, summary, tag_message, laptop_id)
   end
