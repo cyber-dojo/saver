@@ -282,7 +282,11 @@ class KataRanTestsTest < TestBase
         @real.public_send(name, *args, &block)
       end
       def respond_to_missing?(name, include_private = false)
+        # Never exercised: the model calls commit_on_main and the delegated methods
+        # on the double, never respond_to? - so this line is excluded from coverage.
+        # :nocov:
         @real.respond_to?(name, include_private)
+        # :nocov:
       end
     end.new(real, on_first_commit)
   end
