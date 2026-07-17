@@ -14,7 +14,7 @@ class KataStoresLaptopIdTest < TestBase
   ) do
     id = kata_create(custom_manifest)
     files = kata_event(id, 0)['files']
-    model.kata_file_create(id: id, index: 1, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_A)
+    model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_A)
     event = kata_event(id, 1)
     assert_equal 'file_create', event['colour']
     assert_equal LAPTOP_A, event['laptop_id']
@@ -30,7 +30,7 @@ class KataStoresLaptopIdTest < TestBase
     files = kata_event(id, 0)['files']
     edited = files.keys.first
     files[edited]['content'] += "\n# edited"
-    model.kata_file_create(id: id, index: 1, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_B)
+    model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_B)
     events = kata_events(id)
     assert_equal 3, events.size
     assert_equal 'file_edit',   kata_event(id, 1)['colour']
@@ -48,7 +48,7 @@ class KataStoresLaptopIdTest < TestBase
     files = kata_event(id, 0)['files']
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
-    model.kata_ran_tests(id: id, index: 1, files: files, stdout: stdout, stderr: stderr, status: '0', summary: red_summary, laptop_id: LAPTOP_C)
+    model.kata_ran_tests(id: id, files: files, stdout: stdout, stderr: stderr, status: '0', summary: red_summary, laptop_id: LAPTOP_C)
     assert_equal LAPTOP_C, kata_event(id, 1)['laptop_id']
   end
 
@@ -61,7 +61,7 @@ class KataStoresLaptopIdTest < TestBase
   ) do
     id = kata_create(custom_manifest)
     files = kata_event(id, 0)['files']
-    model.kata_file_create(id: id, index: 1, files: files, filename: 'wibble.txt')
+    model.kata_file_create(id: id, files: files, filename: 'wibble.txt')
     event = kata_event(id, 1)
     refute event.key?('laptop_id'), event.to_json
     assert_equal 'file_create', event['colour']
@@ -86,7 +86,7 @@ class KataStoresLaptopIdTest < TestBase
     ].each do |bad|
       id = kata_create(custom_manifest)
       files = kata_event(id, 0)['files']
-      model.kata_file_create(id: id, index: 1, files: files, filename: 'wibble.txt', laptop_id: bad)
+      model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: bad)
       event = kata_event(id, 1)
       refute event.key?('laptop_id'), "stored bad laptop_id #{bad.inspect}: #{event.to_json}"
     end

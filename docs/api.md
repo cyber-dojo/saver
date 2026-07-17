@@ -558,19 +558,18 @@ Returns a gzipped tar archive of the kata's git repository, base64-encoded.
 
 
 - - - -
-## POST kata_file_create(id,index,files,filename)
+## POST kata_file_create(id,files,filename)
 Records a new empty file being created in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
-  * **index:int**. The next event index.
   * **files:Hash**. The current files (the new `filename` is not yet present).
   * **filename:String**. The name of the file being created.
 - returns
-  * the event index to use for the next call.
+  * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","index":4,"files":{...},"filename":"utils.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh"}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -585,19 +584,18 @@ Records a new empty file being created in the browser. If any existing file has 
 
 
 - - - -
-## POST kata_file_delete(id,index,files,filename)
+## POST kata_file_delete(id,files,filename)
 Records a file being deleted in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
-  * **index:int**. The next event index.
   * **files:Hash**. The current files (the `filename` to delete is still present).
   * **filename:String**. The name of the file being deleted.
 - returns
-  * the event index to use for the next call.
+  * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","index":5,"files":{...},"filename":"utils.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh"}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -612,20 +610,19 @@ Records a file being deleted in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_rename(id,index,files,old_filename,new_filename)
+## POST kata_file_rename(id,files,old_filename,new_filename)
 Records a file being renamed in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
-  * **index:int**. The next event index.
   * **files:Hash**. The current files (`old_filename` is present; `new_filename` is not yet present).
   * **old_filename:String**. The current name of the file.
   * **new_filename:String**. The new name of the file.
 - returns
-  * the event index to use for the next call.
+  * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","index":6,"files":{...},"old_filename":"utils.sh","new_filename":"helpers.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"old_filename":"utils.sh","new_filename":"helpers.sh"}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -640,18 +637,17 @@ Records a file being renamed in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_edit(id,index,files)
-Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the same `index` is returned.
+## POST kata_file_edit(id,files)
+Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the next event index is returned unchanged.
 - parameters
   * **id:String**. The kata id.
-  * **index:int**. The next event index.
   * **files:Hash**. The current files.
 - returns
-  * the (possibly unchanged) event index to use for the next call.
+  * the next event index (the saver assigns it; unchanged if no file was edited).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","index":7,"files":{...}}' \
+    --data '{"id":"4ScKVJ","files":{...}}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -666,11 +662,10 @@ Records a file edit event if any file content has changed since the last save. I
 
 
 - - - -
-## POST kata_ran_tests(id,index,files,stdout,stderr,status,summary)
+## POST kata_ran_tests(id,files,stdout,stderr,status,summary)
 Record a test event with no prediction.
 - parameters 
   * **id:String**. The kata id.
-  * **index:int**. The next event index.
   * **files:Hash**. The files which created `stdout`,`stderr`,`status` in the same format as [kata_event](#get-kata_eventidindex)
   * **stdout:Hash**. The stdout produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
   * **stderr:Hash**. The stderr produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
@@ -679,22 +674,22 @@ Record a test event with no prediction.
 
 
 - - - -
-## POST kata_predicted_right(id,index,files,stdout,stderr,status,summary)
+## POST kata_predicted_right(id,files,stdout,stderr,status,summary)
 Record a test event with a correct prediction.
 
 
 - - - -
-## POST kata_predicted_wrong(id,index,files,stdout,stderr,status,summary)
+## POST kata_predicted_wrong(id,files,stdout,stderr,status,summary)
 Record a test event with an incorrect prediction.
 
 
 - - - -
-## POST kata_reverted(id,index,files,stdout,stderr,status,summary)
+## POST kata_reverted(id,files,stdout,stderr,status,summary)
 Revert back to a previous traffic-light.
 
 
 - - - -
-## POST kata_checked_out(id,index,files,stdout,stderr,status,summary)
+## POST kata_checked_out(id,files,stdout,stderr,status,summary)
 Checkout a traffic-light from a different avatar.
 
 

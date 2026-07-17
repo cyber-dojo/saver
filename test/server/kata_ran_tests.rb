@@ -6,9 +6,9 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests stores a ran-tests event with correct commit message
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
       assert_tag_commit_message(id, 1, '1 ran tests, no prediction, got red')
-      [index, red_summary]
+      [1, red_summary]
     end
   end
 
@@ -18,7 +18,7 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests returns next_index incremented by 1
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      result = kata_ran_tests(id, index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      result = kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
       next_index = result['next_index']
       assert_equal 2, next_index
       [index=1, red_summary]
@@ -52,7 +52,7 @@ class KataRanTestsTest < TestBase
     externals.instance_variable_set('@shell', error_shell)
 
     error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
     }
     assert_equal 'simulated update-ref failure', error.message
   end
@@ -60,13 +60,13 @@ class KataRanTestsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Sp4DkD', %w(
-  | There is a window between the ref advance (git update-ref, which moves main
-  | to the commit that adds the new index to events.json) and the separate
-  | git tag <index> that records the numeric tag. A concurrent save that loses
-  | the race reads the new last_index from events.json, then calls event() ->
-  | git_archive, whose tag lookup raises TagNotFound because the tag is not
-  | written yet. This transient failure must not surface raw; it must resolve to
-  | the normal "Out of order event".
+  | There is a window between the ref advance (git update-ref, which moves main to
+  | the commit that adds the new index to events.json) and the separate git tag
+  | <index> that records the numeric tag. A save whose internal read lands in that
+  | window calls event() -> git_archive, whose tag lookup raises TagNotFound
+  | because the tag is not written yet. git_archive retries over the window; once
+  | the tag lands the read recovers, so nothing surfaces raw and the save is
+  | accepted and appended at head+1.
   ) do
     gid = group_create(custom_manifest)
     id  = group_join(gid)
@@ -76,20 +76,17 @@ class KataRanTestsTest < TestBase
     status = 0
 
     # First save succeeds: events.json gains index 1 and tag 1 is written.
-    kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
 
-    # Wrap the in-process git so the next tag read reproduces the window: the
-    # first tag_tree_blobs raises TagNotFound (tag momentarily absent), then the
-    # retry delegates to the real git (tag present), as a concurrent winner's
-    # git tag closes it.
+    # Wrap the in-process git to reproduce the window: it delegates every call to
+    # the real git, except the first tag_tree_blobs raises TagNotFound (tag
+    # momentarily absent); the retry then delegates to the real git (tag present),
+    # as a concurrent winner's git tag closes it.
     tag_race_git = Class.new do
       attr_reader :reproduced
       def initialize(real)
         @real = real
         @reproduced = false
-      end
-      def head_blob(repo_dir, path)
-        @real.head_blob(repo_dir, path)
       end
       def tag_tree_blobs(repo_dir, index)
         unless @reproduced
@@ -98,18 +95,28 @@ class KataRanTestsTest < TestBase
         end
         @real.tag_tree_blobs(repo_dir, index)
       end
+      def method_missing(name, *args, &block)
+        @real.public_send(name, *args, &block)
+      end
+      def respond_to_missing?(name, include_private = false)
+        # Never exercised: the model calls tag_tree_blobs and the delegated methods
+        # on the double, never respond_to? - so this line is excluded from coverage.
+        # :nocov:
+        @real.respond_to?(name, include_private)
+        # :nocov:
+      end
     end.new(git)
 
     externals.instance_variable_set('@git', tag_race_git)
 
-    # The losing concurrent save (same index 1) must report out-of-order.
-    error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
-    }
-    assert_equal "Out of order event for #{id}", error.message
-    # Confirm the window was actually reproduced: a stale save reports
-    # "Out of order event" anyway, so without this the test could pass without
-    # exercising the tag-read retry at all.
+    # The save's internal read hits the window and recovers, so the save is
+    # accepted and appended at head+1 (index 2).
+    result = kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+
+    assert_equal 3, result['next_index']
+    assert_equal [0, 1, 2], kata_events(id).map { |e| e['index'] }
+    # Confirm the window was actually reproduced, so the test really exercised
+    # git_archive's tag-read retry rather than passing trivially.
     assert tag_race_git.reproduced, 'tag-write window was never reproduced'
   end
 
@@ -187,7 +194,7 @@ class KataRanTestsTest < TestBase
   | file_edit), 2 (the test).
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
     end
   end
 
@@ -199,7 +206,7 @@ class KataRanTestsTest < TestBase
   | commits the predict event on the new head.
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_predicted_right(id, 1, files, stdout, stderr, status, red_summary.merge('predicted' => 'red'), laptop_id)
+      kata_predicted_right(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'red'), laptop_id)
     end
   end
 
@@ -211,8 +218,74 @@ class KataRanTestsTest < TestBase
   | commits the predict event on the new head.
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_predicted_wrong(id, 1, files, stdout, stderr, status, red_summary.merge('predicted' => 'green'), laptop_id)
+      kata_predicted_wrong(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'green'), laptop_id)
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkH', %w(
+  | a test event that loses the update-ref compare-and-swap (a competing same-laptop
+  | write won the slot) is self-lag: it retries onto the new head and commits rather
+  | than being dropped. With no pending edit the race hits the test event's own
+  | commit, not an internal file_edit, so the retry path runs: events are create(0),
+  | the competing write(1), the retried test event(2).
+  ) do
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
+    id  = group_join(gid)
+
+    files  = kata_event(id, 0)['files']  # unchanged, so the internal file_edit commits nothing
+    stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
+
+    filename = files.keys.first
+    competing_files = files.merge(filename => { 'content' => files[filename]['content'] + "\ncompeting\n" })
+    competing_model = Externals.new.model
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
+    externals.instance_variable_set('@git', racing_git(git, inject))
+
+    _stdout_captured, stderr_captured = capture_stdout_stderr do
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    end
+    assert_includes stderr_captured, 'update_ref failed', stderr_captured
+
+    events = kata_events(id)
+    assert_equal [0, 1, 2], events.map { |e| e['index'] }, events.to_s
+    assert_equal 'red', events.last['colour'], events.to_s
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkJ', %w(
+  | a non-out-of-order failure DURING the test's internal file_edit (here the
+  | update-ref failing for a non-race reason) propagates out of the write, not
+  | swallowed. file_edit_before_test_event only swallows "Out of order event" and
+  | re-raises anything else, so the caller sees the real error.
+  ) do
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
+    id  = group_join(gid)
+
+    base_files = kata_event(id, 0)['files']
+    edited = base_files.keys.first
+    files  = base_files.merge(edited => { 'content' => base_files[edited]['content'] + "\nedit\n" })
+    stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
+
+    # commit_event's only shell call is the update-ref CAS, so raising here makes
+    # the internal file_edit's commit fail for a non-race reason.
+    error_shell = Class.new do
+      def assert_cd_exec(_path, *_commands)
+        raise RuntimeError, 'simulated update-ref failure'
+      end
+    end.new
+    externals.instance_variable_set('@shell', error_shell)
+
+    error = assert_raises(RuntimeError) {
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    }
+    assert_equal 'simulated update-ref failure', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -241,7 +314,7 @@ class KataRanTestsTest < TestBase
     # The competing in-flight inter-test file_edit, same laptop, committed via a
     # real-git model on the same repo the instant before our update-ref CAS.
     competing_model = Externals.new.model
-    inject = -> { competing_model.kata_file_edit(id: id, index: 1, files: competing_files, laptop_id: laptop_id) }
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
     externals.instance_variable_set('@git', racing_git(git, inject))
 
     _stdout_captured, stderr_captured = capture_stdout_stderr do
@@ -301,7 +374,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
+      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
     end
   end
 
@@ -313,7 +386,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, 1, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
+      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
     end
   end
 
@@ -333,7 +406,7 @@ class KataRanTestsTest < TestBase
     path   = working_tree_path(id, 'events.json')
     before = File.read(path)
 
-    kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
 
     # correctness: the committed state advanced (read via git)
     assert_equal 2, kata_events(id).size

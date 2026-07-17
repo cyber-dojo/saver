@@ -15,7 +15,7 @@ class KataFileEditTest < TestBase
   | does NOT create any new events
   ) do
     in_tennis_kata do |id, files|
-      next_index = kata_file_edit(id, index=1, files, laptop_id)
+      next_index = kata_file_edit(id, files, laptop_id)
 
       events = kata_events(id)
       assert_equal 1, next_index
@@ -38,7 +38,7 @@ class KataFileEditTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
 
-      next_index = kata_file_edit(id, index=1, files, laptop_id)
+      next_index = kata_file_edit(id, files, laptop_id)
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -63,7 +63,7 @@ class KataFileEditTest < TestBase
     id = kids[version]
     files = kata_event(id, 0)['files']
     assert_raises(NoLongerImplementedError) do
-      kata_file_edit(id, 1, files, laptop_id)
+      kata_file_edit(id, files, laptop_id)
     end
   end
 end

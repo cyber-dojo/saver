@@ -339,13 +339,13 @@ class DifferTest < TestBase
       @was_files[filename] = data['content']
     end
     was_index = event['index'] + 1
-    result = kata_ran_tests(id, was_index, @was_files, laptop_id)
+    result = kata_ran_tests(id, @was_files, laptop_id)
     now_index = result['next_index']
 
     event['files'].each do |filename, data|
       @now_files[filename] = data['content']
     end
-    _result = kata_ran_tests(id, now_index, @now_files, laptop_id)
+    _result = kata_ran_tests(id, @now_files, laptop_id)
 
     [id, was_index, now_index]
   end
@@ -361,10 +361,9 @@ class DifferTest < TestBase
 
   # - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, index, files, laptop_id)
+  def kata_ran_tests(id, files, laptop_id)
     model.kata_ran_tests(
       id: id,
-      index: index,
       files: plain(files),
       stdout: { 'content' => 'this is stdout', 'truncated' => false },
       stderr: { 'content' => 'this is stderr', 'truncated' => false },

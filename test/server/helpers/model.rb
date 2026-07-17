@@ -74,67 +74,67 @@ module TestHelpersModel
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_file_create(id, index, files, filename, laptop_id)
+  def kata_file_create(id, files, filename, laptop_id)
     model.kata_file_create(
-      id:id, index:index, files:files, filename:filename, laptop_id:laptop_id
+      id:id, files:files, filename:filename, laptop_id:laptop_id
     )
   end
 
-  def kata_file_delete(id, index, files, filename, laptop_id)
+  def kata_file_delete(id, files, filename, laptop_id)
     model.kata_file_delete(
-      id:id, index:index, files:files, filename:filename, laptop_id:laptop_id
+      id:id, files:files, filename:filename, laptop_id:laptop_id
     )
   end
 
-  def kata_file_rename(id, index, files, old_filename, new_filename, laptop_id)
+  def kata_file_rename(id, files, old_filename, new_filename, laptop_id)
     model.kata_file_rename(
-      id:id, index:index, files:files, old_filename:old_filename, new_filename:new_filename, laptop_id:laptop_id
+      id:id, files:files, old_filename:old_filename, new_filename:new_filename, laptop_id:laptop_id
     )
   end
 
-  def kata_file_edit(id, index, files, laptop_id)
+  def kata_file_edit(id, files, laptop_id)
     model.kata_file_edit(
-      id:id, index:index, files:files, laptop_id:laptop_id
+      id:id, files:files, laptop_id:laptop_id
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
     model.kata_ran_tests(
-      id:id, index:index,
+      id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
       summary:summary, laptop_id:laptop_id
     )
   end
 
-  def kata_predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
     model.kata_predicted_right(
-      id:id, index:index,
+      id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
       summary:summary, laptop_id:laptop_id
     )
   end
 
-  def kata_predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
     model.kata_predicted_wrong(
-      id:id, index:index,
+      id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
       summary:summary, laptop_id:laptop_id
     )
   end
 
-  def kata_reverted(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_reverted(id, files, stdout, stderr, status, summary, laptop_id)
     model.kata_reverted(
-      id:id, index:index,
+      id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
       summary:summary, laptop_id:laptop_id
     )
   end
 
-  def kata_checked_out(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_checked_out(id, files, stdout, stderr, status, summary, laptop_id)
     model.kata_checked_out(
-      id:id, index:index,
+      id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
       summary:summary, laptop_id:laptop_id
     )

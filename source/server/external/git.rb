@@ -93,20 +93,23 @@ module External
     end
 
     # Builds the next commit on top of HEAD, in-process, on a single consistent
-    # base (so the caller's out-of-order detection and the eventual update-ref CAS
-    # both key off the same base_oid). Replaces the files/ subtree with `files`
+    # base (so the eventual update-ref CAS keys off the same base_oid). Assigns the
+    # new event's position, place_at = HEAD's last index + 1 (the saver owns the
+    # index; the caller sends none). Replaces the files/ subtree with `files`
     # (name => content), computes the files/ line-count delta vs HEAD's tree, and
-    # yields (base_events, added, deleted) where base_events is HEAD's
+    # yields (base_events, place_at, added, deleted) where base_events is HEAD's
     # events.json parsed. The block returns the remaining path => content writes
-    # (the new events.json, stdout/stderr/status/truncations.json); they are
-    # added, the tree is written, and a commit is created (NOT advancing any
-    # ref). Returns { base_oid:, new_oid: }. The caller advances main onto new_oid
-    # with an update-ref compare-and-swap. See docs/in-process-git.md.
-    def commit_on_main(repo_dir, message, files)
+    # (the new events.json, stdout/stderr/status/truncations.json); they are added,
+    # the tree is written, and a commit is created (NOT advancing any ref) with the
+    # message "<place_at> <tag_message>". Returns { base_oid:, new_oid:, place_at: }.
+    # The caller advances main onto new_oid with an update-ref compare-and-swap.
+    # See docs/in-process-git.md.
+    def commit_on_main(repo_dir, tag_message, files)
       repo = Rugged::Repository.new(repo_dir)
       base_oid = repo.head.target_id
       base_tree = repo.lookup(base_oid).tree
       base_events = read_json_blob(repo, base_tree, 'events.json')
+      place_at = base_events.last['index'] + 1
 
       index = repo.index
       index.read_tree(base_tree)
@@ -129,13 +132,13 @@ module External
       diff.find_similar!
       stat = diff.stat
 
-      yield(base_events, stat[1], stat[2]).each do |path, content|
+      yield(base_events, place_at, stat[1], stat[2]).each do |path, content|
         index.add(path: path, oid: repo.write(content, :blob), mode: 0100644)
       end
 
       new_oid = Rugged::Commit.create(repo,
-        tree: index.write_tree(repo), parents: [base_oid], message: message, update_ref: nil)
-      { base_oid: base_oid, new_oid: new_oid }
+        tree: index.write_tree(repo), parents: [base_oid], message: "#{place_at} #{tag_message}", update_ref: nil)
+      { base_oid: base_oid, new_oid: new_oid, place_at: place_at }
     end
 
     # Creates the lightweight numeric tag refs/tags/<name> at <oid>.
