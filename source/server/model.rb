@@ -139,49 +139,50 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  # Each event-committing write accepts an optional laptop_id: the id of the
-  # browser (laptop) that made the write, minted as a cookie by web and sent on
-  # every event-write. It is accepted here so the strict-keyword dispatch does
-  # not reject it, but is not yet used or stored: web can start sending it before
-  # the saver acts on it. It powers mobbing detection (telling one laptop's
-  # events from another's) once the saver stamps events with it.
+  # index and laptop_id are optional keywords so the strict-keyword dispatch does
+  # not 500 when a caller omits them:
+  # - index: the saver assigns each event's position (head + 1), so it does not
+  #   need a client index and ignores any it is sent. A caller can stop sending it.
+  # - laptop_id: the id of the browser (laptop) that made the write. The saver
+  #   stamps it on the committed event; the browser's read-side poll uses it to
+  #   tell one laptop's events from another's (mobbing detection).
 
-  def kata_file_create(id:, index:, files:, filename:, laptop_id: nil)
-    kata(id).file_create(id, index, files, filename, laptop_id)
+  def kata_file_create(id:, index: nil, files:, filename:, laptop_id: nil)
+    kata(id).file_create(id, files, filename, laptop_id)
   end
 
-  def kata_file_delete(id:, index:, files:, filename:, laptop_id: nil)
-    kata(id).file_delete(id, index, files, filename, laptop_id)
+  def kata_file_delete(id:, index: nil, files:, filename:, laptop_id: nil)
+    kata(id).file_delete(id, files, filename, laptop_id)
   end
 
-  def kata_file_rename(id:, index:, files:, old_filename:, new_filename:, laptop_id: nil)
-    kata(id).file_rename(id, index, files, old_filename, new_filename, laptop_id)
+  def kata_file_rename(id:, index: nil, files:, old_filename:, new_filename:, laptop_id: nil)
+    kata(id).file_rename(id, files, old_filename, new_filename, laptop_id)
   end
 
-  def kata_file_edit(id:, index:, files:, laptop_id: nil)
-    kata(id).file_edit(id, index, files, laptop_id)
+  def kata_file_edit(id:, index: nil, files:, laptop_id: nil)
+    kata(id).file_edit(id, files, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).ran_tests(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_ran_tests(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_right(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).predicted_right(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_right(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_wrong(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).predicted_wrong(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_wrong(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_reverted(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).reverted(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_reverted(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).reverted(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_checked_out(id:, index:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).checked_out(id, index, files, stdout, stderr, status, summary, laptop_id)
+  def kata_checked_out(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+    kata(id).checked_out(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - -
