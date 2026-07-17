@@ -139,49 +139,51 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  # index and laptop_id are optional keywords so the strict-keyword dispatch does
-  # not 500 when a caller omits them:
-  # - index: the saver assigns each event's position (head + 1), so it does not
-  #   need a client index and ignores any it is sent. A caller can stop sending it.
-  # - laptop_id: the id of the browser (laptop) that made the write. The saver
-  #   stamps it on the committed event; the browser's read-side poll uses it to
-  #   tell one laptop's events from another's (mobbing detection).
+  # These write methods take no index: the saver assigns each event's position
+  # (head + 1), and any client index is stripped at the HTTP boundary (post_json)
+  # before dispatch, so it never reaches here.
+  #
+  # laptop_id is an optional keyword (defaults to nil) so the strict-keyword
+  # dispatch does not 500 when a caller omits it: it is the id of the browser
+  # (laptop) that made the write. The saver stamps it on the committed event; the
+  # browser's read-side poll uses it to tell one laptop's events from another's
+  # (mobbing detection).
 
-  def kata_file_create(id:, index: nil, files:, filename:, laptop_id: nil)
+  def kata_file_create(id:, files:, filename:, laptop_id: nil)
     kata(id).file_create(id, files, filename, laptop_id)
   end
 
-  def kata_file_delete(id:, index: nil, files:, filename:, laptop_id: nil)
+  def kata_file_delete(id:, files:, filename:, laptop_id: nil)
     kata(id).file_delete(id, files, filename, laptop_id)
   end
 
-  def kata_file_rename(id:, index: nil, files:, old_filename:, new_filename:, laptop_id: nil)
+  def kata_file_rename(id:, files:, old_filename:, new_filename:, laptop_id: nil)
     kata(id).file_rename(id, files, old_filename, new_filename, laptop_id)
   end
 
-  def kata_file_edit(id:, index: nil, files:, laptop_id: nil)
+  def kata_file_edit(id:, files:, laptop_id: nil)
     kata(id).file_edit(id, files, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+  def kata_ran_tests(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
     kata(id).ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_right(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+  def kata_predicted_right(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
     kata(id).predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_predicted_wrong(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+  def kata_predicted_wrong(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
     kata(id).predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_reverted(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+  def kata_reverted(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
     kata(id).reverted(id, files, stdout, stderr, status, summary, laptop_id)
   end
 
-  def kata_checked_out(id:, index: nil, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
+  def kata_checked_out(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
     kata(id).checked_out(id, files, stdout, stderr, status, summary, laptop_id)
   end
 

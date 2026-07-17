@@ -121,24 +121,22 @@ class KataWriteIndexIgnoredTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   test 'Ndx006', %w(
-  | a write that omits the index argument is accepted: the saver assigns the
-  | position (head+1), so the caller need not send an index. The dispatch index
-  | keyword defaults to nil, so an omitted index does not 500 the strict-keyword
-  | dispatch.
+  | the model write methods take no index: the client index is stripped at the HTTP
+  | boundary (post_json) for every write, so index is not part of the model's write
+  | contract. Passing index: to a write raises unknown keyword.
   ) do
     id = kata_create(custom_manifest)
     files = kata_event(id, 0)['files']
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    result = model.kata_ran_tests(
-      id: id, files: files, stdout: stdout, stderr: stderr,
-      status: '0', summary: red_summary, laptop_id: laptop_id
-    )
-
-    assert_equal 2, result['next_index']
-    assert_equal 2, kata_events(id).size
-    assert_equal 1, kata_event(id, -1)['index']
+    error = assert_raises(ArgumentError) {
+      model.kata_ran_tests(
+        id: id, index: 1, files: files, stdout: stdout, stderr: stderr,
+        status: '0', summary: red_summary, laptop_id: laptop_id
+      )
+    }
+    assert_includes error.message, 'unknown keyword: :index'
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -

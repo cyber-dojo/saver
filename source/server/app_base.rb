@@ -39,6 +39,12 @@ class AppBase < Sinatra::Base
       respond_to do |format|
         format.json do
           args = to_json_object(request_body)
+          # The saver assigns each event's position (head + 1), so no write uses
+          # the client index; strip it here so the write methods take no index. The
+          # fork methods keep it (index is their fork point, not an event position).
+          unless [:group_fork, :kata_fork].include?(method_name)
+            args.delete('index')
+          end
           json_result(klass_name, method_name, args)
         end
       end

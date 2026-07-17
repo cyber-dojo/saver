@@ -303,7 +303,6 @@ class KataDiffTest < TestBase
   def kata_ran_tests(id, index, files, laptop_id)
     model.kata_ran_tests(
       id: id,
-      index: index,
       files: plain(files),
       stdout: { 'content' => 'this is stdout', 'truncated' => false },
       stderr: { 'content' => 'this is stderr', 'truncated' => false },

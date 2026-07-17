@@ -248,7 +248,7 @@ class KataRanTestsTest < TestBase
     # The competing in-flight inter-test file_edit, same laptop, committed via a
     # real-git model on the same repo the instant before our update-ref CAS.
     competing_model = Externals.new.model
-    inject = -> { competing_model.kata_file_edit(id: id, index: 1, files: competing_files, laptop_id: laptop_id) }
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
     externals.instance_variable_set('@git', racing_git(git, inject))
 
     _stdout_captured, stderr_captured = capture_stdout_stderr do
