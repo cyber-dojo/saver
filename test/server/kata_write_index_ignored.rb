@@ -1,0 +1,121 @@
+require_relative 'test_base'
+
+class KataWriteIndexIgnoredTest < TestBase
+
+  def initialize(arg)
+    super(arg)
+    @version = 2
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx001', %w(
+  | A reused index whose intervening event was written by a different laptop_id is
+  | accepted and appended at head+1. The saver always places an event at head+1
+  | and does not reject a behind index; mobbing detection lives in the browser's
+  | read-side poll, not a saver write-time check.
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    result = kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, another_laptop_id)
+
+    assert_equal 3, result['next_index']
+    assert_equal 3, kata_events(id).size
+    assert_equal 2, kata_event(id, -1)['index']
+    assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx002', %w(
+  | a write whose index is ahead of head+1 is accepted and placed at head+1, not
+  | at the claimed index: the saver ignores the client index for placement and
+  | always appends at head+1.
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    result = kata_ran_tests(id, 5, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    assert_equal 3, result['next_index']
+    assert_equal 3, kata_events(id).size
+    assert_equal 2, kata_event(id, -1)['index']
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx003', %w(
+  | a write with no laptop_id and a reused (behind) index is accepted and appended
+  | at head+1: the saver ignores the client index for placement whether or not a
+  | laptop_id is present.
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, nil)
+
+    result = kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, nil)
+
+    assert_equal 3, result['next_index']
+    assert_equal 3, kata_events(id).size
+    assert_equal 2, kata_event(id, -1)['index']
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx004', %w(
+  | a behind index from the SAME laptop is accepted and appended at head+1 - the
+  | same-laptop lost-response (self-lag) case, indistinguishable to the saver from
+  | any other behind write.
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    result = kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    assert_equal 4, result['next_index']
+    assert_equal 4, kata_events(id).size
+    assert_equal 3, kata_event(id, -1)['index']
+    assert_equal laptop_id, kata_event(id, -1)['laptop_id']
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx005', %w(
+  | an in-order write (index == head+1) from a DIFFERENT laptop is accepted and
+  | appended at head+1 - a legitimate handoff (a solo user switching laptops).
+  | Laptop identity does not gate placement.
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+
+    result = kata_ran_tests(id, 3, files, stdout, stderr, '0', red_summary, another_laptop_id)
+
+    assert_equal 4, result['next_index']
+    assert_equal 4, kata_events(id).size
+    assert_equal 3, kata_event(id, -1)['index']
+    assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
+  end
+
+end

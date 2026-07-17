@@ -5,13 +5,12 @@ class KataConcurrentSavesTest < TestBase
 
   version_test 2, 'DccG02', %w(
   | N concurrent kata_ran_tests calls to the same kata-id, each from a DIFFERENT
-  | laptop_id, all use index=1 (genuine mobbing: N laptops racing the same
-  | next-event slot). Exactly one succeeds. The remaining N-1 all get
-  | 'Out of order event': either from losing the update-ref compare-and-swap
-  | (concurrent case) or from the mobbing check rejecting a behind index whose
-  | intervening event was written by a different laptop (sequential case).
-  | Distinct laptop_ids are essential: with a shared laptop_id a behind write is
-  | accepted as self-lag, so more than one call could succeed.
+  | laptop_id, all at index=1 - N laptops racing the same next-event slot. The
+  | saver appends every write (a CAS-loss loser retries onto the new head) and does
+  | not reject a behind index, so laptop_id does not gate placement: ALL N commit,
+  | at contiguous indices in some order, none rejected. The browsers' read-side
+  | polls, not the saver, flag the mobbing. (DccG03 is the shared-laptop_id mirror
+  | of this.)
   ) do
     n = 10
     in_kata do |id|
@@ -29,12 +28,18 @@ class KataConcurrentSavesTest < TestBase
         Thread.new do
           saver.kata_ran_tests(id, 1, files, stdout, stderr, status, summary, laptop_ids[i])
         rescue => error
+          # Every racing write is appended, so this path never runs when green:
+          # no write fails.
+          # :nocov:
           mu.synchronize { errors << error.message }
+          # :nocov:
         end
       end.each(&:join)
 
-      assert errors.all? { |e| e.include?('Out of order event') }
-      assert_equal n - 1, errors.length
+      assert_equal [], errors, errors.to_s
+      events = kata_events(id)
+      assert_equal n + 1, events.size, events.to_s
+      assert_equal (0..n).to_a, events.map { |e| e['index'] }
     end
   end
 

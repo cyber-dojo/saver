@@ -442,57 +442,28 @@ class Kata_v2
     # No worktree, no working-tree checkout (the working tree stays stale; reads
     # go via git). See docs/in-process-git.md.
     #
-    # Out-of-sync detection has two layers, each catching a different scenario.
+    # Placement is saver-authoritative: inside the commit_on_main block the event
+    # is placed at head + 1 (base_events.last['index'] + 1), ignoring the client
+    # index. The saver never rejects a write for a stale or wrong client index -
+    # mobbing detection lives in the browser's read-side poll, not here.
     #
-    # 1. Per-write placement + detection (inside the commit_on_main block, before
-    #    any commit is created, so no corrupt data is ever written):
-    #    - no laptop_id: today's check - the client index must be exactly the next
-    #      position (last_index + 1), else "Out of order event".
-    #    - laptop_id present: the saver places the event at head + 1; it rejects an
-    #      index ahead of that, and rejects an index behind head when the events
-    #      the browser missed (index .. head) include a different laptop's write
-    #      (genuine mobbing). A behind index whose missed events are all this same
-    #      laptop's own writes is accepted (self-lag).
-    #
-    # 2. Concurrent write (the rescue below):
-    #    Two saves for the same kata arrive together, build on the same base_oid,
-    #    and both pass layer 1. Whichever reaches the update-ref compare-and-swap
-    #    second fails (main has moved off base_oid). The rescue resolves the loser:
-    #    a genuine verdict rejection (a different laptop, or an ahead index)
-    #    re-raises; a file-event loser is dropped as "Out of order" (superseded -
-    #    its files are already in the winner); a test-family loser from this same
-    #    laptop is self-lag, so it retries onto the new head and commits in order
-    #    rather than falsely raising. Bounded by COMMIT_EVENT_MAX_RETRIES.
+    # The remaining out-of-sync handling is the concurrent-write race (the rescue
+    # below): two saves for the same kata build on the same base_oid; whichever
+    # reaches the update-ref compare-and-swap second fails (main has moved off
+    # base_oid). The rescue resolves that loser: a file-event loser is dropped as
+    # "Out of order" (superseded - its files are already in the winner); a
+    # test-family loser rebuilds on the new head and re-appends so it lands after
+    # the winner in order. Bounded by COMMIT_EVENT_MAX_RETRIES.
     all_events = nil
     place_at = nil
     result = git.commit_on_main(repo_dir(id), "#{index} #{tag_message}", content_of(files)) do |base_events, added, deleted|
-      if laptop_id.nil?
-        # No laptop_id (legacy events, or a client not yet sending one): today's
-        # behavior unchanged - the client index must be exactly the next position.
-        unless index == base_events.last['index'] + 1
-          raise "Out of order event for #{id}"
-        end
-        place_at = index
-      else
-        # laptop_id present: placement is saver-authoritative (the saver, not web,
-        # decides it: head + 1). An index ahead of head + 1 claims a position that
-        # does not exist and is rejected. An index behind head means the browser
-        # missed commits; accept it only when every event it has not yet seen
-        # (index .. head) was written by this same laptop (its own lost-response
-        # writes), otherwise a different laptop got in and it is rejected as
-        # mobbing.
-        head = base_events.last['index']
-        place_at = head + 1
-        unless index == place_at
-          if index > place_at
-            raise "Out of order event for #{id}"
-          end
-          intervening = base_events.select { |event| event['index'] >= index }
-          unless intervening.all? { |event| event['laptop_id'] == laptop_id }
-            raise "Out of order event for #{id}"
-          end
-        end
-      end
+      # Placement is saver-authoritative (the saver, not the caller, decides it):
+      # every event goes at head + 1. The client index is ignored, whatever it is
+      # (ahead of, at, or behind head + 1) and whether or not a laptop_id is
+      # present, so a stale or wrong client index never rejects a write. Mobbing
+      # detection lives in the browser's read-side poll, not a saver write-time
+      # check.
+      place_at = base_events.last['index'] + 1
       new_event = summary.merge!({
         'index' => place_at,
         'time' => time.now,
@@ -533,31 +504,30 @@ class Kata_v2
     git.create_tag(repo_dir(id), place_at, result[:new_oid])
 
     all_events
-  rescue => error
-    # Layer 1 (the commit_on_main verdict) rejected this write - an ahead index, or
-    # a behind index whose missed events include a different laptop (genuine
-    # mobbing). That is a real out-of-order: never retry.
-    raise if error.message.include?('Out of order event')
-
-    # Otherwise the update-ref compare-and-swap lost: a concurrent write for this
-    # kata advanced main off the base this commit was built on. Read the tip via
-    # git (the working tree is stale; HEAD advances atomically via update-ref, so
-    # this sees the latest committed events - see read_events_via_git and
-    # docs/reads-via-git.md).
+  rescue
+    # A raised error here is normally the update-ref compare-and-swap losing: a
+    # concurrent write for this kata advanced main off the base this commit was
+    # built on. Read the tip via git (the working tree is stale; HEAD advances
+    # atomically via update-ref, so this sees the latest committed events - see
+    # read_events_via_git and docs/reads-via-git.md). The saver does not reject a
+    # write for its index, so the only in-flight failure to sort out here is a
+    # lost compare-and-swap; any other error left the tip where it was.
     current_events = read_events_via_git(id)
     if current_events.last['index'] < index
-      # The tip did not pass us - an unexpected failure, re-raise as-is.
+      # The tip did not pass us, so the error was not a lost CAS - re-raise as-is.
       raise
     end
 
     # A concurrent same-kata write won the compare-and-swap.
     # - file-event loser: superseded (the winner's files already include this
-    #   event's file changes), so drop it as "Out of order" (the web client's
-    #   inter-test .catch discards it silently, no dialog). No retry.
-    # - test-family loser from this same laptop: self-lag. Rebuild on the new head
-    #   and re-append so it lands after the winner in order. On retry,
-    #   commit_on_main's verdict self-lag-accepts this same laptop, or raises for a
-    #   different laptop (caught above). Bounded against pathological contention.
+    #   event's file changes), so drop it as "Out of order" (the caller's
+    #   inter-test handler discards a superseded file event silently). No retry.
+    # - test-family loser: rebuild on the new head and re-append so it lands after
+    #   the winner in order (append-only). On retry commit_on_main accepts the
+    #   behind write and places it at the new head + 1 - self-lag (this laptop's
+    #   own lost-response write) or a concurrent write from another laptop alike;
+    #   the read-side poll flags any staleness. Bounded against pathological
+    #   contention.
     if summary['colour'].to_s.start_with?('file_') || attempts >= COMMIT_EVENT_MAX_RETRIES
       raise "Out of order event for #{id}"
     end

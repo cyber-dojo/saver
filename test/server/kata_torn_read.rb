@@ -87,11 +87,11 @@ class KataTornReadTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Tn6Wb6', %w(
-  | The commit_event rescue decides "Out of order event" by reading the tip
-  | committed events.json through git, not the working tree. The working tree is
-  | stale (saves no longer refresh it), so reading it directly could mask the
-  | out-of-order with a raw JSON/IO error. With a truncated working-tree
-  | events.json, a different-laptop stale save still reports "Out of order event".
+  | commit_event reads its base committed events through git, not the working
+  | tree, which is stale (saves do not refresh it). A truncated working-tree
+  | events.json must not affect a write: a behind different-laptop write is
+  | accepted and commits at head+1, stamped with its laptop_id, proving the base
+  | read went through git rather than the torn working-tree file.
   ) do
     in_kata do |id|
       files  = kata_event(id, 0)['files']
@@ -103,19 +103,20 @@ class KataTornReadTest < TestBase
       full = File.read(path)
       File.write(path, full[0, full.size / 2])
 
-      error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
-      }
-      assert_equal "Out of order event for #{id}", error.message
+      result = kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
+
+      assert_equal 3, result['next_index']
+      assert_equal 2, kata_event(id, -1)['index']
+      assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
     end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Tn6Wb7', %w(
-  | As Tn6Wb6 but with the working-tree events.json absent (deleted): the
-  | commit_event rescue still reports "Out of order event" because it reads
-  | the tip through git rather than the missing working-tree file.
+  | As Tn6Wb6 but with the working-tree events.json absent (deleted): commit_event
+  | reads its base through git rather than the missing working-tree file, so the
+  | behind different-laptop write is still accepted and commits at head+1.
   ) do
     in_kata do |id|
       files  = kata_event(id, 0)['files']
@@ -125,10 +126,11 @@ class KataTornReadTest < TestBase
 
       File.delete(working_tree_path(id, 'events.json'))
 
-      error = assert_raises(RuntimeError) {
-        kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
-      }
-      assert_equal "Out of order event for #{id}", error.message
+      result = kata_ran_tests(id, 1, files, stdout, stderr, 0, red_summary, another_laptop_id)
+
+      assert_equal 3, result['next_index']
+      assert_equal 2, kata_event(id, -1)['index']
+      assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
     end
   end
 

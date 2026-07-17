@@ -60,13 +60,13 @@ class KataRanTestsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Sp4DkD', %w(
-  | There is a window between the ref advance (git update-ref, which moves main
-  | to the commit that adds the new index to events.json) and the separate
-  | git tag <index> that records the numeric tag. A concurrent save that loses
-  | the race reads the new last_index from events.json, then calls event() ->
-  | git_archive, whose tag lookup raises TagNotFound because the tag is not
-  | written yet. This transient failure must not surface raw; it must resolve to
-  | the normal "Out of order event".
+  | There is a window between the ref advance (git update-ref, which moves main to
+  | the commit that adds the new index to events.json) and the separate git tag
+  | <index> that records the numeric tag. A save whose internal read lands in that
+  | window calls event() -> git_archive, whose tag lookup raises TagNotFound
+  | because the tag is not written yet. git_archive retries over the window; once
+  | the tag lands the read recovers, so nothing surfaces raw and the save is
+  | accepted and appended at head+1.
   ) do
     gid = group_create(custom_manifest)
     id  = group_join(gid)
@@ -78,18 +78,15 @@ class KataRanTestsTest < TestBase
     # First save succeeds: events.json gains index 1 and tag 1 is written.
     kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
 
-    # Wrap the in-process git so the next tag read reproduces the window: the
-    # first tag_tree_blobs raises TagNotFound (tag momentarily absent), then the
-    # retry delegates to the real git (tag present), as a concurrent winner's
-    # git tag closes it.
+    # Wrap the in-process git to reproduce the window: it delegates every call to
+    # the real git, except the first tag_tree_blobs raises TagNotFound (tag
+    # momentarily absent); the retry then delegates to the real git (tag present),
+    # as a concurrent winner's git tag closes it.
     tag_race_git = Class.new do
       attr_reader :reproduced
       def initialize(real)
         @real = real
         @reproduced = false
-      end
-      def head_blob(repo_dir, path)
-        @real.head_blob(repo_dir, path)
       end
       def tag_tree_blobs(repo_dir, index)
         unless @reproduced
@@ -98,18 +95,28 @@ class KataRanTestsTest < TestBase
         end
         @real.tag_tree_blobs(repo_dir, index)
       end
+      def method_missing(name, *args, &block)
+        @real.public_send(name, *args, &block)
+      end
+      def respond_to_missing?(name, include_private = false)
+        # Never exercised: the model calls tag_tree_blobs and the delegated methods
+        # on the double, never respond_to? - so this line is excluded from coverage.
+        # :nocov:
+        @real.respond_to?(name, include_private)
+        # :nocov:
+      end
     end.new(git)
 
     externals.instance_variable_set('@git', tag_race_git)
 
-    # The losing concurrent save (same index 1) must report out-of-order.
-    error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
-    }
-    assert_equal "Out of order event for #{id}", error.message
-    # Confirm the window was actually reproduced: a stale save reports
-    # "Out of order event" anyway, so without this the test could pass without
-    # exercising the tag-read retry at all.
+    # The save's internal read hits the window and recovers, so the save is
+    # accepted and appended at head+1 (index 2).
+    result = kata_ran_tests(id, 1, files, stdout, stderr, status, red_summary, laptop_id)
+
+    assert_equal 3, result['next_index']
+    assert_equal [0, 1, 2], kata_events(id).map { |e| e['index'] }
+    # Confirm the window was actually reproduced, so the test really exercised
+    # git_archive's tag-read retry rather than passing trivially.
     assert tag_race_git.reproduced, 'tag-write window was never reproduced'
   end
 
