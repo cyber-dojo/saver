@@ -67,16 +67,16 @@ class KataEventsTest < TestBase
     in_kata do |id|
       files = kata_event(id, 0)['files']
       
-      kata_file_create(id, 1, files, 'newfile.txt', laptop_id)
+      kata_file_create(id, files, 'newfile.txt', laptop_id)
       
-      kata_ran_tests(id, 2, files, stdout, stderr,   '0', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr,   '0', summary, laptop_id)
 
       files['newfile.txt'] = { 'content' => 'edited' }
-      kata_file_rename(id, 3, files, 'newfile.txt', 'newfile2.txt', laptop_id)
+      kata_file_rename(id, files, 'newfile.txt', 'newfile2.txt', laptop_id)
 
-      kata_ran_tests(id, 5, files, stdout, stderr,   '0', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr,   '0', summary, laptop_id)
       
-      kata_ran_tests(id, 6, files, stdout, stderr, '137', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, '137', summary, laptop_id)
 
       actual = kata_events(id)
       assert_equal 7, actual.size

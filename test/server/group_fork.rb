@@ -48,8 +48,9 @@ class GroupForkTest < TestBase
         "duration" => 1.46448,
         "predicted" => "none",
       }
-      kata_ran_tests(kid, index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(kid, files, stdout, stderr, status, red_summary, laptop_id)
 
+      index = kata_events(kid).last['index']
       fid = group_fork(kid, index)
 
       assert group_exists?(fid), "assert group_exists?(#{fid})"

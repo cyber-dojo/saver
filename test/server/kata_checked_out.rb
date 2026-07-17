@@ -14,7 +14,7 @@ class KataCheckedOutTest < TestBase
       stdout = data['stdout']
       stderr = data['stderr']
       status = data['status']
-      kata_ran_tests(id1, index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id1, files, stdout, stderr, status, red_summary, laptop_id)
 
       id2 = group_join(gid)
       checkout = { 
@@ -26,11 +26,10 @@ class KataCheckedOutTest < TestBase
         'colour' => 'red', 
         'checkout' => checkout 
       }
-      kata_checked_out(id2, index=1, files, stdout, stderr, status, checkout_out_summary, laptop_id)
+      kata_checked_out(id2, files, stdout, stderr, status, checkout_out_summary, laptop_id)
 
       expected = JSON.generate(checkout)
       assert_tag_commit_message(id2, 1, "1 checked out #{expected}")
-      [index, checkout_out_summary]
     end
   end
 
@@ -49,7 +48,7 @@ class KataCheckedOutTest < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      result = kata_ran_tests(id1, next_index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      result = kata_ran_tests(id1, files, stdout, stderr, status, red_summary, laptop_id)
       assert_equal 2, result['next_index']
 
       id2 = group_join(gid)
@@ -63,7 +62,7 @@ class KataCheckedOutTest < TestBase
         'checkout' => checkout 
       }
 
-      result = kata_checked_out(id2, index=1, files, stdout, stderr, status, checkout_out_summary, laptop_id)
+      result = kata_checked_out(id2, files, stdout, stderr, status, checkout_out_summary, laptop_id)
       next_index = result['next_index']
 
       actual = kata_event(id2, next_index - 1)
@@ -96,7 +95,7 @@ class KataCheckedOutTest < TestBase
       'checkout' => { 'id' => id, 'index' => 0, 'avatarIndex' => 0 }
     }
     assert_raises(NoLongerImplementedError) do
-      kata_checked_out(id, 1, files, data['stdout'], data['stderr'], data['status'], checkout_summary, laptop_id)
+      kata_checked_out(id, files, data['stdout'], data['stderr'], data['status'], checkout_summary, laptop_id)
     end
   end
 

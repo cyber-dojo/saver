@@ -89,20 +89,20 @@ class TestBase < Id58TestBase
     'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
   end
 
-  def kata_file_create(id, index, files, filename, laptop_id)
-    saver.kata_file_create(id, index, files, filename, laptop_id)
+  def kata_file_create(id, files, filename, laptop_id)
+    saver.kata_file_create(id, files, filename, laptop_id)
   end
 
-  def kata_file_delete(id, index, files, filename, laptop_id)
-    saver.kata_file_delete(id, index, files, filename, laptop_id)
+  def kata_file_delete(id, files, filename, laptop_id)
+    saver.kata_file_delete(id, files, filename, laptop_id)
   end
 
-  def kata_file_rename(id, index, files, old_filename, new_filename, laptop_id)
-    saver.kata_file_rename(id, index, files, old_filename, new_filename, laptop_id)
+  def kata_file_rename(id, files, old_filename, new_filename, laptop_id)
+    saver.kata_file_rename(id, files, old_filename, new_filename, laptop_id)
   end
 
-  def kata_file_edit(id, index, files, laptop_id)
-    saver.kata_file_edit(id, index, files, laptop_id)
+  def kata_file_edit(id, files, laptop_id)
+    saver.kata_file_edit(id, files, laptop_id)
   end
 
   # - - - - - - - - - - - - - - - - - -

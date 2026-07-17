@@ -20,9 +20,9 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
-    result = kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, another_laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
     assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
@@ -42,9 +42,9 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
-    result = kata_ran_tests(id, 5, files, stdout, stderr, '0', red_summary, laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
     assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
@@ -63,9 +63,9 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, nil)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, nil)
 
-    result = kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, nil)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, nil)
 
     assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
@@ -84,10 +84,10 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
-    kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
-    result = kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
     assert_equal 4, result['next_index']
     assert_equal 4, kata_events(id).size
@@ -107,10 +107,10 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, 1, files, stdout, stderr, '0', red_summary, laptop_id)
-    kata_ran_tests(id, 2, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
 
-    result = kata_ran_tests(id, 3, files, stdout, stderr, '0', red_summary, another_laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
     assert_equal 4, result['next_index']
     assert_equal 4, kata_events(id).size

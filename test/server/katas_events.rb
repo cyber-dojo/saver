@@ -44,14 +44,14 @@ class KatasEventsTest < TestBase
       in_kata(gid) do |id|
         files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, 1, files, stdout, stderr, "0", red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr, "0", red_summary, laptop_id)
       end
       in_kata(gid) do |id|
         files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, 1, files, stdout, stderr,   '0', red_summary, laptop_id)
-        kata_ran_tests(id, 2, files, stdout, stderr,   '0', red_summary, laptop_id)
-        kata_ran_tests(id, 3, files, stdout, stderr, '137', red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr, '137', red_summary, laptop_id)
       end
       actual = katas_events([ids[0], ids[1]], [1, 3])
       expected = {

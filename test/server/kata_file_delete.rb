@@ -15,7 +15,7 @@ class KataFileDeleteTest < TestBase
   | results in a single delete-file event 
   ) do
     in_tennis_kata do |id, files|
-      next_index = kata_file_delete(id, index=1, files, 'readme.txt', laptop_id)
+      next_index = kata_file_delete(id, files, 'readme.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -46,7 +46,7 @@ class KataFileDeleteTest < TestBase
       files['readme.txt']['content'] = edited_content
       
       # At this point, 'tennis.py', the deleted file, IS in files
-      next_index = kata_file_delete(id, index=1, files, 'tennis.py', laptop_id)
+      next_index = kata_file_delete(id, files, 'tennis.py', laptop_id)
 
       events = kata_events(id)
       assert_equal 3, next_index
@@ -83,7 +83,7 @@ class KataFileDeleteTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
-      next_index = kata_file_delete(id, index=1, files, 'readme.txt', laptop_id)
+      next_index = kata_file_delete(id, files, 'readme.txt', laptop_id)
 
       events = kata_events(id)
       assert_equal 3, next_index
@@ -115,7 +115,7 @@ class KataFileDeleteTest < TestBase
     id = kids[version]
     files = kata_event(id, 0)['files']
     assert_raises(NoLongerImplementedError) do
-      kata_file_delete(id, 1, files, 'readme.txt', laptop_id)
+      kata_file_delete(id, files, 'readme.txt', laptop_id)
     end
   end
 

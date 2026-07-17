@@ -9,7 +9,7 @@ class KataFileEditTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      next_index = kata_file_edit(id, index=1, files, laptop_id)
+      next_index = kata_file_edit(id, files, laptop_id)
 
       events = kata_events(id)
       assert_equal 1, next_index
@@ -32,7 +32,7 @@ class KataFileEditTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
 
-      next_index = kata_file_edit(id, index=1, files, laptop_id)
+      next_index = kata_file_edit(id, files, laptop_id)
 
       events = kata_events(id)
       assert_equal 2, next_index

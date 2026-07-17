@@ -48,8 +48,9 @@ class KataForkTest < TestBase
         "duration" => 1.46448,
         "predicted" => "none",
       }
-      kata_ran_tests(kid, index=1, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(kid, files, stdout, stderr, status, red_summary, laptop_id)
 
+      index = kata_events(kid).last['index']
       fid = kata_fork(kid, index)
 
       assert kata_exists?(fid), "assert kata_exists?(#{fid})"
