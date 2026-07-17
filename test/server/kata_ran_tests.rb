@@ -224,6 +224,72 @@ class KataRanTestsTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'Sp4DkH', %w(
+  | a test event that loses the update-ref compare-and-swap (a competing same-laptop
+  | write won the slot) is self-lag: it retries onto the new head and commits rather
+  | than being dropped. With no pending edit the race hits the test event's own
+  | commit, not an internal file_edit, so the retry path runs: events are create(0),
+  | the competing write(1), the retried test event(2).
+  ) do
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
+    id  = group_join(gid)
+
+    files  = kata_event(id, 0)['files']  # unchanged, so the internal file_edit commits nothing
+    stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
+
+    filename = files.keys.first
+    competing_files = files.merge(filename => { 'content' => files[filename]['content'] + "\ncompeting\n" })
+    competing_model = Externals.new.model
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
+    externals.instance_variable_set('@git', racing_git(git, inject))
+
+    _stdout_captured, stderr_captured = capture_stdout_stderr do
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    end
+    assert_includes stderr_captured, 'update_ref failed', stderr_captured
+
+    events = kata_events(id)
+    assert_equal [0, 1, 2], events.map { |e| e['index'] }, events.to_s
+    assert_equal 'red', events.last['colour'], events.to_s
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'Sp4DkJ', %w(
+  | a non-out-of-order failure DURING the test's internal file_edit (here the
+  | update-ref failing for a non-race reason) propagates out of the write, not
+  | swallowed. file_edit_before_test_event only swallows "Out of order event" and
+  | re-raises anything else, so the caller sees the real error.
+  ) do
+    manifest = manifest_Tennis_refactoring_Python_unitttest
+    manifest['version'] = @version
+    gid = group_create(manifest)
+    id  = group_join(gid)
+
+    base_files = kata_event(id, 0)['files']
+    edited = base_files.keys.first
+    files  = base_files.merge(edited => { 'content' => base_files[edited]['content'] + "\nedit\n" })
+    stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
+
+    # commit_event's only shell call is the update-ref CAS, so raising here makes
+    # the internal file_edit's commit fail for a non-race reason.
+    error_shell = Class.new do
+      def assert_cd_exec(_path, *_commands)
+        raise RuntimeError, 'simulated update-ref failure'
+      end
+    end.new
+    externals.instance_variable_set('@shell', error_shell)
+
+    error = assert_raises(RuntimeError) {
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    }
+    assert_equal 'simulated update-ref failure', error.message
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   # Drives the "a solo user's [test] races its own in-flight inter-test file_edit"
   # scenario for a test-family write (yielded). Sets up a kata with a pending edit,
   # installs a git that makes a competing SAME-laptop file_edit win the slot during

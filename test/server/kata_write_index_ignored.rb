@@ -159,4 +159,19 @@ class KataWriteIndexIgnoredTest < TestBase
     assert_tag_commit_message(id, 1, '1 ran tests')
   end
 
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'Ndx008', %w(
+  | the HTTP boundary (post_json) strips index only for event-writes, not for the
+  | fork methods: a kata_fork POST keeps its index (the fork's event position), so
+  | forking at a given index still works through the dispatch.
+  ) do
+    id = kata_create(custom_manifest)
+
+    assert_json_post_200('kata_fork', { id: id, index: 0 }.to_json) do |response|
+      forked_id = response['kata_fork']
+      assert kata_exists?(forked_id), forked_id
+    end
+  end
+
 end
