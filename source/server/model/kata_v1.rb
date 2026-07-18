@@ -99,19 +99,19 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(id, files, filename, laptop_id)
+  def file_create(id, files, filename, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def file_delete(id, files, filename, laptop_id)
+  def file_delete(id, files, filename, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def file_rename(id, files, old_filename, new_filename, laptop_id)
+  def file_rename(id, files, old_filename, new_filename, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def file_edit(id, files, laptop_id)
+  def file_edit(id, files, laptop_id, tab_seq)
     raise_not_implemented
   end
 
