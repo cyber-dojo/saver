@@ -117,23 +117,23 @@ class Kata_v1
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
+  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
+  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
+  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def reverted(id, files, stdout, stderr, status, summary, laptop_id)
+  def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     raise_not_implemented
   end
 
-  def checked_out(id, files, stdout, stderr, status, summary, laptop_id)
+  def checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     raise_not_implemented
   end
 

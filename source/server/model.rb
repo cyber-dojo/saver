@@ -167,24 +167,24 @@ class Model
 
   # - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_ran_tests(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil, tab_seq: nil)
+    kata(id).ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
   end
 
-  def kata_predicted_right(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_right(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil, tab_seq: nil)
+    kata(id).predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
   end
 
-  def kata_predicted_wrong(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_wrong(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil, tab_seq: nil)
+    kata(id).predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
   end
 
-  def kata_reverted(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).reverted(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_reverted(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil, tab_seq: nil)
+    kata(id).reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
   end
 
-  def kata_checked_out(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil)
-    kata(id).checked_out(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_checked_out(id:, files:, stdout:, stderr:, status:, summary:, laptop_id: nil, tab_seq: nil)
+    kata(id).checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - -

@@ -275,39 +275,39 @@ class Kata_v2
     raise unless error.message.include?('Out of order event')
   end
 
-  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
+  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit_before_test_event(id, files, laptop_id)
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
+  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit_before_test_event(id, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
+  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit_before_test_event(id, files, laptop_id)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def reverted(id, files, stdout, stderr, status, summary, laptop_id)
+  def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
     # info.inspect added escaping that the old shell-quoting path stripped back
     # out, so the historical message was the plain JSON. The in-process (rugged)
     # commit uses the message literally, so embed the plain JSON directly.
     tag_message = "reverted to #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def checked_out(id, files, stdout, stderr, status, summary, laptop_id)
+  def checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     info = json_plain(summary['checkout'])
     # Plain JSON, not info.inspect: see the note in reverted.
     tag_message = "checked out #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -413,11 +413,12 @@ class Kata_v2
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    # File events carry no tab_seq yet, so no dedup key: pass nil explicitly.
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, nil)
   end
 
-  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
-    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
 
     {
       'next_index' => all_events.last['index'] + 1,
@@ -435,7 +436,7 @@ class Kata_v2
   # only caps pathological contention.
   COMMIT_EVENT_MAX_RETRIES = 10
 
-  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts = 0)
+  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts = 0)
     # Builds the event commit in-process (libgit2/rugged) on a single base,
     # advances main onto it with an update-ref compare-and-swap, then tags it.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
@@ -453,6 +454,17 @@ class Kata_v2
     # "Out of order" (superseded - its files are already in the winner); a
     # test-family loser rebuilds on the new head and re-appends so it lands after
     # the winner in order. Bounded by COMMIT_EVENT_MAX_RETRIES.
+    #
+    # Idempotency (A8): a write whose (laptop_id, tab_seq) is already committed is
+    # a redelivery, so it is a no-op. Return the committed events unchanged, so the
+    # caller reports the same position the original commit produced.
+    if tab_seq
+      committed = read_events_via_git(id)
+      if committed.any? { |event| event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq }
+        return committed
+      end
+    end
+
     all_events = nil
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
       new_event = summary.merge!({
@@ -466,6 +478,9 @@ class Kata_v2
       # event is indistinguishable from a pre-laptop_id event and its writer is
       # treated as unknown. Only the genuine minted format is trusted.
       new_event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
+      # Store the tab_seq so a later redelivery of this write can be recognised
+      # as an already-committed (laptop_id, tab_seq) and deduplicated above.
+      new_event['tab_seq'] = tab_seq unless tab_seq.nil?
       all_events = base_events + [new_event]
       {
         events_filename => json_pretty(all_events),
@@ -523,7 +538,7 @@ class Kata_v2
     if summary['colour'].to_s.start_with?('file_') || attempts >= COMMIT_EVENT_MAX_RETRIES
       raise "Out of order event for #{id}"
     end
-    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts + 1)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts + 1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
