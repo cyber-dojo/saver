@@ -201,7 +201,7 @@ Determines if a group with the given `id` exists.
   ```
 
 - - - -
-## POST group_join(id, indexes)
+## POST group_join(id,indexes)
 Creates a new kata in the group with the given `id` and returns the kata's id.
 - parameters 
   * **id:String**. The group id.
@@ -558,12 +558,13 @@ Returns a gzipped tar archive of the kata's git repository, base64-encoded.
 
 
 - - - -
-## POST kata_file_create(id,files,filename)
+## POST kata_file_create(id,files,filename,laptop_id)
 Records a new empty file being created in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
   * **files:Hash**. The current files (the new `filename` is not yet present).
   * **filename:String**. The name of the file being created.
+  * **laptop_id:String**. See [laptop_id](#laptop_id).
 - returns
   * the next event index (the saver assigns it).
 - example
@@ -584,12 +585,13 @@ Records a new empty file being created in the browser. If any existing file has 
 
 
 - - - -
-## POST kata_file_delete(id,files,filename)
+## POST kata_file_delete(id,files,filename,laptop_id)
 Records a file being deleted in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
   * **files:Hash**. The current files (the `filename` to delete is still present).
   * **filename:String**. The name of the file being deleted.
+  * **laptop_id:String**. See [laptop_id](#laptop_id).
 - returns
   * the next event index (the saver assigns it).
 - example
@@ -610,13 +612,14 @@ Records a file being deleted in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_rename(id,files,old_filename,new_filename)
+## POST kata_file_rename(id,files,old_filename,new_filename,laptop_id)
 Records a file being renamed in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
   * **id:String**. The kata id.
   * **files:Hash**. The current files (`old_filename` is present; `new_filename` is not yet present).
   * **old_filename:String**. The current name of the file.
   * **new_filename:String**. The new name of the file.
+  * **laptop_id:String**. See [laptop_id](#laptop_id).
 - returns
   * the next event index (the saver assigns it).
 - example
@@ -637,11 +640,12 @@ Records a file being renamed in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_edit(id,files)
+## POST kata_file_edit(id,files,laptop_id)
 Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the next event index is returned unchanged.
 - parameters
   * **id:String**. The kata id.
   * **files:Hash**. The current files.
+  * **laptop_id:String**. See [laptop_id](#laptop_id).
 - returns
   * the next event index (the saver assigns it; unchanged if no file was edited).
 - example
@@ -662,7 +666,7 @@ Records a file edit event if any file content has changed since the last save. I
 
 
 - - - -
-## POST kata_ran_tests(id,files,stdout,stderr,status,summary)
+## POST kata_ran_tests(id,files,stdout,stderr,status,summary,laptop_id)
 Record a test event with no prediction.
 - parameters 
   * **id:String**. The kata id.
@@ -671,25 +675,26 @@ Record a test event with no prediction.
   * **stderr:Hash**. The stderr produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
   * **status:String**. The status produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
   * **summary:Hash**. Extra event data to store, eg `duration`,`time`,`colour`
+  * **laptop_id:String**. See [laptop_id](#laptop_id).
 
 
 - - - -
-## POST kata_predicted_right(id,files,stdout,stderr,status,summary)
+## POST kata_predicted_right(id,files,stdout,stderr,status,summary,laptop_id)
 Record a test event with a correct prediction.
 
 
 - - - -
-## POST kata_predicted_wrong(id,files,stdout,stderr,status,summary)
+## POST kata_predicted_wrong(id,files,stdout,stderr,status,summary,laptop_id)
 Record a test event with an incorrect prediction.
 
 
 - - - -
-## POST kata_reverted(id,files,stdout,stderr,status,summary)
+## POST kata_reverted(id,files,stdout,stderr,status,summary,laptop_id)
 Revert back to a previous traffic-light.
 
 
 - - - -
-## POST kata_checked_out(id,files,stdout,stderr,status,summary)
+## POST kata_checked_out(id,files,stdout,stderr,status,summary,laptop_id)
 Checkout a traffic-light from a different avatar.
 
 
@@ -905,6 +910,22 @@ The git commit sha used to create the Docker image.
     "sha": "41d7e6068ab75716e4c7b9262a3a44323b4d1448"
   }
   ```
+
+
+- - - -
+## laptop_id
+The 64-char lowercase-hex id of the writer, used by the browser's read-side poll
+for unintended "mobbing" detection. It is two 32-char halves: the first 32 identify the browser
+(laptop) profile, the last 32 identify the writing tab (its `tab_id`), so the poll
+can tell one tab from another as well as one laptop from another. (A non-JS client
+that sends no `tab_id` falls back to its plain 64-char browser cookie.) The saver
+stamps a valid `laptop_id` onto the committed event verbatim; a value that is not
+64 lowercase-hex characters is not trusted and is not stored, so the event reads as
+having an unknown writer.
+
+Accepted by `kata_file_create`, `kata_file_delete`, `kata_file_rename`,
+`kata_file_edit`, `kata_ran_tests`, `kata_predicted_right`, `kata_predicted_wrong`,
+`kata_reverted` and `kata_checked_out`.
 
 
 - - - -
