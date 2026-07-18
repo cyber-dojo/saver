@@ -20,7 +20,7 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
     result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
@@ -42,9 +42,9 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
     assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
@@ -84,15 +84,15 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
     assert_equal 4, result['next_index']
     assert_equal 4, kata_events(id).size
     assert_equal 3, kata_event(id, -1)['index']
-    assert_equal laptop_id, kata_event(id, -1)['laptop_id']
+    assert_equal default_laptop_id, kata_event(id, -1)['laptop_id']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -107,8 +107,8 @@ class KataWriteIndexIgnoredTest < TestBase
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
 
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
-    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
     result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
@@ -133,7 +133,7 @@ class KataWriteIndexIgnoredTest < TestBase
     error = assert_raises(ArgumentError) {
       model.kata_ran_tests(
         id: id, index: 1, files: files, stdout: stdout, stderr: stderr,
-        status: '0', summary: red_summary, laptop_id: laptop_id
+        status: '0', summary: red_summary, laptop_id: default_laptop_id
       )
     }
     assert_includes error.message, 'unknown keyword: :index'
@@ -153,7 +153,7 @@ class KataWriteIndexIgnoredTest < TestBase
 
     model.kata_ran_tests(
       id: id, files: files, stdout: stdout, stderr: stderr,
-      status: '0', summary: red_summary, laptop_id: laptop_id
+      status: '0', summary: red_summary, laptop_id: default_laptop_id
     )
 
     assert_tag_commit_message(id, 1, '1 ran tests')

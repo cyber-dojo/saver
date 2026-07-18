@@ -67,27 +67,27 @@ class KataEventsTest < TestBase
     in_kata do |id|
       files = kata_event(id, 0)['files']
       
-      kata_file_create(id, files, 'newfile.txt', laptop_id)
+      kata_file_create(id, files, 'newfile.txt')
       
-      kata_ran_tests(id, files, stdout, stderr,   '0', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr,   '0', summary)
 
       files['newfile.txt'] = { 'content' => 'edited' }
-      kata_file_rename(id, files, 'newfile.txt', 'newfile2.txt', laptop_id)
+      kata_file_rename(id, files, 'newfile.txt', 'newfile2.txt')
 
-      kata_ran_tests(id, files, stdout, stderr,   '0', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr,   '0', summary)
       
-      kata_ran_tests(id, files, stdout, stderr, '137', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, '137', summary)
 
       actual = kata_events(id)
       assert_equal 7, actual.size
 
       assert_equal kata_create_event(0, t0), actual[0], 0
-      assert_equal file_create_event(1, 0, 1, t1, 'newfile.txt'), actual[1], 1
-      assert_equal rag_event(2, 1, 0, t2, 'red', 0, 0), actual[2], 2
-      assert_equal file_edit_event(3, 1, 1, t3, 'newfile.txt', 1, 0), actual[3], 3
-      assert_equal file_rename_event(4, 1, 2, t4, 'newfile.txt', 'newfile2.txt'), actual[4], 4
-      assert_equal rag_event(5, 2, 0, t5, 'red', 0, 0), actual[5], 5
-      assert_equal rag_event(6, 3, 0, t6, 'red', 0, 0), actual[6], 6
+      assert_equal file_create_event(1, 0, 1, t1, 'newfile.txt', 1), actual[1], 1
+      assert_equal rag_event(2, 1, 0, t2, 'red', 0, 0, 2), actual[2], 2
+      assert_equal file_edit_event(3, 1, 1, t3, 'newfile.txt', 1, 0, 3), actual[3], 3
+      assert_equal file_rename_event(4, 1, 2, t4, 'newfile.txt', 'newfile2.txt', 3), actual[4], 4
+      assert_equal rag_event(5, 2, 0, t5, 'red', 0, 0, 4), actual[5], 5
+      assert_equal rag_event(6, 3, 0, t6, 'red', 0, 0, 5), actual[6], 6
     end
   end
 
@@ -143,7 +143,7 @@ class KataEventsTest < TestBase
     }
   end
 
-  def rag_event(index, major, minor, time, colour, diff_added_count, diff_deleted_count)
+  def rag_event(index, major, minor, time, colour, diff_added_count, diff_deleted_count, tab_seq)
     {
       'index' => index,
       'major_index' => major,
@@ -152,11 +152,12 @@ class KataEventsTest < TestBase
       'colour' => colour,
       'diff_added_count' => diff_added_count,
       'diff_deleted_count' => diff_deleted_count,
-      'laptop_id' => laptop_id
+      'laptop_id' => default_laptop_id,
+      'tab_seq' => tab_seq
     }
   end
 
-  def file_create_event(index, major, minor, time, filename)
+  def file_create_event(index, major, minor, time, filename, tab_seq)
     {
       'index' => index,
       'major_index' => major,
@@ -166,11 +167,12 @@ class KataEventsTest < TestBase
       'filename' => filename,
       'diff_added_count' => 0,
       'diff_deleted_count' => 0,
-      'laptop_id' => laptop_id
+      'laptop_id' => default_laptop_id,
+      'tab_seq' => tab_seq
     }
   end
 
-  def file_edit_event(index, major, minor, time, filename, diff_added_count, diff_deleted_count)
+  def file_edit_event(index, major, minor, time, filename, diff_added_count, diff_deleted_count, tab_seq)
     {
       'index' => index,
       'major_index' => major,
@@ -180,11 +182,12 @@ class KataEventsTest < TestBase
       'filename' => filename,
       'diff_added_count' => diff_added_count,
       'diff_deleted_count' => diff_deleted_count,
-      'laptop_id' => laptop_id
+      'laptop_id' => default_laptop_id,
+      'tab_seq' => tab_seq
     }
   end
 
-  def file_rename_event(index, major, minor, time, old_filename, new_filename)
+  def file_rename_event(index, major, minor, time, old_filename, new_filename, tab_seq)
     {
       'index' => index,
       'major_index' => major,
@@ -195,7 +198,8 @@ class KataEventsTest < TestBase
       'new_filename' => new_filename,
       'diff_added_count' => 0,
       'diff_deleted_count' => 0,
-      'laptop_id' => laptop_id
+      'laptop_id' => default_laptop_id,
+      'tab_seq' => tab_seq
     }
   end
 

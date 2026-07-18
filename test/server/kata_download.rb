@@ -16,8 +16,8 @@ class KataDownloadTest < TestBase
     in_kata do |id|
       files = kata_event(id, 0)['files']
       expected_cyber_dojo_sh = files['cyber-dojo.sh']['content']
-      kata_ran_tests(id, files, stdout, stderr,   '0', summary, laptop_id)
-      kata_ran_tests(id, files, stdout, stderr,   '1', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr,   '0', summary)
+      kata_ran_tests(id, files, stdout, stderr,   '1', summary)
       year, month, day = 2021, 7, 11
       externals.instance_exec { @time = TimeStub.new([year, month, day]) }
       tgz_filename, encoded64 = *model.kata_download(id:id)
@@ -92,8 +92,8 @@ class KataDownloadTest < TestBase
     summary = { 'colour' => 'red' }
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      kata_ran_tests(id, files, stdout, stderr, '0', summary, laptop_id)
-      kata_ran_tests(id, files, stdout, stderr, '1', summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, '0', summary)
+      kata_ran_tests(id, files, stdout, stderr, '1', summary)
 
       File.write(working_tree_path(id, 'events.json'), 'CORRUPT-NOT-JSON')
 

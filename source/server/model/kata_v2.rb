@@ -184,44 +184,51 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_create(id, files, filename, laptop_id)
+  def file_create(id, files, filename, laptop_id, tab_seq)
     # Called just BEFORE filename is created in the browser.
     # So it is NOT yet present in files.keys
 
-    file_edit(id, files, laptop_id)
+    # Both events this write can commit - the underneath edit and the file_create
+    # below - carry the same tab_seq (one browser action). Their colours differ,
+    # so the dedup guard does not mistake one for the other.
+    file_edit(id, files, laptop_id, tab_seq)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
     # No quotes around the filename: the old save committed via a shell command
     # whose quoting stripped them, so historically the stored message had none.
     # The commit is now in-process (rugged), which uses the message literally.
     tag_message = "created file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id)
+    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_delete(id, files, filename, laptop_id)
+  def file_delete(id, files, filename, laptop_id, tab_seq)
     # Called just BEFORE filename is deleted in the browser.
     # So it IS present in files.
 
-    file_edit(id, files, laptop_id)
+    # The underneath edit and the file_delete share this write's tab_seq (one
+    # browser action); their differing colours keep them apart in the guard.
+    file_edit(id, files, laptop_id, tab_seq)
     files.delete(filename)
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     # No quotes: see the note in file_create.
     tag_message = "deleted file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id)
+    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_rename(id, files, old_filename, new_filename, laptop_id)
+  def file_rename(id, files, old_filename, new_filename, laptop_id, tab_seq)
     # Called just BEFORE the rename in the browser.
     # So old_filename IS present in files.
     # And new_filename is NOT present in files.
 
-    file_edit(id, files, laptop_id)
+    # The underneath edit and the file_rename share this write's tab_seq (one
+    # browser action); their differing colours keep them apart in the guard.
+    file_edit(id, files, laptop_id, tab_seq)
     files[new_filename] = files.delete(old_filename)
     summary = {
       'colour' => 'file_rename',
@@ -229,18 +236,20 @@ class Kata_v2
       'new_filename' => new_filename
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id)
+    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
     result['next_index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def file_edit(id, files, laptop_id)
+  def file_edit(id, files, laptop_id, tab_seq)
     # Called in many places in the browser to indicate
     # that a file MAY have been edited (since the last save).
     # Creates a saver event if any file has been edited.
     # NOTE WELL: Called at the start of ALL other functions to
-    # catch newly created/edited files.
+    # catch newly created/edited files. Those internal calls pass tab_seq nil
+    # (the implicit edit is its own event, carrying no tab_seq); only the direct
+    # kata_file_edit write carries a tab_seq for its dedup key.
 
     all_events = events(id)
     last_index = all_events[-1]['index'] # all_events.size - 1
@@ -255,7 +264,7 @@ class Kata_v2
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     # No quotes: see the note in file_create.
     tag_message = "edited file #{edited_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id)
+    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
     result['next_index']
   end
 
@@ -269,45 +278,47 @@ class Kata_v2
   # the pending edit is still carried by the following test event's own files, so
   # swallow that specific drop and let the caller commit the test anyway (placed at
   # head + 1 like any write). Any other error propagates.
-  def file_edit_before_test_event(id, files, laptop_id)
-    file_edit(id, files, laptop_id)
+  def file_edit_before_test_event(id, files, laptop_id, tab_seq)
+    # The underneath pre-test edit shares the test event's tab_seq (one browser
+    # action); their differing colours keep them apart in the dedup guard.
+    file_edit(id, files, laptop_id, tab_seq)
   rescue => error
     raise unless error.message.include?('Out of order event')
   end
 
-  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
-    file_edit_before_test_event(id, files, laptop_id)
+  def ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
+    file_edit_before_test_event(id, files, laptop_id, tab_seq)
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
-    file_edit_before_test_event(id, files, laptop_id)
+  def predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
+    file_edit_before_test_event(id, files, laptop_id, tab_seq)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
-    file_edit_before_test_event(id, files, laptop_id)
+  def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
+    file_edit_before_test_event(id, files, laptop_id, tab_seq)
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def reverted(id, files, stdout, stderr, status, summary, laptop_id)
+  def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
     # info.inspect added escaping that the old shell-quoting path stripped back
     # out, so the historical message was the plain JSON. The in-process (rugged)
     # commit uses the message literally, so embed the plain JSON directly.
     tag_message = "reverted to #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def checked_out(id, files, stdout, stderr, status, summary, laptop_id)
+  def checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     info = json_plain(summary['checkout'])
     # Plain JSON, not info.inspect: see the note in reverted.
     tag_message = "checked out #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -409,15 +420,15 @@ class Kata_v2
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  def git_commit_tag(id, files, summary, tag_message, laptop_id)
+  def git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
-    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id)
+  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
 
     {
       'next_index' => all_events.last['index'] + 1,
@@ -435,7 +446,7 @@ class Kata_v2
   # only caps pathological contention.
   COMMIT_EVENT_MAX_RETRIES = 10
 
-  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts = 0)
+  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts = 0)
     # Builds the event commit in-process (libgit2/rugged) on a single base,
     # advances main onto it with an update-ref compare-and-swap, then tags it.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
@@ -453,6 +464,27 @@ class Kata_v2
     # "Out of order" (superseded - its files are already in the winner); a
     # test-family loser rebuilds on the new head and re-appends so it lands after
     # the winner in order. Bounded by COMMIT_EVENT_MAX_RETRIES.
+    #
+    # Idempotency (A8): a write whose (laptop_id, tab_seq, colour) is already
+    # committed is a redelivery, so it is a no-op. Return the committed events
+    # unchanged, so the caller reports the same position the original commit made.
+    #
+    # colour is in the key because one incoming write expands into two commits
+    # that share a tab_seq - the implicit underneath file_edit and the real event
+    # (see file_edit_before_test_event and file_create/delete/rename). They differ
+    # in colour, so matching on colour stops the real event from deduping against
+    # its own sibling on first delivery (which would silently drop it). Distinct
+    # web writes never share a tab_seq (it is the tab's monotonic per-event
+    # counter), so no two genuine writes collide on the key.
+    if tab_seq
+      colour = summary['colour']
+      committed = read_events_via_git(id)
+      already = committed.any? do |event|
+        event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
+      end
+      return committed if already
+    end
+
     all_events = nil
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
       new_event = summary.merge!({
@@ -466,6 +498,9 @@ class Kata_v2
       # event is indistinguishable from a pre-laptop_id event and its writer is
       # treated as unknown. Only the genuine minted format is trusted.
       new_event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
+      # Store the tab_seq so a later redelivery of this write can be recognised
+      # as an already-committed (laptop_id, tab_seq) and deduplicated above.
+      new_event['tab_seq'] = tab_seq unless tab_seq.nil?
       all_events = base_events + [new_event]
       {
         events_filename => json_pretty(all_events),
@@ -523,7 +558,7 @@ class Kata_v2
     if summary['colour'].to_s.start_with?('file_') || attempts >= COMMIT_EVENT_MAX_RETRIES
       raise "Out of order event for #{id}"
     end
-    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, attempts + 1)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts + 1)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

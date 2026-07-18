@@ -284,12 +284,12 @@ class KataDiffTest < TestBase
       @was_files[filename] = data['content']
     end
     was_index = event['index'] + 1
-    result = kata_ran_tests(id, @was_files, laptop_id)
+    result = kata_ran_tests(id, @was_files)
     now_index = result['next_index']
     event['files'].each do |filename, data|
       @now_files[filename] = data['content']
     end
-    kata_ran_tests(id, @now_files, laptop_id)
+    kata_ran_tests(id, @now_files)
     [id, was_index, now_index]
   end
 
@@ -300,7 +300,7 @@ class KataDiffTest < TestBase
     manifest
   end
 
-  def kata_ran_tests(id, files, laptop_id)
+  def kata_ran_tests(id, files)
     model.kata_ran_tests(
       id: id,
       files: plain(files),

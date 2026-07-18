@@ -44,14 +44,14 @@ class KatasEventsTest < TestBase
       in_kata(gid) do |id|
         files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, files, stdout, stderr, "0", red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr, "0", red_summary)
       end
       in_kata(gid) do |id|
         files = kata_event(id, 0)['files']
         ids << id
-        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary, laptop_id)
-        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary, laptop_id)
-        kata_ran_tests(id, files, stdout, stderr, '137', red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary)
+        kata_ran_tests(id, files, stdout, stderr,   '0', red_summary)
+        kata_ran_tests(id, files, stdout, stderr, '137', red_summary)
       end
       actual = katas_events([ids[0], ids[1]], [1, 3])
       expected = {
@@ -66,7 +66,8 @@ class KatasEventsTest < TestBase
             'status' => '0',
             'diff_added_count' => 0,
             'diff_deleted_count' => 0,
-            'laptop_id' => laptop_id
+            'laptop_id' => default_laptop_id,
+            'tab_seq' => 1
           }
         },
         ids[1] => {
@@ -80,7 +81,8 @@ class KatasEventsTest < TestBase
             'status' => '137',
             'diff_added_count' => 0,
             'diff_deleted_count' => 0,
-            'laptop_id' => laptop_id
+            'laptop_id' => default_laptop_id,
+            'tab_seq' => 4
           }
         }
       }
