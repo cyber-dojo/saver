@@ -17,7 +17,7 @@ class KataFileRenameTest < TestBase
     in_tennis_kata do |id, files|
       content = files['readme.txt']['content']
       
-      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md', laptop_id)
+      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -51,7 +51,7 @@ class KataFileRenameTest < TestBase
       renamed_content = files['readme.txt']['content']
       files['tennis.py']['content'] = edited_content
       
-      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md', laptop_id)
+      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md')
 
       assert_equal 3, next_index
       events = kata_events(id)
@@ -90,7 +90,7 @@ class KataFileRenameTest < TestBase
       edited_content = files['readme.txt']['content'] + '# some comment'
       files['readme.txt']['content'] = edited_content
       
-      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md', laptop_id)
+      next_index = kata_file_rename(id, files, 'readme.txt', 'readme.md')
 
       events = kata_events(id)
       assert_equal 3, next_index
@@ -125,7 +125,7 @@ class KataFileRenameTest < TestBase
     id = kids[version]
     files = kata_event(id, 0)['files']
     assert_raises(NoLongerImplementedError) do
-      kata_file_rename(id, files, 'readme.txt', 'readme2.txt', laptop_id)
+      kata_file_rename(id, files, 'readme.txt', 'readme2.txt')
     end
   end
 

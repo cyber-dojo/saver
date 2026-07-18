@@ -74,69 +74,74 @@ module TestHelpersModel
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_file_create(id, files, filename, laptop_id)
+  # These event-write helpers fill in laptop_id and tab_seq by default, so tests
+  # not focused on them stay uncluttered: laptop_id defaults to default_laptop_id
+  # and tab_seq to the per-call-incrementing next_tab_seq. Tests focused on
+  # laptop_id or tab_seq pass explicit values (or call model.* directly).
+
+  def kata_file_create(id, files, filename, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_file_create(
-      id:id, files:files, filename:filename, laptop_id:laptop_id
+      id:id, files:files, filename:filename, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_file_delete(id, files, filename, laptop_id)
+  def kata_file_delete(id, files, filename, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_file_delete(
-      id:id, files:files, filename:filename, laptop_id:laptop_id
+      id:id, files:files, filename:filename, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_file_rename(id, files, old_filename, new_filename, laptop_id)
+  def kata_file_rename(id, files, old_filename, new_filename, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_file_rename(
-      id:id, files:files, old_filename:old_filename, new_filename:new_filename, laptop_id:laptop_id
+      id:id, files:files, old_filename:old_filename, new_filename:new_filename, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_file_edit(id, files, laptop_id)
+  def kata_file_edit(id, files, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_file_edit(
-      id:id, files:files, laptop_id:laptop_id
+      id:id, files:files, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
   # - - - - - - - - - - - - - - - - - - - - -
 
-  def kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_ran_tests(
       id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
-      summary:summary, laptop_id:laptop_id
+      summary:summary, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_predicted_right(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_right(id, files, stdout, stderr, status, summary, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_predicted_right(
       id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
-      summary:summary, laptop_id:laptop_id
+      summary:summary, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_predicted_wrong(
       id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
-      summary:summary, laptop_id:laptop_id
+      summary:summary, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_reverted(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_reverted(id, files, stdout, stderr, status, summary, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_reverted(
       id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
-      summary:summary, laptop_id:laptop_id
+      summary:summary, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 
-  def kata_checked_out(id, files, stdout, stderr, status, summary, laptop_id)
+  def kata_checked_out(id, files, stdout, stderr, status, summary, laptop_id = default_laptop_id, tab_seq = next_tab_seq)
     model.kata_checked_out(
       id:id,
       files:files, stdout:stdout, stderr:stderr, status:status,
-      summary:summary, laptop_id:laptop_id
+      summary:summary, laptop_id:laptop_id, tab_seq:tab_seq
     )
   end
 

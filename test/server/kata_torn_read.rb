@@ -13,7 +13,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
       expected = kata_events(id)
 
@@ -38,7 +38,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
       expected = kata_events(id)
 
@@ -97,7 +97,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
       path = working_tree_path(id, 'events.json')
       full = File.read(path)
@@ -122,7 +122,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
       File.delete(working_tree_path(id, 'events.json'))
 
@@ -147,7 +147,7 @@ class KataTornReadTest < TestBase
       files  = kata_event(id, 0)['files']
       stdout = { 'content' => '', 'truncated' => false }
       stderr = { 'content' => '', 'truncated' => false }
-      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
       expected = kata_events(id)
 
@@ -203,7 +203,7 @@ class KataTornReadTest < TestBase
 
       # Grow events.json first so each later save rewrites it across more
       # write() chunks, widening the torn-read window.
-      40.times { |i| kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id) }
+      40.times { |i| kata_ran_tests(id, files, stdout, stderr, 0, red_summary) }
       next_index = 41
 
       stop        = false
@@ -227,7 +227,7 @@ class KataTornReadTest < TestBase
       # Single writer: sequential saves keep git merge --ff-only continuously
       # rewriting the working-tree events.json that the readers are reading.
       150.times do
-        kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+        kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
         next_index += 1
       end
 

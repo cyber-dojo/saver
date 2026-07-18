@@ -6,7 +6,7 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests stores a ran-tests event with correct commit message
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
       assert_tag_commit_message(id, 1, '1 ran tests, no prediction, got red')
       [1, red_summary]
     end
@@ -18,7 +18,7 @@ class KataRanTestsTest < TestBase
   | kata_ran_tests returns next_index incremented by 1
   ) do
     in_kata do |id, files, stdout, stderr, status|
-      result = kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      result = kata_ran_tests(id, files, stdout, stderr, status, red_summary)
       next_index = result['next_index']
       assert_equal 2, next_index
       [index=1, red_summary]
@@ -52,7 +52,7 @@ class KataRanTestsTest < TestBase
     externals.instance_variable_set('@shell', error_shell)
 
     error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     }
     assert_equal 'simulated update-ref failure', error.message
   end
@@ -76,7 +76,7 @@ class KataRanTestsTest < TestBase
     status = 0
 
     # First save succeeds: events.json gains index 1 and tag 1 is written.
-    kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, status, red_summary)
 
     # Wrap the in-process git to reproduce the window: it delegates every call to
     # the real git, except the first tag_tree_blobs raises TagNotFound (tag
@@ -111,7 +111,7 @@ class KataRanTestsTest < TestBase
 
     # The save's internal read hits the window and recovers, so the save is
     # accepted and appended at head+1 (index 2).
-    result = kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+    result = kata_ran_tests(id, files, stdout, stderr, status, red_summary)
 
     assert_equal 3, result['next_index']
     assert_equal [0, 1, 2], kata_events(id).map { |e| e['index'] }
@@ -194,7 +194,7 @@ class KataRanTestsTest < TestBase
   | file_edit), 2 (the test).
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     end
   end
 
@@ -206,7 +206,7 @@ class KataRanTestsTest < TestBase
   | commits the predict event on the new head.
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_predicted_right(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'red'), laptop_id)
+      kata_predicted_right(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'red'))
     end
   end
 
@@ -218,7 +218,7 @@ class KataRanTestsTest < TestBase
   | commits the predict event on the new head.
   ) do
     assert_test_survives_raced_internal_file_edit do |id, files, stdout, stderr, status|
-      kata_predicted_wrong(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'green'), laptop_id)
+      kata_predicted_wrong(id, files, stdout, stderr, status, red_summary.merge('predicted' => 'green'))
     end
   end
 
@@ -242,11 +242,11 @@ class KataRanTestsTest < TestBase
     filename = files.keys.first
     competing_files = files.merge(filename => { 'content' => files[filename]['content'] + "\ncompeting\n" })
     competing_model = Externals.new.model
-    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: default_laptop_id) }
     externals.instance_variable_set('@git', racing_git(git, inject))
 
     _stdout_captured, stderr_captured = capture_stdout_stderr do
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     end
     assert_includes stderr_captured, 'update_ref failed', stderr_captured
 
@@ -283,7 +283,7 @@ class KataRanTestsTest < TestBase
     externals.instance_variable_set('@shell', error_shell)
 
     error = assert_raises(RuntimeError) {
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     }
     assert_equal 'simulated update-ref failure', error.message
   end
@@ -314,7 +314,7 @@ class KataRanTestsTest < TestBase
     # The competing in-flight inter-test file_edit, same laptop, committed via a
     # real-git model on the same repo the instant before our update-ref CAS.
     competing_model = Externals.new.model
-    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: laptop_id) }
+    inject = -> { competing_model.kata_file_edit(id: id, files: competing_files, laptop_id: default_laptop_id) }
     externals.instance_variable_set('@git', racing_git(git, inject))
 
     _stdout_captured, stderr_captured = capture_stdout_stderr do
@@ -374,7 +374,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
+      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary)
     end
   end
 
@@ -386,7 +386,7 @@ class KataRanTestsTest < TestBase
     files = kata_event(id, 0)['files']
     data = bats
     assert_raises(NoLongerImplementedError) do
-      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary, laptop_id)
+      kata_ran_tests(id, files, data['stdout'], data['stderr'], data['status'], red_summary)
     end
   end
 
@@ -406,7 +406,7 @@ class KataRanTestsTest < TestBase
     path   = working_tree_path(id, 'events.json')
     before = File.read(path)
 
-    kata_ran_tests(id, files, stdout, stderr, 0, red_summary, laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, 0, red_summary)
 
     # correctness: the committed state advanced (read via git)
     assert_equal 2, kata_events(id).size

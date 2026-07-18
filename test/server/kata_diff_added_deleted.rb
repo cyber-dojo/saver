@@ -19,7 +19,7 @@ class KataDiffAddedDeletedTest < TestBase
       edited_content = files['readme.txt']['content'] + "\n" + added_lines.join("\n")
 
       files['readme.txt']['content'] = edited_content
-      next_index = kata_file_edit(id, files, laptop_id)
+      next_index = kata_file_edit(id, files)
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -43,7 +43,7 @@ class KataDiffAddedDeletedTest < TestBase
       assert deleted_lines.size > 0
 
       files['readme.txt']['content'] = ''
-      next_index = kata_file_edit(id, files, laptop_id)
+      next_index = kata_file_edit(id, files)
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -62,7 +62,7 @@ class KataDiffAddedDeletedTest < TestBase
   | shows diff_added_lines=0, diff_deleted_lines=0
   ) do
     in_tennis_kata do |id, files|
-      next_index = kata_file_rename(id, files, 'readme.txt', 'readme2.txt', laptop_id)
+      next_index = kata_file_rename(id, files, 'readme.txt', 'readme2.txt')
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -81,7 +81,7 @@ class KataDiffAddedDeletedTest < TestBase
   | shows diff_added_lines=0, diff_deleted_lines=0
   ) do
     in_tennis_kata do |id, files|
-      next_index = kata_file_create(id, files, 'newfile.txt', laptop_id)
+      next_index = kata_file_create(id, files, 'newfile.txt')
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -104,7 +104,7 @@ class KataDiffAddedDeletedTest < TestBase
       deleted_lines = deleted_content.split("\n")
       assert deleted_lines.size > 0
 
-      next_index = kata_file_delete(id, files, 'readme.txt', laptop_id)
+      next_index = kata_file_delete(id, files, 'readme.txt')
 
       events = kata_events(id)
       assert_equal 2, next_index
@@ -130,7 +130,7 @@ class KataDiffAddedDeletedTest < TestBase
       lines[4] = lines[4].rstrip + "Hello world"
 
       files['readme.txt']['content'] = lines.join("\n")
-      next_index = kata_file_edit(id, files, laptop_id)
+      next_index = kata_file_edit(id, files)
 
       events = kata_events(id)
       assert_equal 2, next_index

@@ -77,17 +77,26 @@ class TestBase < Id58TestBase
     yield(id, kata_event(id, 0)['files'], stdout, stderr, status)
   end
 
-  # An arbitrary well-formed laptop_id (SecureRandom.hex(32) format), passed
-  # explicitly by tests on every event-write as a real client now does. Its
-  # specific value is not significant.
-  def laptop_id
+  # An arbitrary well-formed laptop_id (SecureRandom.hex(32) format) the event-
+  # write helpers stamp by default, so tests not focused on laptop_id need not
+  # mention it. Its specific value is not significant.
+  def default_laptop_id
     '9b1c7f0e4a2d6538c1e0fb94a7d213e6f5028b4c9de71a36085fc2b7d419e0a2'
   end
 
-  # A second well-formed laptop_id, distinct from laptop_id, for tests that need
-  # two different laptops (genuine mobbing).
+  # A second well-formed laptop_id, distinct from default_laptop_id, for tests
+  # that need two different laptops (genuine mobbing).
   def another_laptop_id
     'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
+  end
+
+  # The tab's next event counter (1, 2, 3, ...), advancing per call within a
+  # test as a real tab stamps each event. The event-write helpers use it by
+  # default so every write gets a distinct tab_seq and same-colour writes do not
+  # collide on the (laptop_id, tab_seq, colour) dedup key. Resets per test:
+  # minitest builds a fresh instance per test method.
+  def next_tab_seq
+    @tab_seq = (@tab_seq || 0) + 1
   end
 
   def assert_tag_commit_message(id, tag, expected)

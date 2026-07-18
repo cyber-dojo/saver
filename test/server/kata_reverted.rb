@@ -12,13 +12,13 @@ class KataRevertedTest < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
       reverted_summary = { 
         'colour' => 'red', 
         'revert' => [id, index=1] 
       }
-      kata_reverted(id, files, stdout, stderr, status, reverted_summary, laptop_id)
+      kata_reverted(id, files, stdout, stderr, status, reverted_summary)
       expected = JSON.generate({'id': id, 'index': 1})
       assert_tag_commit_message(id, 3, "3 reverted to #{expected}")
       [index, reverted_summary]
@@ -37,14 +37,14 @@ class KataRevertedTest < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
-      kata_ran_tests(id, files, stdout, stderr, status, red_summary, laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
       reverted_summary = { 
         'colour' => 'red', 
         'revert' => [id, index=1] 
       }
 
-      result = kata_reverted(id, files, stdout, stderr, status, reverted_summary, laptop_id)
+      result = kata_reverted(id, files, stdout, stderr, status, reverted_summary)
       next_index = result['next_index']
 
       actual = kata_event(id, next_index - 1)
@@ -70,7 +70,7 @@ class KataRevertedTest < TestBase
     data = bats
     reverted_summary = { 'colour' => 'red', 'revert' => [id, 0] }
     assert_raises(NoLongerImplementedError) do
-      kata_reverted(id, files, data['stdout'], data['stderr'], data['status'], reverted_summary, laptop_id)
+      kata_reverted(id, files, data['stdout'], data['stderr'], data['status'], reverted_summary)
     end
   end
 
