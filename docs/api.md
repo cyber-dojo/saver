@@ -8,24 +8,27 @@
 
 
 - - - -
-# Cluster API
+# Cluster
 
-A cluster is the umbrella over a multi-LTF practice: it offers 2..4
-language-test-frameworks, holding one ordinary group per LTF (its children).
+A cluster is the umbrella over a multi Language-Test-Framework (LTF) practice: it offers 2..5
+LTFs, holding one ordinary Group per LTF (its children).
 A cluster is never joined directly; a joiner joins one of its child groups.
 
-## POST cluster_create(manifest)
-Creates a cluster from the given `manifest` and returns its id.
-The manifest holds the group-wide `exercise` and an `ltfs` array (2..4 per-LTF
-group manifests). For each ltf a child group is created, carrying a `cluster_id`
-back-pointer, and the cluster references the children.
+## POST cluster_create
+- description
+  * Creates a cluster from the given `manifest` and returns its id.
+    The manifest holds the group-wide `exercise` and an `ltfs` array (2..5 per-LTF
+    group manifests). For each ltf a child group is created, carrying a `cluster_id`
+    back-pointer, and the cluster references the children.
 - parameters
-  * **manifest:Hash** with `exercise:String` and `ltfs:Array[Hash]`, the 2..4
-    per-LTF group manifests (as built by
-    [creator](https://github.com/cyber-dojo/creator)).
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `manifest` | `Hash` | with `exercise:String` and `ltfs:Array[Hash]`, the 2..5 per LTF group manifests (as built by [creator](https://github.com/cyber-dojo/creator)). |
+
 - returns
   * the `id` of the created cluster.
-  * status 400 if `ltfs` does not hold 2..4 entries.
+  * status 400 if `ltfs` does not hold 2..5 entries.
 - example
   ```bash
   $ curl \
@@ -44,11 +47,16 @@ back-pointer, and the cluster references the children.
 
 
 - - - -
-## GET cluster_manifest(id)
-Gets the manifest of the cluster with the given `id`: its `exercise` and its
-`children` (one per LTF, each `{ltf_display_name, group_id}`).
+## GET cluster_manifest
+- description
+  * Gets the manifest of the cluster with the given `id`: its `exercise` and its
+    `children` (one per LTF, each `{ltf_display_name, group_id}`).
 - parameters
-  * **id:String**. The cluster id.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The cluster id. |
+
 - returns
   * the manifest of the cluster with the given `id`.
 - example
@@ -76,10 +84,15 @@ Gets the manifest of the cluster with the given `id`: its `exercise` and its
 
 
 - - - -
-## GET cluster_exists?(id)
-Determines if a cluster with the given `id` exists.
+## GET cluster_exists?
+- description
+  * Determines if a cluster with the given `id` exists.
 - parameters
-  * **id:String**. The cluster id.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The cluster id. |
+
 - returns
   * `true` if a cluster with the given `id` exists, otherwise `false`.
 - example
@@ -100,19 +113,24 @@ Determines if a cluster with the given `id` exists.
 
 
 - - - -
-# Group API
+# Group
 
-## POST group_create(manifest)
-Creates a new group from the given `manifest` and returns its id.  
-See `group_manifest` below for a `manifest` overview.  
-See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
-- parameters 
-  * **manifest:Hash** created by 
-  [creator](https://github.com/cyber-dojo/creator) 
-  from
-  [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and
-  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) or
-  [custom-start-points](https://github.com/cyber-dojo/custom-start-points).
+A group is a shared practice for a single Language-Test-Framework: joiners join it,
+each allocated a distinct avatar (Lion, Salmon, Bee, etc) and their own Kata of the group's exercise.
+A group holds up to 64 katas, one per avatar. In a Cluster a group is one of the
+children (one per LTF).
+
+## POST group_create
+- description
+  * Creates a new group from the given `manifest` and returns its id.  
+    See `group_manifest` below for a `manifest` overview.  
+    See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `manifest` | `Hash` | created by [creator](https://github.com/cyber-dojo/creator) from [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) or [custom-start-points](https://github.com/cyber-dojo/custom-start-points). |
+
 - returns 
   * the `id` of the created group.
 - example
@@ -133,10 +151,15 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
 
 
 - - - -
-## GET group_manifest(id)
-Gets the manifest used to create the group with the given `id`.
+## GET group_manifest
+- description
+  * Gets the manifest used to create the group with the given `id`.
 - parameters
-  * **id:String**. The group id.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The group id. |
+
 - returns
   * the manifest of the group with the given `id`.
 - example
@@ -178,10 +201,15 @@ Gets the manifest used to create the group with the given `id`.
 
 
 - - - -
-## GET group_exists?(id)
-Determines if a group with the given `id` exists.
-- parameters 
-  * **id:String**. The group id.
+## GET group_exists?
+- description
+  * Determines if a group with the given `id` exists.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The group id. |
+
 - returns 
   * `true` if a group with the given `id` exists, otherwise `false`.
 - example
@@ -201,16 +229,16 @@ Determines if a group with the given `id` exists.
   ```
 
 - - - -
-## POST group_join(id,indexes)
-Creates a new kata in the group with the given `id` and returns the kata's id.
-- parameters 
-  * **id:String**. The group id.
-  * **indexes:Array[int]** (optional). The candidate avatar indexes (from 0..63)
-    in preference order. The first index not already taken in the group is
-    allocated. Defaults to a shuffled 0..63. Pass a custom order to influence
-    which avatar a joiner gets. For example, in a cluster, list the avatars not
-    yet used elsewhere in the cluster first, so avatars stay distinct across the
-    cluster's groups.
+## POST group_join
+- description
+  * Creates a new kata in the group with the given `id` and returns the kata's id.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The group id. |
+  | `indexes` | `Array[int]` | (optional). The candidate avatar indexes (from 0..63) in preference order. The first index not already taken in the group is allocated. Defaults to a shuffled 0..63. Pass a custom order to influence which avatar a joiner gets. For example, in a cluster, list the avatars not yet used elsewhere in the cluster first, so avatars stay distinct across the cluster's groups. |
+
 - returns 
   * the `id` of the created kata, or `null` if the group is already full.
 - example
@@ -231,11 +259,16 @@ Creates a new kata in the group with the given `id` and returns the kata's id.
 
 
 - - - -
-## GET group_joined(id)
-Returns the kata-id and kata-events-summary keyed against the kata's avatar-index (0-63)
-for the katas that have joined a group. 
-- parameters 
-  * **id:String**. The group's `id` **or** the `id` of any kata in the group.
+## GET group_joined
+- description
+  * Returns the kata-id and kata-events-summary keyed against the kata's avatar-index (0-63)
+    for the katas that have joined a group. 
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The group's `id` **or** the `id` of any kata in the group. |
+
 - returns 
   * a **Hash**.
 - example
@@ -266,14 +299,19 @@ for the katas that have joined a group.
 
 
 - - - -
-## POST group_fork(id,index)
-Creates a new group whose starting files are a copy of the files in the kata with 
-the given `id` at the given `index`. The new group is *not* a fork in the git sense;
-that is, it is *not* a 'deep' copy, the history of commits (one per test event)
-that exist in the kata being forked are *not* copied.
-- parameters 
-  * **id:String**. The id of the kata being forked.
-  * **index:int**. The event index to fork from.
+## POST group_fork
+- description
+  * Creates a new group whose starting files are a copy of the files in the kata with 
+    the given `id` at the given `index`. The new group is *not* a fork in the git sense;
+    that is, it is *not* a 'deep' copy, the history of commits (one per test event)
+    that exist in the kata being forked are *not* copied.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The id of the kata being forked. |
+  | `index` | `int` | The event index to fork from. |
+
 - returns 
   * the `id` of the created group.
 - example
@@ -294,19 +332,24 @@ that exist in the kata being forked are *not* copied.
 
 
 - - - -
-# Kata API
+# Kata
 
-## POST kata_create(manifest)
-Creates a new kata from the given `manifest` and returns its id.  
-See `kata_manifest` below for a `manifest` overview.  
-See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
-- parameters 
-  * **manifest:Hash** created by 
-  [creator](https://github.com/cyber-dojo/creator) 
-  from
-  [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and
-  [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) (or
-  [custom-start-points](https://github.com/cyber-dojo/custom-start-points)).
+A kata is one participant's practice: created from a manifest (an exercise for a
+single Language-Test-Framework), it records every event as its own git commit -
+the create, each file create/delete/rename/edit, and each test run with its
+traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
+
+## POST kata_create
+- description
+  * Creates a new kata from the given `manifest` and returns its id.  
+    See `kata_manifest` below for a `manifest` overview.  
+    See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestjson.html) for more detailed `manifest` information.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `manifest` | `Hash` | created by [creator](https://github.com/cyber-dojo/creator) from [languages-start-points](https://github.com/cyber-dojo/languages-start-points) and [exercises-start-points](https://github.com/cyber-dojo/exercises-start-points) (or [custom-start-points](https://github.com/cyber-dojo/custom-start-points)). |
+
 - returns 
   * the `id` of the created kata.
 - example
@@ -327,10 +370,15 @@ See [here](https://blog.cyber-dojo.org/2016/08/cyber-dojo-start-points-manifestj
 
 
 - - - -
-## GET kata_manifest(id)
-Gets the manifest used to create the kata exercise with the given `id`.
-- parameters 
-  * **id:String**. The kata id.
+## GET kata_manifest
+- description
+  * Gets the manifest used to create the kata exercise with the given `id`.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+
 - returns 
   * the manifest of the kata with the given `id`.
 - example
@@ -372,10 +420,15 @@ Gets the manifest used to create the kata exercise with the given `id`.
 
 
 - - - -
-## GET kata_exists?(id)
-Determines if a kata exercise with the given `id` exists.
-- parameters 
-  * **id:String**. The kata id.
+## GET kata_exists?
+- description
+  * Determines if a kata exercise with the given `id` exists.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+
 - returns 
   * `true` if a kata with the given `id` exists, otherwise `false`.
 - example
@@ -396,10 +449,15 @@ Determines if a kata exercise with the given `id` exists.
 
 
 - - - -
-## GET kata_events(id)
-Gets the summary of all current events for the kata with the given `id`.
-- parameters 
-  * **id:String**. The kata id.
+## GET kata_events
+- description
+  * Gets the summary of all current events for the kata with the given `id`.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+
 - returns 
   * an Array holding the events summary of the kata with the given `id`.
 - example
@@ -416,26 +474,49 @@ Gets the summary of all current events for the kata with the given `id`.
   {
     "kata_events": [
       { "index": 0,
-         "time": [2020,10,19,12,52,46,396907],
-         "event": "created"
+        "major_index": 0,
+        "minor_index": 0,
+        "time": [2020,10,19,12,52,46,396907],
+        "colour": "create",
+        "event": "created",
+        "diff_added_count": 0,
+        "diff_deleted_count": 0
       },
-      { "time": [2020,10,19,12,52,54,772809],
-        "duration": 0.491393,
+      { "index": 1,
+        "major_index": 1,
+        "minor_index": 0,
+        "time": [2020,10,19,12,52,54,772809],
         "colour": "red",
+        "duration": 0.491393,
         "predicted": "none",
-        "index": 1
+        "diff_added_count": 4,
+        "diff_deleted_count": 1,
+        "laptop_id": "02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f",
+        "tab_seq": 1
       },
-      { "time": [2020,10,19,12,52,58,547002],
-        "duration": 0.426736,
+      { "index": 2,
+        "major_index": 2,
+        "minor_index": 0,
+        "time": [2020,10,19,12,52,58,547002],
         "colour": "amber",
+        "duration": 0.426736,
         "predicted": "none",
-        "index": 2
+        "diff_added_count": 2,
+        "diff_deleted_count": 0,
+        "laptop_id": "02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f",
+        "tab_seq": 2
       },
-      { "time": [2020,10,19,12,53,3,256202],
-        "duration": 0.438522,
+      { "index": 3,
+        "major_index": 3,
+        "minor_index": 0,
+        "time": [2020,10,19,12,53,3,256202],
         "colour": "green",
+        "duration": 0.438522,
         "predicted": "none",
-        "index": 3
+        "diff_added_count": 3,
+        "diff_deleted_count": 2,
+        "laptop_id": "02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f",
+        "tab_seq": 3
       }
     ]
   }
@@ -443,11 +524,16 @@ Gets the summary of all current events for the kata with the given `id`.
 
 
 - - - -
-## GET kata_event(id,index)
-Gets the full details for the kata event whose kata has the given `id` whose event has the given `index`.
-- parameters 
-  * **id:String**. The kata id.
-  * **index:int**. Negative values count backwards, -1 is the last index.
+## GET kata_event
+- description
+  * Gets the full details for the kata event whose kata has the given `id` whose event has the given `index`.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `index` | `int` | Negative values count backwards, -1 is the last index. |
+
 - returns 
   * the event with the given `id` and `index`.
 - example
@@ -479,23 +565,34 @@ Gets the full details for the kata event whose kata has the given `id` whose eve
          "truncated": false
        },
        "status": "1",
+       "index": 2,
+       "major_index": 2,
+       "minor_index": 0,
        "time": [2020,10,19,12,52,58,547002],
-       "duration": 0.426736,
        "colour": "amber",
+       "duration": 0.426736,
        "predicted": "none",
-       "index": 2
+       "diff_added_count": 2,
+       "diff_deleted_count": 0,
+       "laptop_id": "02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f",
+       "tab_seq": 2
      }
    }
    ```
 
 
 - - - -
-## GET katas_events(ids,indexes)
-Gets the full details for the kata events with the given `ids` and `indexes`.
-A Batch-Method for kata_event(id,index).
-- parameters 
-  * **ids:Array[String]**. The kata ids.
-  * **index:Array[int]**. The corresponding event indexes.
+## GET katas_events
+- description
+  * Gets the full details for the kata events with the given `ids` and `indexes`.
+    A Batch-Method for kata_event(id,index).
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `ids` | `Array[String]` | The kata ids. |
+  | `index` | `Array[int]` | The corresponding event indexes. |
+
 - returns 
   * the events with the given `ids` and `indexes`.
 - example
@@ -531,10 +628,15 @@ A Batch-Method for kata_event(id,index).
 
 
 - - - -
-## GET kata_download(id)
-Returns a gzipped tar archive of the kata's git repository, base64-encoded.
+## GET kata_download
+- description
+  * Returns a gzipped tar archive of the kata's git repository, base64-encoded.
 - parameters
-  * **id:String**. The kata id.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+
 - returns
   * an Array of two elements: the suggested filename (`String`) and the base64-encoded tgz content (`String`).
 - example
@@ -558,19 +660,25 @@ Returns a gzipped tar archive of the kata's git repository, base64-encoded.
 
 
 - - - -
-## POST kata_file_create(id,files,filename,laptop_id)
-Records a new empty file being created in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+## POST kata_file_create
+- description
+  * Records a new empty file being created in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
-  * **id:String**. The kata id.
-  * **files:Hash**. The current files (the new `filename` is not yet present).
-  * **filename:String**. The name of the file being created.
-  * **laptop_id:String**. See [laptop_id](#laptop_id).
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `files` | `Hash` | The current files (the new `filename` is not yet present). |
+  | `filename` | `String` | The name of the file being created. |
+  | `laptop_id` | `String` | See [laptop_id](#laptop_id). |
+  | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
+
 - returns
   * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh","laptop_id":"02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f","tab_seq":1}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -585,19 +693,25 @@ Records a new empty file being created in the browser. If any existing file has 
 
 
 - - - -
-## POST kata_file_delete(id,files,filename,laptop_id)
-Records a file being deleted in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+## POST kata_file_delete
+- description
+  * Records a file being deleted in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
-  * **id:String**. The kata id.
-  * **files:Hash**. The current files (the `filename` to delete is still present).
-  * **filename:String**. The name of the file being deleted.
-  * **laptop_id:String**. See [laptop_id](#laptop_id).
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `files` | `Hash` | The current files (the `filename` to delete is still present). |
+  | `filename` | `String` | The name of the file being deleted. |
+  | `laptop_id` | `String` | See [laptop_id](#laptop_id). |
+  | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
+
 - returns
   * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"filename":"utils.sh","laptop_id":"02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f","tab_seq":2}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -612,20 +726,26 @@ Records a file being deleted in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_rename(id,files,old_filename,new_filename,laptop_id)
-Records a file being renamed in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
+## POST kata_file_rename
+- description
+  * Records a file being renamed in the browser. If any existing file has been edited since the last save, that edit is recorded first as a `file_edit` event.
 - parameters
-  * **id:String**. The kata id.
-  * **files:Hash**. The current files (`old_filename` is present; `new_filename` is not yet present).
-  * **old_filename:String**. The current name of the file.
-  * **new_filename:String**. The new name of the file.
-  * **laptop_id:String**. See [laptop_id](#laptop_id).
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `files` | `Hash` | The current files (`old_filename` is present; `new_filename` is not yet present). |
+  | `old_filename` | `String` | The current name of the file. |
+  | `new_filename` | `String` | The new name of the file. |
+  | `laptop_id` | `String` | See [laptop_id](#laptop_id). |
+  | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
+
 - returns
   * the next event index (the saver assigns it).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","files":{...},"old_filename":"utils.sh","new_filename":"helpers.sh"}' \
+    --data '{"id":"4ScKVJ","files":{...},"old_filename":"utils.sh","new_filename":"helpers.sh","laptop_id":"02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f","tab_seq":3}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -640,18 +760,24 @@ Records a file being renamed in the browser. If any existing file has been edite
 
 
 - - - -
-## POST kata_file_edit(id,files,laptop_id)
-Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the next event index is returned unchanged.
+## POST kata_file_edit
+- description
+  * Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the next event index is returned unchanged.
 - parameters
-  * **id:String**. The kata id.
-  * **files:Hash**. The current files.
-  * **laptop_id:String**. See [laptop_id](#laptop_id).
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `files` | `Hash` | The current files. |
+  | `laptop_id` | `String` | See [laptop_id](#laptop_id). |
+  | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
+
 - returns
   * the next event index (the saver assigns it; unchanged if no file was edited).
 - example
   ```bash
   $ curl \
-    --data '{"id":"4ScKVJ","files":{...}}' \
+    --data '{"id":"4ScKVJ","files":{...},"laptop_id":"02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f","tab_seq":4}' \
     --fail \
     --header 'Content-type: application/json' \
     --silent \
@@ -666,57 +792,73 @@ Records a file edit event if any file content has changed since the last save. I
 
 
 - - - -
-## POST kata_ran_tests(id,files,stdout,stderr,status,summary,laptop_id)
-Record a test event with no prediction.
-- parameters 
-  * **id:String**. The kata id.
-  * **files:Hash**. The files which created `stdout`,`stderr`,`status` in the same format as [kata_event](#get-kata_eventidindex)
-  * **stdout:Hash**. The stdout produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
-  * **stderr:Hash**. The stderr produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
-  * **status:String**. The status produced from `files`, in the same format as [kata_event](#get-kata_eventidindex)
-  * **summary:Hash**. Extra event data to store, eg `duration`,`time`,`colour`
-  * **laptop_id:String**. See [laptop_id](#laptop_id).
+## POST kata_ran_tests
+- description
+  * Record a test event with no prediction.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `files` | `Hash` | The files which created `stdout`,`stderr`,`status` in the same format as [kata_event](#get-kata_event) |
+  | `stdout` | `Hash` | The stdout produced from `files`, in the same format as [kata_event](#get-kata_event) |
+  | `stderr` | `Hash` | The stderr produced from `files`, in the same format as [kata_event](#get-kata_event) |
+  | `status` | `String` | The status produced from `files`, in the same format as [kata_event](#get-kata_event) |
+  | `summary` | `Hash` | Extra event data to store, eg `duration`,`time`,`colour` |
+  | `laptop_id` | `String` | See [laptop_id](#laptop_id). |
+  | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
 
 
 - - - -
-## POST kata_predicted_right(id,files,stdout,stderr,status,summary,laptop_id)
-Record a test event with a correct prediction.
+## POST kata_predicted_right
+- description
+  * Record a test event with a correct prediction.
 
 
 - - - -
-## POST kata_predicted_wrong(id,files,stdout,stderr,status,summary,laptop_id)
-Record a test event with an incorrect prediction.
+## POST kata_predicted_wrong
+- description
+  * Record a test event with an incorrect prediction.
 
 
 - - - -
-## POST kata_reverted(id,files,stdout,stderr,status,summary,laptop_id)
-Revert back to a previous traffic-light.
+## POST kata_reverted
+- description
+  * Revert back to a previous traffic-light.
 
 
 - - - -
-## POST kata_checked_out(id,files,stdout,stderr,status,summary,laptop_id)
-Checkout a traffic-light from a different avatar.
+## POST kata_checked_out
+- description
+  * Checkout a traffic-light from a different avatar.
 
 
 - - - -
-## GET kata_option_get(id,name)
-Get a theme (dark/light) or colour (on/off) or prediction (on/off) option.
+## GET kata_option_get
+- description
+  * Get a theme (dark/light) or colour (on/off) or prediction (on/off) option.
 
 
 - - - -
-## POST kata_option_set(id,name,value)
-Set a theme (dark/light) or colour (on/off) or prediction (on/off) option.
+## POST kata_option_set
+- description
+  * Set a theme (dark/light) or colour (on/off) or prediction (on/off) option.
 
 
 - - - -
-## POST kata_fork(id,index)
-Creates a new kata whose starting files are a copy of the files in the kata with 
-the given `id` at the given `index`. The new kata is *not* a fork in the git sense;
-that is, it is *not* a 'deep' copy, the history of commits (one per test event)
-that exist in the kata being forked are *not* copied.
-- parameters 
-  * **id:String**.
-  * **index:int**
+## POST kata_fork
+- description
+  * Creates a new kata whose starting files are a copy of the files in the kata with 
+    the given `id` at the given `index`. The new kata is *not* a fork in the git sense;
+    that is, it is *not* a 'deep' copy, the history of commits (one per test event)
+    that exist in the kata being forked are *not* copied.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` |  |
+  | `index` | `int` |  |
+
 - returns 
   * the `id` of the created kata.
 - example
@@ -736,17 +878,24 @@ that exist in the kata being forked are *not* copied.
   ```
 
 - - - -
-# ID API
+# ID
+
+Find the full Cluster/Group/Kata information of any id.
 
 - - - -
-## GET id_chain(id)
-Returns the chain of ids from the given `id` up to its topmost containing entity,
-ordered bottom-to-top as `[{type,id}, ...]` where `type` is `kata`, `group` or
-`cluster`. The first entry is the given id; the last entry's id is the topmost.
-Lets a caller resolve any id up to the practice it belongs to (eg a kata up to
-its cluster).
+## GET id_chain
+- description
+  * Returns the chain of ids from the given `id` up to its topmost containing entity,
+    ordered bottom-to-top as `[{type,id}, ...]` where `type` is `kata`, `group` or
+    `cluster`. The first entry is the given id; the last entry's id is the topmost.
+    Lets a caller resolve any id up to the practice it belongs to (eg a kata up to
+    its cluster).
 - parameters
-  * **id:String**. A kata, group or cluster id.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | A kata, group or cluster id. |
+
 - returns
   * the id chain. A solo kata returns just itself; a kata in a cluster returns
     its kata, then group, then cluster.
@@ -772,16 +921,23 @@ its cluster).
 
 
 - - - -
-# Diff API
+# Diff
 
-## GET diff_lines(id,was_index,now_index)
-A diff of two sets of files (designated with `was_index` and `now_index`) from the kata with the given `id`.
-Every line of every file is returned - not just the changed lines with a few unchanged lines either side
-as a normal `git diff` would give. Unchanged files and files renamed with identical content are also included.
+Compare a Kata's files between two event indexes.
+
+## GET diff_lines
+- description
+  * A diff of two sets of files (designated with `was_index` and `now_index`) from the kata with the given `id`.
+    Every line of every file is returned - not just the changed lines with a few unchanged lines either side
+    as a normal `git diff` would give. Unchanged files and files renamed with identical content are also included.
 - parameters
-  * **id:String**. The kata id.
-  * **was_index:Integer**. The event index of the first set of files.
-  * **now_index:Integer**. The event index of the second set of files.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `was_index` | `Integer` | The event index of the first set of files. |
+  | `now_index` | `Integer` | The event index of the second set of files. |
+
 - returns
   * an Array of Hashes, one per file. Each Hash has the following keys:
     - `"type"` - one of `"created"`, `"deleted"`, `"renamed"`, `"changed"`, `"unchanged"`.
@@ -822,12 +978,17 @@ as a normal `git diff` would give. Unchanged files and files renamed with identi
 
 
 - - - -
-## GET diff_summary(id,was_index,now_index)
-The same as `diff_lines` except the returned Hashes do *not* include the `"lines"` key.
+## GET diff_summary
+- description
+  * The same as `diff_lines` except the returned Hashes do *not* include the `"lines"` key.
 - parameters
-  * **id:String**. The kata id.
-  * **was_index:Integer**. The event index of the first set of files.
-  * **now_index:Integer**. The event index of the second set of files.
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The kata id. |
+  | `was_index` | `Integer` | The event index of the first set of files. |
+  | `now_index` | `Integer` | The event index of the second set of files. |
+
 - returns
   * an Array of Hashes with `"type"`, `"old_filename"`, `"new_filename"`, and `"line_counts"` (no `"lines"`).
 - example
@@ -856,10 +1017,13 @@ The same as `diff_lines` except the returned Hashes do *not* include the `"lines
 
 
 - - - -
-# Probe API
+# Probe
+
+Operational health checks, plus the git sha of the running image.
 
 ## GET alive?
-Liveness probe - is the service alive?  
+- description
+  * Liveness probe - is the service alive?  
 - parameters
   * none
 - result 
@@ -877,7 +1041,8 @@ Liveness probe - is the service alive?
 
 - - - -
 ## GET ready?
-Readiness probe - is the service ready to handle requests?  
+- description
+  * Readiness probe - is the service ready to handle requests?  
 - parameters
   * none
 - result 
@@ -896,7 +1061,8 @@ Readiness probe - is the service ready to handle requests?
 
 - - - -
 ## GET sha
-The git commit sha used to create the Docker image.
+- description
+  * The git commit sha used to create the Docker image.
 - parameters
   * none
 - result 
@@ -922,6 +1088,20 @@ that sends no `tab_id` falls back to its plain 64-char browser cookie.) The save
 stamps a valid `laptop_id` onto the committed event verbatim; a value that is not
 64 lowercase-hex characters is not trusted and is not stored, so the event reads as
 having an unknown writer.
+
+Accepted by `kata_file_create`, `kata_file_delete`, `kata_file_rename`,
+`kata_file_edit`, `kata_ran_tests`, `kata_predicted_right`, `kata_predicted_wrong`,
+`kata_reverted` and `kata_checked_out`.
+
+
+- - - -
+## tab_seq
+The writing tab's own monotonic event counter, minted in the browser and counting
+every event the tab fires (its first event is `1`, the next `2`, and so on).
+Together with `laptop_id` it forms the `(laptop_id, tab_seq)` idempotency key: the
+saver stamps it onto the committed event, and a later write carrying a
+`(laptop_id, tab_seq)` that is already committed is a no-op, so a redelivered write
+is never committed twice.
 
 Accepted by `kata_file_create`, `kata_file_delete`, `kata_file_rename`,
 `kata_file_edit`, `kata_ran_tests`, `kata_predicted_right`, `kata_predicted_wrong`,

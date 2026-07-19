@@ -72,32 +72,54 @@ module External
 
     # - - - - - - - - - - - - - - - - - -
 
-    def kata_file_create(id, files, filename, laptop_id = nil)
-      @http.post(__method__, { id:id, files:files, filename:filename, laptop_id:laptop_id })
+    def kata_file_create(id, files, filename, laptop_id, tab_seq)
+      @http.post(__method__, { 
+        id:id, 
+        files:files, 
+        filename:filename, 
+        laptop_id:laptop_id, 
+        tab_seq:tab_seq
+      })
     end
 
-    def kata_file_delete(id, files, filename, laptop_id = nil)
-      @http.post(__method__, { id:id, files:files, filename:filename, laptop_id:laptop_id })
+    def kata_file_delete(id, files, filename, laptop_id, tab_seq)
+      @http.post(__method__, {
+        id:id, 
+        files:files, 
+        filename:filename, 
+        laptop_id:laptop_id, 
+        tab_seq:tab_seq })
     end
 
-    def kata_file_rename(id, files, old_filename, new_filename, laptop_id = nil)
+    def kata_file_rename(id, files, old_filename, new_filename, laptop_id, tab_seq)
       @http.post(__method__, {
         id:id,
         files:files,
         old_filename:old_filename,
         new_filename:new_filename,
-        laptop_id:laptop_id
+        laptop_id:laptop_id,
+        tab_seq:tab_seq
       })
     end
 
-    def kata_file_edit(id, files, laptop_id = nil)
-      @http.post(__method__, { id:id, files:files, laptop_id:laptop_id })
+    def kata_file_edit(id, files, laptop_id, tab_seq)
+      @http.post(__method__, {
+        id:id,
+        files:files,
+        laptop_id:laptop_id,
+        tab_seq:tab_seq
+      })
     end
 
-    def kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id = nil)
+    def kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
       @http.post(__method__, {
-        id:id, files:files,
-        stdout:stdout, stderr:stderr, status:status, summary:summary, laptop_id:laptop_id
+        id:id,
+        files:files,
+        stdout:stdout,
+        stderr:stderr,
+        status:status,
+        summary:summary,
+        laptop_id:laptop_id, tab_seq:tab_seq
       })
     end
 

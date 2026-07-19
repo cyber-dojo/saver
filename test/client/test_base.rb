@@ -89,20 +89,33 @@ class TestBase < Id58TestBase
     'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
   end
 
-  def kata_file_create(id, files, filename, laptop_id)
-    saver.kata_file_create(id, files, filename, laptop_id)
+  # The tab's next event counter (1, 2, 3, ...), advancing per call within a
+  # test as a real tab stamps each event. Resets per test: minitest builds a
+  # fresh instance per test method.
+  def next_tab_seq
+    @tab_seq = (@tab_seq || 0) + 1
   end
 
-  def kata_file_delete(id, files, filename, laptop_id)
-    saver.kata_file_delete(id, files, filename, laptop_id)
+  # These event-write helpers default tab_seq to the per-call-incrementing
+  # next_tab_seq, so tests not focused on it stay uncluttered and every write
+  # gets a distinct tab_seq (same-colour writes do not collide on the
+  # (laptop_id, tab_seq, colour) dedup key). Tests focused on tab_seq pass an
+  # explicit value (or call saver.* directly).
+
+  def kata_file_create(id, files, filename, laptop_id, tab_seq = next_tab_seq)
+    saver.kata_file_create(id, files, filename, laptop_id, tab_seq)
   end
 
-  def kata_file_rename(id, files, old_filename, new_filename, laptop_id)
-    saver.kata_file_rename(id, files, old_filename, new_filename, laptop_id)
+  def kata_file_delete(id, files, filename, laptop_id, tab_seq = next_tab_seq)
+    saver.kata_file_delete(id, files, filename, laptop_id, tab_seq)
   end
 
-  def kata_file_edit(id, files, laptop_id)
-    saver.kata_file_edit(id, files, laptop_id)
+  def kata_file_rename(id, files, old_filename, new_filename, laptop_id, tab_seq = next_tab_seq)
+    saver.kata_file_rename(id, files, old_filename, new_filename, laptop_id, tab_seq)
+  end
+
+  def kata_file_edit(id, files, laptop_id, tab_seq = next_tab_seq)
+    saver.kata_file_edit(id, files, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - -
