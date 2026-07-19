@@ -8,7 +8,7 @@ class KataLaptopIdTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      saver.kata_file_create(id, files, 'wibble.txt', laptop_id)
+      saver.kata_file_create(id, files, 'wibble.txt', laptop_id, 1)
       assert_equal laptop_id, kata_event(id, 1)['laptop_id']
     end
   end
@@ -19,7 +19,7 @@ class KataLaptopIdTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      next_index = saver.kata_file_create(id, files, 'wibble.txt')
+      next_index = saver.kata_file_create(id, files, 'wibble.txt', nil, 1)
       assert_equal 2, next_index
       refute kata_event(id, 1).key?('laptop_id'), kata_event(id, 1).to_json
     end
@@ -37,9 +37,9 @@ class KataLaptopIdTest < TestBase
       stderr = { 'content' => 'e', 'truncated' => false }
       summary = { 'colour' => 'red', 'predicted' => 'none' }
 
-      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, laptop_id)
+      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, laptop_id, 1)
 
-      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, another_laptop_id)
+      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, another_laptop_id, 2)
 
       events = kata_events(id)
       assert_equal 3, events.size, events.to_s

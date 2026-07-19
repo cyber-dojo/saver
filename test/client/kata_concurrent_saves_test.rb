@@ -26,7 +26,7 @@ class KataConcurrentSavesTest < TestBase
 
       n.times.map do |i|
         Thread.new do
-          saver.kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_ids[i])
+          saver.kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_ids[i], i + 1)
         rescue => error
           # Every racing write is appended, so this path never runs when green:
           # no write fails.
@@ -64,9 +64,9 @@ class KataConcurrentSavesTest < TestBase
       errors = []
       mu = Mutex.new
 
-      n.times.map do
+      n.times.map do |i|
         Thread.new do
-          saver.kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id)
+          saver.kata_ran_tests(id, files, stdout, stderr, status, summary, laptop_id, i + 1)
         rescue => error
           # This error-collection path only runs if a write fails. With the fix
           # every same-laptop write succeeds, so it is never reached when green.
