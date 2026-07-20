@@ -28,7 +28,8 @@ require 'tmpdir'
 # This means that the index in each event no longer corresponds to
 # just the red/amber/green ran-tests events. In the above, there are
 # two ran-tests events at indexes 3,6 which would previously have been 1,2
-# Because of this, ran_tests() et-all now returns three indexes:
+# Because of this, each event read back carries three indexes (the write
+# methods return nothing; poly_filler populates these on reads):
 #   index       - events[i].index == i
 #   major_index - the previous red/amber/green index
 #   minor_index - the non red/amber/green index between major_indexes
@@ -198,8 +199,7 @@ class Kata_v2
     # whose quoting stripped them, so historically the stored message had none.
     # The commit is now in-process (rugged), which uses the message literally.
     tag_message = "created file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -215,8 +215,7 @@ class Kata_v2
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     # No quotes: see the note in file_create.
     tag_message = "deleted file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -236,8 +235,7 @@ class Kata_v2
       'new_filename' => new_filename
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -255,17 +253,15 @@ class Kata_v2
     last_index = all_events[-1]['index'] # all_events.size - 1
     current_files = event_from(id, last_index, all_events)['files']
     edited_filename = edited_filename(current_files, files)
-    if !edited_filename
-      # nothing edited, so nothing is committed and the head does not move; the
-      # next position stays head + 1.
-      return last_index + 1
+    unless edited_filename
+      # nothing edited, so nothing is committed and the head does not move.
+      return
     end
 
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     # No quotes: see the note in file_create.
     tag_message = "edited file #{edited_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -273,19 +269,19 @@ class Kata_v2
   def ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
@@ -295,14 +291,14 @@ class Kata_v2
     # out, so the historical message was the plain JSON. The in-process (rugged)
     # commit uses the message literally, so embed the plain JSON directly.
     tag_message = "reverted to #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     info = json_plain(summary['checkout'])
     # Plain JSON, not info.inspect: see the note in reverted.
     tag_message = "checked out #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -408,20 +404,8 @@ class Kata_v2
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
-
-  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
-    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
-
-    {
-      'next_index' => all_events.last['index'] + 1,
-      'major_index' => major_index(all_events),
-      'minor_index' => 0
-    }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
 
   def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
     # Builds the event commit in-process (libgit2/rugged) on the current head,
@@ -440,8 +424,7 @@ class Kata_v2
     # re-append, or loser-rescue.
     #
     # Idempotency (A8): a write whose (laptop_id, tab_seq, colour) is already
-    # committed is a redelivery, so it is a no-op. Return the committed events
-    # unchanged, so the caller reports the same position the original commit made.
+    # committed is a redelivery, so it is a no-op - skip the commit entirely.
     #
     # colour is in the key because one incoming write expands into two commits
     # that share a tab_seq - the implicit underneath file_edit and the real event
@@ -456,10 +439,9 @@ class Kata_v2
       already = committed.any? do |event|
         event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
       end
-      return committed if already
+      return if already
     end
 
-    all_events = nil
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
       new_event = summary.merge!({
         'index' => place_at,
@@ -475,9 +457,8 @@ class Kata_v2
       # Store the tab_seq so a later redelivery of this write can be recognised
       # as an already-committed (laptop_id, tab_seq) and deduplicated above.
       new_event['tab_seq'] = tab_seq unless tab_seq.nil?
-      all_events = base_events + [new_event]
       {
-        events_filename => json_pretty(all_events),
+        events_filename => json_pretty(base_events + [new_event]),
         'stdout' => stdout['content'],
         'stderr' => stderr['content'],
         'status' => status.to_s,
@@ -497,8 +478,7 @@ class Kata_v2
     # See docs/in-process-git.md.
     shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
     git.create_tag(repo_dir(id), result[:place_at], result[:new_oid])
-
-    all_events
+    nil
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -707,16 +687,6 @@ def edited_filename(previous_files, current_files)
     end
   end
   return nil
-end
-
-def major_index(events)
-  count = 0
-  events[1..].each do |event|
-    if is_light?(event)
-      count += 1
-    end
-  end
-  count
 end
 
 def plural(n, word)
