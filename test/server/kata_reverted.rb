@@ -44,8 +44,8 @@ class KataRevertedTest < TestBase
         'revert' => [id, index=1] 
       }
 
-      result = kata_reverted(id, files, stdout, stderr, status, reverted_summary)
-      next_index = result['next_index']
+      kata_reverted(id, files, stdout, stderr, status, reverted_summary)
+      next_index = kata_events(id).size
 
       actual = kata_event(id, next_index - 1)
       assert actual.keys.include?('revert'), :no_revert_key

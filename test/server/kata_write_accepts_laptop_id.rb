@@ -25,8 +25,8 @@ class KataWriteAcceptsLaptopIdTest < TestBase
       laptop_id: 'a1b2c3d4e5f6'
     }.to_json
 
-    assert_json_post_200('kata_file_create', body) do |response|
-      assert_equal 2, response['kata_file_create']
+    assert_json_post_200('kata_file_create', body) do
+      assert_equal 2, kata_events(id).size
     end
   end
 
@@ -53,8 +53,8 @@ class KataWriteAcceptsLaptopIdTest < TestBase
       laptop_id: 'a1b2c3d4e5f6'
     }.to_json
 
-    assert_json_post_200('kata_ran_tests', body) do |response|
-      assert_equal 2, response['kata_ran_tests']['next_index']
+    assert_json_post_200('kata_ran_tests', body) do
+      assert_equal 2, kata_events(id).size
     end
   end
 

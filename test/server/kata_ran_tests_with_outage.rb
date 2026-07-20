@@ -20,9 +20,13 @@ class KataRanTestsWithOutageTest < TestBase
 
       files.delete('readme.txt')
 
-      actual = kata_ran_tests(id, files, stdout, stderr, status, red_summary)
-      expected = { 'next_index' => 2, 'major_index' => 1, 'minor_index' => 0 }
-      assert_equal expected, actual
+      kata_ran_tests(id, files, stdout, stderr, status, red_summary)
+      events = kata_events(id)
+      assert_equal 2, events.size
+      light = events[1]
+      assert_equal 'red', light['colour']
+      assert_equal 1, light['major_index']
+      assert_equal 0, light['minor_index']
     end
   end
 end

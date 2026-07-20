@@ -284,8 +284,8 @@ class KataDiffTest < TestBase
       @was_files[filename] = data['content']
     end
     was_index = event['index'] + 1
-    result = kata_ran_tests(id, @was_files)
-    now_index = result['next_index']
+    kata_ran_tests(id, @was_files)
+    now_index = kata_events(id).size
     event['files'].each do |filename, data|
       @now_files[filename] = data['content']
     end

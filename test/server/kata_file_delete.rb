@@ -15,10 +15,9 @@ class KataFileDeleteTest < TestBase
   | results in a single delete-file event 
   ) do
     in_tennis_kata do |id, files|
-      next_index = kata_file_delete(id, files, 'readme.txt')
+      kata_file_delete(id, files, 'readme.txt')
 
       events = kata_events(id)
-      assert_equal 2, next_index
       assert_equal 2, events.size
 
       assert_equal 1, events[1]['index']
@@ -46,10 +45,9 @@ class KataFileDeleteTest < TestBase
       files['readme.txt']['content'] = edited_content
       
       # At this point, 'tennis.py', the deleted file, IS in files
-      next_index = kata_file_delete(id, files, 'tennis.py')
+      kata_file_delete(id, files, 'tennis.py')
 
       events = kata_events(id)
-      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']
@@ -83,10 +81,9 @@ class KataFileDeleteTest < TestBase
       edited_content = files['readme.txt']['content'] + 'Hello world'
       files['readme.txt']['content'] = edited_content
       
-      next_index = kata_file_delete(id, files, 'readme.txt')
+      kata_file_delete(id, files, 'readme.txt')
 
       events = kata_events(id)
-      assert_equal 3, next_index
       assert_equal 3, events.size
 
       assert_equal 1, events[1]['index']

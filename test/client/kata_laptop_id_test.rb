@@ -19,8 +19,7 @@ class KataLaptopIdTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      next_index = saver.kata_file_create(id, files, 'wibble.txt', nil, 1)
-      assert_equal 2, next_index
+      saver.kata_file_create(id, files, 'wibble.txt', nil, 1)
       refute kata_event(id, 1).key?('laptop_id'), kata_event(id, 1).to_json
     end
   end
