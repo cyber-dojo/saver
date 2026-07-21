@@ -459,7 +459,15 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
   | `id` | `String` | The kata id. |
 
 - returns 
-  * an Array holding the events summary of the kata with the given `id`.
+  * an Array holding the events summary of the kata with the given `id`. Each
+    event carries three positional indexes, computed on read (the event-write
+    POSTs do not return them):
+    * `index` - the event's absolute position, so `events[index].index == index`.
+    * `major_index` - the number of red/amber/green traffic-lights up to and
+      including this event (the `created` event is `0`); a traffic-light is always
+      at `major_index` with `minor_index` `0`.
+    * `minor_index` - `0` on a traffic-light; incremented by each inter-test file
+      event (create/delete/rename/edit) since the previous traffic-light.
 - example
   ```bash
   $ curl \
@@ -674,7 +682,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
   | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
 
 - returns
-  * the next event index (the saver assigns it).
+  * nothing meaningful (a 200 ack); the event is recorded - read it back via [kata_events](#get-kata_events).
 - example
   ```bash
   $ curl \
@@ -683,12 +691,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_file_create | jq .
-  ```
-  ```bash
-  {
-    "kata_file_create": 5
-  }
+      https://${DOMAIN}:${PORT}/kata_file_create
   ```
 
 
@@ -707,7 +710,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
   | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
 
 - returns
-  * the next event index (the saver assigns it).
+  * nothing meaningful (a 200 ack); the event is recorded - read it back via [kata_events](#get-kata_events).
 - example
   ```bash
   $ curl \
@@ -716,12 +719,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_file_delete | jq .
-  ```
-  ```bash
-  {
-    "kata_file_delete": 6
-  }
+      https://${DOMAIN}:${PORT}/kata_file_delete
   ```
 
 
@@ -741,7 +739,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
   | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
 
 - returns
-  * the next event index (the saver assigns it).
+  * nothing meaningful (a 200 ack); the event is recorded - read it back via [kata_events](#get-kata_events).
 - example
   ```bash
   $ curl \
@@ -750,19 +748,14 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_file_rename | jq .
-  ```
-  ```bash
-  {
-    "kata_file_rename": 7
-  }
+      https://${DOMAIN}:${PORT}/kata_file_rename
   ```
 
 
 - - - -
 ## POST kata_file_edit
 - description
-  * Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded and the next event index is returned unchanged.
+  * Records a file edit event if any file content has changed since the last save. If no file has changed, no event is recorded.
 - parameters
 
   | Name | Type | Description |
@@ -773,7 +766,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
   | `tab_seq` | `int` | See [tab_seq](#tab_seq). |
 
 - returns
-  * the next event index (the saver assigns it; unchanged if no file was edited).
+  * nothing meaningful (a 200 ack); the file_edit event, if any, is recorded - read it back via [kata_events](#get-kata_events).
 - example
   ```bash
   $ curl \
@@ -782,12 +775,7 @@ traffic-light colour (red, amber, green). Each avatar in a Group is a kata.
     --header 'Content-type: application/json' \
     --silent \
     --request POST \
-      https://${DOMAIN}:${PORT}/kata_file_edit | jq .
-  ```
-  ```bash
-  {
-    "kata_file_edit": 7
-  }
+      https://${DOMAIN}:${PORT}/kata_file_edit
   ```
 
 
