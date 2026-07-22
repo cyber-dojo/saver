@@ -368,7 +368,9 @@ class DifferTest < TestBase
       stdout: { 'content' => 'this is stdout', 'truncated' => false },
       stderr: { 'content' => 'this is stderr', 'truncated' => false },
       status: '0',
-      summary: { 'duration' => 0.457764, 'colour' => 'green', 'predicted' => 'none' }
+      summary: { 'duration' => 0.457764, 'colour' => 'green', 'predicted' => 'none' },
+      laptop_id: default_laptop_id,
+      tab_seq: next_tab_seq
     )
   end
 
