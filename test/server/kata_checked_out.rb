@@ -48,8 +48,8 @@ class KataCheckedOutTest < TestBase
       stderr = data['stderr']
       status = data['status']
 
-      result = kata_ran_tests(id1, files, stdout, stderr, status, red_summary)
-      assert_equal 2, result['next_index']
+      kata_ran_tests(id1, files, stdout, stderr, status, red_summary)
+      assert_equal 2, kata_events(id1).size
 
       id2 = group_join(gid)
       checkout = {
@@ -62,8 +62,8 @@ class KataCheckedOutTest < TestBase
         'checkout' => checkout 
       }
 
-      result = kata_checked_out(id2, files, stdout, stderr, status, checkout_out_summary)
-      next_index = result['next_index']
+      kata_checked_out(id2, files, stdout, stderr, status, checkout_out_summary)
+      next_index = kata_events(id2).size
 
       actual = kata_event(id2, next_index - 1)
       assert actual.keys.include?('checkout'), :no_checkout_key

@@ -284,8 +284,8 @@ class KataDiffTest < TestBase
       @was_files[filename] = data['content']
     end
     was_index = event['index'] + 1
-    result = kata_ran_tests(id, @was_files)
-    now_index = result['next_index']
+    kata_ran_tests(id, @was_files)
+    now_index = kata_events(id).size
     event['files'].each do |filename, data|
       @now_files[filename] = data['content']
     end
@@ -307,7 +307,9 @@ class KataDiffTest < TestBase
       stdout: { 'content' => 'this is stdout', 'truncated' => false },
       stderr: { 'content' => 'this is stderr', 'truncated' => false },
       status: '0',
-      summary: { 'duration' => 0.457764, 'colour' => 'green', 'predicted' => 'none' }
+      summary: { 'duration' => 0.457764, 'colour' => 'green', 'predicted' => 'none' },
+      laptop_id: default_laptop_id,
+      tab_seq: next_tab_seq
     )
   end
 

@@ -28,7 +28,8 @@ require 'tmpdir'
 # This means that the index in each event no longer corresponds to
 # just the red/amber/green ran-tests events. In the above, there are
 # two ran-tests events at indexes 3,6 which would previously have been 1,2
-# Because of this, ran_tests() et-all now returns three indexes:
+# Because of this, each event read back carries three indexes (the write
+# methods return nothing; poly_filler populates these on reads):
 #   index       - events[i].index == i
 #   major_index - the previous red/amber/green index
 #   minor_index - the non red/amber/green index between major_indexes
@@ -198,8 +199,7 @@ class Kata_v2
     # whose quoting stripped them, so historically the stored message had none.
     # The commit is now in-process (rugged), which uses the message literally.
     tag_message = "created file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -215,8 +215,7 @@ class Kata_v2
     summary = { 'colour' => 'file_delete', 'filename' => filename }
     # No quotes: see the note in file_create.
     tag_message = "deleted file #{filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -236,8 +235,7 @@ class Kata_v2
       'new_filename' => new_filename
     }
     tag_message = "renamed file #{old_filename} to #{new_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -255,53 +253,35 @@ class Kata_v2
     last_index = all_events[-1]['index'] # all_events.size - 1
     current_files = event_from(id, last_index, all_events)['files']
     edited_filename = edited_filename(current_files, files)
-    if !edited_filename
-      # nothing edited, so nothing is committed and the head does not move; the
-      # next position stays head + 1.
-      return last_index + 1
+    unless edited_filename
+      # nothing edited, so nothing is committed and the head does not move.
+      return
     end
 
     summary = { 'colour' => 'file_edit', 'filename' => edited_filename }
     # No quotes: see the note in file_create.
     tag_message = "edited file #{edited_filename}"
-    result = git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
-    result['next_index']
+    git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
 
-  # Runs the internal file_edit that captures any pending edit before a test-family
-  # event (ran_tests/predicted_right/predicted_wrong all call it first). A
-  # concurrent same-laptop write can win the slot first, so this file_edit loses
-  # the update-ref compare-and-swap and, being a file-event, is dropped as "Out of
-  # order" (a file-event CAS-loss is not retried). That is benign for a solo user:
-  # the pending edit is still carried by the following test event's own files, so
-  # swallow that specific drop and let the caller commit the test anyway (placed at
-  # head + 1 like any write). Any other error propagates.
-  def file_edit_before_test_event(id, files, laptop_id, tab_seq)
-    # The underneath pre-test edit shares the test event's tab_seq (one browser
-    # action); their differing colours keep them apart in the dedup guard.
-    file_edit(id, files, laptop_id, tab_seq)
-  rescue => error
-    raise unless error.message.include?('Out of order event')
-  end
-
   def ran_tests(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
-    file_edit_before_test_event(id, files, laptop_id, tab_seq)
+    file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, no prediction, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def predicted_right(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
-    file_edit_before_test_event(id, files, laptop_id, tab_seq)
+    file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def predicted_wrong(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
-    file_edit_before_test_event(id, files, laptop_id, tab_seq)
+    file_edit(id, files, laptop_id, tab_seq) # capture any pending edit before the test event
     tag_message = "ran tests, predicted #{summary['predicted']}, got #{summary['colour']}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
@@ -311,14 +291,14 @@ class Kata_v2
     # out, so the historical message was the plain JSON. The in-process (rugged)
     # commit uses the message literally, so embed the plain JSON directly.
     tag_message = "reverted to #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   def checked_out(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     info = json_plain(summary['checkout'])
     # Plain JSON, not info.inspect: see the note in reverted.
     tag_message = "checked out #{info}"
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -424,31 +404,12 @@ class Kata_v2
     stdout = { 'content' => '', 'truncated' => false }
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
-    git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
 
-  def git_commit_tag_sss(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
-    all_events = commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
-
-    {
-      'next_index' => all_events.last['index'] + 1,
-      'major_index' => major_index(all_events),
-      'minor_index' => 0
-    }
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - -
-
-  # A same-laptop test-family write that loses the update-ref compare-and-swap is
-  # re-appended on the new head (self-lag), retrying up to this many times. The
-  # bound is generous: concurrent same-laptop writes for one kata are few (a
-  # browser fires only a couple at once) and each retry drains one winner, so this
-  # only caps pathological contention.
-  COMMIT_EVENT_MAX_RETRIES = 10
-
-  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts = 0)
-    # Builds the event commit in-process (libgit2/rugged) on a single base,
-    # advances main onto it with an update-ref compare-and-swap, then tags it.
+  def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    # Builds the event commit in-process (libgit2/rugged) on the current head,
+    # advances main onto it (git update-ref) and tags it with its numeric index.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
     # go via git). See docs/in-process-git.md.
     #
@@ -457,35 +418,30 @@ class Kata_v2
     # never rejects a write for a stale or wrong client index - mobbing detection
     # lives in the browser's read-side poll, not here.
     #
-    # The remaining out-of-sync handling is the concurrent-write race (the rescue
-    # below): two saves for the same kata build on the same base_oid; whichever
-    # reaches the update-ref compare-and-swap second fails (main has moved off
-    # base_oid). The rescue resolves that loser: a file-event loser is dropped as
-    # "Out of order" (superseded - its files are already in the winner); a
-    # test-family loser rebuilds on the new head and re-appends so it lands after
-    # the winner in order. Bounded by COMMIT_EVENT_MAX_RETRIES.
+    # The spooler is the single ordered writer per kata, so writes for one kata
+    # arrive one at a time in tab_seq order. This is a straight append: there is
+    # no concurrent-write race to resolve, so no compare-and-swap retry, self-lag
+    # re-append, or loser-rescue.
     #
     # Idempotency (A8): a write whose (laptop_id, tab_seq, colour) is already
-    # committed is a redelivery, so it is a no-op. Return the committed events
-    # unchanged, so the caller reports the same position the original commit made.
+    # committed is a redelivery, so it is a no-op - skip the commit entirely.
     #
     # colour is in the key because one incoming write expands into two commits
     # that share a tab_seq - the implicit underneath file_edit and the real event
-    # (see file_edit_before_test_event and file_create/delete/rename). They differ
-    # in colour, so matching on colour stops the real event from deduping against
-    # its own sibling on first delivery (which would silently drop it). Distinct
-    # web writes never share a tab_seq (it is the tab's monotonic per-event
-    # counter), so no two genuine writes collide on the key.
+    # (see file_create/delete/rename and the pre-test edit in the test methods).
+    # They differ in colour, so matching on colour stops the real event from
+    # deduping against its own sibling on first delivery (which would silently
+    # drop it). Distinct web writes never share a tab_seq (it is the tab's
+    # monotonic per-event counter), so no two genuine writes collide on the key.
     if tab_seq
       colour = summary['colour']
       committed = read_events_via_git(id)
       already = committed.any? do |event|
         event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
       end
-      return committed if already
+      return if already
     end
 
-    all_events = nil
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
       new_event = summary.merge!({
         'index' => place_at,
@@ -501,9 +457,8 @@ class Kata_v2
       # Store the tab_seq so a later redelivery of this write can be recognised
       # as an already-committed (laptop_id, tab_seq) and deduplicated above.
       new_event['tab_seq'] = tab_seq unless tab_seq.nil?
-      all_events = base_events + [new_event]
       {
-        events_filename => json_pretty(all_events),
+        events_filename => json_pretty(base_events + [new_event]),
         'stdout' => stdout['content'],
         'stderr' => stderr['content'],
         'status' => status.to_s,
@@ -514,51 +469,16 @@ class Kata_v2
       }
     end
 
-    # Advance main with a compare-and-swap on the base the commit was built on:
-    # a concurrent winner makes the CAS fail (main no longer at base_oid). Then
-    # tag the new commit with its numeric index.
-    #
-    # This stays a git shell call (not rugged): the CAS is the only step here
-    # that cannot be done in-process via libgit2/rugged. update-ref's old-value
-    # precondition (set main to <new> only if it is still <base>) maps to
-    # libgit2's git_reference_create_matching, but rugged's high-level API does
-    # not surface it -- references offers create (force-overwrite, not a CAS) and
-    # update, neither with an expected-old-value check. That precondition IS the
-    # concurrency mechanism (loser detection), so it cannot be dropped. See
-    # docs/in-process-git.md.
+    # Advance main to the new commit, then tag it with its numeric index. The
+    # update-ref keeps its base_oid precondition (set main to <new> only if it is
+    # still <base>): with the spooler as the single ordered writer per kata this
+    # always holds, so it is a cheap integrity guard rather than loser detection.
+    # It stays a git shell call because rugged's high-level API does not surface
+    # update-ref's old-value precondition (libgit2's git_reference_create_matching).
+    # See docs/in-process-git.md.
     shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
     git.create_tag(repo_dir(id), result[:place_at], result[:new_oid])
-
-    all_events
-  rescue
-    # A raised error here is normally the update-ref compare-and-swap losing: a
-    # concurrent write for this kata advanced main off the base this commit was
-    # built on. Read the tip via git (the working tree is stale; HEAD advances
-    # atomically via update-ref, so this sees the latest committed events - see
-    # read_events_via_git and docs/reads-via-git.md). The saver does not reject a
-    # write for its index, so the only in-flight failure to sort out here is a
-    # lost compare-and-swap; any other error left the tip where it was.
-    current_events = read_events_via_git(id)
-    if result.nil? || current_events.last['index'] < result[:place_at]
-      # commit_on_main failed to build the commit (result nil), or the tip did not
-      # pass our place_at - either way this was not a lost CAS, so re-raise as-is.
-      raise
-    end
-
-    # A concurrent same-kata write won the compare-and-swap.
-    # - file-event loser: superseded (the winner's files already include this
-    #   event's file changes), so drop it as "Out of order" (the caller's
-    #   inter-test handler discards a superseded file event silently). No retry.
-    # - test-family loser: rebuild on the new head and re-append so it lands after
-    #   the winner in order (append-only). On retry commit_on_main accepts the
-    #   behind write and places it at the new head + 1 - self-lag (this laptop's
-    #   own lost-response write) or a concurrent write from another laptop alike;
-    #   the read-side poll flags any staleness. Bounded against pathological
-    #   contention.
-    if summary['colour'].to_s.start_with?('file_') || attempts >= COMMIT_EVENT_MAX_RETRIES
-      raise "Out of order event for #{id}"
-    end
-    commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq, attempts + 1)
+    nil
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -767,16 +687,6 @@ def edited_filename(previous_files, current_files)
     end
   end
   return nil
-end
-
-def major_index(events)
-  count = 0
-  events[1..].each do |event|
-    if is_light?(event)
-      count += 1
-    end
-  end
-  count
 end
 
 def plural(n, word)

@@ -103,9 +103,8 @@ class KataTornReadTest < TestBase
       full = File.read(path)
       File.write(path, full[0, full.size / 2])
 
-      result = kata_ran_tests(id, files, stdout, stderr, 0, red_summary, another_laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, another_laptop_id)
 
-      assert_equal 3, result['next_index']
       assert_equal 2, kata_event(id, -1)['index']
       assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
     end
@@ -126,9 +125,8 @@ class KataTornReadTest < TestBase
 
       File.delete(working_tree_path(id, 'events.json'))
 
-      result = kata_ran_tests(id, files, stdout, stderr, 0, red_summary, another_laptop_id)
+      kata_ran_tests(id, files, stdout, stderr, 0, red_summary, another_laptop_id)
 
-      assert_equal 3, result['next_index']
       assert_equal 2, kata_event(id, -1)['index']
       assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
     end

@@ -22,9 +22,8 @@ class KataWriteIndexIgnoredTest < TestBase
 
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
-    assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
     assert_equal 2, kata_event(id, -1)['index']
     assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']
@@ -44,9 +43,8 @@ class KataWriteIndexIgnoredTest < TestBase
 
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
     assert_equal 2, kata_event(id, -1)['index']
   end
@@ -65,9 +63,8 @@ class KataWriteIndexIgnoredTest < TestBase
 
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary, nil)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, nil)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, nil)
 
-    assert_equal 3, result['next_index']
     assert_equal 3, kata_events(id).size
     assert_equal 2, kata_event(id, -1)['index']
   end
@@ -87,9 +84,8 @@ class KataWriteIndexIgnoredTest < TestBase
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    assert_equal 4, result['next_index']
     assert_equal 4, kata_events(id).size
     assert_equal 3, kata_event(id, -1)['index']
     assert_equal default_laptop_id, kata_event(id, -1)['laptop_id']
@@ -110,9 +106,8 @@ class KataWriteIndexIgnoredTest < TestBase
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
     kata_ran_tests(id, files, stdout, stderr, '0', red_summary)
 
-    result = kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, another_laptop_id)
 
-    assert_equal 4, result['next_index']
     assert_equal 4, kata_events(id).size
     assert_equal 3, kata_event(id, -1)['index']
     assert_equal another_laptop_id, kata_event(id, -1)['laptop_id']

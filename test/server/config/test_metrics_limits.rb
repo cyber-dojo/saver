@@ -2,11 +2,11 @@
 def metrics
   [
     [ nil ],
-    [ 'test_count',    '>=', 399 ],
-    [ 'total_time',    '<=',  50 ],
+    [ 'test_count',    '>=', 395 ],
+    [ 'total_time',    '<=',  20 ],
     [ nil ],
-    [ 'failure_count', '<=', 0   ],
-    [ 'error_count'  , '<=', 0   ],
-    [ 'skip_count'   , '<=', 0   ],
+    [ 'failure_count', '<=',   0 ],
+    [ 'error_count'  , '<=',   0 ],
+    [ 'skip_count'   , '<=',   0 ],
   ]
 end

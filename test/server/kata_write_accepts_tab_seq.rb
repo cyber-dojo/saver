@@ -23,8 +23,8 @@ class KataWriteAcceptsTabSeqTest < TestBase
 
     files[fn]['content'] += "\n# editing"
     edit_body = { id: id, files: files, laptop_id: laptop_id, tab_seq: 1 }.to_json
-    assert_json_post_200('kata_file_edit', edit_body) do |response|
-      assert_equal 2, response['kata_file_edit'], 'next_index after the edit'
+    assert_json_post_200('kata_file_edit', edit_body) do
+      assert_equal 2, kata_events(id).size, 'committed events after the edit'
     end
 
     run_body = {
@@ -34,8 +34,8 @@ class KataWriteAcceptsTabSeqTest < TestBase
       status: '0', summary: red_summary,
       laptop_id: laptop_id, tab_seq: 2
     }.to_json
-    assert_json_post_200('kata_ran_tests', run_body) do |response|
-      assert_equal 3, response['kata_ran_tests']['next_index'], 'next_index after the run'
+    assert_json_post_200('kata_ran_tests', run_body) do
+      assert_equal 3, kata_events(id).size, 'committed events after the run'
     end
   end
 
