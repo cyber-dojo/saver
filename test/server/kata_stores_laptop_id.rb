@@ -14,7 +14,7 @@ class KataStoresLaptopIdTest < TestBase
   ) do
     id = kata_create(custom_manifest)
     files = kata_event(id, 0)['files']
-    model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_A)
+    kata_file_create(id, files, 'wibble.txt', LAPTOP_A)
     event = kata_event(id, 1)
     assert_equal 'file_create', event['colour']
     assert_equal LAPTOP_A, event['laptop_id']
@@ -30,7 +30,7 @@ class KataStoresLaptopIdTest < TestBase
     files = kata_event(id, 0)['files']
     edited = files.keys.first
     files[edited]['content'] += "\n# edited"
-    model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: LAPTOP_B)
+    kata_file_create(id, files, 'wibble.txt', LAPTOP_B)
     events = kata_events(id)
     assert_equal 3, events.size
     assert_equal 'file_edit',   kata_event(id, 1)['colour']
@@ -48,25 +48,8 @@ class KataStoresLaptopIdTest < TestBase
     files = kata_event(id, 0)['files']
     stdout = { 'content' => 'o', 'truncated' => false }
     stderr = { 'content' => 'e', 'truncated' => false }
-    model.kata_ran_tests(id: id, files: files, stdout: stdout, stderr: stderr, status: '0', summary: red_summary, laptop_id: LAPTOP_C)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, LAPTOP_C)
     assert_equal LAPTOP_C, kata_event(id, 1)['laptop_id']
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  test 'La3F04', %w(
-  | a write with no laptop_id (nil from the outside) does NOT store a
-  | laptop_id key on the event at all, leaving it indistinguishable from a
-  | legacy pre-laptop_id event; the other event fields are unchanged
-  ) do
-    id = kata_create(custom_manifest)
-    files = kata_event(id, 0)['files']
-    model.kata_file_create(id: id, files: files, filename: 'wibble.txt')
-    event = kata_event(id, 1)
-    refute event.key?('laptop_id'), event.to_json
-    assert_equal 'file_create', event['colour']
-    assert_equal 'wibble.txt', event['filename']
-    assert_equal 1, event['index']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -86,10 +69,31 @@ class KataStoresLaptopIdTest < TestBase
     ].each do |bad|
       id = kata_create(custom_manifest)
       files = kata_event(id, 0)['files']
-      model.kata_file_create(id: id, files: files, filename: 'wibble.txt', laptop_id: bad)
+      kata_file_create(id, files, 'wibble.txt', bad)
       event = kata_event(id, 1)
       refute event.key?('laptop_id'), "stored bad laptop_id #{bad.inspect}: #{event.to_json}"
     end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'La3F06', %w(
+  | consecutive writes from two different laptops both append at head + 1, and
+  | each event carries the laptop_id of the write that made it
+  ) do
+    id = kata_create(custom_manifest)
+    files = kata_event(id, 0)['files']
+    stdout = { 'content' => 'o', 'truncated' => false }
+    stderr = { 'content' => 'e', 'truncated' => false }
+
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, LAPTOP_A)
+    kata_ran_tests(id, files, stdout, stderr, '0', red_summary, LAPTOP_B)
+
+    assert_equal 3, kata_events(id).size
+    assert_equal 1, kata_event(id, 1)['index']
+    assert_equal LAPTOP_A, kata_event(id, 1)['laptop_id']
+    assert_equal 2, kata_event(id, 2)['index']
+    assert_equal LAPTOP_B, kata_event(id, 2)['laptop_id']
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -

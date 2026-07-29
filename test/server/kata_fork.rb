@@ -177,4 +177,18 @@ class KataForkTest < TestBase
     refute keys.include?('group_id')
     refute keys.include?('group_index')
   end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  version_test 2, 'c5C76a', %w(
+  | a kata_fork POST carrying the fork-point index forks through the HTTP
+  | dispatch, and the forked kata exists
+  ) do
+    in_kata do |id|
+      assert_json_post_200('kata_fork', { id: id, index: 0 }.to_json) do |response|
+        forked_id = response['kata_fork']
+        assert kata_exists?(forked_id), forked_id
+      end
+    end
+  end
 end

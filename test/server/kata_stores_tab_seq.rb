@@ -39,30 +39,6 @@ class KataStoresTabSeqTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  test 'Sq5E02', %w(
-  | a write with no tab_seq (an interim browser from before web stamps one -
-  | A8 ships before A9) stores NO tab_seq key on the committed event, mirroring
-  | laptop_id's optional-first discipline. Such a write is simply not deduped by
-  | key; its other fields are unchanged.
-  ) do
-    laptop_id = '02cfdffb5c0c31221b837a153d1108e6cd19fd6cef11db27c8457a1e63caf46f'
-    id = kata_create(custom_manifest)
-    files = kata_event(id, 0)['files']
-    model.kata_ran_tests(
-      id: id, files: files,
-      stdout: { 'content' => 'some output', 'truncated' => false },
-      stderr: { 'content' => '',            'truncated' => false },
-      status: '0', summary: red_summary,
-      laptop_id: laptop_id
-    )
-
-    event = kata_event(id, 1)
-    refute event.key?('tab_seq'), event.to_json
-    assert_equal laptop_id, event['laptop_id']
-  end
-
-  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   test 'Sq5E03', %w(
   | a write that also commits an implicit file_edit stamps BOTH events - the
   | underneath edit and the real event - with the SAME tab_seq (web assigned one

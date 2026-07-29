@@ -245,9 +245,9 @@ class Kata_v2
     # that a file MAY have been edited (since the last save).
     # Creates a saver event if any file has been edited.
     # NOTE WELL: Called at the start of ALL other functions to
-    # catch newly created/edited files. Those internal calls pass tab_seq nil
-    # (the implicit edit is its own event, carrying no tab_seq); only the direct
-    # kata_file_edit write carries a tab_seq for its dedup key.
+    # catch newly created/edited files. Those internal calls pass the write's own
+    # tab_seq, so the implicit edit and the real event share it; the two differ in
+    # colour, which is what keeps them apart in the dedup key.
 
     all_events = events(id)
     last_index = all_events[-1]['index'] # all_events.size - 1
@@ -433,14 +433,12 @@ class Kata_v2
     # deduping against its own sibling on first delivery (which would silently
     # drop it). Distinct web writes never share a tab_seq (it is the tab's
     # monotonic per-event counter), so no two genuine writes collide on the key.
-    if tab_seq
-      colour = summary['colour']
-      committed = read_events_via_git(id)
-      already = committed.any? do |event|
-        event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
-      end
-      return if already
+    colour = summary['colour']
+    committed = read_events_via_git(id)
+    already = committed.any? do |event|
+      event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
     end
+    return if already
 
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
       new_event = summary.merge!({
@@ -456,7 +454,7 @@ class Kata_v2
       new_event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
       # Store the tab_seq so a later redelivery of this write can be recognised
       # as an already-committed (laptop_id, tab_seq) and deduplicated above.
-      new_event['tab_seq'] = tab_seq unless tab_seq.nil?
+      new_event['tab_seq'] = tab_seq
       {
         events_filename => json_pretty(base_events + [new_event]),
         'stdout' => stdout['content'],
