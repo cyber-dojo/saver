@@ -5,8 +5,8 @@ def metrics
     [ 'test_count',    '>=', 385 ],
     [ 'total_time',    '<=',  20 ],
     [ nil ],
-    [ 'failure_count', '<=',   0 ],
-    [ 'error_count'  , '<=',   0 ],
-    [ 'skip_count'   , '<=',   0 ],
+    [ 'failure_count', '==',   0 ],
+    [ 'error_count'  , '==',   0 ],
+    [ 'skip_count'   , '==',   0 ],
   ]
 end

@@ -8,42 +8,19 @@ class KataLaptopIdTest < TestBase
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      saver.kata_file_create(id, files, 'wibble.txt', laptop_id, 1)
+      kata_file_create(id, files, 'wibble.txt', laptop_id)
       assert_equal laptop_id, kata_event(id, 1)['laptop_id']
     end
   end
 
   version_test 2, 'La7C02', %w(
-  | a kata_file_create with no laptop_id (the transitional default) still
-  | succeeds and stores no laptop_id key on the event
+  | a kata_file_create whose laptop_id is nil (a browser with no laptop_id
+  | cookie) commits, and the event carries no laptop_id key
   ) do
     in_kata do |id|
       files = kata_event(id, 0)['files']
-      saver.kata_file_create(id, files, 'wibble.txt', nil, 1)
+      kata_file_create(id, files, 'wibble.txt', nil)
       refute kata_event(id, 1).key?('laptop_id'), kata_event(id, 1).to_json
-    end
-  end
-
-  version_test 2, 'La7C03', %w(
-  | a stale-index write from a different laptop_id is accepted, not rejected: the
-  | saver places it at head+1 and stamps its laptop_id. Mobbing detection lives in
-  | the browser's read-side poll, so the client sees a normal commit rather than a
-  | ServiceError.
-  ) do
-    in_kata do |id|
-      files = kata_event(id, 0)['files']
-      stdout = { 'content' => 'o', 'truncated' => false }
-      stderr = { 'content' => 'e', 'truncated' => false }
-      summary = { 'colour' => 'red', 'predicted' => 'none' }
-
-      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, laptop_id, 1)
-
-      saver.kata_ran_tests(id, files, stdout, stderr, 0, summary, another_laptop_id, 2)
-
-      events = kata_events(id)
-      assert_equal 3, events.size, events.to_s
-      assert_equal 2, events.last['index']
-      assert_equal another_laptop_id, events.last['laptop_id']
     end
   end
 
