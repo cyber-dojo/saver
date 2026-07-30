@@ -83,12 +83,6 @@ class TestBase < Id58TestBase
     'd4f9a0c71e2b85630af1c9e4b7028d5f6a3c1e8092b4d7f60a5e3c19b8d24f70'
   end
 
-  # A second well-formed laptop_id, distinct from laptop_id, for tests that need
-  # two different laptops (genuine mobbing).
-  def another_laptop_id
-    'ca990e850c196480e16b8f04a611297e12ea64c93766055643e0e60f8f8d51e0'
-  end
-
   # The tab's next event counter (1, 2, 3, ...), advancing per call within a
   # test as a real tab stamps each event. Resets per test: minitest builds a
   # fresh instance per test method.
