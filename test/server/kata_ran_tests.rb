@@ -99,9 +99,9 @@ class KataRanTestsTest < TestBase
       def respond_to_missing?(name, include_private = false)
         # Never exercised: the model calls tag_tree_blobs and the delegated methods
         # on the double, never respond_to? - so this line is excluded from coverage.
-        # :nocov:
+        # simplecov:disable
         @real.respond_to?(name, include_private)
-        # :nocov:
+        # simplecov:enable
       end
     end.new(git)
 
