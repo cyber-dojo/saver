@@ -2,12 +2,12 @@ require 'json'
 
 module JsonAdapter
 
-  # :nocov:
+  # simplecov:disable
   def json_plain(obj)
     #Oj.dump(obj, { :mode => :strict })
     JSON.generate(obj)
   end
-  # :nocov:
+  # simplecov:enable
 
   def json_pretty(obj)
     #Oj.generate(obj, OJ_PRETTY_OPTIONS)

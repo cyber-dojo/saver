@@ -57,13 +57,13 @@ module TestHelpersRack
 
   def assert_status(expected, stdout, stderr)
     actual = last_response.status
-    # :nocov:
+    # simplecov:disable
     if expected != actual
       print("stdout:\n#{stdout}")
       print("stderr:\n#{stderr}")
       assert_equal expected, actual
     end
-    # :nocov:
+    # simplecov:enable
   end
 
   def json_response_body
