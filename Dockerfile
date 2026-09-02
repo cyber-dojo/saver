@@ -2,6 +2,9 @@ FROM ghcr.io/cyber-dojo/sinatra-base:5ab6a10@sha256:c096154011cc1cef9cc69e8be948
 # The FROM statement above is typically set via an automated pull-request from the sinatra-base repo
 LABEL maintainer=jon@jaggersoft.com
 
+# jq is not used by the saver server. It is installed for debugging scripts in
+# sibling repos that docker-exec into a running saver container, such as
+# web/bin/show_manifest.sh, which pretty-prints a kata's manifest.json.
 RUN apk add git jq
 
 # In-process git via libgit2 (the rugged gem) - see docs/in-process-git.md.
