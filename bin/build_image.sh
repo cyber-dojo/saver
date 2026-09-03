@@ -74,14 +74,12 @@ build_image()
   fi
 
   if [ "${type}" == 'server' ]; then
-    # Create latest tag for image build cache
-    docker --log-level=ERROR tag "${image_name}" "${CYBER_DOJO_SAVER_IMAGE}:latest"
     # Tag image-name for local development where savers name comes from echo-env-vars
     docker --log-level=ERROR tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
-    # After tagging, so removing an earlier build's tags takes its last tag with
-    # them and the image itself goes, rather than being left dangling when
-    # :latest moves to this build. check_args rejects 'server' inside CI, so the
-    # image pulled by the 'Download docker image' CI job is never at risk here.
+    # After tagging, so this build is protected by its own tag, and removing an
+    # earlier build's tags takes its last tag with them and the image itself
+    # goes. check_args rejects 'server' inside CI, so the image pulled by the
+    # 'Download docker image' CI job is never at risk here.
     remove_old_images
     echo
     echo "  echo CYBER_DOJO_SAVER_SHA=${CYBER_DOJO_SAVER_SHA}"
