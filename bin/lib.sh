@@ -109,9 +109,6 @@ remove_old_images()
   #   o) filtering a [docker image ls]
   #   o) occasional [docker ps -aq | xargs docker image rm]
   # I prefer to remove old images Continuously.
-  #
-  # Removing old images and not busting the image layer
-  # cache requires the latest image is tagged to :latest
 
   echo Removing old images
   # grep exits non-zero when the machine holds no saver image, eg one whose
@@ -122,9 +119,8 @@ remove_old_images()
   remove_all_but_current "${dil}" cyberdojo/saver
 }
 
-# Keeps :latest, which local tooling and the build cache refer to, and this
-# commit's tag, which names the build just made. Every older tag goes, and an
-# earlier build whose last tag was one of those goes with it.
+# Keeps this commit's tag, which names the build just made. Every older tag
+# goes, and an earlier build whose last tag was one of those goes with it.
 remove_all_but_current()
 {
   local -r docker_image_ls="${1}"
@@ -134,8 +130,7 @@ remove_all_but_current()
   local tagged_name
   for tagged_name in $(echo "${docker_image_ls}" | grep "${name}:" || true)
   do
-    if [ "${tagged_name}" != "${name}:latest" ] \
-    && [ "${tagged_name}" != "${name}:${CYBER_DOJO_SAVER_TAG}" ]; then
+    if [ "${tagged_name}" != "${name}:${CYBER_DOJO_SAVER_TAG}" ]; then
       docker image rm --force "${tagged_name}" || echo "  skipped ${tagged_name} (in use)"
     fi
   done
