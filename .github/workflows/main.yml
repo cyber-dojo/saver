@@ -60,6 +60,9 @@ jobs:
           flow_description: "Group/Kata model+persistence"
           flow_tags: |
             env=${{ env.KOSLI_AWS_BETA }}
+            kind=build
+            ci=github
+            repo_url=${{ github.server_url }}/${{ github.repository }}
 
 
   pull-request:
