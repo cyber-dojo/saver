@@ -26,7 +26,7 @@ Done (all of it):
 - The write speedup. A save advances `main` with a `git update-ref`
   compare-and-swap (`fast_forward_main_via_worktree`) instead of
   `git merge --ff-only`, so it no longer checks the new tree out; the working
-  tree is left stale. The CAS preserves loser-detection (a concurrent save
+  tree is left stale. The compare-and-swap preserves loser-detection (a concurrent save
   whose base moved fails and resolves to "Out of order event").
 
 Decided against: making the kata repo bare. A bare repo is a different on-disk
@@ -186,7 +186,7 @@ that changed in the commit -- `events.json` plus the small metadata files
 re-written. Those are small writes, except `events.json`, which grows with the
 session. But the dominant per-save cost is git process startup, not this file
 I/O, and the advance is still one git subprocess either way (merge, vs
-update-ref with `branch^` as the CAS old-value). So skipping the checkout is a
+update-ref with `branch^` as the compare-and-swap old-value). So skipping the checkout is a
 real saving mainly when `events.json` is large (long sessions); for small katas
 it may be a wash. This has not been benchmarked -- the honest claim is "removes
 the per-save working-tree checkout", not "measurably faster". The torn-read fix
@@ -225,7 +225,7 @@ re-verified from git source in this work.
 ## Trade-offs and open questions
 
 - Cost moves, it does not vanish. Each read becomes a git subprocess
-  (`assert_cd_exec`) instead of a cheap `File.read`. `events()` / `event()` /
+  instead of a cheap `File.read`. `events()` / `event()` /
   `file_edit()` read `events.json` on a hot path. Against that: the per-save
   working-tree checkout disappears, and writes already shell out to git heavily.
   Whether the net is a win needs measuring, not assuming, and runs against the
@@ -317,7 +317,7 @@ Step 2 (DONE): convert `download` to read from git (a `git clone`), since its
 `tar` of the working tree would otherwise ship stale content after the switch.
 
 Step 3 (DONE): the write speedup -- replace `merge --ff-only` with the
-`update-ref` CAS advance, leaving the working tree unrefreshed.
+`update-ref` compare-and-swap advance, leaving the working tree unrefreshed.
 
 What does NOT need converting:
 - `manifest.json` reads (`read_manifest`): immutable, so a stale working-tree

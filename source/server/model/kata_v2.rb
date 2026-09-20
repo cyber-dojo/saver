@@ -5,6 +5,7 @@ require_relative 'id_pather'
 require_relative 'options'
 require_relative 'poly_filler'
 require_relative '../lib/json_adapter'
+require_relative '../lib/tgz'
 require_relative '../lib/utf8_clean'
 require 'base64'
 require 'tmpdir'
@@ -195,9 +196,9 @@ class Kata_v2
     file_edit(id, files, laptop_id, tab_seq)
     files[filename] = { 'content' => '' }
     summary = { 'colour' => 'file_create', 'filename' => filename }
-    # No quotes around the filename: the old save committed via a shell command
-    # whose quoting stripped them, so historically the stored message had none.
-    # The commit is now in-process (rugged), which uses the message literally.
+    # The filename is bare, with no quotes around it. The commit uses the
+    # message literally, and every kata already stored holds it in this form,
+    # so anything reading these messages sees one shape, not two.
     tag_message = "created file #{filename}"
     git_commit_tag(id, files, summary, tag_message, laptop_id, tab_seq)
   end
@@ -287,9 +288,9 @@ class Kata_v2
   def reverted(id, files, stdout, stderr, status, summary, laptop_id, tab_seq)
     revert = summary['revert']
     info = json_plain({ 'id' => revert[0], 'index' => revert[1] })
-    # info.inspect added escaping that the old shell-quoting path stripped back
-    # out, so the historical message was the plain JSON. The in-process (rugged)
-    # commit uses the message literally, so embed the plain JSON directly.
+    # The plain JSON is embedded directly, not info.inspect, whose escaping the
+    # commit would keep: the message is used literally. Every kata already
+    # stored holds the plain form, so the messages all read alike.
     tag_message = "reverted to #{info}"
     commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
   end
@@ -318,19 +319,18 @@ class Kata_v2
       return
     end
     # Build the options.json change as an in-process commit on a single base,
-    # then advance main onto it with an update-ref compare-and-swap on that same
+    # then advance main onto it with a ref compare-and-swap on that same
     # base. No worktree, no checkout (the working tree stays stale; option_get
-    # reads via git). The CAS gives loser detection: a concurrent winner makes it
-    # fail. See docs/in-process-git.md.
+    # reads via git). The compare-and-swap gives loser detection: a concurrent
+    # winner makes it fail. See docs/in-process-git.md.
     result = git.commit_options(repo_dir(id), "set option #{name} to #{value}") do |options|
       options[name] = value
       { options_filename => json_pretty(options) }
     end
-    # Stays a git shell call (not rugged): rugged's high-level API does not expose
-    # update-ref's old-value precondition (libgit2's git_reference_create_matching),
-    # and that precondition is the concurrency mechanism, so it cannot be dropped.
+    # The advance keeps its base_oid precondition, which is the concurrency
+    # mechanism: a concurrent winner makes it fail rather than be overwritten.
     # See the fuller note in commit_event and docs/in-process-git.md.
-    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
+    git.advance_main(repo_dir(id), result[:new_oid], result[:base_oid])
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -338,19 +338,16 @@ class Kata_v2
   def download(id)
     # Build the download from committed git state, not the working tree, so it
     # is correct even when the working tree is stale (see docs/reads-via-git.md).
-    # git clone gives a fresh repo with the full history and tags and a checkout
-    # of HEAD; remove the local-path origin it adds so the result is a plain repo
-    # the user can push to GitHub. The clone dir is named after the tgz, so the
-    # tarball's root dir matches the filename.
+    # The clone gives a fresh repo with the full history and tags and a checkout
+    # of HEAD, with no origin remote, so it is a plain repo the user can push to
+    # GitHub. The clone dir is named after the tgz, so the tarball's root dir
+    # matches the filename.
     year, month, day = *time.now
     user_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
     Dir.mktmpdir do |tmp_dir|
       clone_dir = "#{tmp_dir}/#{user_name}"
-      shell.assert_cd_exec(repo_dir(id), "git clone --quiet . #{clone_dir}")
-      shell.assert_cd_exec(clone_dir, "git remote remove origin")
-      shell.assert_cd_exec(tmp_dir, "tar -czf #{user_name}.tgz #{user_name}")
-      tgz_file_path = "#{tmp_dir}/#{user_name}.tgz"
-      [ "#{user_name}.tgz", Base64.encode64(File.read(tgz_file_path)) ]
+      git.clone_without_origin(repo_dir(id), clone_dir)
+      [ "#{user_name}.tgz", Base64.encode64(TGZ.of(tree_files(clone_dir, user_name))) ]
     end
   end
 
@@ -359,6 +356,20 @@ class Kata_v2
   include Options
 
   private
+
+  # Every file under <dir>, as { "<root_name>/<path relative to dir>" => bytes },
+  # which is the shape TGZ.of tars. FNM_DOTMATCH is what picks up .git, which is
+  # most of a download. Directories are not entries of their own: tar extractors
+  # create the parents each file names, and every file git tracks is mode 0644,
+  # which is the mode TGZ.of writes, so the extracted checkout matches the index
+  # and reads as clean.
+  def tree_files(dir, root_name)
+    Dir.glob(File.join(dir, '**', '*'), File::FNM_DOTMATCH)
+       .select { |path| File.file?(path) }
+       .each_with_object({}) do |path, memo|
+         memo["#{root_name}/#{path.delete_prefix("#{dir}/")}"] = File.binread(path)
+       end
+  end
 
   include IdPather
   include JsonAdapter
@@ -409,7 +420,7 @@ class Kata_v2
 
   def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
     # Builds the event commit in-process (libgit2/rugged) on the current head,
-    # advances main onto it (git update-ref) and tags it with its numeric index.
+    # advances main onto it (a compare-and-swap) and tags it with its numeric index.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
     # go via git). See docs/in-process-git.md.
     #
@@ -468,13 +479,11 @@ class Kata_v2
     end
 
     # Advance main to the new commit, then tag it with its numeric index. The
-    # update-ref keeps its base_oid precondition (set main to <new> only if it is
+    # advance keeps its base_oid precondition (set main to <new> only if it is
     # still <base>): with the spooler as the single ordered writer per kata this
     # always holds, so it is a cheap integrity guard rather than loser detection.
-    # It stays a git shell call because rugged's high-level API does not surface
-    # update-ref's old-value precondition (libgit2's git_reference_create_matching).
     # See docs/in-process-git.md.
-    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
+    git.advance_main(repo_dir(id), result[:new_oid], result[:base_oid])
     git.create_tag(repo_dir(id), result[:place_at], result[:new_oid])
     nil
   end
@@ -496,11 +505,12 @@ class Kata_v2
   # "git archive --format=tar <index>" (hence the method name). See
   # docs/in-process-git.md.
   #
-  # A save commits its event (advancing main via git update-ref) and then, as a
-  # separate step, writes that index's numeric tag (via rugged). A concurrent
-  # reader can observe the new index in events.json before its tag exists, so the
-  # tag lookup raises External::Git::TagNotFound. The caller has already validated
-  # pos_index against events.json, so this is the transient tag-write window:
+  # A save commits its event (advancing main via the ref compare-and-swap) and
+  # then, as a separate step, writes that index's numeric tag (via rugged). A
+  # concurrent reader can observe the new index in events.json before its tag
+  # exists, so the tag lookup raises External::Git::TagNotFound. The caller has
+  # already validated pos_index against events.json, so this is the transient
+  # tag-write window:
   # retry briefly until the writer finishes; if the retries are exhausted (a
   # genuine missing tag) the exception is re-raised.
   GIT_ARCHIVE_MAX_RETRIES   = 100
@@ -519,9 +529,8 @@ class Kata_v2
       end
     # tag_tree_blobs returns blob bytes tagged ASCII-8BIT. The kata's stored
     # files, stdout/stderr, events.json and truncations.json are all UTF-8 text,
-    # so retag them as UTF-8 (scrubbing any invalid bytes), exactly as the old
-    # shell path did (git archive's stdout went through External::Shell, which
-    # Utf8.cleans), matching read_events_via_git. Without this, content with
+    # so retag them as UTF-8 (scrubbing any invalid bytes), matching
+    # read_events_via_git. Without this, content with
     # non-ASCII bytes compares unequal to the same text after it has round-tripped
     # through JSON (file_edit would log a phantom edit), and JSON-serialising the
     # event response warns (and raises under json 3.0).
@@ -532,8 +541,8 @@ class Kata_v2
 
   # Reads the kata's committed events.json through git rather than off the
   # working tree. The working tree is stale (saves no longer refresh it; they
-  # advance main with git update-ref, no checkout), so its events.json is not
-  # the latest. HEAD (the kata's main branch) advances atomically and the
+  # advance main with a ref compare-and-swap, no checkout), so its events.json
+  # is not the latest. HEAD (the kata's main branch) advances atomically and the
   # committed blob exists before the ref moves, so this always returns the
   # whole, consistent, latest events.json. See docs/reads-via-git.md.
   def read_events_via_git(id)
@@ -541,8 +550,8 @@ class Kata_v2
   end
 
   # Reads the kata's committed options.json through git rather than off the
-  # working tree. option_set advances main with git update-ref without a
-  # checkout, so the working-tree options.json is stale; reading at HEAD (which
+  # working tree. option_set advances main with a ref compare-and-swap without
+  # a checkout, so the working-tree options.json is stale; reading at HEAD (which
   # advances atomically) gives the latest. See git_show and docs/reads-via-git.md.
   def read_options_via_git(id)
     json_parse(Utf8.clean(git_show(id, 'options.json')))
@@ -655,10 +664,6 @@ class Kata_v2
 
   def git
     @externals.git
-  end
-
-  def shell
-    @externals.shell
   end
 
   def time

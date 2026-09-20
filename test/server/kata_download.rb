@@ -6,8 +6,13 @@ require 'tmpdir'
 class KataDownloadTest < TestBase
 
   version_test 2, 'kL375s', %w(
-  | kata_exists? is false,
-  | for a well-formed id that does not exist
+  | kata_download returns a base64 .tgz which the real tar extracts.
+  | Its root dir is named cyber-dojo-<year>-<month>-<day>-<id>.
+  | The extracted dir holds a git repo with one tag and one commit per event.
+  | The commits come newest first and each tag sits on its own index's commit.
+  | The checkout is clean.
+  | The repo carries the kata's cyber-dojo.sh and a README.md linking to it.
+  | The repo has no remote.
   ) do
     stdout = { 'content' => 'so', 'truncated' => false }
     stderr = { 'content' => 'se', 'truncated' => true }
@@ -23,35 +28,35 @@ class KataDownloadTest < TestBase
       tgz_filename, encoded64 = *model.kata_download(id:id)
       assert tgz_filename.end_with?('.tgz')
       Dir.mktmpdir do |tmp_dir|
-        File.write("#{tmp_dir}/#{tgz_filename}", Base64.decode64(encoded64))
-        untar_command = "tar -xvf #{tgz_filename}"
-        shell.assert_cd_exec(tmp_dir, untar_command)
+        untar(Base64.decode64(encoded64), tmp_dir)
         dir_name = "cyber-dojo-#{year}-#{month}-#{day}-#{id}"
-        shell.assert_cd_exec(tmp_dir, "[ -d #{dir_name} ]")
         dir_path = "#{tmp_dir}/#{dir_name}"
-        shell.assert_cd_exec(dir_path, '[ -d .git ]')
-        tags = shell.assert_cd_exec(dir_path, 'git tag')
+        assert File.directory?(dir_path), dir_path
+        assert File.directory?("#{dir_path}/.git"), dir_path
         # tags are exactly 0,1,2 (names, not just count)
+        tags = `cd #{dir_path} && git tag`
         assert_equal %w(0 1 2), tags.split("\n").sort
         # full history: one commit per event, right messages, newest first
-        subjects = shell.assert_cd_exec(dir_path, 'git log --pretty=%s').split("\n")
+        subjects = `cd #{dir_path} && git log --pretty=%s`
         assert_equal [
           '2 ran tests, no prediction, got red',
           '1 ran tests, no prediction, got red',
           '0 kata creation',
-        ], subjects
+        ], subjects.split("\n")
         # each tag points at the commit for its index (commit<->tag correspondence)
         %w(0 1 2).each do |i|
-          subject = shell.assert_cd_exec(dir_path, "git log -1 --pretty=%s #{i}")
+          subject = `cd #{dir_path} && git log -1 --pretty=%s #{i}`
           assert subject.start_with?("#{i} "), "tag #{i} -> #{subject}"
         end
         # working tree is checked out clean at HEAD (nothing missing or modified)
-        status = shell.assert_cd_exec(dir_path, 'git status --porcelain')
+        status = `cd #{dir_path} && git status --porcelain`
         assert_equal '', status, status
-        actual_cyber_dojo_sh = shell.assert_cd_exec(dir_path, 'cat files/cyber-dojo.sh')
-        #assert_equal 'pytest *_test.rb', cyber_dojo_sh
+        # no remote, so nothing points back at saver's disk
+        remotes = `cd #{dir_path} && git remote -v 2>&1`
+        assert_equal '', remotes, remotes
+        actual_cyber_dojo_sh = File.read("#{dir_path}/files/cyber-dojo.sh")
         assert_equal expected_cyber_dojo_sh, actual_cyber_dojo_sh
-        readme_md = shell.assert_cd_exec(dir_path, 'cat README.md')
+        readme_md = File.read("#{dir_path}/README.md")
         url = "https://cyber-dojo.org/kata/edit/#{id}"
         link = "# This a copy of [your cyber-dojo exercise](#{url}):"
         assert readme_md.include?(link)
@@ -99,15 +104,28 @@ class KataDownloadTest < TestBase
 
       year, month, day = 2021, 7, 11
       externals.instance_exec { @time = TimeStub.new([year, month, day]) }
-      tgz_filename, encoded64 = *model.kata_download(id:id)
+      _tgz_filename, encoded64 = *model.kata_download(id:id)
       Dir.mktmpdir do |tmp_dir|
-        File.write("#{tmp_dir}/#{tgz_filename}", Base64.decode64(encoded64))
-        shell.assert_cd_exec(tmp_dir, "tar -xf #{tgz_filename}")
+        untar(Base64.decode64(encoded64), tmp_dir)
         dir_path = "#{tmp_dir}/cyber-dojo-#{year}-#{month}-#{day}-#{id}"
-        events = JSON.parse(shell.assert_cd_exec(dir_path, 'cat events.json'))
+        events = JSON.parse(File.read("#{dir_path}/events.json"))
         assert_equal 3, events.size
       end
     end
+  end
+
+  private
+
+  # Extracts the tgz under <dir> with the real tar, so the download is inspected
+  # as the directory tree and git repo a user gets. Deliberately not saver's own
+  # TGZ reader: extracting with the same library that wrote the tarball would
+  # only show that saver can read back what it wrote, and the tarball has to
+  # open with the tar a user actually has. tar's verbose output is captured so a
+  # passing test stays silent.
+  def untar(tgz, dir)
+    File.binwrite("#{dir}/kata.tgz", tgz)
+    output = `cd #{dir} && tar -xvf kata.tgz 2>&1`
+    assert_equal 0, $?.exitstatus, output
   end
 
 end

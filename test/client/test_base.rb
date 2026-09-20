@@ -126,6 +126,10 @@ class TestBase < Id58TestBase
     saver.kata_fork(id, index)
   end
 
+  def kata_download(id)
+    saver.kata_download(id)
+  end
+
   def diff_lines(id, was_index, now_index)
     saver.diff_lines(id, was_index, now_index)
   end
