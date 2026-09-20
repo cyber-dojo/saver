@@ -205,7 +205,7 @@ under json 3.0, raise) when json_pretty re-serializes the merged events.
 
 - A large rewrite of the save, read and create paths: the
   worktree-based commit becomes index-based, git archive becomes direct blob
-  reads, and the External::Shell git usage is replaced by rugged behind the same
+  reads, and the shelled-out git usage is replaced by rugged behind the same
   externals abstraction (v2 only; v0/v1 are untouched and are not git repos).
 - A new heavy C-extension dependency (rugged + bundled libgit2), plus the
   image-build deps (build-base, cmake, pkgconf) and ~30s added to the image
@@ -348,9 +348,28 @@ it is left alone and `nil` is returned.
   the old behaviour, where the shell helper raised on a non-zero `git
   update-ref`.
 
-So a v2 save now spawns no git subprocesses at all. download is the only
-remaining git CLI user (git clone + git remote remove, plus tar), which keeps
-External::Shell alive.
+So a v2 save now spawns no git subprocesses at all.
+
+download went the same way in the same change, which is what removed the last
+subprocess of any kind:
+
+- `git clone` + `git remote remove origin` became
+  External::Git#clone_without_origin, over Rugged::Repository.clone_at (which
+  clones non-bare, so the full history, the tags and a checkout of HEAD all come
+  with it) and remotes.delete.
+- `tar -czf` became TGZ.of over the files the clone leaves on disk. Every file
+  git tracks is mode 0644, which is the mode TGZ.of writes, so the extracted
+  checkout matches the index and reads as clean.
+
+With no callers left, saver has no External::Shell.
+
+The download tests still extract with the real `tar` and inspect the extracted
+repo with the real `git`, from the test rather than through an external.
+Unpacking with saver's own TGZ reader, or reading the repo back with the same
+rugged that wrote it, would only show that saver agrees with itself; the
+download has to open with the tools a user actually has. Keeping the tests on
+the real binaries also keeps rugged out of them, so every rugged call in the
+repo is one production makes.
 
 
 - - - -

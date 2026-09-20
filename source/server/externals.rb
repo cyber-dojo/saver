@@ -2,7 +2,6 @@ require_relative 'external/differ'
 require_relative 'external/disk'
 require_relative 'external/git'
 require_relative 'external/random'
-require_relative 'external/shell'
 require_relative 'external/time'
 require_relative 'model'
 require_relative 'prober'
@@ -35,10 +34,6 @@ class Externals
 
   def time
     @time ||= External::Time.new
-  end
-
-  def shell
-    @shell ||= External::Shell.new
   end
 
 end

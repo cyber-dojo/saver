@@ -145,9 +145,9 @@ module External
       @http.get(__method__, { id:id, was_index:was_index, now_index:now_index })
     end
 
-    #def kata_download(id)
-    #  @http.get(__method__, { id:id })
-    #end
+    def kata_download(id)
+      @http.get(__method__, { id:id })
+    end
 
   end
 

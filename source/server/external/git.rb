@@ -165,6 +165,22 @@ module External
       nil
     end
 
+    # Clones the repo at <source_repo_dir> into <clone_dir> and drops the origin
+    # remote the clone records. Equivalent to `git clone <source> <clone_dir>`
+    # followed by `git remote remove origin`. The clone is not bare, so it has
+    # the full history, the tags, and a checkout of HEAD; dropping origin leaves
+    # a plain repo with no pointer back to saver's disk, which the user can push
+    # to GitHub. Used by download.
+    #
+    # The delete takes the remote's keys but leaves an empty [remote "origin"]
+    # section in .git/config, where `git remote remove` takes the section too.
+    # The section carries no url, so git lists no remote either way.
+    def clone_without_origin(source_repo_dir, clone_dir)
+      repo = Rugged::Repository.clone_at(source_repo_dir, clone_dir)
+      repo.remotes.delete('origin')
+      nil
+    end
+
     # Creates the lightweight numeric tag refs/tags/<name> at <oid>.
     def create_tag(repo_dir, name, oid)
       Rugged::Repository.new(repo_dir).references.create("refs/tags/#{name}", oid)

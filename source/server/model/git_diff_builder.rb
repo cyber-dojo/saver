@@ -96,8 +96,7 @@ class GitDiffBuilder
     { type: type, line: clean(line[:content]), number: number }
   end
 
-  # libgit2 blob bytes arrive tagged ASCII-8BIT; clean to UTF-8 (matching the
-  # old shell path, which ran Utf8.clean over the git-diff output) and drop the
+  # libgit2 blob bytes arrive tagged ASCII-8BIT; clean to UTF-8 and drop the
   # single trailing newline the diff line carries.
   def clean(content)
     Utf8.clean(content.chomp("\n"))

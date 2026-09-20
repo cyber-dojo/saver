@@ -101,7 +101,7 @@ class TestBase < Id58TestBase
 
   def assert_tag_commit_message(id, tag, expected)
     dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
-    stdout = shell.assert_cd_exec(dir, "git tag --list --format='%(contents)' #{tag}")
+    stdout = `cd #{dir} && git tag --list --format='%(contents)' #{tag}`
     line = stdout.lines[0]
     diagnostic = "\nexpected:#{expected}\n  actual:#{line}"
     assert line.include?(expected), diagnostic

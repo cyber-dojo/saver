@@ -27,10 +27,6 @@ module TestHelpersExternals
     externals.random
   end
 
-  def shell
-    externals.shell
-  end
-
   #def time
   #  This interferes with MiniTest::Ci
   #  externals.time

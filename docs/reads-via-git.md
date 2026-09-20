@@ -225,7 +225,7 @@ re-verified from git source in this work.
 ## Trade-offs and open questions
 
 - Cost moves, it does not vanish. Each read becomes a git subprocess
-  (`assert_cd_exec`) instead of a cheap `File.read`. `events()` / `event()` /
+  instead of a cheap `File.read`. `events()` / `event()` /
   `file_edit()` read `events.json` on a hot path. Against that: the per-save
   working-tree checkout disappears, and writes already shell out to git heavily.
   Whether the net is a win needs measuring, not assuming, and runs against the
