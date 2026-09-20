@@ -20,6 +20,10 @@ module External
     # kata_v2.rb and docs/in-process-git.md.
     class TagNotFound < RuntimeError; end
 
+    # Raised when advance_main's compare-and-swap does not hold, ie refs/heads/main
+    # has moved off the base the new commit was built on. See advance_main.
+    class RefAdvanceFailed < RuntimeError; end
+
     # Context lines requested from a tree diff. Larger than any kata file, so
     # libgit2 emits a single hunk per file holding every line (full context),
     # reproducing the old `git diff --unified=<huge>`. Kept within uint32 (the
@@ -93,16 +97,17 @@ module External
     end
 
     # Builds the next commit on top of HEAD, in-process, on a single consistent
-    # base (so the eventual update-ref CAS keys off the same base_oid). Assigns the
-    # new event's position, place_at = HEAD's last index + 1 (the saver owns the
-    # index; the caller sends none). Replaces the files/ subtree with `files`
-    # (name => content), computes the files/ line-count delta vs HEAD's tree, and
-    # yields (base_events, place_at, added, deleted) where base_events is HEAD's
-    # events.json parsed. The block returns the remaining path => content writes
-    # (the new events.json, stdout/stderr/status/truncations.json); they are added,
-    # the tree is written, and a commit is created (NOT advancing any ref) with the
+    # base (so the eventual advance_main compare-and-swap keys off the same
+    # base_oid). Assigns the new event's position, place_at = HEAD's last index
+    # + 1 (the saver owns the index; the caller sends none). Replaces the files/
+    # subtree with `files` (name => content), computes the files/ line-count
+    # delta vs HEAD's tree, and yields (base_events, place_at, added, deleted)
+    # where base_events is HEAD's events.json parsed. The block returns the
+    # remaining path => content writes (the new events.json,
+    # stdout/stderr/status/truncations.json); they are added, the tree is
+    # written, and a commit is created (NOT advancing any ref) with the
     # message "<place_at> <tag_message>". Returns { base_oid:, new_oid:, place_at: }.
-    # The caller advances main onto new_oid with an update-ref compare-and-swap.
+    # The caller advances main onto new_oid with advance_main's compare-and-swap.
     # See docs/in-process-git.md.
     def commit_on_main(repo_dir, tag_message, files)
       repo = Rugged::Repository.new(repo_dir)
@@ -141,6 +146,25 @@ module External
       { base_oid: base_oid, new_oid: new_oid, place_at: place_at }
     end
 
+    # Points refs/heads/main at <new_oid>, but only if it currently points at
+    # <base_oid>. Equivalent to `git update-ref refs/heads/main <new> <base>`.
+    # The precondition is the concurrency mechanism: a caller builds its commit
+    # on <base_oid>, and the swap failing means another writer got there first,
+    # so the caller's commit is orphaned rather than silently overwriting the
+    # winner. Raises RefAdvanceFailed when the swap does not hold.
+    #
+    # :current_id is cyber-dojo's addition to rugged (libgit2's
+    # git_reference_create_matching), which is why saver installs rugged from
+    # https://github.com/cyber-dojo/rugged. It returns nil on a mismatch.
+    # See docs/in-process-git.md.
+    def advance_main(repo_dir, new_oid, base_oid)
+      ref = Rugged::Repository.new(repo_dir).references.create(
+        'refs/heads/main', new_oid, force: true, current_id: base_oid)
+      raise RefAdvanceFailed, "refs/heads/main is no longer #{base_oid}" if ref.nil?
+
+      nil
+    end
+
     # Creates the lightweight numeric tag refs/tags/<name> at <oid>.
     def create_tag(repo_dir, name, oid)
       Rugged::Repository.new(repo_dir).references.create("refs/tags/#{name}", oid)
@@ -154,7 +178,8 @@ module External
     # 0, and points HEAD at main. The identity is also passed explicitly to this
     # first commit so it does not depend on libgit2 having refreshed the config
     # it was just handed. The result is an ordinary git repo, against which the
-    # save/read and update-ref CAS paths run unchanged. Returns the commit oid.
+    # save/read and advance_main compare-and-swap paths run unchanged. Returns
+    # the commit oid.
     # See docs/in-process-git.md.
     def create(repo_dir, user_name, user_email, message, files)
       repo = Rugged::Repository.init_at(repo_dir)

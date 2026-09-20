@@ -318,19 +318,18 @@ class Kata_v2
       return
     end
     # Build the options.json change as an in-process commit on a single base,
-    # then advance main onto it with an update-ref compare-and-swap on that same
+    # then advance main onto it with a ref compare-and-swap on that same
     # base. No worktree, no checkout (the working tree stays stale; option_get
-    # reads via git). The CAS gives loser detection: a concurrent winner makes it
-    # fail. See docs/in-process-git.md.
+    # reads via git). The compare-and-swap gives loser detection: a concurrent
+    # winner makes it fail. See docs/in-process-git.md.
     result = git.commit_options(repo_dir(id), "set option #{name} to #{value}") do |options|
       options[name] = value
       { options_filename => json_pretty(options) }
     end
-    # Stays a git shell call (not rugged): rugged's high-level API does not expose
-    # update-ref's old-value precondition (libgit2's git_reference_create_matching),
-    # and that precondition is the concurrency mechanism, so it cannot be dropped.
+    # The advance keeps its base_oid precondition, which is the concurrency
+    # mechanism: a concurrent winner makes it fail rather than be overwritten.
     # See the fuller note in commit_event and docs/in-process-git.md.
-    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
+    git.advance_main(repo_dir(id), result[:new_oid], result[:base_oid])
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -409,7 +408,7 @@ class Kata_v2
 
   def commit_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
     # Builds the event commit in-process (libgit2/rugged) on the current head,
-    # advances main onto it (git update-ref) and tags it with its numeric index.
+    # advances main onto it (a compare-and-swap) and tags it with its numeric index.
     # No worktree, no working-tree checkout (the working tree stays stale; reads
     # go via git). See docs/in-process-git.md.
     #
@@ -468,13 +467,11 @@ class Kata_v2
     end
 
     # Advance main to the new commit, then tag it with its numeric index. The
-    # update-ref keeps its base_oid precondition (set main to <new> only if it is
+    # advance keeps its base_oid precondition (set main to <new> only if it is
     # still <base>): with the spooler as the single ordered writer per kata this
     # always holds, so it is a cheap integrity guard rather than loser detection.
-    # It stays a git shell call because rugged's high-level API does not surface
-    # update-ref's old-value precondition (libgit2's git_reference_create_matching).
     # See docs/in-process-git.md.
-    shell.assert_cd_exec(repo_dir(id), "git update-ref refs/heads/main #{result[:new_oid]} #{result[:base_oid]}")
+    git.advance_main(repo_dir(id), result[:new_oid], result[:base_oid])
     git.create_tag(repo_dir(id), result[:place_at], result[:new_oid])
     nil
   end
@@ -496,11 +493,12 @@ class Kata_v2
   # "git archive --format=tar <index>" (hence the method name). See
   # docs/in-process-git.md.
   #
-  # A save commits its event (advancing main via git update-ref) and then, as a
-  # separate step, writes that index's numeric tag (via rugged). A concurrent
-  # reader can observe the new index in events.json before its tag exists, so the
-  # tag lookup raises External::Git::TagNotFound. The caller has already validated
-  # pos_index against events.json, so this is the transient tag-write window:
+  # A save commits its event (advancing main via the ref compare-and-swap) and
+  # then, as a separate step, writes that index's numeric tag (via rugged). A
+  # concurrent reader can observe the new index in events.json before its tag
+  # exists, so the tag lookup raises External::Git::TagNotFound. The caller has
+  # already validated pos_index against events.json, so this is the transient
+  # tag-write window:
   # retry briefly until the writer finishes; if the retries are exhausted (a
   # genuine missing tag) the exception is re-raised.
   GIT_ARCHIVE_MAX_RETRIES   = 100
@@ -532,8 +530,8 @@ class Kata_v2
 
   # Reads the kata's committed events.json through git rather than off the
   # working tree. The working tree is stale (saves no longer refresh it; they
-  # advance main with git update-ref, no checkout), so its events.json is not
-  # the latest. HEAD (the kata's main branch) advances atomically and the
+  # advance main with a ref compare-and-swap, no checkout), so its events.json
+  # is not the latest. HEAD (the kata's main branch) advances atomically and the
   # committed blob exists before the ref moves, so this always returns the
   # whole, consistent, latest events.json. See docs/reads-via-git.md.
   def read_events_via_git(id)
@@ -541,8 +539,8 @@ class Kata_v2
   end
 
   # Reads the kata's committed options.json through git rather than off the
-  # working tree. option_set advances main with git update-ref without a
-  # checkout, so the working-tree options.json is stale; reading at HEAD (which
+  # working tree. option_set advances main with a ref compare-and-swap without
+  # a checkout, so the working-tree options.json is stale; reading at HEAD (which
   # advances atomically) gives the latest. See git_show and docs/reads-via-git.md.
   def read_options_via_git(id)
     json_parse(Utf8.clean(git_show(id, 'options.json')))

@@ -27,7 +27,7 @@ class KataRanTestsTest < TestBase
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   version_test 2, 'Sp4DkC', %w(
-  | a failure in the git update-ref that advances main (here stubbed to raise)
+  | a failure in the ref advance that moves main (here stubbed to raise)
   | propagates out of the write as-is. commit_event has no rescue - the spooler
   | is the single ordered writer, so there is no concurrent-write race to sort
   | out - so the caller sees the real error.
@@ -39,20 +39,17 @@ class KataRanTestsTest < TestBase
     stderr = { 'content' => '', 'truncated' => false }
     status = 0
 
-    error_shell = Class.new do
-      # commit_event's only shell call is the update-ref CAS, so raising here
-      # simulates that ref advance failing for a non-race reason.
-      def assert_cd_exec(_path, *_commands)
-        raise RuntimeError, 'simulated update-ref failure'
-      end
-    end.new
-
-    externals.instance_variable_set('@shell', error_shell)
+    # Override only advance_main on the real git external, so every other
+    # in-process git call the write makes still runs for real.
+    error_git = externals.git
+    def error_git.advance_main(_repo_dir, _new_oid, _base_oid)
+      raise RuntimeError, 'simulated ref advance failure'
+    end
 
     error = assert_raises(RuntimeError) {
       kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     }
-    assert_equal 'simulated update-ref failure', error.message
+    assert_equal 'simulated ref advance failure', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,19 +192,18 @@ class KataRanTestsTest < TestBase
     files  = base_files.merge(edited => { 'content' => base_files[edited]['content'] + "\nedit\n" })
     stdout = bats['stdout']; stderr = bats['stderr']; status = bats['status']
 
-    # commit_event's only shell call is the update-ref CAS, so raising here makes
-    # the internal file_edit's commit fail for a non-race reason.
-    error_shell = Class.new do
-      def assert_cd_exec(_path, *_commands)
-        raise RuntimeError, 'simulated update-ref failure'
-      end
-    end.new
-    externals.instance_variable_set('@shell', error_shell)
+    # Raising from the ref advance makes the internal file_edit's commit fail
+    # for a non-race reason. Only advance_main is overridden, so every other
+    # in-process git call the write makes still runs for real.
+    error_git = externals.git
+    def error_git.advance_main(_repo_dir, _new_oid, _base_oid)
+      raise RuntimeError, 'simulated ref advance failure'
+    end
 
     error = assert_raises(RuntimeError) {
       kata_ran_tests(id, files, stdout, stderr, status, red_summary)
     }
-    assert_equal 'simulated update-ref failure', error.message
+    assert_equal 'simulated ref advance failure', error.message
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -

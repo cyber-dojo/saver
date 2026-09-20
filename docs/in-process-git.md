@@ -4,8 +4,10 @@ In-process git for the save and read hot paths (libgit2 / rugged)
 
 A design note. The hot path is now IMPLEMENTED: the v2 save commit, the
 events/event/options reads, AND the diff endpoints (diff_lines / diff_summary)
-run in-process via libgit2 (the rugged gem). Only the concurrency ref-advance
-(the update-ref CAS) and download stay on the git CLI. The one remaining
+run in-process via libgit2 (the rugged gem). Only download stays on the git
+CLI; the concurrency ref-advance moved in-process once cyber-dojo's rugged fork
+added the compare-and-swap it needs (see "Ref advance (moved in-process
+later)", below). The one remaining
 worktree user is kata_option_set, left on the CLI for now (see "What landed",
 below). This note records the original plan, the spike, the benchmark, and the
 parity findings that came out of the build.
@@ -65,11 +67,13 @@ startup-bound and already parallel, the test wall-clock too.
   reported stat = [files, insertions, deletions], i.e. the line counts the save
   needs for diff_added_count / diff_deleted_count are available in-process.
 - Gap: the atomic compare-and-swap ref update is NOT exposed by rugged's
-  high-level API. `references` offers `create` (force-overwrite, not a CAS) and
-  `update`, with no old-value precondition / set-target-with-expected. libgit2
-  has it (git_reference_create_matching) but rugged does not surface it. That
-  CAS is the whole concurrency mechanism (loser detection), so it cannot be
-  dropped.
+  high-level API. `references` offers `create` (force-overwrite, not a
+  compare-and-swap) and `update`, with no old-value precondition /
+  set-target-with-expected. libgit2 has it (git_reference_create_matching) but
+  rugged does not surface it. That compare-and-swap is the whole concurrency
+  mechanism (loser detection), so it cannot be dropped.
+  [RESOLVED LATER: cyber-dojo forked rugged and added the missing option. See
+  "Ref advance (moved in-process later)", below.]
 
 
 - - - -
@@ -90,8 +94,11 @@ Move to rugged (in-process):
 Keep on the git CLI (unchanged):
 - the ref advance: the single
   `git update-ref refs/heads/main <new> <base>` compare-and-swap. rugged does
-  not expose the CAS, and this is the concurrency primitive, so keep it as one
-  shell call.
+  not expose the compare-and-swap, and this is the concurrency primitive, so
+  keep it as one shell call.
+  [SUPERSEDED: this is the original plan. The ref advance later moved in-process
+  too, by forking rugged to add the missing compare-and-swap. See "Ref advance
+  (moved in-process later)", below.]
 - git_diff.rb (diff_lines / diff_summary): stays exactly as it is. This removes
   the biggest parity risk (textual git-diff output parsed by git_diff_parser.rb
   vs rugged's structured deltas) from scope entirely.
@@ -101,7 +108,7 @@ Keep on the git CLI (unchanged):
   (moved in-process later)", below.]
 - download: the git clone stays a shell call (rare; works on the repo as built).
 
-So a save goes from ~14 git subprocesses to ~1 (the CAS) plus in-process rugged
+So a save goes from ~14 git subprocesses to ~1 (the compare-and-swap) plus in-process rugged
 work, and the events/event reads go from subprocess-per-call to in-process.
 
 
@@ -110,7 +117,7 @@ work, and the events/event reads go from subprocess-per-call to in-process.
 
 A standalone prototype implemented the save both ways (shell-git worktree commit
 vs the rugged hybrid: in-process index build + Rugged::Commit.create + the one
-git update-ref CAS + rugged tag) and the event read both ways (git show +
+git update-ref compare-and-swap + rugged tag) and the event read both ways (git show +
 git archive vs in-process blob reads), and timed them head to head. 40 saves and
 100 reads each, rugged 1.9.0 in a ruby:3.3-alpine container:
 
@@ -122,7 +129,7 @@ git archive vs in-process blob reads), and timed them head to head. 40 saves and
       rugged    :    8.5 ms total = 0.09 ms/read     speedup 21.3x
 
 The hybrid ran end to end: 40 sequential saves (in-process commit + the shell
-CAS + rugged tag) and 100 reads all succeeded with correct commits and tags. So
+compare-and-swap + rugged tag) and 100 reads all succeeded with correct commits and tags. So
 the approach is functionally sound, and ~9x faster on saves, ~21x on reads.
 
 Honest caveat on the absolute numbers: this container's git startup is ~1.6ms
@@ -208,7 +215,7 @@ under json 3.0, raise) when json_pretty re-serializes the merged events.
   (Sp4DkC-G, Tn6Wb*, DccG02, Hpq7Rz, kata_diff_added_deleted) are the safety net.
 
 What stays the same: the on-disk format, the diff endpoints' behavior, the
-download contract, and the update-ref CAS concurrency semantics.
+download contract, and the update-ref compare-and-swap concurrency semantics.
 
 
 - - - -
@@ -221,20 +228,22 @@ v2 only:
 - Save commit: commit_event builds the new tree via the index on a single base
   (read base tree, replace files/, set events.json + metadata), computes the
   line counts via the tree diff (options above), and Rugged::Commit.create. The
-  ref advance stays the one shell `git update-ref` CAS; the numeric tag is a
-  rugged ref create. No git worktree add, no checkout, no worktree cleanup.
+  ref advance stays the one shell `git update-ref` compare-and-swap; the numeric
+  tag is a rugged ref create. No git worktree add, no checkout, no worktree
+  cleanup.
 
 The full server suite stays green and dropped from ~25s to ~8s, confirming the
 startup-bound prediction in the saver image (not just the standalone bench).
 
-Kept on the git CLI: download and the update-ref CAS. (Two things kept on the
-CLI in the original rollout moved in-process in later changes: git_diff.rb and
-kata creation; see "Diff endpoints (moved in-process later)" and "Kata creation
-(moved in-process later)", below.)
+Kept on the git CLI: download and the update-ref compare-and-swap. (Three
+things kept on the CLI in the original rollout moved in-process in later
+changes: git_diff.rb, kata creation, and the ref advance; see "Diff endpoints
+(moved in-process later)", "Kata creation (moved in-process later)" and "Ref
+advance (moved in-process later)", below.)
 
 Deferred (still on the CLI / worktree):
 - kata_option_set still uses fast_forward_main_via_worktree (git worktree add +
-  shell commit + CAS + cleanup). It is now the ONLY worktree user. Converting it
+  shell commit + compare-and-swap + cleanup). It is now the ONLY worktree user. Converting it
   in-process would remove fast_forward_main_via_worktree, read_options(worktree),
   and the worktree-based write_files path. Hpq7Rz (the worktree-cleanup guard) is
   now pointed at option_set, since that is the only path still creating one.
@@ -294,7 +303,7 @@ subprocesses at all.
   libgit2 having refreshed the config it was just handed. The on-disk result is
   an ordinary git repo, byte-identical to the old shell-built one (the working
   tree is written first with the same bytes the commit uses), so the save/read
-  and update-ref CAS paths run against it unchanged.
+  and update-ref compare-and-swap paths run against it unchanged.
 - The directory creation (External::Disk#dir_make) dropped its `mkdir -vp`
   subprocess too: it now creates missing parents with FileUtils.mkdir_p and
   claims the leaf with Dir.mkdir, a single atomic syscall that raises
@@ -309,11 +318,47 @@ away.
 
 
 - - - -
+## Ref advance (moved in-process later)
+
+The spike found one operation the save could not do in-process: setting
+refs/heads/main to a new commit only if it still points at the base that commit
+was built on. That precondition is the concurrency mechanism, so it could not be
+dropped, and the save kept one `git update-ref refs/heads/main <new> <base>`
+subprocess purely for it.
+
+libgit2 has always exposed the operation as git_reference_create_matching. The
+gap was in the ruby binding, which did not surface it. So cyber-dojo forked
+rugged and added a `:current_id` option to
+Rugged::ReferenceCollection#create:
+
+    repo.references.create("refs/heads/main", new_oid,
+                           force: true, current_id: base_oid)
+
+The reference moves only if it currently points at `current_id`; on a mismatch
+it is left alone and `nil` is returned.
+
+- The fork is https://github.com/cyber-dojo/rugged, and its README.md explains
+  the arrangement. saver's Dockerfile installs rugged from it, pinned to a
+  commit, rather than from rubygems.
+- The change is offered upstream as
+  https://github.com/libgit2/rugged/pull/1014. If that is merged and released,
+  saver goes back to the rubygems gem and the fork can be deleted.
+- The shell call became External::Git#advance_main, which raises
+  External::Git::RefAdvanceFailed when the swap does not hold. That preserves
+  the old behaviour, where the shell helper raised on a non-zero `git
+  update-ref`.
+
+So a v2 save now spawns no git subprocesses at all. download is the only
+remaining git CLI user (git clone + git remote remove, plus tar), which keeps
+External::Shell alive.
+
+
+- - - -
 ## Recommendation and rollout (DONE for the hot path)
 
 High value (the only remaining lever for both production and test speed once
 parallelism is maxed). All go/no-go gates came in green: rugged builds in Alpine,
-commit/read/diff-stat work in-process, the CAS is handled by keeping the one
+commit/read/diff-stat work in-process, the compare-and-swap is handled by keeping the one
 shell call, the standalone benchmark showed ~9x (saves) / ~21x (reads), and the
 in-image full suite confirmed it end to end (~25s -> ~8s, green). The diff
 endpoints have since moved in-process too (see above); option_set is the next

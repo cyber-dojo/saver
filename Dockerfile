@@ -8,15 +8,38 @@ LABEL maintainer=jon@jaggersoft.com
 RUN apk add git jq
 
 # In-process git via libgit2 (the rugged gem) - see docs/in-process-git.md.
-# rugged compiles a vendored libgit2 statically into its extension, so the build
-# toolchain (and libgit2-dev) is only needed to compile it: install as a virtual
-# package, build, then drop it. Re-add libgcc for the libgcc_s the compiled
-# extension links at runtime (the only runtime lib not already provided by ruby;
-# libssl/libcrypto/libz/libgmp are).
+#
+# rugged comes from cyber-dojo's fork, not from rubygems. The fork adds the
+# :current_id compare-and-swap option to Rugged::ReferenceCollection#create,
+# which External::Git#advance_main needs to move refs/heads/main only when it
+# still points at the commit the change was built on. Upstream carries this as
+# the open pull request https://github.com/libgit2/rugged/pull/1014; if that is
+# merged and released, this goes back to `gem install rugged`. The fork's
+# README.md explains the arrangement.
+#
+# The submodules are updated after the checkout, not cloned with --recursive,
+# because rugged vendors libgit2 as a submodule at vendor/libgit2 and the
+# gemspec packages source from it, so the submodule has to match the pinned
+# commit. The pin keeps the image reproducible.
+#
+# rugged compiles that vendored libgit2 statically into its extension, so the
+# build toolchain (and libgit2-dev) is only needed to compile it: install as a
+# virtual package, build, then drop it. Re-add libgcc for the libgcc_s the
+# compiled extension links at runtime (the only runtime lib not already provided
+# by ruby; libssl/libcrypto/libz/libgmp are).
 # rugged runs a bare gmake, so MAKEFLAGS=-j parallelises the libgit2 compile
 # (~3x faster: 142s -> 43s on a 10-core builder).
+ARG RUGGED_REPO=https://github.com/cyber-dojo/rugged.git
+ARG RUGGED_SHA=e9f9caec0a485499d3420f7304a50a67d7779b2f
 RUN apk add --no-cache --virtual .rugged-build-deps build-base cmake pkgconf libgit2-dev \
- && MAKEFLAGS="-j$(nproc)" gem install rugged \
+ && git clone "${RUGGED_REPO}" /tmp/rugged \
+ && git -C /tmp/rugged checkout "${RUGGED_SHA}" \
+ && git -C /tmp/rugged submodule update --init --recursive \
+ && cd /tmp/rugged \
+ && gem build rugged.gemspec \
+ && MAKEFLAGS="-j$(nproc)" gem install ./rugged-*.gem \
+ && cd / \
+ && rm -rf /tmp/rugged \
  && apk del .rugged-build-deps \
  && apk add --no-cache libgcc
 
