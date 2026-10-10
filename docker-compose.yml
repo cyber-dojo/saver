@@ -6,7 +6,6 @@ volumes:
 services:
 
   client:
-    platform: linux/amd64
     depends_on: [ server ]
     build:
       context: source/client
@@ -23,7 +22,6 @@ services:
       - ./test/client:/saver/test:ro
 
   server:
-    platform: linux/amd64
     depends_on: [ differ ]
     build:
       context: .
@@ -43,7 +41,6 @@ services:
       - /tmp
 
   differ:
-    platform: linux/amd64
     image: ${CYBER_DOJO_DIFFER_IMAGE}:${CYBER_DOJO_DIFFER_TAG}
     user: nobody
     env_file: [ .env ]
