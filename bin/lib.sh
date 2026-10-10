@@ -21,7 +21,7 @@ exit_non_zero()
 
 containers_down()
 {
-  docker --log-level=ERROR compose down --remove-orphans --volumes
+  docker compose down --remove-orphans --volumes
 }
 
 exit_non_zero_unless_installed()

@@ -109,7 +109,7 @@ run_tests()
   exit_non_zero_unless_installed docker
   containers_down
   create_space_limited_volume
-  docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
+  docker compose --progress=plain up --no-build --wait --wait-timeout=10 "${TYPE}"
   # Resolved here (not in check_args) because the container does not exist
   # until the compose up above has brought it up.
   export CONTAINER_NAME="$(service_container "${TYPE}")"

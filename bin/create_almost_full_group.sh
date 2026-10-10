@@ -16,7 +16,7 @@ export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-saver}"
 readonly USER="${CYBER_DOJO_SAVER_SERVER_USER}"
 
 # TODO: Need to start a custom-start-points container
-docker --log-level=ERROR compose --progress=plain up --no-build --wait --wait-timeout=10 server
+docker compose --progress=plain up --no-build --wait --wait-timeout=10 server
 # Resolved after compose up because the container does not exist before it.
 readonly CONTAINER="$(service_container server)"
 docker exec "${CONTAINER}" bash -c "rm -rf /cyber-dojo/*"
