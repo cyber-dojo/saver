@@ -57,11 +57,11 @@ build_image()
 
   if [ "${CI:-}" != 'true' ]; then
     # Locally, client and server tests both need a server
-    docker --log-level=ERROR compose build server
+    docker compose build server
   fi
 
   if [ "${type}" == 'client' ]; then
-    docker --log-level=ERROR compose build client
+    docker compose build client
   fi
 
   local -r image_name="${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}"
@@ -75,7 +75,7 @@ build_image()
 
   if [ "${type}" == 'server' ]; then
     # Tag image-name for local development where savers name comes from echo-env-vars
-    docker --log-level=ERROR tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
+    docker tag "${image_name}" "cyberdojo/saver:${CYBER_DOJO_SAVER_TAG}"
     # After tagging, so this build is protected by its own tag, and removing an
     # earlier build's tags takes its last tag with them and the image itself
     # goes. check_args rejects 'server' inside CI, so the image pulled by the
