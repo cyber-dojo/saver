@@ -67,7 +67,7 @@ class Kata_v2
     options_json  = json_pretty(default_options)
     events_json   = json_pretty(events)
     readme_md     = readme(manifest)
-    files_content = content_of(files)
+    files_content = lf_content_of(files)
 
     disk.assert_all([
       disk.file_create_command(manifest_filename(id), manifest_json),
@@ -654,6 +654,13 @@ class Kata_v2
 
   def content_of(files)
     files.map{|filename,file| [filename,file['content']]}.to_h
+  end
+
+  # Each file's content with its \r\n line endings as \n. A browser's
+  # textarea sends back \n, so storing the created files the same way keeps
+  # a [test] with no edits from being seen as a change to every \r\n file.
+  def lf_content_of(files)
+    content_of(files).transform_values { |content| content.gsub("\r\n", "\n") }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -

@@ -29,4 +29,27 @@ class KataCreateTest < TestBase
     assert_equal 505, last_response.status
   end
 
+  version_test 2, 'e09h37', %w(
+  | kata_create(manifest) stores each visible file with its \r\n line
+  | endings as \n, matching what a browser's textarea sends back, so
+  | a [test] with no edits is not seen as a change
+  ) do
+    manifest = custom_manifest
+    lf_content = manifest['visible_files']['tennis.py']['content']
+    manifest['visible_files']['tennis.py']['content'] = lf_content.gsub("\n", "\r\n")
+    id = kata_create(manifest)
+    assert_equal lf_content, kata_event(id, 0)['files']['tennis.py']['content']
+  end
+
+  version_test 2, 'e09h38', %w(
+  | group_join(id) stores each visible file of the new kata with its
+  | \r\n line endings as \n
+  ) do
+    manifest = custom_manifest
+    lf_content = manifest['visible_files']['tennis.py']['content']
+    manifest['visible_files']['tennis.py']['content'] = lf_content.gsub("\n", "\r\n")
+    id = group_join(group_create(manifest))
+    assert_equal lf_content, kata_event(id, 0)['files']['tennis.py']['content']
+  end
+
 end

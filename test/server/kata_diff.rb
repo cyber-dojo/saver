@@ -239,6 +239,25 @@ class KataDiffTest < TestBase
     ]
   end
 
+  test 'D4E5C5', %w(
+  | v2 kata: a file whose only change is its \r\n line endings becoming \n
+  | is unchanged, with all its lines
+  ) do
+    @was_files = { 'hiker.c' => "#include \"hiker.h\"\r\n\r\nint answer(void)\r\n{\r\n    return 6 * 9;\r\n}\r\n" }
+    @now_files = { 'hiker.c' => "#include \"hiker.h\"\n\nint answer(void)\n{\n    return 6 * 9;\n}\n" }
+    assert_diff [
+      :unchanged, 'hiker.c', 'hiker.c', 0, 0, 6,
+      [
+        same(1, '#include "hiker.h"'),
+        same(2, ''),
+        same(3, 'int answer(void)'),
+        same(4, '{'),
+        same(5, '    return 6 * 9;'),
+        same(6, '}')
+      ]
+    ]
+  end
+
   test 'D4E5C4', %w(
   | v2 kata: diff_lines with a non-existent now-index raises a reasonable exception
   ) do
