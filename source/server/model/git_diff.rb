@@ -18,9 +18,18 @@ module GitDiff
     validate_diff_index(id, now_index)
     structured = git.diff(repo_dir(id), was_index, now_index)
     diffs = GitDiffBuilder.new(structured, options).build_all
+    diffs.reject! { |diff| eol_only_change?(diff) }
     now_files = git.files_blobs(repo_dir(id), now_index)
     fill_identical_renamed_files(now_files, diffs, options)
     diffs + unchanged_files(now_files, diffs, options)
+  end
+
+  # True for a changed file with no lines, which is how git reports a file
+  # whose only change is at the ends of its lines (eg \r\n becoming \n), as
+  # the diff ignores space at eol. Dropping it lets it be listed as unchanged,
+  # with all its lines.
+  def eol_only_change?(diff)
+    diff[:type] == :changed && diff[:line_counts] == { same: 0, deleted: 0, added: 0 }
   end
 
   def fill_identical_renamed_files(now_files, diffs, options)
