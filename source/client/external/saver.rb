@@ -44,6 +44,10 @@ module External
       @http.post(__method__, { id:id, index:index })
     end
 
+    def avatar_fork(id, index)
+      @http.post(__method__, { id:id, index:index })
+    end
+
     # - - - - - - - - - - - - - - - - - - -
 
     def kata_create(manifest)

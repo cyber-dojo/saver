@@ -332,6 +332,41 @@ children (one per LTF).
 
 
 - - - -
+## POST avatar_fork
+- description
+  * Creates a new kata (a new avatar) in the group of the kata with the given `id`,
+    whose starting files are a copy of the files in that kata at the given `index`.
+    As with `group_fork`, it is *not* a 'deep' copy; the history of commits in the
+    kata being forked is *not* copied.
+- parameters
+
+  | Name | Type | Description |
+  |------|------|-------------|
+  | `id` | `String` | The id of the kata being forked. It must be in a group. |
+  | `index` | `int` | The event index to fork from. |
+  | `indexes` | `Array[int]` | (optional). As for `group_join`: the candidate avatar indexes (from 0..63) in preference order. Defaults to a shuffled 0..63. |
+
+- returns 
+  * the `id` of the created kata, or `null` if the group is already full.
+  * a kata with the given `id` that is not in a group is a request error.
+- example
+  ```bash
+  $ curl \
+    --data '{"id":"dFg8Us", "index":23}' \
+    --fail \    
+    --header 'Content-type: application/json' \
+    --silent \
+    --request POST \
+      https://${DOMAIN}:${PORT}/avatar_fork | jq .
+  ```
+  ```bash
+  {
+    "avatar_fork": "Rn3pQz"
+  }
+  ```
+
+
+- - - -
 # Kata
 
 A kata is one participant's practice: created from a manifest (an exercise for a

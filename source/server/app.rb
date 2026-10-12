@@ -27,6 +27,7 @@ class App < AppBase
 
   post_json(:model, :group_fork)
   post_json(:model, :kata_fork)
+  post_json(:model, :avatar_fork)
 
   post_json(:model, :kata_create)
    get_json(:model, :kata_download)

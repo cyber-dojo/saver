@@ -28,6 +28,10 @@ module TestHelpersModel
     model.group_fork(id:id, index:index)
   end
 
+  def avatar_fork(id, index, indexes = AVATAR_INDEXES.shuffle)
+    model.avatar_fork(id:id, index:index, indexes:indexes)
+  end
+
   def cluster_create(manifests)
     model.cluster_create(manifests:manifests)
   end

@@ -60,6 +60,7 @@ children (one per LTF).
 | POST | [group_join](docs/api.md#post-group_join) | Creates a new kata in the group with the given `id` and returns the kata's id. |
 | GET  | [group_joined](docs/api.md#get-group_joined) | Returns the kata-id and kata-events-summary keyed against the kata's avatar-index (0-63) for the katas that have joined a group. |
 | POST | [group_fork](docs/api.md#post-group_fork) | Creates a new group whose starting files are a copy of the files in the kata with the given `id` at the given `index`. |
+| POST | [avatar_fork](docs/api.md#post-avatar_fork) | Creates a new kata in the group of the kata with the given `id`, whose starting files are a copy of that kata's files at the given `index`. |
 
 
 ## [Kata](docs/api.md#kata)

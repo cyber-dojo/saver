@@ -105,6 +105,15 @@ class Model
     kata(id).fork(Group_v2, id, index)
   end
 
+  # Joins a new avatar to the group of kata id, starting from the files of
+  # its event index. Returns the new avatar's kata id, or nil when full.
+  def avatar_fork(id:, index:, indexes:AVATAR_INDEXES.shuffle)
+    group_id = kata_manifest(id:id)['group_id']
+    fail RequestError, "kata #{id} is not in a group" if group_id.nil?
+    files = kata_event(id:id, index:index)['files']
+    group(group_id).join(group_id, indexes, files)
+  end
+
   # - - - - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest:)
