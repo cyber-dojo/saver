@@ -36,12 +36,13 @@ class Group_v2
     manifest
   end
 
-  def join(id, indexes)
+  def join(id, indexes, files = nil)
     taken = katas_indexes(id).map{ |index,_| index }
     indexes -= taken
     manifest = self.manifest(id)
     manifest.delete('id')
     manifest['group_id'] = id
+    manifest['visible_files'] = files unless files.nil?
     commands = indexes.map{ |index| dir_make_command(id, index) }
     results = disk.run_until_true(commands)
     result_index = results.find_index(true)

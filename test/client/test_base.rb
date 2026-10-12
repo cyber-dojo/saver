@@ -48,6 +48,10 @@ class TestBase < Id58TestBase
     saver.group_fork(id, index)
   end
 
+  def avatar_fork(id, index)
+    saver.avatar_fork(id, index)
+  end
+
   # - - - - - - - - - - - - - - - - - -
 
   def kata_create(manifest)
