@@ -21,7 +21,7 @@ $ make {image_server|image_client}
 $ make {test_server|test_client}
 
 # Run only tests whose id starts with Sp5
-$ make {test_server|test_client} tid=Sp5
+$ make {test_server|test_client} tids=Sp5
 
 # Check test metrics
 $ make {metrics_test_server|metrics_test_client}
