@@ -3,7 +3,7 @@ require_relative 'test_base'
 class ProbingTest < TestBase
 
   test 'AEA602', %w(
-  | ready? is true when all start_points are ready
+  | ready? is always true
   ) do
     assert prober.ready?
   end

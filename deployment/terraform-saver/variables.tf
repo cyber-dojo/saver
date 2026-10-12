@@ -41,16 +41,10 @@ variable "TAGGED_IMAGE" {
 variable "app_env_vars" {
   type = map(any)
   default = {
-    CYBER_DOJO_PROMETHEUS                      = "true"
-    CYBER_DOJO_SAVER_PORT                      = "4537"
-    CYBER_DOJO_DIFFER_PORT                     = "4567"
-    CYBER_DOJO_DIFFER_HOSTNAME                 = "differ.cyber-dojo.eu-central-1"
-    CYBER_DOJO_LANGUAGES_START_POINTS_PORT     = "4524"
-    CYBER_DOJO_EXERCISES_START_POINTS_PORT     = "4525"
-    CYBER_DOJO_CUSTOM_START_POINTS_PORT        = "4526"
-    CYBER_DOJO_LANGUAGES_START_POINTS_HOSTNAME = "languages-start-points.cyber-dojo.eu-central-1"
-    CYBER_DOJO_EXERCISES_START_POINTS_HOSTNAME = "exercises-start-points.cyber-dojo.eu-central-1"
-    CYBER_DOJO_CUSTOM_START_POINTS_HOSTNAME    = "custom-start-points.cyber-dojo.eu-central-1"
+    CYBER_DOJO_PROMETHEUS      = "true"
+    CYBER_DOJO_SAVER_PORT      = "4537"
+    CYBER_DOJO_DIFFER_PORT     = "4567"
+    CYBER_DOJO_DIFFER_HOSTNAME = "differ.cyber-dojo.eu-central-1"
   }
 }
 

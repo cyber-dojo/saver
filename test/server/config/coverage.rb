@@ -10,6 +10,8 @@ SimpleCov.start do
   filters.clear
   skip("test/id58_test_base.rb")
   root(APP_DIR)
+  track_files("#{APP_DIR}/source/**/*.rb")
+  add_filter("source/config/")
 
   code_tab = ENV['COVERAGE_CODE_TAB_NAME']
   test_tab = ENV['COVERAGE_TEST_TAB_NAME']
