@@ -106,12 +106,35 @@ class Model
   end
 
   # Joins a new avatar to the group of kata id, starting from the files of
-  # its event index. Returns the new avatar's kata id, or nil when full.
+  # its traffic-light at index, and gives it that light, checked out from
+  # kata id, so it opens with a light. Returns the new avatar's kata id, or
+  # nil when full. Only a traffic-light that is a test result can be forked;
+  # the creation event, file events, and pulling, timed_out and faulty lights
+  # are request errors.
   def avatar_fork(id:, index:, indexes:AVATAR_INDEXES.shuffle)
-    group_id = kata_manifest(id:id)['group_id']
+    manifest = kata_manifest(id:id)
+    group_id = manifest['group_id']
     fail RequestError, "kata #{id} is not in a group" if group_id.nil?
-    files = kata_event(id:id, index:index)['files']
-    group(group_id).join(group_id, indexes, files)
+    light = kata_events(id:id).find { |e| e['index'] == index }
+    not_test_results = %w( create pulling timed_out faulty ) + PolyFiller::FILE_EVENTS
+    if not_test_results.include?(light['colour'])
+      fail RequestError, "kata #{id} event #{index} is not a traffic-light"
+    end
+    event = kata_event(id:id, index:index)
+    avatar_id = group(group_id).join(group_id, indexes, event['files'])
+    unless avatar_id.nil?
+      checkout = {
+        'id' => id,
+        'index' => index,
+        'major_index' => light['major_index'],
+        'minor_index' => light['minor_index'],
+        'avatarIndex' => manifest['group_index']
+      }
+      summary = { 'colour' => light['colour'], 'checkout' => checkout }
+      kata(avatar_id).checked_out(avatar_id, event['files'], event['stdout'],
+                                  event['stderr'], event['status'], summary, nil, nil)
+    end
+    avatar_id
   end
 
   # - - - - - - - - - - - - - - - - - - - -

@@ -1,22 +1,22 @@
 # Generates a group with 63 avatars, ready for group-full test
 
 def require_source(file)
-  require_relative("../../#{file}")
+  require_relative("../../source/#{file}")
 end
 
 require_source 'externals'
 require_source 'model'
-require_source 'external/custom_start_points'
+require_relative 'kata_test_data'
+include KataTestData
 
 version = ARGV[0].to_i
 
-custom = External::CustomStartPoints.new
-name = custom.display_names[0]
-manifest = custom.manifest(name)
+# The manifest the tests use, so no start-points service needs to be up.
+manifest = manifest_Tennis_refactoring_Python_unitttest
 manifest["version"] = version
 model = Model.new(Externals.new)
 
-gid = model.group_create(manifests:[manifest], options:{})
+gid = model.group_create(manifest:manifest)
 63.times { model.group_join(id:gid) }
 
 print(gid)
