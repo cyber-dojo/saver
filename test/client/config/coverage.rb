@@ -8,8 +8,11 @@ SimpleCov.start do
   enable_coverage(:branch)
   primary_coverage(:branch)
   filters.clear
-  skip("test/id58_test_base.rb")
   root(APP_DIR)
+  cover("source/**/*.rb")
+  cover { |file| file.project_filename.start_with?("test/") }
+  skip("test/id58_test_base.rb")
+  skip("source/config/")
 
   code_tab = ENV['COVERAGE_CODE_TAB_NAME']
   test_tab = ENV['COVERAGE_TEST_TAB_NAME']
