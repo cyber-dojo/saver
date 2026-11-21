@@ -90,15 +90,28 @@ jobs:
   # runner. The unit tests run in the linux/amd64 one, and build-image builds
   # the image FROM each, so the image's runtime is the one the tests ran in.
   # Neither is published, nor has provenance or an SBOM: only the image does.
+  # The built OCI layout is cached by the Dockerfile's hash. A cache hit skips
+  # the build. A miss builds with no layer cache, so unpinned apk packages are
+  # as new as the Dockerfile's last change (see its apk-refresh number).
   runtime-amd64:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
-      - uses: docker/setup-buildx-action@v4
+
+      - name: Restore the runtime built from this Dockerfile
+        id: cached
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/runtime.tar
+          key: saver-runtime-amd64-${{ hashFiles('Dockerfile') }}
+
+      - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
+        uses: docker/setup-buildx-action@v4
 
       - name: Build the runtime as an OCI layout
+        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -106,9 +119,15 @@ jobs:
           platforms: linux/amd64
           provenance: false
           sbom: false
-          cache-from: type=gha,scope=saver-runtime-amd64
-          cache-to: type=gha,scope=saver-runtime-amd64,mode=max
+          no-cache: true
           outputs: type=oci,dest=${{ runner.temp }}/runtime.tar,name=saver-runtime:local
+
+      - name: Cache the runtime built from this Dockerfile
+        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/runtime.tar
+          key: saver-runtime-amd64-${{ hashFiles('Dockerfile') }}
 
       - name: Upload the runtime
         uses: actions/upload-artifact@v7
@@ -125,9 +144,19 @@ jobs:
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
-      - uses: docker/setup-buildx-action@v4
+
+      - name: Restore the runtime built from this Dockerfile
+        id: cached
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/runtime.tar
+          key: saver-runtime-arm64-${{ hashFiles('Dockerfile') }}
+
+      - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
+        uses: docker/setup-buildx-action@v4
 
       - name: Build the runtime as an OCI layout
+        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -135,9 +164,15 @@ jobs:
           platforms: linux/arm64
           provenance: false
           sbom: false
-          cache-from: type=gha,scope=saver-runtime-arm64
-          cache-to: type=gha,scope=saver-runtime-arm64,mode=max
+          no-cache: true
           outputs: type=oci,dest=${{ runner.temp }}/runtime.tar,name=saver-runtime:local
+
+      - name: Cache the runtime built from this Dockerfile
+        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/runtime.tar
+          key: saver-runtime-arm64-${{ hashFiles('Dockerfile') }}
 
       - name: Upload the runtime
         uses: actions/upload-artifact@v7
