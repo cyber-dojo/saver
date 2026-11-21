@@ -32,9 +32,24 @@ jobs:
       image_name:               ${{ steps.vars.outputs.image_name }}
       kosli_flow:               ${{ steps.vars.outputs.kosli_flow }}
       kosli_trail:              ${{ steps.vars.outputs.kosli_trail }}
+      bare_image_hash:          ${{ steps.bare.outputs.hash }}
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
+
+      # The bare image's cache key: a hash of the Dockerfile's base stage, up
+      # to the `FROM base` that starts the deployed image's stage, without
+      # comments or blank lines, so only an edit to an instruction (eg the FROM
+      # digest, or APK_REFRESH) builds a new bare image.
+      - name: Hash the bare image's instructions
+        id: bare
+        run: |
+          grep --quiet --line-regexp 'FROM base' Dockerfile \
+            || { echo "No 'FROM base' line in Dockerfile"; exit 1; }
+          HASH="$(sed '/^FROM base$/q' Dockerfile \
+                  | grep --invert-match --extended-regexp '^[[:space:]]*(#|$)' \
+                  | sha256sum | cut --delimiter=' ' --fields=1)"
+          echo "hash=${HASH}" >> "${GITHUB_OUTPUT}"
 
       - name: Prepare outputs for workflow jobs
         id: vars
@@ -90,9 +105,10 @@ jobs:
   # on that platform's runner. The unit tests run in the linux/amd64 one, and
   # build-image builds the deployed image FROM each. No bare image is
   # published, nor has provenance or an SBOM: only the deployed image does.
-  # The built OCI layout is cached by the Dockerfile's hash. A cache hit skips
-  # the build. A miss builds with no layer cache, so unpinned apk packages are
-  # as new as the Dockerfile's last change (see its apk-refresh number).
+  # The built OCI layout is cached by setup's bare_image_hash. A cache hit
+  # skips the build. A miss builds with no layer cache, so unpinned apk
+  # packages are as new as the last change to the base stage's instructions
+  # (see the Dockerfile's APK_REFRESH).
   bare-image-amd64:
     needs: [setup]
     runs-on: ubuntu-latest
@@ -105,7 +121,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-amd64-${{ hashFiles('Dockerfile') }}
+          key: saver-bare-image-amd64-${{ needs.setup.outputs.bare_image_hash }}
 
       - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/setup-buildx-action@v4
@@ -127,7 +143,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-amd64-${{ hashFiles('Dockerfile') }}
+          key: saver-bare-image-amd64-${{ needs.setup.outputs.bare_image_hash }}
 
       - name: Upload the bare image
         uses: actions/upload-artifact@v7
@@ -150,7 +166,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-arm64-${{ hashFiles('Dockerfile') }}
+          key: saver-bare-image-arm64-${{ needs.setup.outputs.bare_image_hash }}
 
       - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/setup-buildx-action@v4
@@ -172,7 +188,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-arm64-${{ hashFiles('Dockerfile') }}
+          key: saver-bare-image-arm64-${{ needs.setup.outputs.bare_image_hash }}
 
       - name: Upload the bare image
         uses: actions/upload-artifact@v7
