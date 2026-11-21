@@ -61,7 +61,7 @@ check_coverage()
     --volume ${HOST_TEST_DIR}/config/check_metrics.rb:${CONTAINER_TMP_DIR}/check_metrics.rb:ro \
     --volume ${HOST_REPORTS_DIR}/test_metrics.json:${CONTAINER_TMP_DIR}/test_metrics.json:ro \
     --volume ${HOST_TEST_DIR}/config/test_metrics_limits.rb:${CONTAINER_TMP_DIR}/test_metrics_limits.rb:ro \
-      "${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}" \
+      "${CYBER_DOJO_SAVER_METRICS_IMAGE:-${CYBER_DOJO_SAVER_IMAGE}:${CYBER_DOJO_SAVER_TAG}}" \
         sh -c "ruby ${CONTAINER_TMP_DIR}/check_metrics.rb ${CONTAINER_TMP_DIR}/test_metrics.json test_metrics_limits" \
         2>/dev/null | tee -a "${HOST_REPORTS_DIR}/${TEST_LOG}"
 

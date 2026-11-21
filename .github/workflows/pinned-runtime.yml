@@ -1,0 +1,160 @@
+name: Pinned runtime (trial)
+
+# A trial of building the image FROM the very runtime the server tests ran
+# in, next to main.yml, which it does not change. Nothing here deploys or
+# attests to Kosli: its image is built here, not by secure-docker-build.
+#
+#   runtime     builds the Dockerfile's base stage (docker build --target base):
+#               Ruby, its gems, the OS and the saver user, with no source.
+#               Its layers are cached, so it is rebuilt only when they change.
+#   unit-tests  run the server tests in that runtime (bin/run_tests_bare.sh)
+#   image       builds the image FROM that same runtime, by replacing the
+#               Dockerfile's base stage with it (--build-context), and checks
+#               the image's layers start with the runtime's, exactly
+#   same        checks the image's runtime is the one the tests ran in
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+  runtime:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      id: ${{ steps.load.outputs.id }}
+    steps:
+      - uses: cyber-dojo/harden-runner@main
+      - uses: cyber-dojo/pinned-checkout@main
+
+      - name: Name the runtime image
+        id: vars
+        run:
+          echo "tag=saver-runtime:${GITHUB_SHA:0:7}" >> "${GITHUB_OUTPUT}"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build the runtime (the Dockerfile's base stage)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: base
+          tags: ${{ steps.vars.outputs.tag }}
+          cache-from: type=gha,scope=saver-runtime
+          cache-to: type=gha,scope=saver-runtime,mode=max
+          outputs: type=docker,dest=${{ runner.temp }}/saver-runtime.tar
+
+      - name: Load it, to name it by its id
+        id: load
+        run: |
+          docker load --input "${{ runner.temp }}/saver-runtime.tar"
+          echo "id=$(docker image inspect --format '{{.Id}}' "${{ steps.vars.outputs.tag }}")" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload the runtime
+        uses: actions/upload-artifact@v7
+        with:
+          name: saver-runtime
+          path: ${{ runner.temp }}/saver-runtime.tar
+          if-no-files-found: error
+          retention-days: 1
+
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: [runtime]
+    steps:
+      - uses: cyber-dojo/harden-runner@main
+      - uses: cyber-dojo/pinned-checkout@main
+
+      - name: Download the runtime
+        uses: actions/download-artifact@v8
+        with:
+          name: saver-runtime
+          path: ${{ runner.temp }}
+
+      - name: Load the runtime, checking it is the one built
+        run: |
+          docker load --input "${{ runner.temp }}/saver-runtime.tar"
+          id="$(docker image inspect --format '{{.Id}}' "${{ needs.runtime.outputs.tag }}")"
+          test "${id}" == "${{ needs.runtime.outputs.id }}"
+
+      - name: Run unit tests with metrics, in the runtime
+        env:
+          CYBER_DOJO_SAVER_RUNTIME_IMAGE: ${{ needs.runtime.outputs.tag }}
+        run:
+          bin/run_tests_bare.sh
+
+      - name: Upload the runtime the tests ran in
+        if: ${{ success() || failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-tests-runtime-versions
+          path: reports/server/runtime_versions.txt
+          if-no-files-found: error
+          retention-days: 1
+
+
+  image:
+    runs-on: ubuntu-latest
+    needs: [runtime]
+    steps:
+      - uses: cyber-dojo/harden-runner@main
+      - uses: cyber-dojo/pinned-checkout@main
+
+      - name: Download the runtime
+        uses: actions/download-artifact@v8
+        with:
+          name: saver-runtime
+          path: ${{ runner.temp }}
+
+      - name: Load the runtime, checking it is the one built
+        run: |
+          docker load --input "${{ runner.temp }}/saver-runtime.tar"
+          id="$(docker image inspect --format '{{.Id}}' "${{ needs.runtime.outputs.tag }}")"
+          test "${id}" == "${{ needs.runtime.outputs.id }}"
+
+      - name: Build the image FROM the runtime
+        run:
+          docker build
+            --build-context "base=docker-image://${{ needs.runtime.outputs.tag }}"
+            --build-arg "COMMIT_SHA=${GITHUB_SHA}"
+            --tag saver-pinned
+            .
+
+      - name: Check the image's layers start with the runtime's, exactly
+        run: |
+          layers() { docker image inspect --format '{{range .RootFS.Layers}}{{println .}}{{end}}' "${1}" | sed '/^$/d'; }
+          runtime_layers="$(layers "${{ needs.runtime.outputs.tag }}")"
+          count="$(echo "${runtime_layers}" | wc -l)"
+          image_prefix="$(layers saver-pinned | head -n "${count}")"
+          diff --unified <(echo "${runtime_layers}") <(echo "${image_prefix}")
+
+      - name: Save the image's runtime
+        run:
+          bin/runtime_versions.sh image saver-pinned > image_runtime_versions.txt
+
+      - name: Upload the image's runtime
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-runtime-versions
+          path: image_runtime_versions.txt
+          if-no-files-found: error
+          retention-days: 1
+
+
+  same:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, image]
+    steps:
+      - uses: cyber-dojo/harden-runner@main
+
+      - name: Download both runtimes
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*-runtime-versions'
+          merge-multiple: true
+
+      - name: Check the image's runtime is the one the unit tests ran in
+        run:
+          diff --unified runtime_versions.txt image_runtime_versions.txt
