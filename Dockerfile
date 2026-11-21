@@ -6,10 +6,11 @@ LABEL maintainer=jon@jaggersoft.com
 # sibling repos that docker-exec into a running saver container, such as
 # web/bin/show_manifest.sh, which pretty-prints a kata's manifest.json.
 #
-# The workflow caches the bare image (this base stage) by this file's hash,
-# so these unpinned packages are as new as the last change to this file.
-# To pick up newer ones, eg a git security fix, bump this number:
-# apk-refresh: 1
+# The workflow caches the bare image (this base stage) by a hash of this
+# stage's instructions (comments and blank lines aside), so these unpinned
+# packages are as new as the last change to those instructions. To pick up
+# newer ones, eg a git security fix, bump APK_REFRESH.
+ARG APK_REFRESH=1
 RUN apk add git jq
 
 # In-process git via libgit2 (the rugged gem) - see docs/in-process-git.md.
