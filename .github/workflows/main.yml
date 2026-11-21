@@ -90,9 +90,9 @@ jobs:
   # the artifacts saver-bare-image-amd64 and -arm64, with their digests. The
   # unit tests run in the linux/amd64 one, and build-image builds the deployed
   # image FROM each, both checking the digests. The Dockerfile's APK_REFRESH
-  # explains how its unpinned apk packages are refreshed.
+  # explains how its unpinned apk packages are refreshed. It needs nothing
+  # from setup, so it runs alongside it.
   bare-image:
-    needs: [setup]
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/build-bare-image.yml@main
     with:
       checkout_repository: cyber-dojo/saver
@@ -140,10 +140,11 @@ jobs:
 
   # The server tests run in the bare image, so they start without waiting for
   # the deployed image. With no fingerprint, Kosli binds their attestations to
-  # the saver artifact by the commit.
+  # the saver artifact by the commit. They need setup, which begins the Kosli
+  # trail they attest to.
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [bare-image]
+    needs: [setup, bare-image]
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
