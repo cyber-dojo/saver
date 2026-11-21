@@ -25,4 +25,22 @@ ruby -e "${SCRIPT}" -- ${TEST_ARGS[@]} 2>&1 | tee ${COVERAGE_ROOT}/${TEST_LOG}
 STATUS=${PIPESTATUS[0]}
 set -e
 
+# Path coverage is held to only on a whole, passing run: a run of chosen test
+# IDs leaves paths untaken trivially, and failing tests' coverage says nothing.
+# It fails when any path is untaken or any method has more paths than the
+# max_paths coverage.rb sets.
+readonly PATHS_CHECK="
+report = JSON.parse(File.read(ARGV[0]))
+puts PathCoverage::WaysTotals.lines(report)
+exit(PathCoverage::WaysTotals.failed?(report) ? 1 : 0)"
+
+if [ "${STATUS}" = 0 ] && [ "${#TEST_ARGS[@]}" = 0 ]; then
+  set +e
+  ruby -r json -r path_coverage/ways_totals -e "${PATHS_CHECK}" \
+    "${COVERAGE_ROOT}/paths/path_coverage.json" 2>&1 \
+    | tee -a "${COVERAGE_ROOT}/${TEST_LOG}" # BusyBox tee has no --append
+  STATUS=${PIPESTATUS[0]}
+  set -e
+fi
+
 exit "${STATUS}"

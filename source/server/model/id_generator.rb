@@ -38,27 +38,50 @@ class IdGenerator
 
   include IdPather
 
+  # The first id, of up to 256 random tries, whose dir pather makes;
+  # nil when every try fails.
   def generate_id(pather, *not_pathers)
-    256.times.find do
-      id = SIZE.times.map{ ALPHABET[random_index] }.join
-      if reserved?(id)
-        next
-      end
-      # Ensure ids do not clash across groups, katas and clusters.
-      if not_pathers.any? { |np| disk.run(disk.dir_exists_command(method(np).call(id))) }
-        next
-      end
-
-      dir_make_command = disk.dir_make_command(method(pather).call(id))
-      begin
-        disk.assert(dir_make_command)
-      rescue
-        next
-      end
-
-      return id
+    256.times do
+      id = claim_id(pather, not_pathers)
+      return id unless id.nil?
     end
     nil
+  end
+
+  # A random id, its dir made by pather; nil when the id is reserved,
+  # is already one of not_pathers', or its dir cannot be made.
+  def claim_id(pather, not_pathers)
+    id = random_id
+    id if claimed?(id, pather, not_pathers)
+  end
+
+  # A random id of SIZE characters from ALPHABET.
+  def random_id
+    SIZE.times.map{ ALPHABET[random_index] }.join
+  end
+
+  # True when id is not reserved, is not already one of not_pathers',
+  # and pather makes its dir; checked in that order, each only when
+  # the ones before pass.
+  def claimed?(id, pather, not_pathers)
+    !reserved?(id) && !clashes?(id, not_pathers) && made_dir?(pather, id)
+  end
+
+  # True when id is already one of not_pathers', so ids do not clash
+  # across groups, katas and clusters.
+  def clashes?(id, not_pathers)
+    not_pathers.any? { |np| disk.run(disk.dir_exists_command(method(np).call(id))) }
+  end
+
+  # True when pather makes id's dir; false when making it fails.
+  def made_dir?(pather, id)
+    command = disk.dir_make_command(method(pather).call(id))
+    begin
+      disk.assert(command)
+      true
+    rescue
+      false
+    end
   end
 
   def reserved?(id)

@@ -1,4 +1,5 @@
 require_relative 'differ_diff'
+require_relative 'event_index'
 require_relative 'fork'
 require_relative 'id_pather'
 require_relative 'not_implemented'
@@ -60,12 +61,11 @@ class Kata_v1
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    index = index.to_i
-    if index < 0
-      all = events(id)
-      index = all[index]['index']
-    end
-    result = json_parse(disk.assert(event_file_read_command(id, index)))
+    index = resolved_index(id, index.to_i)
+    commands = [event_file_read_command(id, index)]
+    all = disk.run_all(commands)
+    all = reread_event(id, index, commands) unless all.all?
+    result = json_parse(all[0])
     # v1 stored 'truncated' in individual file entries; v2 does not.
     # Strip it so callers see a consistent file representation.
     result['files'].each_value { |f| f.delete('truncated') }
@@ -149,6 +149,7 @@ class Kata_v1
 
   private
 
+  include EventIndex
   include IdPather
   include JsonAdapter
   include NotImplemented

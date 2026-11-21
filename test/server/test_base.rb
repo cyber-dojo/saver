@@ -41,7 +41,7 @@ class TestBase < Id58TestBase
 
   def custom_manifest
     manifest = manifest_Tennis_refactoring_Python_unitttest
-    manifest['version'] = version
+    manifest['version'] = version unless version.nil?
     manifest
   end
 

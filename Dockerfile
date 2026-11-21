@@ -43,6 +43,12 @@ RUN apk add --no-cache --virtual .rugged-build-deps build-base cmake pkgconf lib
  && apk del .rugged-build-deps \
  && apk add --no-cache libgcc
 
+# path_coverage measures which paths through each decision and method the
+# tests take, alongside SimpleCov's line and branch coverage. It is used only
+# by the test suites (test/*/config/coverage.rb). It is pinned to keep the
+# image reproducible.
+RUN gem install path_coverage --version 0.7.0
+
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
 

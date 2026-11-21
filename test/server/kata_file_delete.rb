@@ -32,6 +32,29 @@ class KataFileDeleteTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test 'DcBC05', %w(
+  | when every file has been deleted
+  | a kata_file_create event
+  | results in a kata whose only file is the one created
+  ) do
+    in_tennis_kata do |id, files|
+      files.keys.each do |filename|
+        kata_file_delete(id, files.dup, filename)
+        files.delete(filename)
+      end
+      assert_equal({}, kata_event(id, -1)['files'])
+
+      kata_file_create(id, {}, 'hiker.py')
+
+      events = kata_events(id)
+      assert_equal 6, events.size
+      assert_equal 'file_create', events[5]['colour']
+      assert_equal ['hiker.py'], kata_event(id, 5)['files'].keys
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'DcBC02', %w(
   | when one file has been edited
   | and a different file has been deleted

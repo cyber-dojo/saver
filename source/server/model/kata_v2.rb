@@ -1,3 +1,4 @@
+require_relative 'event_index'
 require_relative 'fork'
 require_relative 'git_diff'
 require_relative 'id_generator'
@@ -123,55 +124,11 @@ class Kata_v2
   # events.json. See docs/reads-via-git.md.
   def event_from(id, index, all_events)
     index = index.to_i
-
-    if index < 0
-      pos_index = all_events.size + index
-    else
-      pos_index = index
-    end
-
-    unless pos_index >= 0
-      message = "Invalid -ve index #{index} (=> #{pos_index}) [#{plural(all_events.size, :event)}]"
-      raise message
-    end
-
-    unless pos_index < all_events.size
-      message = "Invalid +ve index #{index} [#{plural(all_events.size, :event)}]"
-      raise message
-    end
-
-    result = { 'files' => {} }
-    truncations = nil
-
-    git_archive(id, pos_index).each do |filename, content|
-      # tag_tree_blobs yields blobs only (no directory markers), so every
-      # filename is a real path.
-      if filename.start_with?('files/')
-        result['files'][filename['files/'.size..-1]] = { 'content' => content }
-      elsif ['stdout', 'stderr'].include?(filename)
-        result[filename] = { 'content' => content }
-      elsif filename == 'status'
-        result['status'] = content
-      elsif filename == 'events.json'
-        event = json_parse(content)[pos_index]
-        result.merge!(event)
-      elsif filename == 'truncations.json'
-        truncations = json_parse(content)
-      end
-    end
-
-    if result.has_key?('stdout')
-      result['stdout']['truncated'] = truncations['stdout']
-      result['stderr']['truncated'] = truncations['stderr']
-    end
-
-    if pos_index == 0
-      result['stdout'] = { 'content' => '', 'truncated' => false}
-      result['stderr'] = { 'content' => '', 'truncated' => false}
-      result['status'] = 0
-      result['colour'] = 'create'
-    end
-
+    pos_index = positive_index(index, all_events)
+    fail_unless_in_range(index, pos_index, all_events)
+    result, truncations = archived_event(id, pos_index)
+    add_truncations(result, truncations)
+    polyfill_created_event(result, pos_index)
     result
   end
 
@@ -364,13 +321,17 @@ class Kata_v2
   # which is the mode TGZ.of writes, so the extracted checkout matches the index
   # and reads as clean.
   def tree_files(dir, root_name)
-    Dir.glob(File.join(dir, '**', '*'), File::FNM_DOTMATCH)
-       .select { |path| File.file?(path) }
-       .each_with_object({}) do |path, memo|
-         memo["#{root_name}/#{path.delete_prefix("#{dir}/")}"] = File.binread(path)
-       end
+    paths = Dir.glob(File.join(dir, '**', '*'), File::FNM_DOTMATCH)
+    files = {}
+    paths.each do |path|
+      next unless File.file?(path)
+      name = "#{root_name}/#{path.delete_prefix("#{dir}/")}"
+      files[name] = File.binread(path)
+    end
+    files
   end
 
+  include EventIndex
   include IdPather
   include JsonAdapter
   include PolyFiller
@@ -444,40 +405,81 @@ class Kata_v2
     # deduping against its own sibling on first delivery (which would silently
     # drop it). Distinct web writes never share a tab_seq (it is the tab's
     # monotonic per-event counter), so no two genuine writes collide on the key.
-    colour = summary['colour']
-    committed = read_events_via_git(id)
-    already = committed.any? do |event|
-      event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
-    end
-    return if already
+    return if already_committed?(id, laptop_id, tab_seq, summary['colour'])
+    append_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
+    nil
+  end
 
+  # [the event at pos_index of kata id, as its tag's files hold it, and
+  # its truncations; nil when it has none].
+  def archived_event(id, pos_index)
+    result = { 'files' => {} }
+    extras = {}
+    git_archive(id, pos_index).each do |filename, content|
+      archived_file(result, extras, filename, content, pos_index)
+    end
+    [result, extras['truncations']]
+  end
+
+  # Puts the file filename, of content, of the event at pos_index into
+  # result, or its truncations into extras.
+  def archived_file(result, extras, filename, content, pos_index)
+    # tag_tree_blobs yields blobs only (no directory markers), so every
+    # filename is a real path.
+    if filename.start_with?('files/')
+      result['files'][filename['files/'.size..-1]] = { 'content' => content }
+    elsif ['stdout', 'stderr'].include?(filename)
+      result[filename] = { 'content' => content }
+    elsif filename == 'status'
+      result['status'] = content
+    elsif filename == 'events.json'
+      event = json_parse(content)[pos_index]
+      result.merge!(event)
+    elsif filename == 'truncations.json'
+      extras['truncations'] = json_parse(content)
+    end
+  end
+
+  # Marks result's stdout and stderr, when it has them, with
+  # truncations.
+  def add_truncations(result, truncations)
+    if result.has_key?('stdout')
+      result['stdout']['truncated'] = truncations['stdout']
+      result['stderr']['truncated'] = truncations['stderr']
+    end
+  end
+
+  # Gives result, when the event at pos_index 0, the created event's
+  # empty output and create colour.
+  def polyfill_created_event(result, pos_index)
+    if pos_index == 0
+      result['stdout'] = { 'content' => '', 'truncated' => false}
+      result['stderr'] = { 'content' => '', 'truncated' => false}
+      result['status'] = 0
+      result['colour'] = 'create'
+    end
+  end
+
+  # True when kata id already has an event of laptop_id, tab_seq and
+  # colour: a redelivery, which commit_event skips.
+  def already_committed?(id, laptop_id, tab_seq, colour)
+    read_events_via_git(id).any? do |event|
+      same_write?(event, laptop_id, tab_seq, colour)
+    end
+  end
+
+  # True when event is the write of laptop_id, tab_seq and colour.
+  def same_write?(event, laptop_id, tab_seq, colour)
+    event['laptop_id'] == laptop_id && event['tab_seq'] == tab_seq && event['colour'] == colour
+  end
+
+  # Commits the event of summary, with files and output, onto main of
+  # kata id, then advances main to it and tags it with its index.
+  def append_event(id, files, stdout, stderr, status, summary, tag_message, laptop_id, tab_seq)
     result = git.commit_on_main(repo_dir(id), tag_message, content_of(files)) do |base_events, place_at, added, deleted|
-      new_event = summary.merge!({
-        'index' => place_at,
-        'time' => time.now,
-        'diff_added_count' => added,
-        'diff_deleted_count' => deleted
-      })
-      # Only stamp the writing laptop when a well-formed id was supplied. A nil,
-      # absent, or malformed laptop_id stores no laptop_id key at all, so such an
-      # event is indistinguishable from a pre-laptop_id event and its writer is
-      # treated as unknown. Only the genuine minted format is trusted.
-      new_event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
-      # Store the tab_seq so a later redelivery of this write can be recognised
-      # as an already-committed (laptop_id, tab_seq) and deduplicated above.
-      new_event['tab_seq'] = tab_seq
-      {
-        events_filename => json_pretty(base_events + [new_event]),
-        'stdout' => stdout['content'],
-        'stderr' => stderr['content'],
-        'status' => status.to_s,
-        'truncations.json' => json_pretty({
-          'stdout' => stdout['truncated'],
-          'stderr' => stderr['truncated']
-        })
-      }
+      event = new_event(summary, place_at, added, deleted, laptop_id, tab_seq)
+      event_files(base_events, event, stdout, stderr, status)
     end
-
     # Advance main to the new commit, then tag it with its numeric index. The
     # advance keeps its base_oid precondition (set main to <new> only if it is
     # still <base>): with the spooler as the single ordered writer per kata this
@@ -485,7 +487,41 @@ class Kata_v2
     # See docs/in-process-git.md.
     git.advance_main(repo_dir(id), result[:new_oid], result[:base_oid])
     git.create_tag(repo_dir(id), result[:place_at], result[:new_oid])
-    nil
+  end
+
+  # summary, merged in place with its place_at index, time and diff
+  # counts, stamped with laptop_id when valid, and with tab_seq.
+  def new_event(summary, place_at, added, deleted, laptop_id, tab_seq)
+    event = summary.merge!({
+      'index' => place_at,
+      'time' => time.now,
+      'diff_added_count' => added,
+      'diff_deleted_count' => deleted
+    })
+    # Only stamp the writing laptop when a well-formed id was supplied. A nil,
+    # absent, or malformed laptop_id stores no laptop_id key at all, so such an
+    # event is indistinguishable from a pre-laptop_id event and its writer is
+    # treated as unknown. Only the genuine minted format is trusted.
+    event['laptop_id'] = laptop_id if valid_laptop_id?(laptop_id)
+    # Store the tab_seq so a later redelivery of this write can be recognised
+    # as an already-committed (laptop_id, tab_seq) by already_committed?.
+    event['tab_seq'] = tab_seq
+    event
+  end
+
+  # The files of the commit appending event to base_events, with its
+  # stdout, stderr, status and their truncations.
+  def event_files(base_events, event, stdout, stderr, status)
+    {
+      events_filename => json_pretty(base_events + [event]),
+      'stdout' => stdout['content'],
+      'stderr' => stderr['content'],
+      'status' => status.to_s,
+      'truncations.json' => json_pretty({
+        'stdout' => stdout['truncated'],
+        'stderr' => stderr['truncated']
+      })
+    }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -697,12 +733,4 @@ def edited_filename(previous_files, current_files)
     end
   end
   return nil
-end
-
-def plural(n, word)
-  if n == 1
-    "#{n} #{word}"
-  else
-    "#{n} #{word}s"
-  end
 end
