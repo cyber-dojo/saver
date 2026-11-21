@@ -78,6 +78,27 @@ class RackDispatchingTest < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'FF0E50', %w(
+  | an error is logged to $stdout when no stdout stream
+  | is set for the thread, as in production
+  ) do
+    old_stdout_stream = Thread.current[:stdout_stream]
+    old_stdout = $stdout
+    begin
+      Thread.current[:stdout_stream] = nil
+      $stdout = StringIO.new(+'', 'w')
+      response = get_json '/sha', 'abc'
+      logged = $stdout.string
+    ensure
+      $stdout = old_stdout
+      Thread.current[:stdout_stream] = old_stdout_stream
+    end
+    assert_equal 400, response.status
+    assert_equal 'body is not JSON', JSON.parse(logged)['exception']['message']
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - -
   # 500
   # - - - - - - - - - - - - - - - - - - - - - - - - - -
 

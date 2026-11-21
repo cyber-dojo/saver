@@ -7,7 +7,7 @@ module TestHelpersRack
   include Rack::Test::Methods
 
   def app
-    @app ||= App.new(externals)
+    App.new(externals)
   end
 
   def get_json(path, args)
@@ -56,14 +56,8 @@ module TestHelpersRack
   end
 
   def assert_status(expected, stdout, stderr)
-    actual = last_response.status
-    # simplecov:disable
-    if expected != actual
-      print("stdout:\n#{stdout}")
-      print("stderr:\n#{stderr}")
-      assert_equal expected, actual
-    end
-    # simplecov:enable
+    message = "stdout:\n#{stdout}\nstderr:\n#{stderr}"
+    assert_equal expected, last_response.status, message
   end
 
   def json_response_body

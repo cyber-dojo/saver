@@ -16,6 +16,15 @@ class LinerV0Test < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  test 'B457A6', %w(
+  | lined_file of an empty stderr keeps its truncated field
+  ) do
+    empty_stderr = { 'content' => '', 'truncated' => false }
+    assert_equal({ 'content' => [''], 'truncated' => false }, lined_file(empty_stderr))
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   test 'B457AA', %w(
   | lined(event) splits lines files/stdout/stderr and does not alter argument
   ) do
@@ -99,6 +108,35 @@ class LinerV0Test < TestBase
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'B457C1', %w(
+  | lined(event) lines each of stdout, stderr and status
+  | the event has, in every combination of the three
+  ) do
+    OUTPUT_SETS.each do |keys|
+      unlined = UNLINED_EVENT.slice('files', *keys)
+      expected = LINED_EVENT.slice('files', *keys)
+      assert_equal expected, lined(unlined), keys
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  test 'B457C2', %w(
+  | unlined(event) rejoins each of stdout, stderr and status
+  | the event has, in every combination of the three
+  ) do
+    OUTPUT_SETS.each do |keys|
+      lined = LINED_EVENT.slice('files', *keys)
+      expected = UNLINED_EVENT.slice('files', *keys)
+      assert_equal expected, unlined(lined), keys
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - -
+
+  OUTPUTS = %w( stdout stderr status ).freeze
+  OUTPUT_SETS = (0..OUTPUTS.size).flat_map { |n| OUTPUTS.combination(n).to_a }.freeze
 
   UNLINED_TEST_HIKER_RB = "require 'sss'\nxxx".freeze
   UNLINED_HIKER_RB = "def x\nend\n".freeze

@@ -118,7 +118,7 @@ module External
 
       index = repo.index
       index.read_tree(base_tree)
-      index.entries.select { |e| e[:path].start_with?('files/') }.each { |e| index.remove(e[:path]) }
+      index.remove_dir('files')
       files.each { |name, content| index.add(path: "files/#{name}", oid: repo.write(content, :blob), mode: 0100644) }
 
       # Only files/ differs between base_tree and this interim tree, so the stat

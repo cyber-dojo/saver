@@ -89,4 +89,53 @@ class KatasEventsTest < TestBase
       assert_equal expected, actual
     end
   end
+
+  version_test 2, 'LS51P5', %w(
+  | v2 example with two events of one kata
+  ) do
+    now = [2018, 11, 30, 9, 34, 56, 6_453]
+    externals.instance_exec do
+      @time = TimeStub.new(now, now, now, now)
+    end
+    stdout = { 'content' => 'so', 'truncated' => false }
+    stderr = { 'content' => 'se', 'truncated' => true }
+    red_summary = { 'colour' => 'red' }
+    in_kata do |id|
+      files = kata_event(id, 0)['files']
+      kata_ran_tests(id, files, stdout, stderr,   '0', red_summary)
+      kata_ran_tests(id, files, stdout, stderr, '137', red_summary)
+      actual = katas_events([id, id], [1, 2])
+      expected = {
+        id => {
+          '1' => {
+            'index' => 1,
+            'files' => files,
+            'colour' => 'red',
+            'time' => now,
+            'stdout' => stdout,
+            'stderr' => stderr,
+            'status' => '0',
+            'diff_added_count' => 0,
+            'diff_deleted_count' => 0,
+            'laptop_id' => default_laptop_id,
+            'tab_seq' => 1
+          },
+          '2' => {
+            'index' => 2,
+            'files' => files,
+            'colour' => 'red',
+            'time' => now,
+            'stdout' => stdout,
+            'stderr' => stderr,
+            'status' => '137',
+            'diff_added_count' => 0,
+            'diff_deleted_count' => 0,
+            'laptop_id' => default_laptop_id,
+            'tab_seq' => 2
+          }
+        }
+      }
+      assert_equal expected, actual
+    end
+  end
 end

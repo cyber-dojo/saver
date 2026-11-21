@@ -29,6 +29,15 @@ class KataOptionTest < TestBase
     end
   end
 
+  version_test 2, 'Ks3463', %w(
+  | kata_option_set('theme') to the theme it already has leaves it unchanged
+  ) do
+    in_kata do |id|
+      kata_option_set(id, 'theme', 'light')
+      assert_equal 'light', kata_option_get(id, 'theme')
+    end
+  end
+
   version_test 2, 'Ks3462', %w(
   | kata_option_set('theme', not-dark-not-light) raises
   ) do

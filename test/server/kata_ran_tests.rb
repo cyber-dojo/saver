@@ -93,13 +93,6 @@ class KataRanTestsTest < TestBase
       def method_missing(name, *args, &block)
         @real.public_send(name, *args, &block)
       end
-      def respond_to_missing?(name, include_private = false)
-        # Never exercised: the model calls tag_tree_blobs and the delegated methods
-        # on the double, never respond_to? - so this line is excluded from coverage.
-        # simplecov:disable
-        @real.respond_to?(name, include_private)
-        # simplecov:enable
-      end
     end.new(git)
 
     externals.instance_variable_set('@git', tag_race_git)

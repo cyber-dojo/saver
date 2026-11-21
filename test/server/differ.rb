@@ -233,6 +233,51 @@ class DifferTest < TestBase
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  versions_test 'C9sR1A', %w(
+  | a file renamed 100% identical beside a file renamed <100% identical
+  ) do
+    @was_files = { 'hiker.h' => "a\nb\nc\nd", 'plain' => 'xxx' }
+    @now_files = { 'diamond.h' => "a\nb\nX\nd", 'copy' => 'xxx' }
+    assert_each_diff [
+      :renamed, 'hiker.h', 'diamond.h', 1, 1, 3,
+      [
+        same(1, 'a'),
+        same(2, 'b'),
+        section(0),
+        deleted(3, 'c'),
+        added(3, 'X'),
+        same(4, 'd')
+      ],
+      :renamed, 'plain', 'copy', 0, 0, 1,
+      [
+        same(1, 'xxx')
+      ]
+    ]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  versions_test 'C9sR1B', %w(
+  | a file renamed 100% identical beside a changed file
+  ) do
+    @was_files = { 'non-empty.c' => 'something', 'plain' => 'xxx' }
+    @now_files = { 'non-empty.c' => "something\nmore", 'copy' => 'xxx' }
+    assert_each_diff [
+      :changed, 'non-empty.c', 'non-empty.c', 1, 0, 1,
+      [
+        same(1, 'something'),
+        section(0),
+        added(2, 'more')
+      ],
+      :renamed, 'plain', 'copy', 0, 0, 1,
+      [
+        same(1, 'xxx')
+      ]
+    ]
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   versions_test 'C9s4D0', %w(
   | non-empty file has some content added at the start
   ) do
@@ -292,7 +337,7 @@ class DifferTest < TestBase
     manifest['version'] = 2
     id = kata_create(manifest)
 
-    ex = assert_raises(RuntimeError) do
+    ex = assert_raises(RequestError) do
       diff_lines(id, 1, 2)
     end
     assert_equal 'Invalid +ve index 1 [1 event]', ex.message
@@ -305,6 +350,19 @@ class DifferTest < TestBase
     assert_diff_lines(expected)
     expected[0].delete(:lines)
     assert_diff_summary(expected)
+  end
+
+  # Asserts every diff of raw_expected is in one kata's diff_lines,
+  # and, without its lines, in its diff_summary.
+  def assert_each_diff(raw_expected)
+    id, was_index, now_index = *run_diff_prepare
+    lines = diff_lines(id, was_index, now_index)
+    summary = diff_summary(id, was_index, now_index)
+    expected_diff(raw_expected).each do |expected|
+      assert lines.include?(expected), diagnostic('lines', [expected], lines)
+      unlined = expected.except(:lines)
+      assert summary.include?(unlined), diagnostic('summary', [unlined], summary)
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - -

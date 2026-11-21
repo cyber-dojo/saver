@@ -1,4 +1,5 @@
 require_relative 'differ_diff'
+require_relative 'event_index'
 require_relative 'fork'
 require_relative 'id_pather'
 require_relative 'not_implemented'
@@ -47,15 +48,13 @@ class Kata_v0
   # - - - - - - - - - - - - - - - - - - - - - -
 
   def event(id, index)
-    index = index.to_i
-    if index < 0
-      all = events(id)
-      index = all[index]['index']
-    end
-    all = disk.assert_all([
+    index = resolved_index(id, index.to_i)
+    commands = [
       events_file_read_command(id),
       event_file_read_command(id, index)
-    ])
+    ]
+    all = disk.run_all(commands)
+    all = reread_event(id, index, commands) unless all.all?
     events = json_parse('[' + all[0].lines.join(',') + ']')
     result = unlined(json_parse(all[1]))
     polyfill_event(result, events, index)
@@ -139,6 +138,7 @@ class Kata_v0
 
   private
 
+  include EventIndex
   include IdPather
   include NotImplemented
   include JsonAdapter

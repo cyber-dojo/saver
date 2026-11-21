@@ -118,7 +118,7 @@ class KataEventTest < TestBase
   ) do
     in_kata do |id|
       kata_event(id, -1)
-      ex = assert_raises(RuntimeError) do
+      ex = assert_raises(RequestError) do
         kata_event(id, -2)
       end
       expected = "Invalid -ve index -2 (=> -1) [1 event]"
@@ -135,11 +135,61 @@ class KataEventTest < TestBase
       kata_event(id, -1)
       kata_file_delete(id, files, 'readme.txt')
       kata_event(id, -2)
-      ex = assert_raises(RuntimeError) do
+      ex = assert_raises(RequestError) do
         kata_event(id, -3)
       end
       expected = "Invalid -ve index -3 (=> -1) [2 events]"
       assert_equal expected, ex.message
+    end
+  end
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # kata_event(id, index) out of bounds is a request error
+
+  version_test 0, 'Lw2Hy0', %w(
+  | kata_event(id, index=N) raises a request error when N is past the last event
+  ) do
+    ex = assert_raises(RequestError) { kata_event('5rTJv5', 4) }
+    assert_equal 'Invalid +ve index 4 [4 events]', ex.message
+  end
+
+  version_test 0, 'Lw2Hy1', %w(
+  | kata_event(id, index=-N) raises a request error when N is out of bounds
+  ) do
+    ex = assert_raises(RequestError) { kata_event('5rTJv5', -5) }
+    assert_equal 'Invalid -ve index -5 (=> -1) [4 events]', ex.message
+  end
+
+  version_test 1, 'Lw2Hy2', %w(
+  | kata_event(id, index=N) raises a request error when N is past the last event
+  ) do
+    ex = assert_raises(RequestError) { kata_event('5U2J18', 4) }
+    assert_equal 'Invalid +ve index 4 [4 events]', ex.message
+  end
+
+  version_test 1, 'Lw2Hy3', %w(
+  | kata_event(id, index=-N) raises a request error when N is out of bounds
+  ) do
+    ex = assert_raises(RequestError) { kata_event('5U2J18', -5) }
+    assert_equal 'Invalid -ve index -5 (=> -1) [4 events]', ex.message
+  end
+
+  version_test 1, 'Lw2Hy5', %w(
+  | kata_event(id, index=N) of a kata whose events skip N, as after a saver
+  | outage, where N is before its last event, raises the failed read itself,
+  | not a request error, as N passes the bounds check
+  ) do
+    ex = assert_raises(RuntimeError) { kata_event('Gp4Wy7', 1) }
+    assert_equal RuntimeError, ex.class
+    assert_match(/\Acommands\[0\] != true: .*Gp\/4W\/y7\/1\.event\.json/, ex.message)
+  end
+
+  version_test 2, 'Lw2Hy4', %w(
+  | kata_event(id, index=N) raises a request error when N is past the last event
+  ) do
+    in_kata do |id|
+      ex = assert_raises(RequestError) { kata_event(id, 1) }
+      assert_equal 'Invalid +ve index 1 [1 event]', ex.message
     end
   end
 

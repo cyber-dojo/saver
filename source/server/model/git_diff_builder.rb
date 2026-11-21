@@ -56,38 +56,71 @@ class GitDiffBuilder
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  # The number of lines added, deleted and the same.
   def counts(lines)
+    tally = lines.map { |line| line[:origin] }.tally
     {
-      added:   lines.count { |line| line[:origin] == :addition },
-      deleted: lines.count { |line| line[:origin] == :deletion },
-      same:    lines.count { |line| line[:origin] == :context }
+      added:   tally.fetch(:addition, 0),
+      deleted: tally.fetch(:deletion, 0),
+      same:    tally.fetch(:context, 0)
     }
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  # Each of lines as a source line, a :section marker before each line
+  # that starts a change region.
   def lines_of(lines)
-    out = []
-    section_index = 0
-    i = 0
-    while i < lines.size
-      while i < lines.size && lines[i][:origin] == :context
-        out << source_line(:same, lines[i], lines[i][:new_lineno])
-        i += 1
-      end
-      break unless i < lines.size
-      out << { type: :section, index: section_index }
-      section_index += 1
-      while i < lines.size && lines[i][:origin] == :deletion
-        out << source_line(:deleted, lines[i], lines[i][:old_lineno])
-        i += 1
-      end
-      while i < lines.size && lines[i][:origin] == :addition
-        out << source_line(:added, lines[i], lines[i][:new_lineno])
-        i += 1
-      end
+    starts = section_starts(lines)
+    lines.each_with_index.flat_map do |line, n|
+      section_marker(starts, n) + [diff_line(line)]
     end
-    out
+  end
+
+  # The pairs of origins, [previous, next], whose next line is in the
+  # same change region as its previous one: deletions, then additions.
+  SAME_SECTION = [
+    [:deletion, :deletion],
+    [:deletion, :addition],
+    [:addition, :addition]
+  ].freeze
+
+  # The indexes in lines of each line that starts a change region.
+  def section_starts(lines)
+    origins = lines.map { |line| line[:origin] }
+    previous = [nil] + origins[0..-2]
+    starts = []
+    origins.each_index do |n|
+      starts << n if starts_section?(previous[n], origins[n])
+    end
+    starts
+  end
+
+  # True when a line of origin, after one of previous (nil for none),
+  # starts a change region.
+  def starts_section?(previous, origin)
+    origin != :context && !SAME_SECTION.include?([previous, origin])
+  end
+
+  # The :section marker before the line at n, when it starts the
+  # change region numbered by its place in starts; none when not.
+  def section_marker(starts, n)
+    index = starts.index(n)
+    index.nil? ? [] : [{ type: :section, index: index }]
+  end
+
+  # The source line type of each origin, and the side its number is on.
+  DIFF_LINES = {
+    context:  [:same,    :new_lineno],
+    deletion: [:deleted, :old_lineno],
+    addition: [:added,   :new_lineno]
+  }.freeze
+
+  # line as a source line: numbered on its new side, or its old side
+  # when deleted; a KeyError for any other origin.
+  def diff_line(line)
+    type, side = DIFF_LINES.fetch(line[:origin])
+    source_line(type, line, line[side])
   end
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

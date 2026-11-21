@@ -1,7 +1,10 @@
 require_relative '../lib/utf8_clean'
+require_relative 'event_index'
 require_relative 'git_diff_builder'
 
 module GitDiff
+
+  include EventIndex
 
   def diff_lines(id, was_index, now_index)
     diff_plus(id, was_index, now_index, lines: true)
@@ -65,10 +68,7 @@ module GitDiff
   end
 
   def validate_diff_index(id, index)
-    all_events = events(id)
-    unless index < all_events.size
-      raise "Invalid +ve index #{index} [#{plural(all_events.size, :event)}]"
-    end
+    fail_unless_before_end(index, events(id))
   end
 
 end

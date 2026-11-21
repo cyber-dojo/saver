@@ -176,6 +176,22 @@ class AvatarForkTest < TestBase
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+  version_test 2, 'Af4kQ8', %w[
+  | avatar_fork from an index past the avatar's last event, which
+  | does not exist, raises a request error and adds no avatar to the group
+  ] do
+    in_group do |gid|
+      in_kata(gid) do |kid|
+        index = kata_events(kid).last['index'] + 1
+        error = assert_raises(RequestError) { avatar_fork(kid, index) }
+        assert_equal "Invalid +ve index #{index} [1 event]", error.message
+        assert_equal 1, group_joined(gid).size
+      end
+    end
+  end
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   version_test 2, 'Af4kQ3', %w[
   | avatar_fork from a kata that is not in a group
   | raises a request error naming the kata

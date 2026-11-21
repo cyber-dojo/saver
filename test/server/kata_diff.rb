@@ -262,7 +262,7 @@ class KataDiffTest < TestBase
   | v2 kata: diff_lines with a non-existent now-index raises a reasonable exception
   ) do
     id = kata_create(starter_manifest)
-    ex = assert_raises(RuntimeError) do
+    ex = assert_raises(RequestError) do
       diff_lines(id, 1, 2)
     end
     assert_equal 'Invalid +ve index 1 [1 event]', ex.message
