@@ -49,9 +49,6 @@ RUN apk add --no-cache --virtual .rugged-build-deps build-base cmake pkgconf lib
 # image reproducible.
 RUN gem install path_coverage --version 0.7.0
 
-ARG COMMIT_SHA
-ENV COMMIT_SHA=${COMMIT_SHA}
-
 ARG APP_DIR=/saver
 ENV APP_DIR=${APP_DIR}
 
@@ -62,6 +59,16 @@ RUN adduser                        \
   -s /sbin/nologin `# no shell`    \
   -u 19663         `# user-id`     \
   saver            `# user-name`
+
+# The stage above, base, is the runtime: Ruby, its gems, the OS and the saver
+# user, with no source. The stage below adds the source. Built with
+# --target base it is the runtime the server tests run in (bin/run_tests_bare.sh);
+# built with --build-context base=docker-image://<that runtime>, the image
+# is built FROM the very runtime the tests ran in (pinned-runtime.yml).
+FROM base
+
+ARG COMMIT_SHA
+ENV COMMIT_SHA=${COMMIT_SHA}
 
 WORKDIR ${APP_DIR}/source
 COPY source/server/ .
