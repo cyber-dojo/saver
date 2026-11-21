@@ -32,24 +32,9 @@ jobs:
       image_name:               ${{ steps.vars.outputs.image_name }}
       kosli_flow:               ${{ steps.vars.outputs.kosli_flow }}
       kosli_trail:              ${{ steps.vars.outputs.kosli_trail }}
-      bare_image_hash:          ${{ steps.bare.outputs.hash }}
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
-
-      # The bare image's cache key: a hash of the Dockerfile's base stage, up
-      # to the `FROM base` that starts the deployed image's stage, without
-      # comments or blank lines, so only an edit to an instruction (eg the FROM
-      # digest, or APK_REFRESH) builds a new bare image.
-      - name: Hash the bare image's instructions
-        id: bare
-        run: |
-          grep --quiet --line-regexp 'FROM base' Dockerfile \
-            || { echo "No 'FROM base' line in Dockerfile"; exit 1; }
-          HASH="$(sed '/^FROM base$/q' Dockerfile \
-                  | grep --invert-match --extended-regexp '^[[:space:]]*(#|$)' \
-                  | sha256sum | cut --delimiter=' ' --fields=1)"
-          echo "hash=${HASH}" >> "${GITHUB_OUTPUT}"
 
       - name: Prepare outputs for workflow jobs
         id: vars
@@ -101,106 +86,22 @@ jobs:
 
 
   # The bare image: the Dockerfile's base stage (Ruby, its gems, the OS
-  # packages and the saver user, with no source code), built once per platform
-  # on that platform's runner. The unit tests run in the linux/amd64 one, and
-  # build-image builds the deployed image FROM each. No bare image is
-  # published, nor has provenance or an SBOM: only the deployed image does.
-  # The built OCI layout is cached by setup's bare_image_hash. A cache hit
-  # skips the build. A miss builds with no layer cache, so unpinned apk
-  # packages are as new as the last change to the base stage's instructions
-  # (see the Dockerfile's APK_REFRESH).
-  bare-image-amd64:
+  # packages and the saver user, with no source code), one per platform, as
+  # the artifacts saver-bare-image-amd64 and -arm64, with their digests. The
+  # unit tests run in the linux/amd64 one, and build-image builds the deployed
+  # image FROM each, both checking the digests. The Dockerfile's APK_REFRESH
+  # explains how its unpinned apk packages are refreshed.
+  bare-image:
     needs: [setup]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cyber-dojo/harden-runner@main
-      - uses: cyber-dojo/pinned-checkout@main
-
-      - name: Restore the bare image built from this Dockerfile
-        id: cached
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-amd64-${{ needs.setup.outputs.bare_image_hash }}
-
-      - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build the bare image as an OCI layout
-        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: base
-          platforms: linux/amd64
-          provenance: false
-          sbom: false
-          no-cache: true
-          outputs: type=oci,dest=${{ runner.temp }}/bare-image.tar,name=saver-bare-image:local
-
-      - name: Cache the bare image built from this Dockerfile
-        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-amd64-${{ needs.setup.outputs.bare_image_hash }}
-
-      - name: Upload the bare image
-        uses: actions/upload-artifact@v7
-        with:
-          name: saver-bare-image-amd64
-          path: ${{ runner.temp }}/bare-image.tar
-          if-no-files-found: error
-          retention-days: 1
-
-
-  bare-image-arm64:
-    needs: [setup]
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: cyber-dojo/harden-runner@main
-      - uses: cyber-dojo/pinned-checkout@main
-
-      - name: Restore the bare image built from this Dockerfile
-        id: cached
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-arm64-${{ needs.setup.outputs.bare_image_hash }}
-
-      - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build the bare image as an OCI layout
-        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          target: base
-          platforms: linux/arm64
-          provenance: false
-          sbom: false
-          no-cache: true
-          outputs: type=oci,dest=${{ runner.temp }}/bare-image.tar,name=saver-bare-image:local
-
-      - name: Cache the bare image built from this Dockerfile
-        if: ${{ steps.cached.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ runner.temp }}/bare-image.tar
-          key: saver-bare-image-arm64-${{ needs.setup.outputs.bare_image_hash }}
-
-      - name: Upload the bare image
-        uses: actions/upload-artifact@v7
-        with:
-          name: saver-bare-image-arm64
-          path: ${{ runner.temp }}/bare-image.tar
-          if-no-files-found: error
-          retention-days: 1
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/build-bare-image.yml@main
+    with:
+      checkout_repository: cyber-dojo/saver
+      checkout_ref: ${{ github.sha }}
+      artifact_prefix: saver-bare-image
 
 
   build-image:
-    needs: [setup, bare-image-amd64, bare-image-arm64]
+    needs: [setup, bare-image]
     uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build-from-bare-image.yml@main
     with:
       checkout_repository: cyber-dojo/saver
@@ -211,6 +112,8 @@ jobs:
       image_build_args: |
         COMMIT_SHA=${{ github.sha }}
       bare_image_artifact_prefix: saver-bare-image
+      bare_image_digest_amd64: ${{ needs.bare-image.outputs.digest_amd64 }}
+      bare_image_digest_arm64: ${{ needs.bare-image.outputs.digest_arm64 }}
       kosli_flow: ${{ vars.KOSLI_FLOW }}
       kosli_trail: ${{ needs.setup.outputs.kosli_trail }}
       kosli_reference_name: ${{ needs.setup.outputs.service_name }}
@@ -240,7 +143,7 @@ jobs:
   # the saver artifact by the commit.
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [bare-image-amd64]
+    needs: [bare-image]
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
@@ -252,8 +155,16 @@ jobs:
           name: saver-bare-image-amd64
           path: ${{ runner.temp }}
 
-      - name: Load the bare image
-        run:
+      - name: Load the bare image, checking its digest
+        env:
+          EXPECTED: ${{ needs.bare-image.outputs.digest_amd64 }}
+        run: |
+          ACTUAL="$(tar --extract --to-stdout --file="${{ runner.temp }}/bare-image.tar" index.json \
+                    | jq --raw-output '.manifests[0].digest')"
+          if [ -z "${EXPECTED}" ] || [ "${ACTUAL}" != "${EXPECTED}" ]; then
+            echo "linux/amd64 bare image digest is '${ACTUAL}', expected '${EXPECTED}'"
+            exit 1
+          fi
           docker load --input "${{ runner.temp }}/bare-image.tar"
 
       - name: Run unit tests with metrics, in the bare image
