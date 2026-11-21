@@ -65,11 +65,12 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
-# The stage above, base, is the runtime: Ruby, its gems, the OS and the saver
-# user, with no source. The stage below adds the source. Built with
-# --target base it is the runtime the server tests run in (bin/run_tests_bare.sh);
-# built with --build-context base=<that runtime>, the image is built FROM
-# the very runtime the tests ran in (.github/workflows/main.yml).
+# The stage above, base, is the bare image: Ruby, its gems, the OS packages
+# and the saver user, with no source code. The stage below adds the source
+# code, making the deployed image. Built with --target base it is the bare
+# image the server tests run in (bin/run_tests_bare.sh); built with
+# --build-context base=<that bare image>, the deployed image is built FROM
+# the very bare image the tests ran in (.github/workflows/main.yml).
 FROM base
 
 ARG COMMIT_SHA

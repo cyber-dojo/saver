@@ -85,32 +85,32 @@ jobs:
             --name=pull-request
 
 
-  # The runtime: the Dockerfile's base stage (Ruby, its gems, the OS and the
-  # saver user, with no source), built once per platform on that platform's
-  # runner. The unit tests run in the linux/amd64 one, and build-image builds
-  # the image FROM each, so the image's runtime is the one the tests ran in.
-  # Neither is published, nor has provenance or an SBOM: only the image does.
+  # The bare image: the Dockerfile's base stage (Ruby, its gems, the OS
+  # packages and the saver user, with no source code), built once per platform
+  # on that platform's runner. The unit tests run in the linux/amd64 one, and
+  # build-image builds the deployed image FROM each. No bare image is
+  # published, nor has provenance or an SBOM: only the deployed image does.
   # The built OCI layout is cached by the Dockerfile's hash. A cache hit skips
   # the build. A miss builds with no layer cache, so unpinned apk packages are
   # as new as the Dockerfile's last change (see its apk-refresh number).
-  runtime-amd64:
+  bare-image-amd64:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
 
-      - name: Restore the runtime built from this Dockerfile
+      - name: Restore the bare image built from this Dockerfile
         id: cached
         uses: actions/cache/restore@v4
         with:
-          path: ${{ runner.temp }}/runtime.tar
-          key: saver-runtime-amd64-${{ hashFiles('Dockerfile') }}
+          path: ${{ runner.temp }}/bare-image.tar
+          key: saver-bare-image-amd64-${{ hashFiles('Dockerfile') }}
 
       - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/setup-buildx-action@v4
 
-      - name: Build the runtime as an OCI layout
+      - name: Build the bare image as an OCI layout
         if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/build-push-action@v7
         with:
@@ -120,42 +120,42 @@ jobs:
           provenance: false
           sbom: false
           no-cache: true
-          outputs: type=oci,dest=${{ runner.temp }}/runtime.tar,name=saver-runtime:local
+          outputs: type=oci,dest=${{ runner.temp }}/bare-image.tar,name=saver-bare-image:local
 
-      - name: Cache the runtime built from this Dockerfile
+      - name: Cache the bare image built from this Dockerfile
         if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
-          path: ${{ runner.temp }}/runtime.tar
-          key: saver-runtime-amd64-${{ hashFiles('Dockerfile') }}
+          path: ${{ runner.temp }}/bare-image.tar
+          key: saver-bare-image-amd64-${{ hashFiles('Dockerfile') }}
 
-      - name: Upload the runtime
+      - name: Upload the bare image
         uses: actions/upload-artifact@v7
         with:
-          name: saver-runtime-amd64
-          path: ${{ runner.temp }}/runtime.tar
+          name: saver-bare-image-amd64
+          path: ${{ runner.temp }}/bare-image.tar
           if-no-files-found: error
           retention-days: 1
 
 
-  runtime-arm64:
+  bare-image-arm64:
     needs: [setup]
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
 
-      - name: Restore the runtime built from this Dockerfile
+      - name: Restore the bare image built from this Dockerfile
         id: cached
         uses: actions/cache/restore@v4
         with:
-          path: ${{ runner.temp }}/runtime.tar
-          key: saver-runtime-arm64-${{ hashFiles('Dockerfile') }}
+          path: ${{ runner.temp }}/bare-image.tar
+          key: saver-bare-image-arm64-${{ hashFiles('Dockerfile') }}
 
       - if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/setup-buildx-action@v4
 
-      - name: Build the runtime as an OCI layout
+      - name: Build the bare image as an OCI layout
         if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: docker/build-push-action@v7
         with:
@@ -165,27 +165,27 @@ jobs:
           provenance: false
           sbom: false
           no-cache: true
-          outputs: type=oci,dest=${{ runner.temp }}/runtime.tar,name=saver-runtime:local
+          outputs: type=oci,dest=${{ runner.temp }}/bare-image.tar,name=saver-bare-image:local
 
-      - name: Cache the runtime built from this Dockerfile
+      - name: Cache the bare image built from this Dockerfile
         if: ${{ steps.cached.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
-          path: ${{ runner.temp }}/runtime.tar
-          key: saver-runtime-arm64-${{ hashFiles('Dockerfile') }}
+          path: ${{ runner.temp }}/bare-image.tar
+          key: saver-bare-image-arm64-${{ hashFiles('Dockerfile') }}
 
-      - name: Upload the runtime
+      - name: Upload the bare image
         uses: actions/upload-artifact@v7
         with:
-          name: saver-runtime-arm64
-          path: ${{ runner.temp }}/runtime.tar
+          name: saver-bare-image-arm64
+          path: ${{ runner.temp }}/bare-image.tar
           if-no-files-found: error
           retention-days: 1
 
 
   build-image:
-    needs: [setup, runtime-amd64, runtime-arm64]
-    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build-from-runtime.yml@main
+    needs: [setup, bare-image-amd64, bare-image-arm64]
+    uses: cyber-dojo/reusable-actions-workflows/.github/workflows/secure-docker-build-from-bare-image.yml@main
     with:
       checkout_repository: cyber-dojo/saver
       checkout_ref: ${{ github.sha }}
@@ -194,7 +194,7 @@ jobs:
       image_tag: ${{ needs.setup.outputs.image_tag }}
       image_build_args: |
         COMMIT_SHA=${{ github.sha }}
-      runtime_artifact_prefix: saver-runtime
+      bare_image_artifact_prefix: saver-bare-image
       kosli_flow: ${{ vars.KOSLI_FLOW }}
       kosli_trail: ${{ needs.setup.outputs.kosli_trail }}
       kosli_reference_name: ${{ needs.setup.outputs.service_name }}
@@ -219,39 +219,39 @@ jobs:
       kosli_api_token: ${{ secrets.KOSLI_API_TOKEN }}
 
 
-  # The server tests run in the runtime, not the image, so they start without
-  # waiting for the image. With no fingerprint, Kosli binds their attestations
-  # to the saver artifact by the commit.
+  # The server tests run in the bare image, so they start without waiting for
+  # the deployed image. With no fingerprint, Kosli binds their attestations to
+  # the saver artifact by the commit.
   unit-tests:
     runs-on: ubuntu-latest
-    needs: [runtime-amd64]
+    needs: [bare-image-amd64]
     steps:
       - uses: cyber-dojo/harden-runner@main
       - uses: cyber-dojo/pinned-checkout@main
       - uses: cyber-dojo/setup-kosli-cli@main
 
-      - name: Download the runtime
+      - name: Download the bare image
         uses: actions/download-artifact@v8
         with:
-          name: saver-runtime-amd64
+          name: saver-bare-image-amd64
           path: ${{ runner.temp }}
 
-      - name: Load the runtime
+      - name: Load the bare image
         run:
-          docker load --input "${{ runner.temp }}/runtime.tar"
+          docker load --input "${{ runner.temp }}/bare-image.tar"
 
-      - name: Run unit tests with metrics, in the runtime
+      - name: Run unit tests with metrics, in the bare image
         env:
-          CYBER_DOJO_SAVER_RUNTIME_IMAGE: saver-runtime:local
+          CYBER_DOJO_SAVER_BARE_IMAGE: saver-bare-image:local
         run:
           bin/run_tests_bare.sh
 
-      - name: Upload the runtime the tests ran in, for unit-test-runtime
+      - name: Upload the bare image's packages, for bare-image-match
         if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v7
         with:
-          name: unit-tests-runtime-versions
-          path: reports/server/runtime_versions.txt
+          name: bare-image-packages
+          path: reports/server/bare_image_packages.txt
           if-no-files-found: error
           retention-days: 1
 
@@ -279,12 +279,13 @@ jobs:
             --type=coverage-metrics
 
 
-  # build-image builds the image FROM the runtime the unit tests ran in, so
-  # their runtimes (Ruby, every gem, every OS package) should be identical;
-  # a Dockerfile edit adding to its last stage would make them differ. The
-  # result is attested as saver.unit-test-runtime, which .kosli.yml requires,
-  # so a difference, or no attestation at all, leaves the image non-compliant.
-  unit-test-runtime:
+  # build-image builds the deployed image FROM the bare image the unit tests
+  # ran in, so their packages (Ruby, every gem, every OS package) should be
+  # identical; a Dockerfile edit adding to its last stage would make them
+  # differ. The result is attested as saver.bare-image-match, which
+  # .kosli.yml requires, so a difference, or no attestation at all, leaves
+  # the deployed image non-compliant.
+  bare-image-match:
     if: ${{ !cancelled() && needs.build-image.result == 'success' }}
     runs-on: ubuntu-latest
     needs: [build-image, unit-tests]
@@ -300,22 +301,23 @@ jobs:
         with:
           image_digest: ${{ needs.build-image.outputs.digest }}
 
-      - name: Download the runtime the unit tests ran in
-        id: tests-runtime
+      - name: Download the packages of the bare image the unit tests ran in
+        id: bare-packages
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
-          name: unit-tests-runtime-versions
-          path: runtime
+          name: bare-image-packages
+          path: packages
 
-      - name: Compare it with the image's runtime
-        id: same-runtime
+      - name: Compare them with the deployed image's packages
+        id: match
         run: |
-          bin/runtime_versions.sh image "${{ needs.build-image.outputs.tagged_image_name }}" \
-            > runtime/image_runtime_versions.txt
+          mkdir -p packages
+          bin/image_packages.sh image "${{ needs.build-image.outputs.tagged_image_name }}" \
+            > packages/deployed_image_packages.txt
           COMPLIANT=false
-          if [ "${{ steps.tests-runtime.outcome }}" == success ] \
-             && diff --unified runtime/runtime_versions.txt runtime/image_runtime_versions.txt; then
+          if [ "${{ steps.bare-packages.outcome }}" == success ] \
+             && diff --unified packages/bare_image_packages.txt packages/deployed_image_packages.txt; then
             COMPLIANT=true
           fi
           echo "compliant=${COMPLIANT}" >> "${GITHUB_OUTPUT}"
@@ -324,13 +326,13 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run:
           kosli attest generic
-            --name=saver.unit-test-runtime
-            --compliant=${{ steps.same-runtime.outputs.compliant }}
-            --attachments=runtime
+            --name=saver.bare-image-match
+            --compliant=${{ steps.match.outputs.compliant }}
+            --attachments=packages
 
-      - name: Fail unless the image's runtime is the one the unit tests ran in
+      - name: Fail unless the deployed image's packages are the bare image's
         run:
-          test "${{ steps.same-runtime.outputs.compliant }}" == true
+          test "${{ steps.match.outputs.compliant }}" == true
 
 
   integration-tests:
@@ -383,7 +385,7 @@ jobs:
       - build-image
       - pull-request
       - unit-tests
-      - unit-test-runtime
+      - bare-image-match
       - integration-tests
       - snyk-container-scan
     steps:
