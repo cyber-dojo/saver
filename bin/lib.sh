@@ -74,21 +74,13 @@ copy_in_saver_test_data()
 {
   local -r TEST_DATA_DIR="${ROOT_DIR}/test/server/data"
   local -r CID="$(service_container server)"
-  # You cannot docker cp to a tmpfs, so tar-piping...
-
-  if [ "${CI:-}" == 'true' ]; then
-    set -x
-  fi
-
-  # In the CI workflow this gives a diagnostic
-  #   tar: -: Cannot stat: No such file or directory
-  #   tar: Exiting with failure status due to previous errors
-  # But it appears to worked as the tests all pass, and when commented out some fail ?!?
-  tar --no-xattrs -c -C "${TEST_DATA_DIR}/cyber-dojo" - . | docker exec -i "${CID}" tar x -C /cyber-dojo
-
-  if [ "${CI:-}" == 'true' ]; then
-    set +x
-  fi
+  # You cannot docker cp to a tmpfs, so tar-piping. pipefail, in a subshell
+  # so it holds for this pipe alone, fails the run when either tar fails.
+  (
+    set -o pipefail
+    tar --no-xattrs --create --file=- --directory="${TEST_DATA_DIR}/cyber-dojo" . \
+      | docker exec -i "${CID}" tar x -C /cyber-dojo
+  )
 
   local -r tar_files=(
     almost_full_group.v0.AWCQdE.tgz
