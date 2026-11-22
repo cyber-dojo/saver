@@ -53,7 +53,7 @@ RUN apk add --no-cache --virtual .rugged-build-deps build-base cmake pkgconf lib
 # tests take, alongside SimpleCov's line and branch coverage. It is used only
 # by the test suites (test/*/config/coverage.rb). It is pinned to keep the
 # image reproducible.
-RUN gem install path_coverage --version 0.7.0
+RUN gem install --no-document path_coverage --version 0.7.2
 
 ARG APP_DIR=/saver
 ENV APP_DIR=${APP_DIR}
@@ -66,8 +66,13 @@ RUN adduser                        \
   -u 19663         `# user-id`     \
   saver            `# user-name`
 
+# Created as root, before USER, so the saver user cannot add, remove or
+# rename files in the source dir.
+WORKDIR ${APP_DIR}/source
+USER saver
+
 # The stage above, base, is the bare image: Ruby, its gems, the OS packages
-# and the saver user, with no source code. The stage below adds the source
+# and the saver user it runs as, with no source code. The stage below adds the source
 # code, making the deployed image. Built with --target base it is the bare
 # image the server tests run in (bin/run_tests_bare.sh); built with
 # --build-context base=<that bare image>, the deployed image is built FROM
@@ -77,9 +82,8 @@ FROM base
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
 
-WORKDIR ${APP_DIR}/source
-COPY source/server/ .
-USER saver
+# Owned by root, so the saver user it runs as cannot change its own code.
+COPY --chown=root:root source/server/ .
 HEALTHCHECK --interval=1s --timeout=1s --retries=5 --start-period=5s CMD ./config/healthcheck.sh
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
 CMD [ "./config/up.sh" ]
