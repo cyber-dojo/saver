@@ -268,7 +268,48 @@ class KataDiffTest < TestBase
     assert_equal 'Invalid +ve index 1 [1 event]', ex.message
   end
 
+  test 'D4E5D1', %w(
+  | v2 kata: a file whose name holds a space, a tab or non-ASCII letters is
+  | diffed, and its event read, under its own name, and both serialise as
+  | JSON: changed, created, deleted and renamed alike
+  ) do
+    names = ['sp ace.txt', "ta\tb.txt", 'naïve.txt', 'née ü.txt']
+    expected = {}
+    actual = {}
+    names.each do |name|
+      renamed = "re #{name}"
+      {
+        changed: [{ name => "a\n" }, { name => "a\nb\n" }, ['changed', name, name, 1, 0, 1]],
+        created: [{}, { name => "c\n" }, ['created', nil, name, 1, 0, 0]],
+        deleted: [{ name => "a\n" }, {}, ['deleted', name, nil, 0, 1, 0]],
+        renamed: [{ name => "a\nb\nc\n" }, { renamed => "a\nb\nc\n" },
+                  ['renamed', name, renamed, 0, 0, 3]]
+      }.each do |change, (was, now, (type, old, new, added, deleted, same))|
+        @was_files = was.dup
+        @now_files = now.dup
+        id, was_index, now_index = *run_diff_prepare
+        summary = JSON.parse(diff_summary(id, was_index, now_index).to_json)
+        event = JSON.parse(kata_event(id, now_index).to_json)
+        expected[[name, change]] = [
+          [{ 'type' => type, 'old_filename' => old, 'new_filename' => new,
+             'line_counts' => { 'added' => added, 'deleted' => deleted, 'same' => same } }],
+          now.keys.sort
+        ]
+        actual[[name, change]] = [
+          summary.group_by { |diff| diff['type'] }.except('unchanged').values.flatten,
+          event['files'].keys.sort - starter_filenames
+        ]
+      end
+    end
+    assert_equal expected, actual
+  end
+
   private
+
+  def starter_filenames
+    # The filenames of the files every kata in these tests starts with.
+    kata_event(kata_create(starter_manifest), 0)['files'].keys.sort
+  end
 
   def assert_diff(raw_expected)
     expected = expected_diff(raw_expected)

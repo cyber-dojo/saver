@@ -1,5 +1,6 @@
 require 'rugged'
 require 'json'
+require_relative '../lib/utf8_clean'
 
 module External
 
@@ -35,15 +36,15 @@ module External
     # the old textual git-diff parser skipped "\ No newline at end of file".
     CONTENT_ORIGINS = %i[context addition deletion].freeze
 
-    # Returns the bytes of <path> in the commit HEAD points at (the kata's main
-    # branch tip), as a String. Equivalent to `git show HEAD:<path>`.
+    # Returns the content of <path> in the commit HEAD points at (the kata's
+    # main branch tip), as text. Equivalent to `git show HEAD:<path>`.
     def head_blob(repo_dir, path)
       repo = Rugged::Repository.new(repo_dir)
       entry = repo.head.target.tree.path(path)
-      repo.lookup(entry[:oid]).content
+      text(repo.lookup(entry[:oid]).content)
     end
 
-    # Returns { path => bytes } for every blob in the tree of the commit tagged
+    # Returns { path => content } for every blob in the tree of the commit tagged
     # <index>. Equivalent to reading `git archive --format=tar <index>`. Raises
     # TagNotFound if refs/tags/<index> does not exist yet (use the ref lookup,
     # not rev_parse, which would treat "<index>" as an ambiguous OID prefix).
@@ -79,8 +80,8 @@ module External
         delta = patch.delta
         {
           status: delta.status,
-          old_path: delta.old_file[:path],
-          new_path: delta.new_file[:path],
+          old_path: text(delta.old_file[:path]),
+          new_path: text(delta.new_file[:path]),
           lines: content_lines(patch)
         }
       end
@@ -255,13 +256,23 @@ module External
       repo.lookup(tag_tree(repo, index).path('files')[:oid])
     end
 
-    # { path => bytes } for every blob under <tree>, path relative to <tree>.
+    # { path => content } for every blob under <tree>, path relative to <tree>,
+    # each as text.
     def tree_blobs(repo, tree)
       blobs = {}
       tree.walk(:postorder) do |root, entry|
-        blobs["#{root}#{entry[:name]}"] = repo.lookup(entry[:oid]).content if entry[:type] == :blob
+        blobs[text("#{root}#{entry[:name]}")] = text(repo.lookup(entry[:oid]).content) if entry[:type] == :blob
       end
       blobs
+    end
+
+    # rugged returns every path and every blob's bytes tagged ASCII-8BIT. A
+    # kata's paths and contents are all UTF-8 text (written from JSON), so
+    # each is returned as UTF-8, any invalid bytes dropped. Decoding here, the
+    # one place rugged's strings leave, is what lets every caller compare them
+    # with, and serialise them as, the UTF-8 strings the rest of the saver holds.
+    def text(bytes)
+      Utf8.clean(bytes)
     end
 
     # The real source lines of <patch>, as plain hashes, in diff order. Drops the
@@ -274,7 +285,7 @@ module External
           next unless CONTENT_ORIGINS.include?(line.line_origin)
           lines << {
             origin: line.line_origin,
-            content: line.content,
+            content: text(line.content),
             old_lineno: line.old_lineno,
             new_lineno: line.new_lineno
           }
@@ -283,13 +294,9 @@ module External
       lines
     end
 
-    # Parses <filename> from <tree> as JSON. rugged returns blob bytes tagged
-    # ASCII-8BIT; our JSON files are valid UTF-8 (always written via
-    # JSON.pretty_generate), so retag the bytes as UTF-8 before parsing.
-    # Otherwise the parsed strings stay BINARY and warn now (and raise under
-    # json 3.0) when a caller re-serializes them via json_pretty.
+    # Parses <filename> from <tree>, a JSON file, as text.
     def read_json_blob(repo, tree, filename)
-      JSON.parse(repo.lookup(tree.path(filename)[:oid]).content.force_encoding('UTF-8'))
+      JSON.parse(text(repo.lookup(tree.path(filename)[:oid]).content))
     end
 
   end

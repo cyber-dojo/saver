@@ -554,23 +554,14 @@ class Kata_v2
 
   def git_archive(id, pos_index)
     attempts = 0
-    blobs =
-      begin
-        git.tag_tree_blobs(repo_dir(id), pos_index)
-      rescue External::Git::TagNotFound
-        attempts += 1
-        raise if attempts > GIT_ARCHIVE_MAX_RETRIES
-        sleep(GIT_ARCHIVE_RETRY_SECONDS)
-        retry
-      end
-    # tag_tree_blobs returns blob bytes tagged ASCII-8BIT. The kata's stored
-    # files, stdout/stderr, events.json and truncations.json are all UTF-8 text,
-    # so retag them as UTF-8 (scrubbing any invalid bytes), matching
-    # read_events_via_git. Without this, content with
-    # non-ASCII bytes compares unequal to the same text after it has round-tripped
-    # through JSON (file_edit would log a phantom edit), and JSON-serialising the
-    # event response warns (and raises under json 3.0).
-    blobs.transform_values { |content| Utf8.clean(content) }
+    begin
+      git.tag_tree_blobs(repo_dir(id), pos_index)
+    rescue External::Git::TagNotFound
+      attempts += 1
+      raise if attempts > GIT_ARCHIVE_MAX_RETRIES
+      sleep(GIT_ARCHIVE_RETRY_SECONDS)
+      retry
+    end
   end
 
   # - - - - - - - - - - - - - - - - - - - - - -
@@ -582,7 +573,7 @@ class Kata_v2
   # committed blob exists before the ref moves, so this always returns the
   # whole, consistent, latest events.json. See docs/reads-via-git.md.
   def read_events_via_git(id)
-    json_parse(Utf8.clean(git_show(id, 'events.json')))
+    json_parse(git_show(id, 'events.json'))
   end
 
   # Reads the kata's committed options.json through git rather than off the
@@ -590,7 +581,7 @@ class Kata_v2
   # a checkout, so the working-tree options.json is stale; reading at HEAD (which
   # advances atomically) gives the latest. See git_show and docs/reads-via-git.md.
   def read_options_via_git(id)
-    json_parse(Utf8.clean(git_show(id, 'options.json')))
+    json_parse(git_show(id, 'options.json'))
   end
 
   # Reads filename from the kata's git tree at HEAD as a string, in-process via

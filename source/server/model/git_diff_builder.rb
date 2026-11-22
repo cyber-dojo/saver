@@ -1,5 +1,3 @@
-require_relative '../lib/utf8_clean'
-
 class GitDiffBuilder
   # Builds the saver's per-file diff hashes from the structured diff produced
   # in-process by libgit2 (External::Git#diff). The input is the Array of file
@@ -126,12 +124,7 @@ class GitDiffBuilder
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   def source_line(type, line, number)
-    { type: type, line: clean(line[:content]), number: number }
-  end
-
-  # libgit2 blob bytes arrive tagged ASCII-8BIT; clean to UTF-8 and drop the
-  # single trailing newline the diff line carries.
-  def clean(content)
-    Utf8.clean(content.chomp("\n"))
+    # Each diff line's content carries its single trailing newline.
+    { type: type, line: line[:content].chomp("\n"), number: number }
   end
 end
