@@ -1,4 +1,3 @@
-require_relative '../lib/utf8_clean'
 require_relative 'event_index'
 require_relative 'git_diff_builder'
 
@@ -60,7 +59,7 @@ module GitDiff
   end
 
   def file_lines(content)
-    Utf8.clean(content).split("\n")
+    content.split("\n")
   end
 
   def same_lines(lines)

@@ -37,4 +37,35 @@ class ExternalGitTest < TestBase
     end
   end
 
+  version_test 2, 'Eg1TnH', %w(
+  | every path and every content External::Git returns is UTF-8 text, so a file
+  | whose name and content hold non-ASCII letters reads back equal to the UTF-8
+  | strings it was written from, through head_blob, tag_tree_blobs, files_blobs
+  | and diff alike
+  ) do
+    in_kata do |id|
+      dir = "/#{disk.root_dir}/katas/#{id[0..1]}/#{id[2..3]}/#{id[4..5]}"
+      name = 'née ü.txt'
+      content = "café\n"
+      kata_ran_tests(id, { name => { 'content' => content, 'truncated' => false } },
+                     { 'content' => 'this is stdout', 'truncated' => false },
+                     { 'content' => 'this is stderr', 'truncated' => false },
+                     '0', { 'duration' => 0.457764, 'colour' => 'green', 'predicted' => 'none' })
+      added = git.diff(dir, 0, 1).group_by { |file| file[:status] }.fetch(:added)
+      expected = {
+        head_blob: content,
+        tag_tree_blob: content,
+        files_blobs: { name => content },
+        diff: [[name, [content]]]
+      }
+      actual = {
+        head_blob: git.head_blob(dir, "files/#{name}"),
+        tag_tree_blob: git.tag_tree_blobs(dir, 1).fetch("files/#{name}"),
+        files_blobs: git.files_blobs(dir, 1),
+        diff: added.map { |file| [file[:new_path], file[:lines].map { |line| line[:content] }] }
+      }
+      assert_equal expected, actual
+    end
+  end
+
 end
